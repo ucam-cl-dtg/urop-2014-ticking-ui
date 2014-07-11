@@ -29,7 +29,7 @@ public class Submission {
 							@JsonProperty("repo")String repo, 
 							@JsonProperty("submitted")Date submitted, 
 							@JsonProperty("tick")Tick tick, 
-							@JsonProperty("unitPass")boolean unitPass) {
+							@JsonProperty("unit_pass")boolean unitPass) {
 		
 		this.sid = group+"_"+tick.getName()+"_"+author;
 		this.setGroup(group);

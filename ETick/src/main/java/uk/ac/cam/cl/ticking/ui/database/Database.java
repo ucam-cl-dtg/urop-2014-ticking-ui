@@ -13,6 +13,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.ticks.Submission;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -33,11 +34,11 @@ public class Database {
 		mongoClient = new MongoClient( "localhost" , 27017  );
 		db = mongoClient.getDB("ETick");
 		
-		tickColl = JacksonDBCollection.wrap(db.getCollection("Ticks"),Tick.class,String.class);
-		subColl = JacksonDBCollection.wrap(db.getCollection("Submissions"),Submission.class,String.class);
-		userColl = JacksonDBCollection.wrap(db.getCollection("Users"),User.class,String.class);
-		groupColl = JacksonDBCollection.wrap(db.getCollection("Groups"),Group.class,String.class);
-		groupingColl = JacksonDBCollection.wrap(db.getCollection("Groupings"),Grouping.class,String.class);
+		tickColl = JacksonDBCollection.wrap(db.getCollection(Strings.TICKSCOLLECTION),Tick.class,String.class);
+		subColl = JacksonDBCollection.wrap(db.getCollection(Strings.SUBMISSIONSCOLLECTION),Submission.class,String.class);
+		userColl = JacksonDBCollection.wrap(db.getCollection(Strings.USERSCOLLECTION),User.class,String.class);
+		groupColl = JacksonDBCollection.wrap(db.getCollection(Strings.GROUPSCOLLECTION),Group.class,String.class);
+		groupingColl = JacksonDBCollection.wrap(db.getCollection(Strings.GROUPINGSCOLLECTION),Grouping.class,String.class);
 	}
 	
 	public static Database get() {
