@@ -1,10 +1,10 @@
-package uk.ac.cam.tl364.ticks;
+package uk.ac.cam.cl.ticking.ui.ticks;
 
 import java.util.Date;
 
 import org.mongojack.ObjectId;
 
-import uk.ac.cam.tl364.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.Database;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -21,18 +21,24 @@ public class Submission {
 	private String repo;
 	private Date submitted;
 	private String tick;
-	private boolean ePass;
-	private boolean hPass;
+	private boolean unitPass;
+	private boolean humanPass;
 	
-	public Submission(@JsonProperty("author")String author, @JsonProperty("group")String group, @JsonProperty("repo")String repo, @JsonProperty("submitted")Date submitted, @JsonProperty("tick")Tick tick, @JsonProperty("ePass")boolean ePass) {
+	public Submission(@JsonProperty("author")String author,
+							@JsonProperty("group")String group, 
+							@JsonProperty("repo")String repo, 
+							@JsonProperty("submitted")Date submitted, 
+							@JsonProperty("tick")Tick tick, 
+							@JsonProperty("unitPass")boolean unitPass) {
+		
 		this.sid = group+"_"+tick.getName()+"_"+author;
 		this.setGroup(group);
 		this.setAuthor(author);
 		this.setRepo(repo);
 		this.setSubmitted(submitted);
 		this.setTick(tick);
-		this.setEPass(ePass);
-		this.setHPass(false);
+		this.setUnitPass(unitPass);
+		this.setHumanPass(false);
 	}
 
 	@JsonProperty("repo")
@@ -66,24 +72,24 @@ public class Submission {
 		this.tick = tick.getTID();
 	}
 
-	@JsonProperty("e_pass")
-	public boolean getEPass() {
-		return ePass;
+	@JsonProperty("unit_pass")
+	public boolean getUnitPass() {
+		return unitPass;
 	}
 
-	@JsonProperty("e_pass")
-	public void setEPass(boolean ePass) {
-		this.ePass = ePass;
+	@JsonProperty("unit_pass")
+	public void setUnitPass(boolean ePass) {
+		this.unitPass = ePass;
 	}
 
-	@JsonProperty("h_pass")
-	public boolean getHPass() {
-		return hPass;
+	@JsonProperty("human_pass")
+	public boolean getHumanPass() {
+		return humanPass;
 	}
 
-	@JsonProperty("h_pass")
-	public void setHPass(boolean hPass) {
-		this.hPass = hPass;
+	@JsonProperty("human_pass")
+	public void setHumanPass(boolean hPass) {
+		this.humanPass = hPass;
 	}
 
 	@JsonProperty("author")

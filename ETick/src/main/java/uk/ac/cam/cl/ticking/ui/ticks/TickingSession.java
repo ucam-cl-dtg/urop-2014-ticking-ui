@@ -1,4 +1,4 @@
-package uk.ac.cam.tl364.ticks;
+package uk.ac.cam.cl.ticking.ui.ticks;
 
 import java.util.List;
 

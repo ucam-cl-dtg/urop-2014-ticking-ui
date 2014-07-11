@@ -1,4 +1,4 @@
-package uk.ac.cam.tl364.database;
+package uk.ac.cam.cl.ticking.ui.database;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -7,12 +7,12 @@ import java.util.List;
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
 
-import uk.ac.cam.rds46.actors.Group;
-import uk.ac.cam.rds46.actors.Grouping;
-import uk.ac.cam.rds46.actors.Role;
-import uk.ac.cam.rds46.actors.User;
-import uk.ac.cam.tl364.ticks.Submission;
-import uk.ac.cam.tl364.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.actors.Group;
+import uk.ac.cam.cl.ticking.ui.actors.Grouping;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
+import uk.ac.cam.cl.ticking.ui.actors.User;
+import uk.ac.cam.cl.ticking.ui.ticks.Submission;
+import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -81,25 +81,22 @@ public class Database {
 	}
 	
 	public List<User> getUsers(Group group) {
-		List<User> ps = new ArrayList<User>();
-		DBCursor<Grouping> cursor = groupingColl.find().is("group.$id", group.getGid());
-		while (cursor.hasNext()) {
-			Grouping g = cursor.next();
-			User p = g.fetchUser();
-			ps.add(p);
+		List<User> us = new ArrayList<User>();
+		List<Grouping> grs = getGroupings(group);
+		for (Grouping gr : grs) {
+			us.add(gr.fetchUser());
 		}
-		return ps;
+		return us;
 	}
 	
 	public List<User> getUsers(Group group, Role role) {
-		List<User> ps = new ArrayList<User>();
+		List<User> us = new ArrayList<User>();
 		DBCursor<Grouping> cursor = groupingColl.find().is("group.$id", group.getGid()).is("role", role);
-		while (cursor.hasNext()) {
-			Grouping g = cursor.next();
-			User p = g.fetchUser();
-			ps.add(p);
+		List<Grouping> grs = getGroupings(cursor);
+		for (Grouping gr : grs) {
+			us.add(gr.fetchUser());
 		}
-		return ps;
+		return us;
 	}
 	
 	//Group getters
@@ -113,22 +110,20 @@ public class Database {
 	
 	public List<Group> getGroups(User user) {
 		List<Group> gs = new ArrayList<Group>();
-		DBCursor<Grouping> cursor = groupingColl.find().is("user.$id", user.getCrsid());
-		while (cursor.hasNext()) {
-			Grouping g = cursor.next();
-			Group gr = g.fetchGroup();
-			gs.add(gr);
+		List<Grouping> grs = getGroupings(user);
+		for (Grouping gr : grs) {
+			gs.add(gr.fetchGroup());
 		}
 		return gs;
+		
 	}
 	
 	public List<Group> getGroups(User user, Role role) {
 		List<Group> gs = new ArrayList<Group>();
 		DBCursor<Grouping> cursor = groupingColl.find().is("user.$id", user.getCrsid()).is("role", role);
-		while (cursor.hasNext()) {
-			Grouping g = cursor.next();
-			Group gr = g.fetchGroup();
-			gs.add(gr);
+		List<Grouping> grs = getGroupings(cursor);
+		for (Grouping gr : grs) {
+			gs.add(gr.fetchGroup());
 		}
 		return gs;
 	}
@@ -136,32 +131,27 @@ public class Database {
 	//Grouping getters
 	
 	public List<Grouping> getGroupings(User user) {
-		List<Grouping> gs = new ArrayList<Grouping>();
 		DBCursor<Grouping> cursor = groupingColl.find().is("user.$id", user.getCrsid());
-		while (cursor.hasNext()) {
-			Grouping g = cursor.next();
-			gs.add(g);
-		}
-		return gs;
+		return getGroupings(cursor);
 	}
 	
 	public List<Grouping> getGroupings(Group group) {
-		List<Grouping> gs = new ArrayList<Grouping>();
 		DBCursor<Grouping> cursor = groupingColl.find().is("group.$id", group.getGid());
-		while (cursor.hasNext()) {
-			Grouping g = cursor.next();
-			gs.add(g);
-		}
-		return gs;
+		return getGroupings(cursor);
 	}
 	
 	public List<Grouping> getGroupings(Role role) {
-		List<Grouping> gs = new ArrayList<Grouping>();
 		DBCursor<Grouping> cursor = groupingColl.find().is("role", role);
+		return getGroupings(cursor);
+	}
+	
+	public List<Grouping> getGroupings(DBCursor<Grouping> cursor) {
+		List<Grouping> gs = new ArrayList<Grouping>();
 		while (cursor.hasNext()) {
 			Grouping g = cursor.next();
 			gs.add(g);
 		}
+		cursor.close();
 		return gs;
 	}
 	
@@ -182,6 +172,7 @@ public class Database {
 			Tick t = cursor.next();
 			ts.add(t);
 		}
+		cursor.close();
 		return ts;
 	}
 	
@@ -206,6 +197,7 @@ public class Database {
 			Submission s = cursor.next();
 			ss.add(s);
 		}
+		cursor.close();
 		return ss;
 	}
 	
@@ -217,30 +209,8 @@ public class Database {
 			Submission s = cursor.next();
 			ss.add(s);
 		}
+		cursor.close();
 		return ss;
-	}
-	
-	//Testing
-	public static void main(String[] args) {
-		Database database = get();
-		Group g = new Group("foo");
-		database.saveGroup(g);
-		User u = new User("tl364","Tom");
-		database.saveUser(u);
-		Grouping gr = new Grouping(g,u,Role.AUTHOR);
-		database.saveGrouping(gr);
-		List<User> l = database.getUsers(g);
-		for (User usr : l) {
-			System.out.println(usr.getName());
-		}
-		List<User> la = database.getUsers(g,Role.AUTHOR);
-		for (User usr : la) {
-			System.out.println(usr.getName());
-		}
-		List<Group> lg = database.getGroups(u);
-		for (Group grp : lg) {
-			System.out.println(grp.getName());
-		}
 	}
 
 }

@@ -1,4 +1,4 @@
-package uk.ac.cam.rds46.actors;
+package uk.ac.cam.cl.ticking.ui.actors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.mongojack.DBCursor;
 import org.mongojack.DBRef;
 
-import uk.ac.cam.tl364.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.Database;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,6 +21,7 @@ public class Grouping {
 	private DBRef<User,String> user;
 	private Role role;
 	
+	//Empty default constructor required for MongoJack as Grouping(Group, User, Role) cannot be used
 	@JsonCreator
 	public Grouping() {
 		

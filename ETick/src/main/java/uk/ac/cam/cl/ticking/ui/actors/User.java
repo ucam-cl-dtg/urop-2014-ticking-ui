@@ -1,4 +1,4 @@
-package uk.ac.cam.rds46.actors;
+package uk.ac.cam.cl.ticking.ui.actors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.mongojack.DBCursor;
 
-import uk.ac.cam.tl364.database.Database;
-import uk.ac.cam.tl364.ticks.Submission;
+import uk.ac.cam.cl.ticking.ui.database.Database;
+import uk.ac.cam.cl.ticking.ui.ticks.Submission;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -68,7 +68,9 @@ public class User
 	}
 	
 	public void add(Role role, String gid) {
-		if (groupSets.get(role) == null) groupSets.put(role, new ArrayList<String>());
+		if (groupSets.get(role) == null) {
+			groupSets.put(role, new ArrayList<String>());
+		}
 		groupSets.get(role).add(gid);
 	}
 	

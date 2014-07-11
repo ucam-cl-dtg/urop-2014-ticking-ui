@@ -1,7 +1,7 @@
-package uk.ac.cam.rds46.actors;
+package uk.ac.cam.cl.ticking.ui.actors;
 
-import uk.ac.cam.tl364.database.Database;
-import uk.ac.cam.tl364.ticks.*;
+import uk.ac.cam.cl.ticking.ui.database.Database;
+import uk.ac.cam.cl.ticking.ui.ticks.*;
 
 import java.util.List;
 import java.util.Map;
@@ -13,14 +13,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Student extends User
 {
 	private String college, tripos;
-	private int triposPart;
+	private int yearOfStudy;
 
 	@JsonCreator
 	public Student(@JsonProperty("crsid")String crsid, @JsonProperty("name")String name, @JsonProperty("college")String college, @JsonProperty("tripos")String tripos, @JsonProperty("tripos_part")int triposPart) {
 		super(crsid, name);
 		this.college = college;
 		this.tripos = tripos;
-		this.triposPart = triposPart;
+		this.yearOfStudy = triposPart;
 	}
 
 
@@ -51,13 +51,13 @@ public class Student extends User
 	@JsonProperty("tripos_part")
 	public int getTriposPart()
 	{
-		return triposPart;
+		return yearOfStudy;
 	}
 	
 	@JsonProperty("tripos_part")
 	public void setTriposPart(int triposPart)
 	{
-		this.triposPart = triposPart;
+		this.yearOfStudy = triposPart;
 	}
 
 }

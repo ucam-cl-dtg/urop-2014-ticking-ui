@@ -1,4 +1,4 @@
-package uk.ac.cam.rds46.actors;
+package uk.ac.cam.cl.ticking.ui.actors;
 
 
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.mongojack.DBCursor;
 
-import uk.ac.cam.tl364.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.Database;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -3,7 +3,6 @@
 	<name>ETick</name>
 	<comment></comment>
 	<projects>
-		<project>ucam-ldap</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

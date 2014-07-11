@@ -1,12 +1,22 @@
-package uk.ac.cam.rds46.auth;
+package uk.ac.cam.cl.ticking.ui.auth;
+
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import uk.ac.cam.rds46.actors.*;
-import uk.ac.cam.tl364.database.*;
-import uk.ac.cam.cl.dtg.ldap.*;
-import java.util.List;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+
+import uk.ac.cam.cl.dtg.ldap.LDAPObjectNotFoundException;
+import uk.ac.cam.cl.dtg.ldap.LDAPQueryManager;
+import uk.ac.cam.cl.dtg.ldap.LDAPUser;
+import uk.ac.cam.cl.ticking.ui.actors.Group;
+import uk.ac.cam.cl.ticking.ui.actors.Grouping;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
+import uk.ac.cam.cl.ticking.ui.actors.User;
+import uk.ac.cam.cl.ticking.ui.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.DatabaseTest;
 
 @Path("/raven")
 public class RavenViewTest

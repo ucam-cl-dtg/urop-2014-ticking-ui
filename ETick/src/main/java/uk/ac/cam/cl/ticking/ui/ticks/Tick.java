@@ -1,11 +1,11 @@
-package uk.ac.cam.tl364.ticks;
+package uk.ac.cam.cl.ticking.ui.ticks;
 
 import java.util.Date;
 import java.util.List;
 
 import org.mongojack.ObjectId;
 
-import uk.ac.cam.tl364.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.Database;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -21,7 +21,12 @@ public class Tick {
 	private Date deadline;
 	private List<String> files;
 	
-	public Tick(@JsonProperty("name")String name, @JsonProperty("group")String group, @JsonProperty("repo")String repo, @JsonProperty("deadline")Date deadline, @JsonProperty("files")List<String> files) {
+	public Tick(@JsonProperty("name")String name, 
+						@JsonProperty("group")String group, 
+						@JsonProperty("repo")String repo, 
+						@JsonProperty("deadline")Date deadline, 
+						@JsonProperty("files")List<String> files) {
+		
 		this.tid = group+"_"+name;
 		this.setName(name);
 		this.setGroup(group);
