@@ -31,7 +31,7 @@ public class DatabasePopulator {
 	public static void addEntry(String group, String crsid, String name, Role r) {
 		Group g = new Group(group);
 		db.saveGroup(g);
-		User u = new User(crsid, name);
+		User u = new User(crsid);
 		db.saveUser(u);
 		Grouping gr = new Grouping(g, u, r);
 		db.saveGrouping(gr);

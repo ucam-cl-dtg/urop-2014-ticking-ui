@@ -8,4 +8,5 @@ public class Strings {
 	public static final String USERSCOLLECTION = "Users";
 	public static final String GROUPINGSCOLLECTION = "Groupings";
 
+	public static final String LAB = "Computer Laboratory";
 }
