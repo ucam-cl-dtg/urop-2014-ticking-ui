@@ -1,4 +1,4 @@
-package uk.ac.cam.cl.ticking.ui.database;
+package uk.ac.cam.cl.ticking.ui.dao;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;

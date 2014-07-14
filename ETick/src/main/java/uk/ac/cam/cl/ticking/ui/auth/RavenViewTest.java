@@ -19,9 +19,9 @@ import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.ETickGuiceConfigurationModule;
-import uk.ac.cam.cl.ticking.ui.database.IDataManager;
-import uk.ac.cam.cl.ticking.ui.database.MongoDataManager;
-import uk.ac.cam.cl.ticking.ui.database.DatabaseTest;
+import uk.ac.cam.cl.ticking.ui.dao.DatabasePopulator;
+import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
 
 @Path("/raven")
 public class RavenViewTest
@@ -34,7 +34,7 @@ public class RavenViewTest
 		
 		html += "<h1>User Login Test</h1>";
 		
-		DatabaseTest.testDB();
+		DatabasePopulator.testDB();
 
 		String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
 

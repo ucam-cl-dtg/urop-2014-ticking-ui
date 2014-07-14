@@ -1,4 +1,4 @@
-package uk.ac.cam.cl.ticking.ui.database;
+package uk.ac.cam.cl.ticking.ui.dao;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
@@ -9,14 +9,14 @@ import uk.ac.cam.cl.ticking.ui.api.ETickGuiceConfigurationModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-public class DatabaseTest
-{
+public class DatabasePopulator {
 
 	private static IDataManager db = null;
 
 	public static void testDB() {
-		
-		Injector injector = Guice.createInjector(new ETickGuiceConfigurationModule());
+
+		Injector injector = Guice
+				.createInjector(new ETickGuiceConfigurationModule());
 		db = injector.getInstance(IDataManager.class);
 
 		addEntry("Java 1A", "rds46", "Raahil", Role.OVERVIEW);

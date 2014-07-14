@@ -1,8 +1,8 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
-import uk.ac.cam.cl.ticking.ui.database.IDataManager;
+import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
 import uk.ac.cam.cl.ticking.ui.database.Mongo;
-import uk.ac.cam.cl.ticking.ui.database.MongoDataManager;
 
 import com.google.inject.AbstractModule;
 import com.mongodb.DB;

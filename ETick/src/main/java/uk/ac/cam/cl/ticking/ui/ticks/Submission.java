@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.mongojack.ObjectId;
 
-import uk.ac.cam.cl.ticking.ui.database.MongoDataManager;
+import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
