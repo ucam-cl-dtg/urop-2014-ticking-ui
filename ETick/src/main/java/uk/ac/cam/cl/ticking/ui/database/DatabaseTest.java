@@ -1,18 +1,23 @@
 package uk.ac.cam.cl.ticking.ui.database;
 
-import java.util.List;
-
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
+import uk.ac.cam.cl.ticking.ui.api.ETickGuiceConfigurationModule;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class DatabaseTest
 {
 
-	private final static Database db = Database.get();
+	private static IDataManager db = null;
 
 	public static void testDB() {
+		
+		Injector injector = Guice.createInjector(new ETickGuiceConfigurationModule());
+		db = injector.getInstance(IDataManager.class);
 
 		addEntry("Java 1A", "rds46", "Raahil", Role.OVERVIEW);
 		addEntry("Java 1A", "rds46", "Raahil", Role.AUTHOR);

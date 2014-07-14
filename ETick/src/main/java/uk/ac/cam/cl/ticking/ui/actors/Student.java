@@ -1,6 +1,6 @@
 package uk.ac.cam.cl.ticking.ui.actors;
 
-import uk.ac.cam.cl.ticking.ui.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.MongoDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.*;
 
 import java.util.List;

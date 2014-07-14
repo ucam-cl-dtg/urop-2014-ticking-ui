@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.mongojack.DBCursor;
 
-import uk.ac.cam.cl.ticking.ui.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.MongoDataManager;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,21 +42,21 @@ public class Group {
 		this.gid = gid;
 	}
 	
-	public void save() {
-		Database.get().saveGroup(this);
+	/*public void save() {
+		MongoDataManager.get().saveGroup(this);
 	}
 	
 	public static Group getGroup(String gid) {
-		return Database.get().getGroup(gid);
+		return MongoDataManager.get().getGroup(gid);
 	}
 	
 	public List<Group> getGroups(User user) {
-		return Database.get().getGroups(user);
+		return MongoDataManager.get().getGroups(user);
 	}
 	
 	public List<Group> getGroups(User user, Role role) {
-		return Database.get().getGroups(user, role);
-	}
+		return MongoDataManager.get().getGroups(user, role);
+	}*/
 	
 	@Override
 	public boolean equals(Object g) {

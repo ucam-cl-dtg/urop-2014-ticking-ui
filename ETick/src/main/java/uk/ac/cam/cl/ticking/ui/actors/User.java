@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.mongojack.DBCursor;
 
-import uk.ac.cam.cl.ticking.ui.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.MongoDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Submission;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -69,25 +69,25 @@ public class User {
 		groupSets.get(role).add(gid);
 	}
 
-	public void save() {
-		Database.get().saveUser(this);
+	/*public void save() {
+		MongoDataManager.get().saveUser(this);
 	}
 
 	public static User getUser(String crsid) {
-		return Database.get().getUser(crsid);
+		return MongoDataManager.get().getUser(crsid);
 	}
 
 	public static List<User> getUsers(Group group) {
-		return Database.get().getUsers(group);
+		return MongoDataManager.get().getUsers(group);
 	}
 
 	public static List<User> getUsers(Group group, Role role) {
-		return Database.get().getUsers(group, role);
+		return MongoDataManager.get().getUsers(group, role);
 	}
 
 	public List<Submission> getSubmissions() {
-		Database database = Database.get();
+		MongoDataManager database = MongoDataManager.get();
 		return database.getSubmissions(this.crsid);
-	}
+	}*/
 
 }

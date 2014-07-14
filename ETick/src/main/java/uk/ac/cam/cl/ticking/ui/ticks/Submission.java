@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.mongojack.ObjectId;
 
-import uk.ac.cam.cl.ticking.ui.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.MongoDataManager;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -61,11 +61,11 @@ public class Submission {
 		this.submitted = submitted;
 	}
 
-	@JsonProperty("tick")
+	/*@JsonProperty("tick")
 	public Tick getTick() {
-		Database database = Database.get();
+		MongoDataManager database = MongoDataManager.get();
 		return database.getTick(this.tick);
-	}
+	}*/
 
 	@JsonProperty("tick")
 	public void setTick(Tick tick) {
@@ -112,7 +112,7 @@ public class Submission {
 		this.group = group;
 	}
 	
-	public void save() {
-		Database.get().saveSubmission(this);
-	}
+	/*public void save() {
+		MongoDataManager.get().saveSubmission(this);
+	}*/
 }

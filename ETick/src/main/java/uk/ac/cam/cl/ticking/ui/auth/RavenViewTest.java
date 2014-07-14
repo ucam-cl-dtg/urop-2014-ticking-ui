@@ -8,6 +8,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import uk.ac.cam.cl.dtg.ldap.LDAPObjectNotFoundException;
 import uk.ac.cam.cl.dtg.ldap.LDAPQueryManager;
 import uk.ac.cam.cl.dtg.ldap.LDAPUser;
@@ -15,7 +18,9 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
-import uk.ac.cam.cl.ticking.ui.database.Database;
+import uk.ac.cam.cl.ticking.ui.api.ETickGuiceConfigurationModule;
+import uk.ac.cam.cl.ticking.ui.database.IDataManager;
+import uk.ac.cam.cl.ticking.ui.database.MongoDataManager;
 import uk.ac.cam.cl.ticking.ui.database.DatabaseTest;
 
 @Path("/raven")
@@ -54,7 +59,8 @@ public class RavenViewTest
 		
 		User user = new User(crsid, "");
 
-		Database db = Database.get();
+		Injector injector = Guice.createInjector(new ETickGuiceConfigurationModule());
+		IDataManager db = injector.getInstance(IDataManager.class);
 
 		List<Grouping> grps = db.getGroupings(user);
 		

@@ -6,7 +6,7 @@ import java.util.List;
 import org.mongojack.DBCursor;
 import org.mongojack.DBRef;
 
-import uk.ac.cam.cl.ticking.ui.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.MongoDataManager;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -72,20 +72,20 @@ public class Grouping {
 		this.role = role;
 	}
 	
-	public static List<Grouping> getGroupings(User user) {
-		return Database.get().getGroupings(user);
+	/*public static List<Grouping> getGroupings(User user) {
+		return MongoDataManager.get().getGroupings(user);
 	}
 	
 	public static List<Grouping> getGroupings(Group group) {
-		return Database.get().getGroupings(group);
+		return MongoDataManager.get().getGroupings(group);
 	}
 	
 	public static List<Grouping> getGroupings(Role role) {
-		return Database.get().getGroupings(role);
+		return MongoDataManager.get().getGroupings(role);
 	}
 	
 	public void save() {
-		Database.get().saveGrouping(this);
-	}
+		MongoDataManager.get().saveGrouping(this);
+	}*/
 
 }

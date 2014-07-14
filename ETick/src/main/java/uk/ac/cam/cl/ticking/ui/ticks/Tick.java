@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.mongojack.ObjectId;
 
-import uk.ac.cam.cl.ticking.ui.database.Database;
+import uk.ac.cam.cl.ticking.ui.database.MongoDataManager;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -90,7 +90,7 @@ public class Tick {
 		return tid;
 	}
 	
-	public void save() {
-		Database.get().saveTick(this);
-	}
+	/*public void save() {
+		MongoDataManager.get().saveTick(this);
+	}*/
 }
