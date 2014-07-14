@@ -75,6 +75,28 @@ public class MongoDataManager implements IDataManager{
 	}
 	
 	@Override
+	public List<User> getUsers() {
+		DBCursor<User> cursor = userColl.find();
+		return getUsers(cursor);
+	}
+	
+	@Override
+	public List<User> getStudents() {
+		DBCursor<User> cursor = userColl.find().is("is_student", true);
+		return getUsers(cursor);
+	}
+	
+	private List<User> getUsers(DBCursor<User> cursor) {
+		List<User> us = new ArrayList<User>();
+		while (cursor.hasNext()) {
+			User u = cursor.next();
+			us.add(u);
+		}
+		cursor.close();
+		return us;
+	}
+	
+	@Override
 	public List<User> getUsers(Group group) {
 		List<User> us = new ArrayList<User>();
 		List<Grouping> grs = getGroupings(group);
@@ -102,6 +124,22 @@ public class MongoDataManager implements IDataManager{
 		Group g = null;
 		g = groupColl.findOne(new BasicDBObject("_id", gid));
 		return g;
+	}
+	
+	@Override
+	public List<Group> getGroups() {
+		DBCursor<Group> cursor = groupColl.find();
+		return getGroups(cursor);
+	}
+	
+	private List<Group> getGroups(DBCursor<Group> cursor) {
+		List<Group> gs = new ArrayList<Group>();
+		while (cursor.hasNext()) {
+			Group g = cursor.next();
+			gs.add(g);
+		}
+		cursor.close();
+		return gs;
 	}
 	
 	@Override
@@ -146,7 +184,7 @@ public class MongoDataManager implements IDataManager{
 		return getGroupings(cursor);
 	}
 	
-	public List<Grouping> getGroupings(DBCursor<Grouping> cursor) {
+	private List<Grouping> getGroupings(DBCursor<Grouping> cursor) {
 		List<Grouping> gs = new ArrayList<Grouping>();
 		while (cursor.hasNext()) {
 			Grouping g = cursor.next();

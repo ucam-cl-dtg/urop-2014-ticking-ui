@@ -60,7 +60,22 @@ public interface IDataManager {
 	 * @return User with given crsid
 	 */
 	public User getUser(String crsid);
-
+	
+	/**
+	 * Goes to the configured storage and attempts to find all users
+	 * 
+	 * @return List of all users
+	 */
+	public List<User> getUsers();
+	
+	/**
+	 * Goes to the configured storage and attempts to find all users who are students
+	 * 
+	 * @return List of all users who are students
+	 */
+	public List<User> getStudents();
+	
+	
 	/**
 	 * Goes to the configured storage and attempts to find the users belonging
 	 * to the specified group
@@ -97,6 +112,14 @@ public interface IDataManager {
 	 * @return List of groups that the given user is in
 	 */
 	public List<Group> getGroups(User user);
+	
+	/**
+	 * Goes to the configured storage and attempts to find all groups
+	 * 
+	 * @param user
+	 * @return List of all groups
+	 */
+	public List<Group> getGroups();
 
 	/**
 	 * Goes to the configured storage and attempts to find the groups belonging
