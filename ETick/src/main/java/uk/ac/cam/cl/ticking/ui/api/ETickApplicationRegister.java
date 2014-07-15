@@ -41,6 +41,7 @@ public class ETickApplicationRegister extends Application {
 	@Override
 	public final Set<Class<?>> getClasses() {
 		Set<Class<?>> result = new HashSet<Class<?>>();
+		result.add(APIOverviewResource.class);
 		result.add(RemoteFailureHandler.class);
 		result.add(ExceptionHandler.class);
 		return result;
