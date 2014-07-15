@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
+import uk.ac.cam.cl.dtg.teaching.exceptions.ExceptionHandler;
+import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.ticking.ui.auth.RavenViewTest;
 
 import com.google.inject.Guice;
@@ -39,6 +41,8 @@ public class ETickApplicationRegister extends Application {
 	@Override
 	public final Set<Class<?>> getClasses() {
 		Set<Class<?>> result = new HashSet<Class<?>>();
+		result.add(RemoteFailureHandler.class);
+		result.add(ExceptionHandler.class);
 		return result;
 	}
 }
