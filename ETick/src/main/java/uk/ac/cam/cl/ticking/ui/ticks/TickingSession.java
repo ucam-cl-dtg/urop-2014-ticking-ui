@@ -3,9 +3,9 @@ package uk.ac.cam.cl.ticking.ui.ticks;
 import java.util.List;
 
 /**
+ * TODO Store information regarding a ticking session
+ * 
  * @author tl364
- *
- *         TODO Store information regarding a ticking session
  *
  */
 public class TickingSession {

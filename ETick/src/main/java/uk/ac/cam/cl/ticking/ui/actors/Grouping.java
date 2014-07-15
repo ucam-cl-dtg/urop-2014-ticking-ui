@@ -13,14 +13,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * This class acts as a tuple storing a user, a group, and their role in that
+ * group.
+ * 
+ * Multiple groupings can exist containing the same user and/or group references
+ * providing their roles are different as one user may have multiple roles
+ * within a group.
+ * 
  * @author tl364
- * 
- *         This class acts as a tuple storing a user, a group, and their role in
- *         that group.
- * 
- *         Multiple groupings can exist containing the same user and/or group
- *         references providing their roles are different as one user may have
- *         multiple roles within a group.
  *
  */
 public class Grouping {
@@ -52,10 +52,13 @@ public class Grouping {
 	 * @param role
 	 */
 	public Grouping(Group group, User user, Role role) {
-		this.setGroup(new DBRef<Group, String>(group.getGid(), Strings.GROUPSCOLLECTION));
-		this.setUser(new DBRef<User, String>(user.getCrsid(), Strings.USERSCOLLECTION));
+		this.setGroup(new DBRef<Group, String>(group.getGid(),
+				Strings.GROUPSCOLLECTION));
+		this.setUser(new DBRef<User, String>(user.getCrsid(),
+				Strings.USERSCOLLECTION));
 		this.setRole(role);
-		this._id = group.getGid() + "_" + role.toString() + "_" + user.getCrsid();
+		this._id = group.getGid() + "_" + role.toString() + "_"
+				+ user.getCrsid();
 	}
 
 	/**

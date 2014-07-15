@@ -10,9 +10,9 @@ import uk.ac.cam.cl.ticking.ui.ticks.Submission;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 /**
- * @author tl364
+ * This class manages data access from persistent storage
  * 
- *         This class manages data access from persistent storage
+ * @author tl364
  *
  */
 public interface IDataManager {
@@ -60,22 +60,22 @@ public interface IDataManager {
 	 * @return User with given crsid
 	 */
 	public User getUser(String crsid);
-	
+
 	/**
 	 * Goes to the configured storage and attempts to find all users
 	 * 
 	 * @return List of all users
 	 */
 	public List<User> getUsers();
-	
+
 	/**
-	 * Goes to the configured storage and attempts to find all users who are students
+	 * Goes to the configured storage and attempts to find all users who are
+	 * students
 	 * 
 	 * @return List of all users who are students
 	 */
 	public List<User> getStudents();
-	
-	
+
 	/**
 	 * Goes to the configured storage and attempts to find the users belonging
 	 * to the specified group
@@ -112,7 +112,7 @@ public interface IDataManager {
 	 * @return List of groups that the given user is in
 	 */
 	public List<Group> getGroups(User user);
-	
+
 	/**
 	 * Goes to the configured storage and attempts to find all groups
 	 * 

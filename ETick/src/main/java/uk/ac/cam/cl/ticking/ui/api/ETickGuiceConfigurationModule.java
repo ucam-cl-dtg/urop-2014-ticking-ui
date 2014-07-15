@@ -8,15 +8,17 @@ import com.google.inject.AbstractModule;
 import com.mongodb.DB;
 
 /**
- * @author tl364
+ * This class is responsible for injecting configuration values for persistence
+ * related classes
  * 
- *         This class is responsible for injecting configuration values for
- *         persistence related classes
+ * @author tl364
  *
  */
 public class ETickGuiceConfigurationModule extends AbstractModule {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.google.inject.AbstractModule#configure()
 	 */
 	@Override

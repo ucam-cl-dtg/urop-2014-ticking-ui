@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.BasicDBObject;
 
 /**
- * @author tl364
+ * This class stores the name and identifier for a group
  * 
- *         This class stores the name and identifier for a group
+ * @author tl364
  *
  */
 public class Group {

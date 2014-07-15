@@ -14,11 +14,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.BasicDBObject;
 
 /**
+ * This class stores information about a user.
+ * 
  * @author tl364
- * 
- *         This class stores information about a user.
- * 
- * 
  *
  */
 public class User {
@@ -35,7 +33,7 @@ public class User {
 	private String college;
 
 	private boolean isStudent;
-	
+
 	public User(String crsid) {
 		this.setCrsid(crsid);
 	}

@@ -10,9 +10,9 @@ import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @author tl364
+ * This class stores information regarding a tick.
  * 
- *         This class stores information regarding a tick.
+ * @author tl364
  *
  */
 public class Tick {
