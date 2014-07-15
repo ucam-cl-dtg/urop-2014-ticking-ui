@@ -5,72 +5,70 @@
 <!--[if gt IE 8]><!-->
 <html lang="en" ng-app="eTick" class="no-js">
 <!--<![endif]-->
-
+<html>
 <head>
-
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>ETick</title>
-<meta name="description" content="">
-<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-<link rel="stylesheet"
-	href="bower_components/html5-boilerplate/css/normalize.css">
-<link rel="stylesheet"
-	href="bower_components/html5-boilerplate/css/main.css">
-<link rel="stylesheet" href="css/app.css" />
-<script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
-
+<title>Student Page</title>
 <script src="bower_components/platform/platform.js"></script>
+<link rel="import" href="bower_components/font-roboto/roboto.html">
+<link rel="import"
+	href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/core-ajax/core-ajax.html">
 
-<link rel="import"
-    href="bower_components/core-header-panel/core-header-panel.html">
-<link rel="import"
-    href="bower_components/core-toolbar/core-toolbar.html">
-<link rel="import"
-    href="bower_components/paper-tabs/paper-tabs.html">
-	
+<style>
+body {
+	font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+	margin: 0;
+	padding: 24px;
+}
+
+h2 {
+	color: #5264ae;
+}
+
+paper-button {
+	margin: 1em;
+	width: 10em;
+}
+
+paper-button.colored {
+	background: #009933;
+	color: #fff;
+}
+</style>
 </head>
-<body ng-controller="sideBarController" unresolved touch-action="auto">
-	<!--[if lt IE 7]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-  	<![endif]-->
+<body>
+	<!-- page code -->
+	<h2>Fork a repo:</h2>
+	<paper-button raisedButton class="colored" label="FORK" id="fork"></paper-button>
+	<h2>Submit Tick:</h2>
+	<paper-button raisedButton class="colored" label="SUBMIT"></paper-button>
 
-	<core-header-panel>
-      
-	    <core-toolbar id="core_toolbar">
-      		<core-icon-button icon="menu" id="core_icon_button"></core-icon-button>
-      		<div id="div" flex>Toolbar</div>
-     		<paper-button label="Paper Button" id="paper_button"></paper-button>
-    	</core-toolbar>
-    	<core-drawer-panel id="core_drawer_panel">
-      		<section id="section" drawer>
-        		<core-menu selected="0" selectedindex="0" id="core_menu">
-         			<core-submenu active label="Topics" icon="settings" id="core_submenu">
-            			<core-item label="Topic 1" id="core_item" horizontal center layout></core-item>
-            			<core-item label="Topic 2" id="core_item1" horizontal center layout></core-item>
-          			</core-submenu>
-          			<core-submenu label="Favorites" icon="settings" id="core_submenu1">
-            			<core-item label="Favorite 1" id="core_item2" horizontal center layout></core-item>
-            			<core-item label="Favorite 2" id="core_item3" horizontal center layout></core-item>
-            			<core-item label="Favorite 3" id="core_item4" horizontal center layout></core-item>
-          			</core-submenu>
-        		</core-menu>
-      		</section>
-      		<section id="section1" main>
-        	</section>
-    	</core-drawer-panel>
+	<core-ajax url="http://localhost:8080/git-0.0.1-SNAPSHOT/rest/git"
+		 handleAs="json"></core-ajax>
 
-  	</core-header-panel>
+	<script>
+		var fork = document.querySelector('#fork');
+		fork.addEventListener('click', function(e) {
+			document.querySelector("core-ajax").go();
+		});
+	
+		document.addEventListener('polymer-ready', function() {
+			var ajax = document.querySelector("core-ajax");
+			ajax.addEventListener("core-response", function(e) {
+				console.log(this.response);
+			});
+		});
+	</script>
 
 	<!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
   -->
-	<script src="bower_components/angular/angular.js"></script>
+	<!--<script src="bower_components/angular/angular.js"></script>
 	<script src="bower_components/angular-route/angular-route.js"></script>
 	<script src="js/app.js"></script>
 	<script src="js/services.js"></script>
 	<script src="js/controllers.js"></script>
 	<script src="js/filters.js"></script>
-	<script src="js/directives.js"></script>
+	<script src="js/directives.js"></script>-->
 </body>
 </html>
