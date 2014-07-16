@@ -24,12 +24,12 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 @Path("/raven")
-public class RavenLogin {
+public class RavenManager {
 	
 	private IDataManager db;
 	
 	@Inject
-	public RavenLogin(IDataManager db) {
+	public RavenManager(IDataManager db) {
 		this.db = db;
 	}
 
@@ -74,7 +74,7 @@ public class RavenLogin {
 	}
 
 	@GET
-	@Path("/login")
+	@Path("/stats")
 	public Response Login(@Context HttpServletRequest request) {
 
 		String crsid = (String) request.getSession().getAttribute(

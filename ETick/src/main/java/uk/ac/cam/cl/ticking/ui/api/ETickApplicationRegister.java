@@ -7,7 +7,7 @@ import javax.ws.rs.core.Application;
 
 import uk.ac.cam.cl.dtg.teaching.exceptions.ExceptionHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
-import uk.ac.cam.cl.ticking.ui.auth.RavenLogin;
+import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -34,7 +34,8 @@ public class ETickApplicationRegister extends Application {
 	public final Set<Object> getSingletons() {
 		Injector injector = Guice
 				.createInjector(new ETickGuiceConfigurationModule());
-		this.singletons.add(injector.getInstance(RavenLogin.class));
+		this.singletons.add(injector.getInstance(RavenManager.class));
+		this.singletons.add(injector.getInstance(ETickApiFacade.class));
 		return this.singletons;
 	}
 	

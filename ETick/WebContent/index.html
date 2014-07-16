@@ -38,10 +38,14 @@ paper-button.colored {
 </head>
 <body>
 	<!-- page code -->
+	<h2>Create a tick:</h2>
+	<paper-button raisedButton class="colored" label="ADD" id="add"></paper-button>
 	<h2>Fork a repo:</h2>
 	<paper-button raisedButton class="colored" label="FORK" id="fork"></paper-button>
 	<h2>Submit Tick:</h2>
-	<paper-button raisedButton class="colored" label="SUBMIT"></paper-button>
+	<paper-button raisedButton class="colored" label="SUBMIT" id="subm"></paper-button>
+	<h2>Send an exception:</h2>
+	<paper-button raisedButton class="colored" label="NOPE" id="exc"></paper-button>
 
 	<core-ajax url="http://localhost:8080/git-0.0.1-SNAPSHOT/rest/git"
 		 handleAs="json"></core-ajax>

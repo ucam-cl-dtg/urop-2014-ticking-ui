@@ -33,7 +33,7 @@ public class Grouping {
 	private Role role;
 
 	/**
-	 * Empty default constructor exposed as a JSonCreator as MongoJack cannot
+	 * Empty default constructor exposed as a JsonCreator as MongoJack cannot
 	 * use Grouping(Group, User, Role).
 	 */
 	@JsonCreator

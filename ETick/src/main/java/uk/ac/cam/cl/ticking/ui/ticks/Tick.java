@@ -3,10 +3,7 @@ package uk.ac.cam.cl.ticking.ui.ticks;
 import java.util.Date;
 import java.util.List;
 
-import org.mongojack.ObjectId;
-
-import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -22,6 +19,7 @@ public class Tick {
 	private String tid;
 
 	private String group;
+	private String author;
 
 	private String repo, name;
 	private Date deadline;
@@ -41,8 +39,10 @@ public class Tick {
 	 * @param deadline
 	 * @param files
 	 */
+	@JsonCreator
 	public Tick(@JsonProperty("name") String name,
 			@JsonProperty("group") String group,
+			@JsonProperty("author") String author,
 			@JsonProperty("repo") String repo,
 			@JsonProperty("deadline") Date deadline,
 			@JsonProperty("files") List<String> files) {
@@ -50,6 +50,7 @@ public class Tick {
 		this.tid = group + "_" + name;
 		this.setName(name);
 		this.setGroup(group);
+		this.setAuthor(author);
 		this.setRepo(repo);
 		this.setDeadline(deadline);
 		this.setFiles(files);
@@ -134,6 +135,22 @@ public class Tick {
 	@JsonProperty("group")
 	public void setGroup(String group) {
 		this.group = group;
+	}
+	
+	/**
+	 * @return author
+	 */
+	@JsonProperty("author")
+	public String getAuthor() {
+		return author;
+	}
+
+	/**
+	 * @param author
+	 */
+	@JsonProperty("author")
+	public void setAuthor(String author) {
+		this.author = author;;
 	}
 
 	/**
