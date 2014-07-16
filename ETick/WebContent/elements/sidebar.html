@@ -1,0 +1,36 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../bower_components/core-menu/core-submenu.html">
+<link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../bower_components/core-item/core-item.html">
+
+
+<polymer-element name="my-sidebar" attributes="items icons">
+	<template>
+		<link rel="stylesheet" type="text/css" 
+			href="../css/elements/sidebar.css" shim-shadowdom>
+			<core-toolbar class="core-header">
+				<img src="../images/otterlogo.png" height="30px" width="30px">
+				<div>Otter</div>
+			</core-toolbar>
+			<div id="dropShadow"></div>
+			<core-menu id="menu" valueattr="label" selected=0 on-core-select="{{selectAction}}">
+				<template repeat="{{item in items}}">
+					<core-item icon="{{item.icon}}" label="{{item.label}}" url="{{item.url}}"></core-item>
+				</template>
+	</template>
+	<script>
+		Polymer('my-sidebar', {
+			ready: function () {
+				// Temporary menu population.
+			},
+			selectAction : function(e, detail) { 
+				if (detail.isSelected) {
+					this.selected = detail.item;
+				}
+			}
+		}); 
+	</script>
+</polymer-element>

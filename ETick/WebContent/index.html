@@ -1,78 +1,23 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="eTick" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="eTick" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="eTick" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!-->
-<html lang="en" ng-app="eTick" class="no-js">
-<!--<![endif]-->
+<!doctype html>
 <html>
-<head>
-<title>Student Page</title>
-<script src="bower_components/platform/platform.js"></script>
-<link rel="import" href="bower_components/font-roboto/roboto.html">
-<link rel="import"
-	href="bower_components/paper-button/paper-button.html">
-<link rel="import" href="bower_components/core-ajax/core-ajax.html">
+	<head>
+		<title>Otter</title>
+		<script src="bower_components/platform/platform.js"></script>
+		<link rel="import" href="bower_components/font-roboto/roboto.html">
 
-<style>
-body {
-	font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
-	margin: 0;
-	padding: 24px;
-}
-
-h2 {
-	color: #5264ae;
-}
-
-paper-button {
-	margin: 1em;
-	width: 10em;
-}
-
-paper-button.colored {
-	background: #009933;
-	color: #fff;
-}
-</style>
-</head>
-<body>
-	<!-- page code -->
-	<h2>Create a tick:</h2>
-	<paper-button raisedButton class="colored" label="ADD" id="add"></paper-button>
-	<h2>Fork a repo:</h2>
-	<paper-button raisedButton class="colored" label="FORK" id="fork"></paper-button>
-	<h2>Submit Tick:</h2>
-	<paper-button raisedButton class="colored" label="SUBMIT" id="subm"></paper-button>
-	<h2>Send an exception:</h2>
-	<paper-button raisedButton class="colored" label="NOPE" id="exc"></paper-button>
-
-	<core-ajax url="http://localhost:8080/git-0.0.1-SNAPSHOT/rest/git"
-		 handleAs="json"></core-ajax>
-
-	<script>
-		var fork = document.querySelector('#fork');
-		fork.addEventListener('click', function(e) {
-			document.querySelector("core-ajax").go();
-		});
-	
-		document.addEventListener('polymer-ready', function() {
-			var ajax = document.querySelector("core-ajax");
-			ajax.addEventListener("core-response", function(e) {
-				console.log(this.response);
-			});
-		});
-	</script>
-
-	<!-- In production use:
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
-  -->
-	<!--<script src="bower_components/angular/angular.js"></script>
-	<script src="bower_components/angular-route/angular-route.js"></script>
-	<script src="js/app.js"></script>
-	<script src="js/services.js"></script>
-	<script src="js/controllers.js"></script>
-	<script src="js/filters.js"></script>
-	<script src="js/directives.js"></script>-->
-</body>
+		<!-- My Imports -->
+		<link rel="import" href="elements/scaff.html">
+		<style>
+			html, body {
+				font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+				height: 100%;
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<my-scaffold>
+			<div class="content"></div>
+		</my-scaffold>
+	</body>
 </html>

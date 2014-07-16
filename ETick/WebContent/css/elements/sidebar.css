@@ -1,0 +1,27 @@
+core-header-panel {
+	width: 240px;
+	height: 100%;
+}
+
+.core-header {
+	height: 56px;
+	line-height: 60px;
+	font-size: 20px;
+	padding: 0px 10px;
+	background-color: #3c779e;
+	color: #FFF;
+	transition: height 0.2s;
+}
+
+core-toolbar /deep/ .toolbar-tools {
+	height: 60px;
+}
+
+#dropShadow {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+}

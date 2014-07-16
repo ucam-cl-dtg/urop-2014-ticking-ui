@@ -1,0 +1,71 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-scaffold/core-scaffold.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="sidebar.html">
+<link rel="import" href="my-element.html">
+
+<polymer-element name="my-scaffold">
+	<template>
+		<link rel="stylesheet" type="text/css" 
+			href="../css/elements/scaff.css" shim-shadowdom>
+			<core-scaffold mode="standard" id="scaffold">
+				<my-sidebar 
+					id="sidebar" navigation
+					items="{{items}}"
+					icons="{{icons}}"></my-sidebar>
+				<div flex tool layout horizontal center>
+			  		<div>{{title}}</div>
+				  	<div flex horizontal end-justified layout center>
+				  		<paper-button label="help"></paper-button>
+				  		<paper-button label="logout"></paper-button>
+				  		<paper-icon-button icon="search"></paper-icon-button>
+				  	</div>
+			  	</div>
+
+		  	<!-- Page Content -->
+		  	<div id="card" class="move-up">
+		  		<div id="frameContainer">
+		          <iframe id="frame" on-load="{{frameLoaded}}"></iframe>
+		        </div>
+		  	</div>
+			</core-scaffold>
+	</template>
+	<script>
+		Polymer('my-scaffold', {
+			ready: function () {
+				this.items = [{label: 'Dashboard', icon: 'apps', url: 'pages/buttons.html'},
+							  {label: '1A Java', icon: 'book', url: 'index.html'},
+							  {label: 'Hardware', icon: 'book', url: 'pages/buttons.html'},
+							  {label: 'Settings', icon: 'settings', url: 'pages/buttons.html'}];
+			},	
+			
+			observe: {
+				'$.sidebar.selected' : 'selectedChanged'
+			},
+			selectedChanged: function(oldValue, newValue) {
+				this.title = newValue.label;
+				this.$.frame.contentWindow.location.replace(newValue.getAttribute('url'));
+				this.animateCard();
+			},
+			moveCard: function (y) {
+				var s = this.$.card.style;
+				s.webkitTransform = s.transform = y ? 'translate(0, ' + y + 'px)': '';
+				console.log(s);
+			},
+			animateCard: function() {
+		    	this.$.card.classList.remove('move-up');
+		    	this.$.card.style.display = 'none';
+		    	this.async(function () {
+		    		this.$.card.style.display = 'block'
+		    		this.moveCard(this.$.scaffold.offsetHeight);
+		    		this.async(function () {
+		    			this.$.card.classList.add('move-up');
+		    			this.moveCard(null);
+		    		}, null, 300);
+		    	});
+		    },
+
+		});
+	</script>
+</polymer-element>
