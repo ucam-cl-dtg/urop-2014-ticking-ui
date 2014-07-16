@@ -1,10 +1,13 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
+import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
 import uk.ac.cam.cl.ticking.ui.database.Mongo;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Inject;
+import com.google.inject.Provides;
 import com.mongodb.DB;
 
 /**
@@ -15,6 +18,9 @@ import com.mongodb.DB;
  *
  */
 public class ETickGuiceConfigurationModule extends AbstractModule {
+	
+	private static ETickApiFacade  etickApi = null;
+	private static RavenManager  ravenManager = null;
 
 	/*
 	 * (non-Javadoc)
@@ -39,6 +45,24 @@ public class ETickGuiceConfigurationModule extends AbstractModule {
 	 */
 	private void configureApplicationManagers() {
 		bind(IDataManager.class).to(MongoDataManager.class);
+	}
+	
+	@Inject
+	@Provides
+	private static ETickApiFacade getEtickApiSingleton(IDataManager db, RavenManager raven) {
+		if (etickApi == null) {
+			etickApi = new ETickApiFacade(db, raven);
+		}
+		return etickApi;
+	}
+	
+	@Inject
+	@Provides
+	private static RavenManager getRavenManager(IDataManager db) {
+		if (ravenManager == null) {
+			ravenManager = new RavenManager(db);
+		}
+		return ravenManager;
 	}
 
 }

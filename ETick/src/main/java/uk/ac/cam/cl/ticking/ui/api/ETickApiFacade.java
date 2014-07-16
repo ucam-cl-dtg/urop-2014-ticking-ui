@@ -16,14 +16,15 @@ import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @Path("/")
 public class ETickApiFacade {
 	
 	private IDataManager db;
 	private RavenManager raven;
-
-	@Inject
+	
+	@Inject	
 	public ETickApiFacade(IDataManager db, RavenManager raven) {
 		this.db = db;
 		this.raven = raven;
