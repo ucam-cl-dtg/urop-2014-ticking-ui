@@ -2,6 +2,9 @@
 <link rel="import" href="../bower_components/core-overlay/core-overlay.html">
 <link rel="import" href="../bower_components/core-transition/core-transition-css.html">
 
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+
 <polymer-element name="my-dialog">
 	<template>
 		<style>
@@ -11,7 +14,7 @@
 				-moz-box-sizing: border-box;
 				-webkit-user-select: none;
 				-moz-user-select: none;
-				overflow: hidden;
+				overflow: auto;
 				background: white;
 				padding:30px 42px;
 				outline: 1px solid rgba(0,0,0,0.2);
@@ -24,9 +27,21 @@
 				background: #4285f4;
 				color: #fff;
 			}
+			
+			#cancel {
+				fill:red;
+				border-radius: 20px;
+				border: 0;
+				position: absolute;
+				top: 0px;
+				right: 0px;
+			}
+
 		</style>
 		
-		<core-overlay id="overlay" layered backdrop transition="core-transition-top"></core-overlay>
+		<core-overlay id="overlay" layered backdrop transition="core-transition-bottom">
+		</core-overlay>
+		<paper-icon-button icon="cancel" id="cancel" on-click="{{toggle}}"></paper-icon-button>
 		<content></content>
 	</template>
 	<script>

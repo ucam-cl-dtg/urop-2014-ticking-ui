@@ -14,8 +14,8 @@
 	href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
-
 <link rel="import" href="../elements/dialog.html">
+
 
 
 <style>
@@ -30,6 +30,10 @@ h2 {
 	padding: 0;
 }
 
+h1 {
+	color: #1F2383;
+}
+
 paper-button {
 	margin: 1em;
 	width: 10em;
@@ -40,20 +44,10 @@ paper-button.colored {
 	color: #fff;
 }
 
-core-overlay {
-	box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	overflow: hidden;
-	background: white;
-	padding:30px 42px;
-	box-shadow: 0 10px 16px rgba(0,0,0,0.2);
-}
-
 </style>
 </head>
 <body>
+	<h1>Workflow Test Page</h1>
 	<!-- page code -->
 	<table>
 		<tr>
@@ -69,12 +63,13 @@ core-overlay {
 		</td>
 		</tr>
 	</table>
-	
+
 	<my-dialog id="overlay">
 		<h3>Create a Repository:</h3>
 		<div horizontal layout center>
 			<paper-input floatingLabel label="Repository name..." 
-				validate="^[\w|\-|/]*$" error="Invalid input characters."></paper-input>
+				validate="^\w([\w|\-|/|.]*)$" error="Invalid input characters.">
+			</paper-input>
 			<paper-button class="button" label="CREATE" id="create" core-overlay-toggle></paper-button>
 		</div>
 	</my-dialog>
