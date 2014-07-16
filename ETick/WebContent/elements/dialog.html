@@ -1,0 +1,47 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-overlay/core-overlay.html">
+<link rel="import" href="../bower_components/core-transition/core-transition-css.html">
+
+<polymer-element name="my-dialog">
+	<template>
+		<style>
+
+			:host {
+				box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				overflow: hidden;
+				background: white;
+				padding:30px 42px;
+				outline: 1px solid rgba(0,0,0,0.2);
+				box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+			}
+
+			polyfill-next-selector { content: ':host .button'; }
+			::content .button {
+				margin: 1em;
+				background: #4285f4;
+				color: #fff;
+			}
+		</style>
+		
+		<core-overlay id="overlay" layered backdrop transition="core-transition-top"></core-overlay>
+		<content></content>
+	</template>
+	<script>
+
+	Polymer('my-dialog', {
+	
+		ready: function() {
+			this.$.overlay.target = this;
+		},
+
+		toggle: function() {
+			this.$.overlay.toggle();
+		}
+
+	});
+
+	</script>
+</polymer-element>

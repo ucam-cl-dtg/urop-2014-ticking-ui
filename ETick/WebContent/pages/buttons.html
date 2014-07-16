@@ -13,6 +13,10 @@
 <link rel="import"
 	href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../elements/dialog.html">
+
 
 <style>
 body {
@@ -23,6 +27,7 @@ body {
 
 h2 {
 	color: #5264ae;
+	padding: 0;
 }
 
 paper-button {
@@ -34,20 +39,55 @@ paper-button.colored {
 	background: #009933;
 	color: #fff;
 }
+
+core-overlay {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	overflow: hidden;
+	background: white;
+	padding:30px 42px;
+	box-shadow: 0 10px 16px rgba(0,0,0,0.2);
+}
+
 </style>
 </head>
 <body>
 	<!-- page code -->
-	<h2>Fork a repo:</h2>
-	<paper-button raisedButton class="colored" label="FORK" id="fork"></paper-button>
-	<h2>Submit Tick:</h2>
-	<paper-button raisedButton class="colored" label="SUBMIT"></paper-button>
+	<table>
+		<tr>
+		<td>
+			<h2>Add Repo:</h2>
+			<paper-button raisedButton class="colored" label="ADD" id="add"></paper-button>
+		</td><td>
+			<h2>Submit Tick:</h2>
+			<paper-button raisedButton class="colored" label="SUBMIT" id="submit"></paper-button>
+		</td><td>
+			<h2>Fork a Repo:</h2>
+			<paper-button raisedButton class="colored" label="FORK" id="fork"></paper-button>
+		</td>
+		</tr>
+	</table>
+	
+	<my-dialog id="overlay">
+		<h3>Create a Repository:</h3>
+		<div horizontal layout center>
+			<paper-input floatingLabel label="Repository name..." 
+				validate="^[\w|\-|/]*$" error="Invalid input characters."></paper-input>
+			<paper-button class="button" label="CREATE" id="create" core-overlay-toggle></paper-button>
+		</div>
+	</my-dialog>
 
 	<core-ajax url="http://localhost:8080/git-0.0.1-SNAPSHOT/rest/git"
 		 handleAs="json"></core-ajax>
 
 	<script>
 		var fork = document.querySelector('#fork');
+		var add = document.querySelector('#add');
+		add.addEventListener('click', function() {
+			document.querySelector('#overlay').toggle();
+		});
 		fork.addEventListener('click', function(e) {
 			document.querySelector("core-ajax").go();
 		});
