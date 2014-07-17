@@ -23,7 +23,6 @@ public class Tick {
 
 	private String repo, name;
 	private Date deadline;
-	private List<String> files;
 
 	/**
 	 * 
@@ -44,8 +43,7 @@ public class Tick {
 			@JsonProperty("group") String group,
 			@JsonProperty("author") String author,
 			@JsonProperty("repo") String repo,
-			@JsonProperty("deadline") Date deadline,
-			@JsonProperty("files") List<String> files) {
+			@JsonProperty("deadline") Date deadline) {
 
 		this.tid = group + "_" + name;
 		this.setName(name);
@@ -53,7 +51,6 @@ public class Tick {
 		this.setAuthor(author);
 		this.setRepo(repo);
 		this.setDeadline(deadline);
-		this.setFiles(files);
 
 	}
 
@@ -87,22 +84,6 @@ public class Tick {
 	@JsonProperty("deadline")
 	public void setDeadline(Date deadline) {
 		this.deadline = deadline;
-	}
-
-	/**
-	 * @return files
-	 */
-	@JsonProperty("files")
-	public List<String> getFiles() {
-		return files;
-	}
-
-	/**
-	 * @param files
-	 */
-	@JsonProperty("files")
-	public void setFiles(List<String> files) {
-		this.files = files;
 	}
 
 	/**
