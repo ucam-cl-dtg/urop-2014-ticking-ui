@@ -101,7 +101,7 @@ public class MongoDataManager implements IDataManager{
 		List<User> us = new ArrayList<User>();
 		List<Grouping> grs = getGroupings(group);
 		for (Grouping gr : grs) {
-			us.add(gr.fetchUser());
+			us.add(getUser(gr.getUser()));
 		}
 		return us;
 	}
@@ -109,10 +109,10 @@ public class MongoDataManager implements IDataManager{
 	@Override
 	public List<User> getUsers(Group group, Role role) {
 		List<User> us = new ArrayList<User>();
-		DBCursor<Grouping> cursor = groupingColl.find().is("group.$id", group.getGid()).is("role", role);
+		DBCursor<Grouping> cursor = groupingColl.find().is("group", group.getGid()).is("role", role);
 		List<Grouping> grs = getGroupings(cursor);
 		for (Grouping gr : grs) {
-			us.add(gr.fetchUser());
+			us.add(getUser(gr.getUser()));
 		}
 		return us;
 	}
@@ -147,7 +147,7 @@ public class MongoDataManager implements IDataManager{
 		List<Group> gs = new ArrayList<Group>();
 		List<Grouping> grs = getGroupings(user);
 		for (Grouping gr : grs) {
-			gs.add(gr.fetchGroup());
+			gs.add(getGroup(gr.getGroup()));
 		}
 		return gs;
 		
@@ -156,10 +156,10 @@ public class MongoDataManager implements IDataManager{
 	@Override
 	public List<Group> getGroups(User user, Role role) {
 		List<Group> gs = new ArrayList<Group>();
-		DBCursor<Grouping> cursor = groupingColl.find().is("user.$id", user.getCrsid()).is("role", role);
+		DBCursor<Grouping> cursor = groupingColl.find().is("user", user.getCrsid()).is("role", role);
 		List<Grouping> grs = getGroupings(cursor);
 		for (Grouping gr : grs) {
-			gs.add(gr.fetchGroup());
+			gs.add(getGroup(gr.getGroup()));
 		}
 		return gs;
 	}
@@ -168,13 +168,13 @@ public class MongoDataManager implements IDataManager{
 	
 	@Override
 	public List<Grouping> getGroupings(User user) {
-		DBCursor<Grouping> cursor = groupingColl.find().is("user.$id", user.getCrsid());
+		DBCursor<Grouping> cursor = groupingColl.find().is("user", user.getCrsid());
 		return getGroupings(cursor);
 	}
 	
 	@Override
 	public List<Grouping> getGroupings(Group group) {
-		DBCursor<Grouping> cursor = groupingColl.find().is("group.$id", group.getGid());
+		DBCursor<Grouping> cursor = groupingColl.find().is("group", group.getGid());
 		return getGroupings(cursor);
 	}
 	

@@ -28,8 +28,8 @@ public class Grouping {
 	@JsonProperty("_id")
 	private String _id;
 
-	private DBRef<Group, String> group;
-	private DBRef<User, String> user;
+	private String group;
+	private String user;
 	private Role role;
 
 	/**
@@ -52,10 +52,8 @@ public class Grouping {
 	 * @param role
 	 */
 	public Grouping(Group group, User user, Role role) {
-		this.setGroup(new DBRef<Group, String>(group.getGid(),
-				Strings.GROUPSCOLLECTION));
-		this.setUser(new DBRef<User, String>(user.getCrsid(),
-				Strings.USERSCOLLECTION));
+		this.setGroup(group.getGid());
+		this.setUser(user.getCrsid());
 		this.setRole(role);
 		this._id = group.getGid() + "_" + role.toString() + "_"
 				+ user.getCrsid();
@@ -65,7 +63,7 @@ public class Grouping {
 	 * @return group
 	 */
 	@JsonProperty("group")
-	public DBRef<Group, String> getGroup() {
+	public String getGroup() {
 		return group;
 	}
 
@@ -73,22 +71,22 @@ public class Grouping {
 	 * @param group
 	 */
 	@JsonProperty("group")
-	public void setGroup(DBRef<Group, String> group) {
+	public void setGroup(String group) {
 		this.group = group;
 	}
 
 	/**
-	 * @return actual group object from DBRef
+	 * @return actual group object from DB
 	 */
-	public Group fetchGroup() {
+	/*public Group fetchGroup() {
 		return group.fetch();
-	}
+	}*/
 
 	/**
 	 * @return user
 	 */
 	@JsonProperty("user")
-	public DBRef<User, String> getUser() {
+	public String getUser() {
 		return user;
 	}
 
@@ -96,16 +94,16 @@ public class Grouping {
 	 * @param user
 	 */
 	@JsonProperty("user")
-	public void setUser(DBRef<User, String> user) {
+	public void setUser(String user) {
 		this.user = user;
 	}
 
 	/**
-	 * @return actual user object from DBRef
+	 * @return actual user object from DB
 	 */
-	public User fetchUser() {
+	/*public User fetchUser() {
 		return user.fetch();
-	}
+	}*/
 
 	/**
 	 * @return role
