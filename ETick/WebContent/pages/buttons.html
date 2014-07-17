@@ -82,14 +82,15 @@ paper-button.colored {
 		<p>Could not create repository.</p>
 	<my-dialog>
 
-	<core-ajax url="http://localhost:8080/UROP_UI/api/tick/new" params='{}' handleAs="json" method="POST"></core-ajax>
+	<core-ajax id="addAPI" url="http://localhost:8080/UROP_UI/api/tick/new" handleAs="json" method="POST"></core-ajax>
+
 
 	<script>
 		var fork = document.querySelector('#fork');
 		var add = document.querySelector('#add');
 		var input = document.querySelector('#input');
 		var create = document.querySelector('#create');
-		var call = document.querySelector('core-ajax');
+		var call = document.querySelector('#addAPI');
 		
 		input.addEventListener('input', function() {
 			if(input.invalid) {
@@ -105,7 +106,7 @@ paper-button.colored {
 		});
 
 		create.addEventListener('click', function() {
-			console.log(call);
+			call.params = '{"name": "' + input.value + '"}';
 			call.go();
 		});
 

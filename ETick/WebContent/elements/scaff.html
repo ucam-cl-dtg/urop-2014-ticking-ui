@@ -14,7 +14,7 @@
 					items="{{items}}"
 					icons="{{icons}}"></my-sidebar>
 				<div flex tool layout horizontal center>
-			  		<div>{{title}}</div>
+			  		<div>{{heading}}</div>
 				  	<div flex horizontal end-justified layout center>
 				  		<paper-button label="help"></paper-button>
 				  		<paper-button label="logout"></paper-button>
@@ -43,7 +43,7 @@
 				'$.sidebar.selected' : 'selectedChanged'
 			},
 			selectedChanged: function(oldValue, newValue) {
-				this.title = newValue.label;
+				this.heading = newValue.label;
 				this.$.frame.contentWindow.location.replace(newValue.getAttribute('url'));
 				this.animateCard();
 			},
@@ -62,8 +62,7 @@
 		    			this.moveCard(null);
 		    		}, null, 300);
 		    	});
-		    },
-
+		    }
 		});
 	</script>
 </polymer-element>
