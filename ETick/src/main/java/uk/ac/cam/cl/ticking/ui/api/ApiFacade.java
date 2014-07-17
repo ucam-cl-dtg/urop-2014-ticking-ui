@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -55,12 +56,13 @@ public class ApiFacade {
 	@POST
 	@Path("tick/new")
 	@Produces("application/json")
+	@Consumes("application/json")
 	public Response newTick(@Context HttpServletRequest request, Tick tick) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		
 		ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target("http://example.com/base/uri");
+        ResteasyWebTarget target = client.target("http://localhost:8080/git-0.0.1-SNAPSHOT");
 
         WebInterface proxy = target.proxy(WebInterface.class);
         try {
