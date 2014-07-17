@@ -4,7 +4,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
-import uk.ac.cam.cl.ticking.ui.api.ETickGuiceConfigurationModule;
+import uk.ac.cam.cl.ticking.ui.injection.ETickGuiceConfigurationModule;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

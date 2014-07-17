@@ -10,13 +10,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 @Path("/")
 public class ETickApiFacade {
@@ -57,6 +57,8 @@ public class ETickApiFacade {
 		db.saveTick(tick);
 		return Response.ok().build();
 	}
+	
+	
 	
 	
 }

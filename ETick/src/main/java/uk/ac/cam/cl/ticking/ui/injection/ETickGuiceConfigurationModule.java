@@ -1,5 +1,6 @@
-package uk.ac.cam.cl.ticking.ui.api;
+package uk.ac.cam.cl.ticking.ui.injection;
 
+import uk.ac.cam.cl.ticking.ui.api.ETickApiFacade;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
