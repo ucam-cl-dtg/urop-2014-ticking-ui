@@ -50,9 +50,9 @@ public class GuiceConfigurationModule extends AbstractModule {
 	
 	@Inject
 	@Provides
-	private static ApiFacade getApiSingleton(IDataManager db, RavenManager raven) {
+	private static ApiFacade getApiSingleton(IDataManager db) {
 		if (apiFacade == null) {
-			apiFacade = new ApiFacade(db, raven);
+			apiFacade = new ApiFacade(db);
 		}
 		return apiFacade;
 	}

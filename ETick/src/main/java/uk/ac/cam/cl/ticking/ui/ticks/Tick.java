@@ -22,7 +22,7 @@ public class Tick {
 	private String author;
 
 	private String repo, name;
-	private Date deadline;
+	private String deadline;
 
 	/**
 	 * 
@@ -43,7 +43,7 @@ public class Tick {
 			@JsonProperty("group") String group,
 			@JsonProperty("author") String author,
 			@JsonProperty("repo") String repo,
-			@JsonProperty("deadline") Date deadline) {
+			@JsonProperty("deadline") String deadline) {
 
 		this.tid = group + "_" + name;
 		this.setName(name);
@@ -53,6 +53,14 @@ public class Tick {
 		this.setDeadline(deadline);
 
 	}
+	
+	
+	/**
+	 * Default constructor for Jackson JSON to POJO because java
+	 */
+	public Tick() {
+		
+	};
 
 	/**
 	 * @return repo
@@ -74,7 +82,7 @@ public class Tick {
 	 * @return deadline
 	 */
 	@JsonProperty("deadline")
-	public Date getDeadline() {
+	public String getDeadline() {
 		return deadline;
 	}
 
@@ -82,7 +90,7 @@ public class Tick {
 	 * @param deadline
 	 */
 	@JsonProperty("deadline")
-	public void setDeadline(Date deadline) {
+	public void setDeadline(String deadline) {
 		this.deadline = deadline;
 	}
 
