@@ -63,7 +63,7 @@ paper-button.colored {
 		</tr>
 	</table>
 
-	<my-dialog id="overlay">
+	<my-dialog id="overlay" transition="core-transition-bottom">
 		<h3>Create a Repository:</h3>
 		<div horizontal layout center>
 			<paper-input 
@@ -91,6 +91,8 @@ paper-button.colored {
 		var input = document.querySelector('#input');
 		var create = document.querySelector('#create');
 		var call = document.querySelector('core-ajax');
+
+		console.log(document.querySelector('#overlay').transition);
 		
 		input.addEventListener('input', function() {
 			if(input.invalid) {
