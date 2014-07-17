@@ -62,7 +62,7 @@ public class ApiFacade {
 				"RavenRemoteUser");
 		
 		ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target("http://localhost:8080/git-0.0.1-SNAPSHOT");
+        ResteasyWebTarget target = client.target("http://localhost:8080/UROP_GIT");
 
         WebInterface proxy = target.proxy(WebInterface.class);
         try {
