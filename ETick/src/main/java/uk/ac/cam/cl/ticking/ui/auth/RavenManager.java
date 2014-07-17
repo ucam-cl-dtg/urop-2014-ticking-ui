@@ -62,7 +62,7 @@ public class RavenManager {
 		html += "<h2>User Roles</h2>";
 		html += "<table style=\"width:500px\">";
 		for (Grouping grp : grps) {
-			Group g = grp.fetchGroup();
+			Group g = db.getGroup(grp.getGroup());
 			Role r = grp.getRole();
 			html += "<tr><td>" + g.getName() + "</td><td>" + r.name()
 					+ "</td></tr>";
