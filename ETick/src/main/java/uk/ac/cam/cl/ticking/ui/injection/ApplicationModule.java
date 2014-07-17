@@ -3,7 +3,7 @@ package uk.ac.cam.cl.ticking.ui.injection;
 import uk.ac.cam.cl.dtg.teaching.exceptions.ExceptionHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.ticking.ui.api.APIOverviewResource;
-import uk.ac.cam.cl.ticking.ui.api.ETickApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.ApiFacade;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 
 import com.google.inject.Binder;

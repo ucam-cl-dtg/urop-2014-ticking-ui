@@ -4,7 +4,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
-import uk.ac.cam.cl.ticking.ui.injection.ETickGuiceConfigurationModule;
+import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -16,7 +16,7 @@ public class DatabasePopulator {
 	public static void testDB() {
 
 		Injector injector = Guice
-				.createInjector(new ETickGuiceConfigurationModule());
+				.createInjector(new GuiceConfigurationModule());
 		db = injector.getInstance(IDataManager.class);
 
 		addEntry("Java 1A", "rds46", "Raahil", Role.OVERVIEW);
