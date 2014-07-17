@@ -82,7 +82,11 @@ paper-button.colored {
 		<p>Could not create repository.</p>
 	<my-dialog>
 
-	<core-ajax id="addAPI" url="http://localhost:8080/UROP_UI/api/tick/new" handleAs="json" method="POST"></core-ajax>
+	<core-ajax  id="addAPI" 
+				url="http://localhost:8080/UROP_UI/api/tick/new" 
+				handleAs="json"
+				contentType="application/json"
+				method="POST"></core-ajax>
 
 	<script>
 		var fork = document.querySelector('#fork');
