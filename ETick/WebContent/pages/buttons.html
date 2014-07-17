@@ -1,10 +1,5 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="eTick" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="eTick" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="eTick" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!-->
 <html lang="en" ng-app="eTick">
-<!--<![endif]-->
 <html>
 <head>
 <title>Student Page</title>
@@ -44,6 +39,10 @@ paper-button.colored {
 	color: #fff;
 }
 
+#hidden {
+	display: none;
+}
+
 </style>
 </head>
 <body>
@@ -64,46 +63,62 @@ paper-button.colored {
 		</tr>
 	</table>
 
-	<my-dialog id="overlay">
+	<my-dialog id="overlay" transition="core-transition-bottom">
 		<h3>Create a Repository:</h3>
 		<div horizontal layout center>
-			<paper-input floatingLabel label="Repository name..." 
-				validate="^\w([\w|\-|/|.]*)$" error="Invalid input characters.">
+			<paper-input 
+				id="input" 
+				floatingLabel 
+				label="Repository name..." 
+				validate="^([0-9a-zA-Z])([\w|\-|/|.]*)$" 
+				error="Invalid repository name.">
 			</paper-input>
-			<paper-button class="button" label="CREATE" id="create" core-overlay-toggle></paper-button>
+			<paper-button class="button hidden" label="CREATE" id="create" core-overlay-toggle></paper-button>
 		</div>
 	</my-dialog>
 
-	<core-ajax url="http://localhost:8080/git-0.0.1-SNAPSHOT/rest/git"
+	<my-dialog id="error-dialog" transition="core-transition-center">
+		<h3>Error:</h3>
+		<p>Could not create repository.</p>
+	<my-dialog>
+
+	<core-ajax url="http://gdata.youtube.com/feeds/api/videos/bullshit"
 		 handleAs="json"></core-ajax>
 
 	<script>
 		var fork = document.querySelector('#fork');
 		var add = document.querySelector('#add');
+		var input = document.querySelector('#input');
+		var create = document.querySelector('#create');
+		var call = document.querySelector('core-ajax');
+
+		console.log(document.querySelector('#overlay').transition);
+		
+		input.addEventListener('input', function() {
+			if(input.invalid) {
+				create.style.display = 'none';
+			}
+			else {
+				create.style.display = 'inline-block';
+			}
+		});
+
 		add.addEventListener('click', function() {
 			document.querySelector('#overlay').toggle();
 		});
-		fork.addEventListener('click', function(e) {
-			document.querySelector("core-ajax").go();
+
+		create.addEventListener('click', function() {
+			call.go();
 		});
-	
-		document.addEventListener('polymer-ready', function() {
-			var ajax = document.querySelector("core-ajax");
-			ajax.addEventListener("core-response", function(e) {
+
+		call.addEventListener('core-response', function() {
 				console.log(this.response);
-			});
+				console.log('Successful API Call');
+		});
+		call.addEventListener('core-error', function() {
+			console.log('hey');
+			document.querySelector('#error-dialog').toggle();
 		});
 	</script>
-
-	<!-- In production use:
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
-  -->
-	<!--<script src="bower_components/angular/angular.js"></script>
-	<script src="bower_components/angular-route/angular-route.js"></script>
-	<script src="js/app.js"></script>
-	<script src="js/services.js"></script>
-	<script src="js/controllers.js"></script>
-	<script src="js/filters.js"></script>
-	<script src="js/directives.js"></script>-->
 </body>
 </html>

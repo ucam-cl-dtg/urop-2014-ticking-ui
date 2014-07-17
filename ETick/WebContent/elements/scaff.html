@@ -3,7 +3,6 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="sidebar.html">
-<link rel="import" href="my-element.html">
 
 <polymer-element name="my-scaffold">
 	<template>
@@ -51,7 +50,6 @@
 			moveCard: function (y) {
 				var s = this.$.card.style;
 				s.webkitTransform = s.transform = y ? 'translate(0, ' + y + 'px)': '';
-				console.log(s);
 			},
 			animateCard: function() {
 		    	this.$.card.classList.remove('move-up');

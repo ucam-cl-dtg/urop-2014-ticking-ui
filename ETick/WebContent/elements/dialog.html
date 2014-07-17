@@ -5,7 +5,7 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 
-<polymer-element name="my-dialog">
+<polymer-element name="my-dialog" attributes="transition">
 	<template>
 		<style>
 
@@ -27,6 +27,11 @@
 				background: #4285f4;
 				color: #fff;
 			}
+
+			polyfill-next-selector { content: ':host .hidden'; }
+			::content .hidden {
+				display: none;
+			}
 			
 			#cancel {
 				fill:red;
@@ -39,7 +44,7 @@
 
 		</style>
 		
-		<core-overlay id="overlay" layered backdrop transition="core-transition-bottom">
+		<core-overlay id="overlay" layered backdrop transition="{{transition}}">
 		</core-overlay>
 		<paper-icon-button icon="cancel" id="cancel" on-click="{{toggle}}"></paper-icon-button>
 		<content></content>
@@ -53,8 +58,11 @@
 		},
 
 		toggle: function() {
+			console.log(this.transition);
 			this.$.overlay.toggle();
-		}
+		},
+
+		transition: "core-transition-bottom"
 
 	});
 
