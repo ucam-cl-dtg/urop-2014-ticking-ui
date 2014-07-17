@@ -110,7 +110,7 @@ paper-button.colored {
 		});
 
 		create.addEventListener('click', function() {
-			call.params = '{"name": "' + input.value + '"}';
+			call.body = '{"name": "' + input.value + '"}';
 			call.go();
 		});
 
