@@ -22,7 +22,7 @@
 			  		<div>{{heading}}</div>
 				  	<div flex horizontal end-justified layout center>
 				  		<paper-button label="help"></paper-button>
-				  		<paper-button label="logout"></paper-button>
+				  		<paper-button label="logout" on-click="{{logoutClicked}}"></paper-button>
 				  		<paper-icon-button icon="search"></paper-icon-button>
 				  	</div>
 			  	</div>
@@ -68,6 +68,9 @@
 		    			this.moveCard(null);
 		    		}, null, 300);
 		    	});
+		    },
+		    logoutClicked: function() {
+		    	window.location.href = 'https://raven.cam.ac.uk/auth/logout.html';
 		    }
 		});
 	</script>
