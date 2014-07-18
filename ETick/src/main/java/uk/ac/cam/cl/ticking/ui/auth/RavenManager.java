@@ -16,6 +16,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
+import uk.ac.cam.cl.ticking.ui.dao.DatabasePopulator;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -86,7 +87,7 @@ public class RavenManager {
 	 * If the user does not exist in our database then create an object for them
 	 * using information from LDAP and store it.
 	 * 
-	 * Student/Academic is determined currently by present of 'Computer
+	 * Student/Academic is determined currently by presence of 'Computer
 	 * Laboratory' in the user's list of institutions.
 	 * 
 	 * @param request
@@ -97,6 +98,7 @@ public class RavenManager {
 	@Produces("application/json")
 	public Response Login(@Context HttpServletRequest request) {
 
+		DatabasePopulator.testDB();
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		User user = db.getUser(crsid);
