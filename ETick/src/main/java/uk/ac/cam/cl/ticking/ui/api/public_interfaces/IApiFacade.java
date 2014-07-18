@@ -1,5 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -37,8 +39,8 @@ public interface IApiFacade {
 	/**
 	 * @param request
 	 * @param tick
-	 * @return 	200 - success
-	 * 			500 - repository creation via UROP-GIT failed
+	 * @return response
+	 * @throws IOException
 	 * 
 	 */
 	@POST
@@ -46,19 +48,19 @@ public interface IApiFacade {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response newTick(@Context HttpServletRequest request,
-			Tick tick);
+			Tick tick) throws IOException;
 
 	/**
 	 * @param request
 	 * @param name
-	 * @return 	200 - success 
-	 * 			500 - repository creation via UROP-GIT failed
+	 * @return URL of the new repository to clone
+	 * @throws IOException
 	 * 
 	 */
 	@GET
 	@Path("tick/fork/{name}")
 	@Produces("application/json")
 	public abstract Response forkTick(@Context HttpServletRequest request,
-			@PathParam("name") String name);
+			@PathParam("name") String name) throws IOException;
 
 }

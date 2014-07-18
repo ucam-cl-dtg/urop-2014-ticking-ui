@@ -1,14 +1,5 @@
 package uk.ac.cam.cl.ticking.ui.actors;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.mongojack.DBCursor;
-import org.mongojack.DBRef;
-
-import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
-import uk.ac.cam.cl.ticking.ui.util.Strings;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -76,13 +67,6 @@ public class Grouping {
 	}
 
 	/**
-	 * @return actual group object from DB
-	 */
-	/*public Group fetchGroup() {
-		return group.fetch();
-	}*/
-
-	/**
 	 * @return user
 	 */
 	@JsonProperty("user")
@@ -99,13 +83,6 @@ public class Grouping {
 	}
 
 	/**
-	 * @return actual user object from DB
-	 */
-	/*public User fetchUser() {
-		return user.fetch();
-	}*/
-
-	/**
 	 * @return role
 	 */
 	@JsonProperty("role")
@@ -120,18 +97,5 @@ public class Grouping {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-
-	/*
-	 * public static List<Grouping> getGroupings(User user) { return
-	 * MongoDataManager.get().getGroupings(user); }
-	 * 
-	 * public static List<Grouping> getGroupings(Group group) { return
-	 * MongoDataManager.get().getGroupings(group); }
-	 * 
-	 * public static List<Grouping> getGroupings(Role role) { return
-	 * MongoDataManager.get().getGroupings(role); }
-	 * 
-	 * public void save() { MongoDataManager.get().saveGrouping(this); }
-	 */
 
 }

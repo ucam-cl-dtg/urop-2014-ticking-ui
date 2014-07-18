@@ -9,6 +9,12 @@ import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+/**
+ * Test class used for populating the database with groupings
+ * 
+ * @author tl364
+ *
+ */
 public class DatabasePopulator {
 
 	private static IDataManager db = null;

@@ -1,8 +1,5 @@
 package uk.ac.cam.cl.ticking.ui.ticks;
 
-import java.util.Date;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -53,13 +50,12 @@ public class Tick {
 		this.setDeadline(deadline);
 
 	}
-	
-	
+
 	/**
 	 * Default constructor for Jackson JSON to POJO because java
 	 */
 	public Tick() {
-		
+
 	};
 
 	/**
@@ -125,7 +121,7 @@ public class Tick {
 	public void setGroup(String group) {
 		this.group = group;
 	}
-	
+
 	/**
 	 * @return author
 	 */
@@ -139,7 +135,7 @@ public class Tick {
 	 */
 	@JsonProperty("author")
 	public void setAuthor(String author) {
-		this.author = author;;
+		this.author = author;
 	}
 
 	/**
@@ -148,8 +144,4 @@ public class Tick {
 	public String getTID() {
 		return tid;
 	}
-
-	/*
-	 * public void save() { MongoDataManager.get().saveTick(this); }
-	 */
 }

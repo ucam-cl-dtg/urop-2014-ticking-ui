@@ -24,10 +24,10 @@ import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cl.ticking.ui.util.Strings;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 
 /**
  * A resource that displays a list of available endpoints (which is helpful to
@@ -37,8 +37,7 @@ import com.google.inject.Injector;
  *         https://gist.github.com/wonderb0lt/10731371#file-overviewresource
  *         -java Retrieved 27/05/2014
  * @author Stephen Cummins - modified to work with new version of resteasy
- *         27/05/2014
- *         -java Retrieved 15/07/2014
+ *         27/05/2014 -java Retrieved 15/07/2014
  * @author tl364 - removed 'Isaac' specific code
  */
 @Path("/")
@@ -270,7 +269,10 @@ public class APIOverviewResource {
 				}
 				sb.append(method.getMethod()).append(" ");
 
-				sb.append("<strong>").append(method.fullPath).append("</strong>");
+				sb.append(
+						"<strong> <a href='" + Strings.UI + "/"
+								+ method.getFullPath().substring(1) + "'>")
+						.append(method.fullPath).append("</a></strong>");
 
 				sb.append("<ul>");
 

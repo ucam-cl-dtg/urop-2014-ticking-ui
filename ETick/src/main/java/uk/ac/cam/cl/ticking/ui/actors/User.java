@@ -1,17 +1,9 @@
 package uk.ac.cam.cl.ticking.ui.actors;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import org.mongojack.DBCursor;
-
-import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
-import uk.ac.cam.cl.ticking.ui.ticks.Submission;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mongodb.BasicDBObject;
 
 /**
  * This class stores information about a user.
@@ -197,21 +189,5 @@ public class User {
 	public void setIsStudent(boolean isStudent) {
 		this.isStudent = isStudent;
 	}
-
-	/*
-	 * public void save() { MongoDataManager.get().saveUser(this); }
-	 * 
-	 * public static User getUser(String crsid) { return
-	 * MongoDataManager.get().getUser(crsid); }
-	 * 
-	 * public static List<User> getUsers(Group group) { return
-	 * MongoDataManager.get().getUsers(group); }
-	 * 
-	 * public static List<User> getUsers(Group group, Role role) { return
-	 * MongoDataManager.get().getUsers(group, role); }
-	 * 
-	 * public List<Submission> getSubmissions() { MongoDataManager database =
-	 * MongoDataManager.get(); return database.getSubmissions(this.crsid); }
-	 */
 
 }

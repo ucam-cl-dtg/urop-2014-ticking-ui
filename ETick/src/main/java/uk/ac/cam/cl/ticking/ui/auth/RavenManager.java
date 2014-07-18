@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -16,43 +17,51 @@ import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
-import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
 @Path("/raven")
 public class RavenManager {
-	
+
 	private IDataManager db;
-	
+
 	@Inject
 	public RavenManager(IDataManager db) {
 		this.db = db;
 	}
 
-	
-	public Response stats(User user) {
+	/**
+	 * Displays the information we have concerning the user as HTML.
+	 * 
+	 * @param request
+	 * @return response
+	 */
+	@GET
+	@Path("/stats")
+	public Response stats(@Context HttpServletRequest request) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		User user = db.getUser(crsid);
 
 		String html = "<html><head><title>User Info</title></head><body>";
 
 		html += "<h1>User Login Test</h1>";
 		html += "<h2>User Details</h2>";
-		html += "<table style=\"width:500px\">" 
-				+ "<tr><td>CRSID</td><td>"+ user.getCrsid() + "</td></tr>"
-				+ "<tr><td>Name</td><td>"+ user.getDisplayName() + "</td></tr>"
-				+ "<tr><td>Type</td><td>"+ (user.getIsStudent() ? "Student " : "Staff") + "</td></tr>"
+		html += "<table style=\"width:500px\">" + "<tr><td>CRSID</td><td>"
+				+ user.getCrsid() + "</td></tr>" + "<tr><td>Name</td><td>"
+				+ user.getDisplayName() + "</td></tr>"
+				+ "<tr><td>Type</td><td>"
+				+ (user.getIsStudent() ? "Student " : "Staff") + "</td></tr>"
 				+ "<tr><td>College</td><td>" + user.getCollege() + "</td></tr>"
 				+ "<tr><td>Surname</td><td>" + user.getSurname() + "</td></tr>"
 				+ "<tr><td>Regname</td><td>" + user.getRegName() + "</td></tr>"
 				+ "<tr><td>Email</td><td>" + user.getEmail() + "</td></tr>";
-		
-		for(String inst : user.getInstitutions()) {
+
+		for (String inst : user.getInstitutions()) {
 			html += "<tr><td>" + inst + "</td></tr>";
 		}
-		
+
 		html += "</td></tr>" + "</table>";
 
 		html += "<hr>";
@@ -73,8 +82,19 @@ public class RavenManager {
 		return Response.status(200).entity(html).build();
 	}
 
+	/**
+	 * If the user does not exist in our database then create an object for them
+	 * using information from LDAP and store it.
+	 * 
+	 * Student/Academic is determined currently by present of 'Computer
+	 * Laboratory' in the user's list of institutions.
+	 * 
+	 * @param request
+	 * @return response
+	 */
 	@GET
-	@Path("/stats")
+	@Path("/login")
+	@Produces("application/json")
 	public Response Login(@Context HttpServletRequest request) {
 
 		String crsid = (String) request.getSession().getAttribute(
@@ -89,12 +109,12 @@ public class RavenManager {
 			}
 			boolean notStudent = u.getInstitutions().contains(Strings.LAB);
 			user = new User(crsid, u.getSurname(), u.getRegName(),
-					u.getDisplayName(), u.getEmail(),
-					u.getInstitutions(), u.getCollegeName(), !notStudent);
+					u.getDisplayName(), u.getEmail(), u.getInstitutions(),
+					u.getCollegeName(), !notStudent);
 			db.saveUser(user);
 		}
-		
-		return stats(user);
+
+		return Response.ok().entity(user).build();
 	}
 
 }

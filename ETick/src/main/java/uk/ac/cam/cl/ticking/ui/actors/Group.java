@@ -1,15 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.actors;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.mongojack.DBCursor;
-
-import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mongodb.BasicDBObject;
 
 /**
  * This class stores the name and identifier for a group
@@ -67,19 +59,6 @@ public class Group {
 	public void setGid(String gid) {
 		this.gid = gid;
 	}
-
-	/*
-	 * public void save() { MongoDataManager.get().saveGroup(this); }
-	 * 
-	 * public static Group getGroup(String gid) { return
-	 * MongoDataManager.get().getGroup(gid); }
-	 * 
-	 * public List<Group> getGroups(User user) { return
-	 * MongoDataManager.get().getGroups(user); }
-	 * 
-	 * public List<Group> getGroups(User user, Role role) { return
-	 * MongoDataManager.get().getGroups(user, role); }
-	 */
 
 	/*
 	 * (non-Javadoc)

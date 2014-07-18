@@ -2,10 +2,6 @@ package uk.ac.cam.cl.ticking.ui.ticks;
 
 import java.util.Date;
 
-import org.mongojack.ObjectId;
-
-import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -33,10 +29,8 @@ public class Submission {
 	/**
 	 * Create a new instance of the Submission object.
 	 * 
-	 * This will generate a submission identifier automatically and should only be
-	 * used when a user is creating a new submission.
-	 * 
-	 * 
+	 * This will generate a submission identifier automatically and should only
+	 * be used when a user is creating a new submission.
 	 * 
 	 * @param author
 	 * @param group
@@ -93,11 +87,14 @@ public class Submission {
 	public void setSubmitted(Date submitted) {
 		this.submitted = submitted;
 	}
-
-	/*
-	 * @JsonProperty("tick") public Tick getTick() { MongoDataManager database =
-	 * MongoDataManager.get(); return database.getTick(this.tick); }
+	
+	/**
+	 * @response tick
 	 */
+	@JsonProperty("tick")
+	public String getTick() {
+		return tick;
+	}
 
 	/**
 	 * @param tick
@@ -170,8 +167,4 @@ public class Submission {
 	public void setGroup(String group) {
 		this.group = group;
 	}
-
-	/*
-	 * public void save() { MongoDataManager.get().saveSubmission(this); }
-	 */
 }
