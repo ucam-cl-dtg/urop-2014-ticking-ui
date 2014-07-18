@@ -5,9 +5,10 @@
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-menu/core-menu.html">
 <link rel="import" href="../bower_components/core-item/core-item.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 
 
-<polymer-element name="my-sidebar" attributes="items icons">
+<polymer-element name="my-sidebar" attributes="items">
 	<template>
 		<link rel="stylesheet" type="text/css" 
 			href="../css/elements/sidebar.css" shim-shadowdom>
@@ -20,16 +21,27 @@
 				<template repeat="{{item in items}}">
 					<core-item icon="{{item.icon}}" label="{{item.label}}" url="{{item.url}}"></core-item>
 				</template>
+			</core-menu>
+
+			<!-- API call to populate sidebar menu. -->
+			<core-ajax id="sidebarAjax"
+				url="http://localhost:8080/UROP_UI/api/group/user"
+				handleAs="json"
+				on-core-response="{{handleResponse}}">
+			</core-ajax>
 	</template>
 	<script>
 		Polymer('my-sidebar', {
 			ready: function () {
-				// Temporary menu population.
+				this.$.sidebarAjax.go();
 			},
 			selectAction : function(e, detail) { 
 				if (detail.isSelected) {
 					this.selected = detail.item;
 				}
+			},
+			handleResponse: function() {
+				this.items = this.$.sidebarAjax.response;
 			}
 		}); 
 	</script>

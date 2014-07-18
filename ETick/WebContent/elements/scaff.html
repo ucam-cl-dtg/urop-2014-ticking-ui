@@ -10,9 +10,7 @@
 			href="../css/elements/scaff.css" shim-shadowdom>
 			<core-scaffold mode="standard" id="scaffold">
 				<my-sidebar 
-					id="sidebar" navigation
-					items="{{items}}"
-					icons="{{icons}}"></my-sidebar>
+					id="sidebar" navigation></my-sidebar>
 				<div flex tool layout horizontal center>
 			  		<div>{{heading}}</div>
 				  	<div flex horizontal end-justified layout center>
@@ -33,10 +31,6 @@
 	<script>
 		Polymer('my-scaffold', {
 			ready: function () {
-				this.items = [{label: 'Dashboard', icon: 'apps', url: 'pages/buttons.html'},
-							  {label: '1A Java', icon: 'book', url: 'index.html'},
-							  {label: 'Hardware', icon: 'book', url: 'pages/buttons.html'},
-							  {label: 'Settings', icon: 'settings', url: 'pages/buttons.html'}];
 			},	
 			
 			observe: {
