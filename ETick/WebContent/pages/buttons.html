@@ -63,11 +63,13 @@ paper-button.colored {
 		</tr>
 	</table>
 
-	<my-dialog id="overlay" transition="core-transition-bottom">
+	<!-- Add Repository -->
+
+	<my-dialog id="addOverlay" transition="core-transition-bottom">
 		<h3>Create a Repository:</h3>
 		<div horizontal layout center>
 			<paper-input 
-				id="input" 
+				id="addInput" 
 				floatingLabel 
 				label="Repository name..." 
 				validate="^([0-9a-zA-Z])([\w|\-|/|.]*)$" 
@@ -77,7 +79,7 @@ paper-button.colored {
 		</div>
 	</my-dialog>
 
-	<my-dialog id="error-dialog" transition="core-transition-center">
+	<my-dialog id="addError" transition="core-transition-center">
 		<h3>Error:</h3>
 		<p>Could not create repository.</p>
 	<my-dialog>
@@ -88,29 +90,65 @@ paper-button.colored {
 				contentType="application/json"
 				method="POST"></core-ajax>
 
+	<!-- Fork Repository -->
+
+	<my-dialog id="forkOverlay" transition="core-transition-bottom">
+		<h3>Fork a Repository:</h3>
+		<div horizontal layout center>
+			<paper-input 
+				id="forkInput" 
+				floatingLabel 
+				label="Repository name..." 
+				validate="^([0-9a-zA-Z])([\w|\-|/|.]*)$" 
+				error="Invalid repository name.">
+			</paper-input>
+			<paper-button class="button hidden" label="FORK" id="forkify" core-overlay-toggle></paper-button>
+		</div>
+	</my-dialog>
+	<my-dialog id="forkError" transition="core-transition-center">
+		<h3>Error:</h3>
+		<p>Could not fork the repository.</p>
+	<my-dialog>
+
+	
 
 	<script>
 		var fork = document.querySelector('#fork');
 		var add = document.querySelector('#add');
-		var input = document.querySelector('#input');
+		var addInput = document.querySelector('#addInput');
+		var forkInput = document.querySelector('#forkInput');
 		var create = document.querySelector('#create');
+		var forkify = document.querySelector('#forkify');
 		var call = document.querySelector('#addAPI');
 		
-		input.addEventListener('input', function() {
-			if(input.invalid) {
+		addInput.addEventListener('input', function() {
+			if(addInput.invalid) {
 				create.style.display = 'none';
 			}
 			else {
 				create.style.display = 'inline-block';
 			}
 		});
+		forkInput.addEventListener('input', function() {
+			if(forkInput.invalid) {
+				forkify.style.display = 'none';
+			}
+			else {
+				forkify.style.display = 'inline-block';
+			}
+		});
+
 
 		add.addEventListener('click', function() {
-			document.querySelector('#overlay').toggle();
+			document.querySelector('#addOverlay').toggle();
+		});
+
+		fork.addEventListener('click', function() {
+			document.querySelector('#forkOverlay').toggle();
 		});
 
 		create.addEventListener('click', function() {
-			call.body = '{"name": "' + input.value + '"}';
+			call.body = '{"name": "' + addInput.value + '"}';
 			call.go();
 		});
 
@@ -119,7 +157,7 @@ paper-button.colored {
 				console.log('Success');
 		});
 		call.addEventListener('core-error', function() {
-			document.querySelector('#error-dialog').toggle();
+			document.querySelector('#addError').toggle();
 		});
 	</script>
 </body>
