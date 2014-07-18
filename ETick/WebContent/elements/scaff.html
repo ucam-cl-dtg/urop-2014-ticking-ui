@@ -1,3 +1,7 @@
+<!--
+	! Dead buttons in top toolbar.
+-->
+
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-scaffold/core-scaffold.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
@@ -9,8 +13,11 @@
 		<link rel="stylesheet" type="text/css" 
 			href="../css/elements/scaff.css" shim-shadowdom>
 			<core-scaffold mode="standard" id="scaffold">
-				<my-sidebar 
-					id="sidebar" navigation></my-sidebar>
+
+				<!-- Sidebar element. -->
+				<my-sidebar id="sidebar" navigation></my-sidebar>
+
+				<!-- Top toolbar. -->
 				<div flex tool layout horizontal center>
 			  		<div>{{heading}}</div>
 				  	<div flex horizontal end-justified layout center>
@@ -33,14 +40,19 @@
 			ready: function () {
 			},	
 			
+			// Update top toolbar heading. 
 			observe: {
 				'$.sidebar.selected' : 'selectedChanged'
 			},
 			selectedChanged: function(oldValue, newValue) {
-				this.heading = newValue.label;
-				this.$.frame.contentWindow.location.replace(newValue.getAttribute('url'));
-				this.animateCard();
+				if (newValue.getAttribute('url')) {
+					this.heading = newValue.label;
+					this.$.frame.contentWindow.location.replace(newValue.getAttribute('url'));
+					this.animateCard();
+				}
 			},
+
+			// Page card animations. 
 			moveCard: function (y) {
 				var s = this.$.card.style;
 				s.webkitTransform = s.transform = y ? 'translate(0, ' + y + 'px)': '';

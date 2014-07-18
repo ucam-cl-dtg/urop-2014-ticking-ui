@@ -1,8 +1,13 @@
+<!--
+	Check hard coded URLs and relative paths. 
+-->
+
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="../bower_components/core-menu/core-submenu.html">
 <link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/core-icons/iconsets/social-icons.html">
 <link rel="import" href="../bower_components/core-menu/core-menu.html">
 <link rel="import" href="../bower_components/core-item/core-item.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
@@ -12,20 +17,29 @@
 	<template>
 		<link rel="stylesheet" type="text/css" 
 			href="../css/elements/sidebar.css" shim-shadowdom>
+
+			<!-- Header toolbar. -->
 			<core-toolbar class="core-header">
 				<img src="../images/otterlogo.png" height="30px" width="30px">
 				<div>Otter</div>
 			</core-toolbar>
 			<div id="dropShadow"></div>
+
+			<!-- Dashboard and Settings items permanent. -->
 			<core-menu id="menu" valueattr="label" selected=0 on-core-select="{{selectAction}}">
-				<template repeat="{{item in items}}">
-					<core-item icon="{{item.icon}}" label="{{item.label}}" url="{{item.url}}"></core-item>
-				</template>
+				<core-item icon="apps" label="Dashboard" url="../pages/dashboard.html"></core-item>
+				<core-submenu icon="social:group" label="Groups" selected="Foo">
+					<template repeat="{{item in items}}">
+						<core-item icon="folder-shared" label="{{item.name}}" 
+							url="../pages/group.html"></core-item>
+					</template>
+				</core-submenu>
+				<core-item icon="settings" label="Settings" url="../pages/settings.html"></core-item>
 			</core-menu>
 
 			<!-- API call to populate sidebar menu. -->
 			<core-ajax id="sidebarAjax"
-				url="http://localhost:8080/UROP_UI/api/group/user"
+				url="../sidebarItems.html"
 				handleAs="json"
 				on-core-response="{{handleResponse}}">
 			</core-ajax>
@@ -42,6 +56,7 @@
 			},
 			handleResponse: function() {
 				this.items = this.$.sidebarAjax.response;
+				console.log(this.items);
 			}
 		}); 
 	</script>
