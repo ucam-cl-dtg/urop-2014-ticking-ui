@@ -63,4 +63,16 @@ public interface IApiFacade {
 	public abstract Response forkTick(@Context HttpServletRequest request,
 			@PathParam("name") String name) throws IOException;
 
+	/**
+	 * Uses the user's session to determine the crsid and then returns all
+	 * groups which that user is a member of.
+	 * 
+	 * @param request
+	 * @return the list of groups that the current user is a member of
+	 */
+	@GET
+	@Path("group/user")
+	@Produces("application/json")
+	public abstract Response getUserGroups(@Context HttpServletRequest request);
+
 }

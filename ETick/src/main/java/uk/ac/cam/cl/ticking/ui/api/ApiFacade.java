@@ -15,6 +15,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import uk.ac.cam.cl.git.AddRequestBean;
 import uk.ac.cam.cl.git.ForkRequestBean;
 import uk.ac.cam.cl.git.public_interfaces.WebInterface;
+import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IApiFacade;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
@@ -78,5 +79,15 @@ public class ApiFacade implements IApiFacade {
 		// IOException is thrown
 		return output;
 	}
+	
+	@Override
+	public Response getUserGroups(@Context HttpServletRequest request) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		List<Group> groups = db.getGroups(db.getUser(crsid));
+		
+		return Response.ok(groups).build();
+	}
+		
 
 }
