@@ -98,7 +98,6 @@ public class RavenManager {
 	@Produces("application/json")
 	public Response Login(@Context HttpServletRequest request) {
 
-		DatabasePopulator.testDB();
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		User user = db.getUser(crsid);
@@ -114,6 +113,7 @@ public class RavenManager {
 					u.getDisplayName(), u.getEmail(), u.getInstitutions(),
 					u.getCollegeName(), !notStudent);
 			db.saveUser(user);
+			DatabasePopulator.testPopulate(user);
 		}
 
 		return Response.ok().entity(user).build();

@@ -11,6 +11,8 @@ import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cl.git.AddRequestBean;
 import uk.ac.cam.cl.git.ForkRequestBean;
@@ -26,6 +28,8 @@ import com.google.inject.Inject;
 public class ApiFacade implements IApiFacade {
 
 	private IDataManager db;
+	private static final Logger log = LoggerFactory
+			.getLogger(ApiFacade.class);
 
 	@Inject
 	public ApiFacade(IDataManager db) {
@@ -84,6 +88,7 @@ public class ApiFacade implements IApiFacade {
 	public Response getUserGroups(@Context HttpServletRequest request) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+		log.info(crsid);
 		List<Group> groups = db.getGroups(db.getUser(crsid));
 		
 		return Response.ok(groups).build();
