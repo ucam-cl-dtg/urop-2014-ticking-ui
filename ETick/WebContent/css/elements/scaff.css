@@ -25,10 +25,10 @@ core-scaffold /deep/ core-toolbar /deep/ .toolbar-tools {
 	height: 60px;
 }
 
-polyfill-next-selector { content: '.content'; }
+/*polyfill-next-selector { content: '.content'; }
 ::content .content {
 	padding: 20px;
-}
+}*/
 
 paper-button {
 	font-size: 14px;
