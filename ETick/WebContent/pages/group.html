@@ -12,9 +12,11 @@
 	</style>
 </head>
 <body>
-	<x-group></x-group>
 	<script>
-		// console.log(window.parent.document.querySelector('my-scaffold').currentGroupID);
+		var gid = window.parent.document.querySelector('my-scaffold').currentGroupID
+		var grp = document.createElement('x-group');
+		grp.setAttribute('gid', gid);
+		document.body.appendChild(grp);
 	</script>
 </body>
 </html>

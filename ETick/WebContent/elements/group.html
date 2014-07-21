@@ -2,20 +2,33 @@
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="x-group" noscript>
+<polymer-element name="x-group" attributes="gid">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
-		
-		<!-- <core-toolbar> -->
-			<paper-tabs selected=0>
-				<paper-tab>ONE</paper-tab>
-				<paper-tab>TWO</paper-tab>
-				<paper-tab>THREE</paper-tab>
-				<paper-tab>FOUR</paper-tab>
-			</paper-tabs>
-		<!-- </core-toolbar> -->
+
+		<core-ajax id="roleAjax"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/api/user/' + gid + '/roles'}}"
+			handleAs="json" on-core-response="{{roleResponse}}">
+		</core-ajax>
+
+		<paper-tabs selected=0>
+			<template repeat="{{role in roles}}">
+				<paper-tab>{{role}}</paper-tab>
+			</template>
+		</paper-tabs>
 
 	</template>
+	<script>
+		Polymer('x-group', {
+			ready: function() {
+				this.$.roleAjax.go();
+			},
+
+			roleResponse: function() {
+				this.roles = this.$.roleAjax.response;
+			}
+		});
+	</script>
 </polymer-element>
