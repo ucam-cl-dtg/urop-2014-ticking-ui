@@ -14,16 +14,16 @@ import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
-@Path("/")
+@Path("/tick/")
 @Produces("application/json")
-public interface IApiFacade {
+public interface ITickApiFacade {
 
 	/**
 	 * @param tick
 	 * @return The Tick object with {tick} as it's tid.
 	 */
 	@GET
-	@Path("tick/{tick}")
+	@Path("/{tick}")
 	@Produces("application/json")
 	public abstract Response getTick(@PathParam("tick") String tick);
 
@@ -32,7 +32,7 @@ public interface IApiFacade {
 	 * @return All Tick objects in {group} where {group} is a gid
 	 */
 	@GET
-	@Path("tick/{group}")
+	@Path("/{group}")
 	@Produces("application/json")
 	public abstract Response getTicks(@PathParam("group") String group);
 
@@ -44,7 +44,7 @@ public interface IApiFacade {
 	 * 
 	 */
 	@POST
-	@Path("tick/new")
+	@Path("/new")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response newTick(@Context HttpServletRequest request,
@@ -58,21 +58,9 @@ public interface IApiFacade {
 	 * 
 	 */
 	@GET
-	@Path("tick/fork/{name}")
+	@Path("/fork/{name}")
 	@Produces("application/json")
 	public abstract Response forkTick(@Context HttpServletRequest request,
 			@PathParam("name") String name) throws IOException;
-
-	/**
-	 * Uses the user's session to determine the crsid and then returns all
-	 * groups which that user is a member of.
-	 * 
-	 * @param request
-	 * @return the list of groups that the current user is a member of
-	 */
-	@GET
-	@Path("group/user")
-	@Produces("application/json")
-	public abstract Response getUserGroups(@Context HttpServletRequest request);
 
 }

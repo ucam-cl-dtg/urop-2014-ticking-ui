@@ -8,33 +8,33 @@ package uk.ac.cam.cl.ticking.ui.configuration;
 */
 public class ConfigurationFile
 {
-	private String uiApiLoc = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/";
-    private String gitApiLoc = "http://urop2014.dtg.cl.cam.ac.uk/UROP_GIT/rest/";
+	private String uiApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/";
+    private String gitApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP_GIT/rest/";
     
     
 	/**
 	 * @return URL prefix of the UI api endpoints
 	 */
-	public String getUiApiLoc() {
-		return uiApiLoc;
+	public String getUiApiLocation() {
+		return uiApiLocation;
 	}
 	/**
 	 * @param uiApiLoc
 	 */
-	public void setUiApiLoc(String uiApiLoc) {
-		this.uiApiLoc = uiApiLoc;
+	public void setUiApiLocation(String uiApiLocation) {
+		this.uiApiLocation = uiApiLocation;
 	}
 	/**
 	 * @return URL prefix of the GIT api endpoints
 	 */
-	public String getGitApiLoc() {
-		return gitApiLoc;
+	public String getGitApiLocation() {
+		return gitApiLocation;
 	}
 	/**
 	 * @param gitApiLoc
 	 */
-	public void setGitApiLoc(String gitApiLoc) {
-		this.gitApiLoc = gitApiLoc;
+	public void setGitApiLocation(String gitApiLocation) {
+		this.gitApiLocation = gitApiLocation;
 	}
     
 }
