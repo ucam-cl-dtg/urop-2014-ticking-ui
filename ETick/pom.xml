@@ -6,18 +6,18 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	
-		<properties>
-			<resteasy.version>3.0.8.Final</resteasy.version>
-			<log4j.version>1.2.17</log4j.version>
-			<slf4j.version>1.7.7</slf4j.version>
-		</properties>
-	
-		<repositories>
-			<repository>
-				<id>JBoss repository</id>
-				<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-			</repository>
-		</repositories>
+	<properties>
+		<resteasy.version>3.0.8.Final</resteasy.version>
+		<log4j.version>1.2.17</log4j.version>
+		<slf4j.version>1.7.7</slf4j.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>JBoss repository</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -141,5 +141,22 @@
 	      </extension>
 	    </extensions>
 	</build>
+	
+	<distributionManagement>
+        <!-- use the following if you're not using a snapshot version. -->
+        <repository>
+            <id>dtg-code</id>
+            <name>RepositoryProxy</name>
+			<url>http://maven.dtg.cl.cam.ac.uk/content/repositories/releases</url>
+        </repository>
+        
+        <!-- use the following if you ARE using a snapshot version. -->
+        <snapshotRepository>
+            <id>dtg-code</id>
+            <name>RepositoryProxy</name>
+			<url>http://maven.dtg.cl.cam.ac.uk/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+	
 	
 </project>

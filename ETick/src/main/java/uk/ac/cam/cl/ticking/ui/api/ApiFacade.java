@@ -1,6 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,14 +12,13 @@ import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cl.git.AddRequestBean;
 import uk.ac.cam.cl.git.ForkRequestBean;
 import uk.ac.cam.cl.git.public_interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IApiFacade;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
@@ -28,12 +28,12 @@ import com.google.inject.Inject;
 public class ApiFacade implements IApiFacade {
 
 	private IDataManager db;
-	private static final Logger log = LoggerFactory
-			.getLogger(ApiFacade.class);
+	private ConfigurationFile config;
 
 	@Inject
-	public ApiFacade(IDataManager db) {
+	public ApiFacade(IDataManager db, ConfigurationFile config) {
 		this.db = db;
+		this.config = config;
 	}
 
 	@Override
@@ -88,9 +88,8 @@ public class ApiFacade implements IApiFacade {
 	public Response getUserGroups(@Context HttpServletRequest request) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		log.info(crsid);
 		List<Group> groups = db.getGroups(db.getUser(crsid));
-		
+		Collections.sort(groups);
 		return Response.ok(groups).build();
 	}
 		

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author tl364
  *
  */
-public class Group {
+public class Group implements Comparable<Group>{
 
 	// FORMAT: 'author'_'name'
 	@JsonProperty("_id")
@@ -68,5 +68,10 @@ public class Group {
 	@Override
 	public boolean equals(Object g) {
 		return (g instanceof Group && this.gid.equals(((Group) g).gid));
+	}
+
+	@Override
+	public int compareTo(Group o) {
+		return this.name.compareToIgnoreCase(o.name);
 	}
 }

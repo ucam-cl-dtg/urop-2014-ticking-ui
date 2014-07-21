@@ -3,6 +3,8 @@ package uk.ac.cam.cl.ticking.ui.injection;
 import uk.ac.cam.cl.ticking.ui.api.ApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IApiFacade;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
 import uk.ac.cam.cl.ticking.ui.database.Mongo;
@@ -34,6 +36,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 		this.configureDataPersistence();
 		this.configureApplicationManagers();
 		this.configureFacades();
+		this.configureConfiguration();
 	}
 
 	/**
@@ -50,15 +53,25 @@ public class GuiceConfigurationModule extends AbstractModule {
 		bind(IDataManager.class).to(MongoDataManager.class);
 	}
 
+	/**
+	 * Deals with API
+	 */
 	private void configureFacades() {
 		bind(IApiFacade.class).to(ApiFacade.class);
+	}
+	
+	/**
+	 * Deals with configuration file
+	 */
+	private void configureConfiguration() {
+		bind(ConfigurationFile.class).toInstance(ConfigurationLoader.getConfig());
 	}
 
 	@Inject
 	@Provides
-	private static ApiFacade getApiSingleton(IDataManager db) {
+	private static ApiFacade getApiSingleton(IDataManager db, ConfigurationFile config) {
 		if (apiFacade == null) {
-			apiFacade = new ApiFacade(db);
+			apiFacade = new ApiFacade(db, config);
 		}
 		return apiFacade;
 	}
