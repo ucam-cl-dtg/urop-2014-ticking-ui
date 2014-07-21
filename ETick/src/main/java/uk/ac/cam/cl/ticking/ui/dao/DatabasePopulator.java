@@ -19,26 +19,37 @@ public class DatabasePopulator {
 
 	private static IDataManager db = null;
 
-	public static void testDB() {
+	public static void testPopulate(User u) {
 
 		Injector injector = Guice
 				.createInjector(new GuiceConfigurationModule());
 		db = injector.getInstance(IDataManager.class);
 
-		addEntry("Java 1A", "rds46", "Raahil", Role.OVERVIEW);
-		addEntry("Java 1A", "rds46", "Raahil", Role.AUTHOR);
-		addEntry("Java 1B", "rds46", "Raahil", Role.SUBMITTER);
-		addEntry("Java 2", "rds46", "Raahil", Role.MARKER);
-		addEntry("Java 2", "rds46", "Raahil", Role.MARKER);
-		addEntry("Java 2", "rds46", "Raahil", Role.MARKER);
-		addEntry("Being a grade A boss", "tl364", "Tom", Role.OVERVIEW);
+		addEntry(u, "TestS", Role.SUBMITTER);
+		
+		addEntry(u, "TestM", Role.MARKER);
+		
+		addEntry(u, "TestMA", Role.MARKER);
+		addEntry(u, "TestMA", Role.AUTHOR);
+		
+		addEntry(u, "TestMO", Role.MARKER);
+		addEntry(u, "TestMO", Role.OVERVIEW);
+		
+		addEntry(u, "TestMAO", Role.MARKER);
+		addEntry(u, "TestMAO", Role.AUTHOR);
+		addEntry(u, "TestMAO", Role.OVERVIEW);
+		
+		addEntry(u, "TestA", Role.AUTHOR);
+		
+		addEntry(u, "TestAO", Role.AUTHOR);
+		addEntry(u, "TestAO", Role.OVERVIEW);
+		
+		addEntry(u, "TestO", Role.OVERVIEW);
 	}
 
-	public static void addEntry(String group, String crsid, String name, Role r) {
+	public static void addEntry(User u, String group, Role r) {
 		Group g = new Group(group);
 		db.saveGroup(g);
-		User u = new User(crsid);
-		db.saveUser(u);
 		Grouping gr = new Grouping(g, u, r);
 		db.saveGrouping(gr);
 	}
