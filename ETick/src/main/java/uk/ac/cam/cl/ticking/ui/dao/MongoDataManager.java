@@ -105,8 +105,13 @@ public class MongoDataManager implements IDataManager {
 	public List<User> getUsers(Group group) {
 		List<User> us = new ArrayList<User>();
 		List<Grouping> grs = getGroupings(group);
+		List<String> ss = new ArrayList<String>();
 		for (Grouping gr : grs) {
-			us.add(getUser(gr.getUser()));
+			String u = gr.getUser();
+			if (!ss.contains(u)) {
+				ss.add(u);
+				us.add(getUser(u));
+			}
 		}
 		return us;
 	}
@@ -151,9 +156,14 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public List<Group> getGroups(User user) {
 		List<Group> gs = new ArrayList<Group>();
+		List<String> ss = new ArrayList<String>();
 		List<Grouping> grs = getGroupings(user);
 		for (Grouping gr : grs) {
-			gs.add(getGroup(gr.getGroup()));
+			String g = gr.getGroup();
+			if (!ss.contains(g)) {
+				ss.add(g);
+				gs.add(getGroup(g));
+			}
 		}
 		return gs;
 
