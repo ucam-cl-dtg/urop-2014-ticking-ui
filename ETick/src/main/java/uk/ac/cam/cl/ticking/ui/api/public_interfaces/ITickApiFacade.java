@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
-@Path("/tick/")
+@Path("/tick")
 @Produces("application/json")
 public interface ITickApiFacade {
 

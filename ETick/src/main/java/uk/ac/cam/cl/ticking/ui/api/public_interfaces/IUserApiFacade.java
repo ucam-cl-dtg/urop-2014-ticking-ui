@@ -8,7 +8,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-@Path("/user/")
+@Path("/user")
 @Produces("application/json")
 public interface IUserApiFacade {
 

@@ -136,7 +136,6 @@ public class APIOverviewResource {
 		public void addMethod(String path, ResourceInvoker resourceInvoker) {
 			if (resourceInvoker instanceof ResourceMethodInvoker) {
 				ResourceMethodInvoker method = (ResourceMethodInvoker) resourceInvoker;
-
 				String produces = mostPreferredOrNull(Arrays.asList(method
 						.getProduces()));
 				String consumes = mostPreferredOrNull(Arrays.asList(method
@@ -241,6 +240,16 @@ public class APIOverviewResource {
 				.getRegistry();
 		List<ResourceDescription> descriptions = ResourceDescription
 				.fromBoundResourceInvokers(registry.getBounded().entrySet());
+		// sort the list to make it easier for me to find things
+		Collections.sort(descriptions, new Comparator<ResourceDescription>() {
+
+			@Override
+			public int compare(final ResourceDescription o1,
+					final ResourceDescription o2) {
+				return o1.getBasePath().compareToIgnoreCase(o2.getBasePath());
+			}
+
+		});
 
 		sb.append("<h1>").append("REST interface overview").append("</h1>");
 
@@ -255,7 +264,7 @@ public class APIOverviewResource {
 				@Override
 				public int compare(final MethodDescription o1,
 						final MethodDescription o2) {
-					return o1.getFullPath().compareTo(o2.getFullPath());
+					return o1.getFullPath().compareToIgnoreCase(o2.getFullPath());
 				}
 
 			});
