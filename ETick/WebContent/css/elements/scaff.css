@@ -17,7 +17,8 @@ core-scaffold /deep/ #main {
 
 core-scaffold /deep/ core-toolbar {
 	height: 56px;
-	background-color: #5092bd ;
+	/*background-color: #5092bd ;*/
+    background: #0064C0;
 }
 
 core-scaffold /deep/ core-toolbar /deep/ .toolbar-tools {

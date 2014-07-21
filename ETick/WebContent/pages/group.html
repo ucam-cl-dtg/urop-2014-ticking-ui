@@ -1,8 +1,20 @@
 <!doctype html>
 <html>
-	Group page. 
-
+<head>
+	<script src="../bower_components/platform/platform.js"></script>
+	<link rel="import" href="../bower_components/font-roboto/roboto.html">
+	<link rel="import" href="../elements/group.html">
+	<style>
+		html, body {
+			font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	<x-group></x-group>
 	<script>
-		console.log(window.parent.document.querySelector('my-scaffold').currentGroupID);
+		// console.log(window.parent.document.querySelector('my-scaffold').currentGroupID);
 	</script>
+</body>
 </html>

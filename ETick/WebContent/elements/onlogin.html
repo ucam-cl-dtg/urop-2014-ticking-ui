@@ -11,11 +11,19 @@
 			</core-ajax>
 
 			<!-- API call to populate sidebar menu. -->
+<!-- 			<core-ajax id="sidebarAjax"
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/groups"
+				handleAs="json"
+				on-core-response="{{sidebarResponse}}">
+			</core-ajax> -->
+
+			<!-- For testing only. -->
 			<core-ajax id="sidebarAjax"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/user"
+				url="../sidebarItems.html"
 				handleAs="json"
 				on-core-response="{{sidebarResponse}}">
 			</core-ajax>
+
 	</template>
 	<script>
 		Polymer('on-login', {
