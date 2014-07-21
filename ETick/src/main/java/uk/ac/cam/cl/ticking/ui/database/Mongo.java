@@ -12,7 +12,7 @@ public class Mongo {
 	static {
 		try {
 			MongoClient client = new MongoClient("localhost", 27017);
-			db = client.getDB("ETick");
+			db = client.getDB("UROP_UI");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
