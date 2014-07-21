@@ -47,6 +47,7 @@
 			selectedChanged: function(oldValue, newValue) {
 				if (newValue.getAttribute('url')) {
 					this.heading = newValue.label;
+					this.currentGroupID = newValue.getAttribute('gid');
 					this.$.frame.contentWindow.location.replace(newValue.getAttribute('url'));
 					this.animateCard();
 				}

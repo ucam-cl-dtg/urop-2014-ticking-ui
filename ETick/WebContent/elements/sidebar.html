@@ -31,7 +31,7 @@
 				<core-submenu icon="social:group" label="Groups" selected="Foo">
 					<template repeat="{{item in items}}">
 						<core-item icon="folder-shared" label="{{item.name}}" 
-							url="../pages/group.html"></core-item>
+							url="../pages/group.html" gid="{{item.id}}"></core-item>
 					</template>
 				</core-submenu>
 				<core-item icon="settings" label="Settings" url="../pages/settings.html"></core-item>
@@ -39,7 +39,7 @@
 
 			<!-- API call to populate sidebar menu. -->
 			<core-ajax id="sidebarAjax"
-				url="http://localhost:8080/UROP_UI/api/group/user"
+				url="../sidebarItems.html"
 				handleAs="json"
 				on-core-response="{{handleResponse}}">
 			</core-ajax>
