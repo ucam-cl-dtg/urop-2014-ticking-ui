@@ -24,7 +24,38 @@
       </repositories>
     </profile>
   </profiles>
+  <servers>
+  	<server>
+	    <id>dtg-code</id>
+	    <username>deployment</username>
+	    <password>dtg-mvn-deploy</password>
+	    <configuration>
+	        <wagonProvider>httpclient</wagonProvider>
+	        <httpConfiguration>
+	            <put>
+	                <params>
+	                    <param>
+	                        <name>http.authentication.preemptive</name>
+	                        <value>%b,true</value>
+	                    </param>
+	                </params>
+	            </put>
+	        </httpConfiguration>
+	    </configuration>
+	</server>
+  </servers>
   <activeProfiles>
     <activeProfile>repositories</activeProfile>
   </activeProfiles>
+  <proxies>
+  	<proxy>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>maven.dtg.cl.cam.ac.uk</host>
+      <port>8080</port>
+      <!--<username>proxyuser</username>
+      <password>somepassword</password>
+      <nonProxyHosts>www.google.com|*.somewhere.com</nonProxyHosts>-->
+    </proxy>
+  </proxies>
 </settings>
