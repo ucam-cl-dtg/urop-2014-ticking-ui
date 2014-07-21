@@ -8,29 +8,38 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
-import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 
 import com.google.inject.Inject;
 
-public class GroupApiFacade implements IGroupApiFacade {
+public class UserApiFacade implements IUserApiFacade {
 
 	private IDataManager db;
 	private ConfigurationFile config;
 
 	@Inject
-	public GroupApiFacade(IDataManager db, ConfigurationFile config) {
+	public UserApiFacade(IDataManager db, ConfigurationFile config) {
 		this.db = db;
 		this.config = config;
 	}
 
 	@Override
-	public Response getUserGroups(@Context HttpServletRequest request) {
+	public Response getGroups(@Context HttpServletRequest request) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		List<Group> groups = db.getGroups(db.getUser(crsid));
+		List<Group> groups = db.getGroups(crsid);
 		Collections.sort(groups);
 		return Response.ok(groups).build();
+	}
+
+	@Override
+	public Response getGroupRoles(HttpServletRequest request, String gid) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		List<Role> roles = db.getRoles(gid, crsid);
+		return Response.ok(roles).build();
 	}
 }

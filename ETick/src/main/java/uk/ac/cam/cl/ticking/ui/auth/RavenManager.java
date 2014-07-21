@@ -67,7 +67,7 @@ public class RavenManager {
 
 		html += "<hr>";
 
-		List<Grouping> grps = db.getGroupings(user);
+		List<Grouping> grps = db.getGroupings(user.getCrsid(), true);
 
 		html += "<h2>User Roles</h2>";
 		html += "<table style=\"width:500px\">";

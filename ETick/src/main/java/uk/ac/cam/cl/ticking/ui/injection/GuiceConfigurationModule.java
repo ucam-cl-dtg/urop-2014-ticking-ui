@@ -1,8 +1,8 @@
 package uk.ac.cam.cl.ticking.ui.injection;
 
-import uk.ac.cam.cl.ticking.ui.api.GroupApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.UserApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.TickApiFacade;
-import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
@@ -26,7 +26,7 @@ import com.mongodb.DB;
 public class GuiceConfigurationModule extends AbstractModule {
 
 	private static TickApiFacade tickApiFacade = null;
-	private static GroupApiFacade groupApiFacade = null;
+	private static UserApiFacade userApiFacade = null;
 	private static RavenManager ravenManager = null;
 
 	/*
@@ -61,7 +61,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	 */
 	private void configureFacades() {
 		bind(ITickApiFacade.class).to(TickApiFacade.class);
-		bind(IGroupApiFacade.class).to(GroupApiFacade.class);
+		bind(IUserApiFacade.class).to(UserApiFacade.class);
 	}
 	
 	/**
@@ -82,11 +82,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	
 	@Inject
 	@Provides
-	private static GroupApiFacade getGroupApiSingleton(IDataManager db, ConfigurationFile config) {
-		if (groupApiFacade == null) {
-			groupApiFacade = new GroupApiFacade(db, config);
+	private static UserApiFacade getGroupApiSingleton(IDataManager db, ConfigurationFile config) {
+		if (userApiFacade == null) {
+			userApiFacade = new UserApiFacade(db, config);
 		}
-		return groupApiFacade;
+		return userApiFacade;
 	}
 
 	@Inject
