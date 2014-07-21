@@ -1,6 +1,7 @@
 core-header-panel {
 	width: 240px;
 	height: 100%;
+	overflow: scroll;
 }
 
 .core-header {
