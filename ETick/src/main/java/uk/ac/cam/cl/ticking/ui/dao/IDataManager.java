@@ -40,7 +40,7 @@ public interface IDataManager {
 
 	/**
 	 * @param g
-	 *            - Grou[ object to be saved into storage. If the group exists
+	 *            - Group object to be saved into storage. If the group exists
 	 *            it will be updated, else it will be created
 	 */
 	public void saveGroup(Group g);

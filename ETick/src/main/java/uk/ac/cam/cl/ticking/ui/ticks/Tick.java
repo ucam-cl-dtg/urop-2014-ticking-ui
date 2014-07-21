@@ -56,7 +56,7 @@ public class Tick {
 	 */
 	public Tick() {
 
-	};
+	}
 
 	/**
 	 * @return repo
