@@ -24,10 +24,11 @@ import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cl.ticking.ui.util.Strings;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
 
 /**
  * A resource that displays a list of available endpoints (which is helpful to
@@ -44,6 +45,13 @@ import com.google.common.collect.Maps;
 public class APIOverviewResource {
 	private static final Logger log = LoggerFactory
 			.getLogger(APIOverviewResource.class);
+	
+	private ConfigurationFile config;
+
+	@Inject
+	public APIOverviewResource(ConfigurationFile config) {
+		this.config = config;
+	}
 
 	/**
 	 * POJO to represent Method information collected using reflection and rest
@@ -264,7 +272,8 @@ public class APIOverviewResource {
 				@Override
 				public int compare(final MethodDescription o1,
 						final MethodDescription o2) {
-					return o1.getFullPath().compareToIgnoreCase(o2.getFullPath());
+					return o1.getFullPath().compareToIgnoreCase(
+							o2.getFullPath());
 				}
 
 			});
@@ -279,7 +288,7 @@ public class APIOverviewResource {
 				sb.append(method.getMethod()).append(" ");
 
 				sb.append(
-						"<strong> <a href='" + Strings.UI + "/"
+						"<strong> <a href='" + config.getUiApiLocation()
 								+ method.getFullPath().substring(1) + "'>")
 						.append(method.fullPath).append("</a></strong>");
 
