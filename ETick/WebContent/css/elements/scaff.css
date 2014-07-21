@@ -61,3 +61,7 @@ paper-button {
 #frameContainer {
   height: 100%;
 }
+
+#sidebar {
+  overflow: auto;
+}
