@@ -67,7 +67,7 @@ public class RavenManager {
 
 		html += "<hr>";
 
-		List<Grouping> grps = db.getGroupings(user);
+		List<Grouping> grps = db.getGroupings(user.getCrsid(), true);
 
 		html += "<h2>User Roles</h2>";
 		html += "<table style=\"width:500px\">";
@@ -87,8 +87,9 @@ public class RavenManager {
 	 * If the user does not exist in our database then create an object for them
 	 * using information from LDAP and store it.
 	 * 
-	 * Student/Academic is determined currently by presence of 'Computer
-	 * Laboratory' in the user's list of institutions.
+	 * Student/Academic is determined by checking for the presence of any of the
+	 * Strings in Strings.ACADEMICINSTITUTIONS in the user's list of
+	 * institutions.
 	 * 
 	 * @param request
 	 * @return response
@@ -108,7 +109,15 @@ public class RavenManager {
 			} catch (LDAPObjectNotFoundException e) {
 				return Response.status(600).entity(e.getMessage()).build();
 			}
-			boolean notStudent = u.getInstitutions().contains(Strings.LAB);
+
+			boolean notStudent = false;
+			for (String inst : Strings.ACADEMICINSTITUTIONS) {
+				notStudent = u.getInstitutions().contains(inst);
+				if (notStudent) {
+					break;
+				}
+			}
+
 			user = new User(crsid, u.getSurname(), u.getRegName(),
 					u.getDisplayName(), u.getEmail(), u.getInstitutions(),
 					u.getCollegeName(), !notStudent);

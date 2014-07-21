@@ -17,21 +17,20 @@ import uk.ac.cam.cl.git.AddRequestBean;
 import uk.ac.cam.cl.git.ForkRequestBean;
 import uk.ac.cam.cl.git.public_interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
-import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
-import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
 
-public class ApiFacade implements IApiFacade {
+public class TickApiFacade implements ITickApiFacade {
 
 	private IDataManager db;
 	private ConfigurationFile config;
 
 	@Inject
-	public ApiFacade(IDataManager db, ConfigurationFile config) {
+	public TickApiFacade(IDataManager db, ConfigurationFile config) {
 		this.db = db;
 		this.config = config;
 	}
@@ -44,8 +43,8 @@ public class ApiFacade implements IApiFacade {
 
 	@Override
 	public Response getTicks(@PathParam("group") String group) {
-		List<Tick> grps = db.getGroupTicks(group);
-		return Response.ok().entity(grps).build();
+		List<Tick> tks = db.getGroupTicks(group);
+		return Response.ok().entity(tks).build();
 	}
 
 	@Override
@@ -55,7 +54,7 @@ public class ApiFacade implements IApiFacade {
 				"RavenRemoteUser");
 
 		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(Strings.GIT);
+		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 
 		WebInterface proxy = target.proxy(WebInterface.class);
 		proxy.addRepository(new AddRequestBean(tick.getName(), crsid));
@@ -74,7 +73,7 @@ public class ApiFacade implements IApiFacade {
 				"RavenRemoteUser");
 
 		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(Strings.GIT);
+		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 		WebInterface proxy = target.proxy(WebInterface.class);
 		Response output = null;
 		output = proxy.getForkURL(new ForkRequestBean(null, crsid, name, null));
@@ -83,15 +82,4 @@ public class ApiFacade implements IApiFacade {
 		// IOException is thrown
 		return output;
 	}
-	
-	@Override
-	public Response getUserGroups(@Context HttpServletRequest request) {
-		String crsid = (String) request.getSession().getAttribute(
-				"RavenRemoteUser");
-		List<Group> groups = db.getGroups(db.getUser(crsid));
-		Collections.sort(groups);
-		return Response.ok(groups).build();
-	}
-		
-
 }

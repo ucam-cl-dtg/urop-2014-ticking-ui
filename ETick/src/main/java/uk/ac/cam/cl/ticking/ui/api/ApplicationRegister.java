@@ -5,7 +5,8 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 
@@ -35,7 +36,8 @@ public class ApplicationRegister extends Application {
 		Injector injector = Guice
 				.createInjector(new GuiceConfigurationModule());
 		this.singletons.add(injector.getInstance(RavenManager.class));
-		this.singletons.add(injector.getInstance(IApiFacade.class));
+		this.singletons.add(injector.getInstance(ITickApiFacade.class));
+		this.singletons.add(injector.getInstance(IUserApiFacade.class));
 		return this.singletons;
 	}
 

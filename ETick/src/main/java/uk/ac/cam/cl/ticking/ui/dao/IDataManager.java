@@ -78,22 +78,22 @@ public interface IDataManager {
 
 	/**
 	 * Goes to the configured storage and attempts to find the users belonging
-	 * to the specified group
+	 * to the group with the specified gid
 	 * 
-	 * @param group
+	 * @param gid
 	 * @return List of users belonging to given group
 	 */
-	public List<User> getUsers(Group group);
+	public List<User> getUsers(String gid);
 
 	/**
 	 * Goes to the configured storage and attempts to find the users belonging
-	 * to the specified group with the specified role
+	 * to the group with the specified gid and having the specified role
 	 * 
-	 * @param group
+	 * @param gid
 	 * @param role
 	 * @return List of users belonging to given group with given role
 	 */
-	public List<User> getUsers(Group group, Role role);
+	public List<User> getUsers(String gid, Role role);
 
 	/**
 	 * Goes to the configured storage and attempts to find a group with the
@@ -106,12 +106,12 @@ public interface IDataManager {
 
 	/**
 	 * Goes to the configured storage and attempts to find the groups that the
-	 * specified user is in
+	 * user with the specified crsid is in
 	 * 
-	 * @param user
+	 * @param crsid
 	 * @return List of groups that the given user is in
 	 */
-	public List<Group> getGroups(User user);
+	public List<Group> getGroups(String crsid);
 
 	/**
 	 * Goes to the configured storage and attempts to find all groups
@@ -123,33 +123,34 @@ public interface IDataManager {
 
 	/**
 	 * Goes to the configured storage and attempts to find the groups belonging
-	 * to the specified group with the specified role
+	 * to the user with the specified crsid and having the specified role
 	 * 
-	 * @param user
+	 * @param crsid
 	 * @param role
 	 * @return List of groups that the given user is in with the given role
 	 */
-	public List<Group> getGroups(User user, Role role);
+	public List<Group> getGroups(String crsid, Role role);
 
-	// Grouping getters
+	/**
+	 * Goes to the configured storage and attempts to find the roles for the
+	 * user with the specified crsid in the group with the specified gid
+	 * 
+	 * @param gid
+	 * @param crsid
+	 * @return List of roles that the given user has in the given group
+	 */
+	public List<Role> getRoles(String gid, String crsid);
 
 	/**
 	 * Goes to the configured storage and attempts to find the groupings
-	 * containing the specified user
+	 * containing the {field} with the specified {param}
 	 * 
-	 * @param user
+	 * @param param
+	 * @param field
+	 *            - true: 'User' false: 'Group'
 	 * @return List of groupings that the given user is in
 	 */
-	public List<Grouping> getGroupings(User user);
-
-	/**
-	 * Goes to the configured storage and attempts to find the groupings
-	 * containing the specified group
-	 * 
-	 * @param group
-	 * @return List of groupings that the given group is in
-	 */
-	public List<Grouping> getGroupings(Group group);
+	public List<Grouping> getGroupings(String param, boolean field);
 
 	/**
 	 * Goes to the configured storage and attempts to find the groupings
