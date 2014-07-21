@@ -34,27 +34,13 @@
 					</template>
 				</core-submenu>
 				<core-item icon="settings" label="Settings" url="../pages/settings.html"></core-item>
-			</core-menu>
-
-			<!-- API call to populate sidebar menu. -->
-			<core-ajax id="sidebarAjax"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/user"
-				handleAs="json"
-				on-core-response="{{handleResponse}}">
-			</core-ajax>
-
-			<!-- Test -->
-<!-- 			<core-ajax id="sidebarAjax"
-				url="../sidebarItems.html"
-				handleAs="json"
-				on-core-response="{{handleResponse}}">
-			</core-ajax> -->
+			</core-menu>	
 
 	</template>
 	<script>
 		Polymer('my-sidebar', {
 			ready: function () {
-				this.$.sidebarAjax.go();
+				// this.$.sidebarAjax.go();
 			},
 			selectAction : function(e, detail) { 
 				if (detail.isSelected) {

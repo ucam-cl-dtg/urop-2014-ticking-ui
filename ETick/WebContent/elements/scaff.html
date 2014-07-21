@@ -7,11 +7,16 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="sidebar.html">
+<link rel="import" href="onlogin.html">
 
 <polymer-element name="my-scaffold">
 	<template>
 		<link rel="stylesheet" type="text/css" 
 			href="../css/elements/scaff.css" shim-shadowdom>
+
+			<!-- Run API calls. -->
+			<on-login id="onlogin"></on-login>
+
 			<core-scaffold mode="standard" id="scaffold">
 
 				<!-- Sidebar element. -->
@@ -38,12 +43,15 @@
 	<script>
 		Polymer('my-scaffold', {
 			ready: function () {
+
 			},	
-			
-			// Update top toolbar heading. 
+
 			observe: {
-				'$.sidebar.selected' : 'selectedChanged'
+				'$.sidebar.selected' : 'selectedChanged',
+				'$.onlogin.sidebarItems' : 'sidebarItemsChanged'
 			},
+
+			// Handles changes in sidebar item selection (updates top toolbar heading).
 			selectedChanged: function(oldValue, newValue) {
 				if (newValue.getAttribute('url')) {
 					this.heading = newValue.label;
@@ -53,7 +61,7 @@
 				}
 			},
 
-			// Page card animations. 
+			// Animates page card. 
 			moveCard: function (y) {
 				var s = this.$.card.style;
 				s.webkitTransform = s.transform = y ? 'translate(0, ' + y + 'px)': '';
@@ -70,8 +78,15 @@
 		    		}, null, 300);
 		    	});
 		    },
+
+		    // Handles logout button action. 
 		    logoutClicked: function() {
 		    	window.location.href = 'https://raven.cam.ac.uk/auth/logout.html'
+		    },
+
+		    // Handles changes in sidebar items list population. 
+		    sidebarItemsChanged: function(oldValue, newValue) {
+		    	this.$.sidebar.items = newValue;
 		    }
 		});
 	</script>
