@@ -5,7 +5,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="../bower_components/core-menu/core-submenu.html">
-<link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-icons/iconsets/social-icons.html">
 <link rel="import" href="../bower_components/core-menu/core-menu.html">
@@ -35,19 +34,13 @@
 					</template>
 				</core-submenu>
 				<core-item icon="settings" label="Settings" url="../pages/settings.html"></core-item>
-			</core-menu>
+			</core-menu>	
 
-			<!-- API call to populate sidebar menu. -->
-			<core-ajax id="sidebarAjax"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/user"
-				handleAs="json"
-				on-core-response="{{handleResponse}}">
-			</core-ajax>
 	</template>
 	<script>
 		Polymer('my-sidebar', {
 			ready: function () {
-				this.$.sidebarAjax.go();
+				// this.$.sidebarAjax.go();
 			},
 			selectAction : function(e, detail) { 
 				if (detail.isSelected) {

@@ -1,0 +1,35 @@
+<!-- Performs actions in the background on logging in. -->
+
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="on-login">
+	<template>
+			<!-- API call: adds user if not already registered. -->
+			<core-ajax id="loginAjax"
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+				on-core-response="{{loginResponse}}">
+			</core-ajax>
+
+			<!-- API call to populate sidebar menu. -->
+			<core-ajax id="sidebarAjax"
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/user"
+				handleAs="json"
+				on-core-response="{{sidebarResponse}}">
+			</core-ajax>
+	</template>
+	<script>
+		Polymer('on-login', {
+			ready: function() {
+				this.$.loginAjax.go();
+			},
+			loginResponse: function() {
+				// Do somthing with this.$.loginAjax.response if needed. 
+
+				this.$.sidebarAjax.go();
+			},
+			sidebarResponse: function() {
+				this.sidebarItems = this.$.sidebarAjax.response;
+			}
+		});
+	</script>
+</polymer-element>
