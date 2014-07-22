@@ -44,7 +44,7 @@ public class Tick {
 			@JsonProperty("repo") String repo,
 			@JsonProperty("deadline") Date deadline) {
 
-		this.tid = group + "_" + name;
+		this.tid = group + "/" + author + "/" + name;
 		this.setName(name);
 		this.setGroup(group);
 		this.setAuthor(author);

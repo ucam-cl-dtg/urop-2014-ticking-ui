@@ -11,11 +11,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Group implements Comparable<Group>{
 
-	// FORMAT: 'author'_'name'
+	// FORMAT: 'creator'/'name'
 	@JsonProperty("_id")
 	private String gid;
 
-	private String name;
+	private String name, creator;
 
 	/**
 	 * Create a new instance of a Group object
@@ -27,9 +27,10 @@ public class Group implements Comparable<Group>{
 	 *            - desired name for the group
 	 */
 	@JsonCreator
-	public Group(@JsonProperty("name") String name) {
+	public Group(@JsonProperty("name") String name, @JsonProperty("creator") String creator) {
 		this.setName(name);
-		this.gid = name;
+		this.setCreator(creator);
+		this.gid = creator + "/" + name;
 	}
 
 	/**
@@ -58,6 +59,20 @@ public class Group implements Comparable<Group>{
 	 */
 	public void setGid(String gid) {
 		this.gid = gid;
+	}
+	
+	/**
+	 * @return creator
+	 */
+	public String getCreator() {
+		return creator;
+	}
+
+	/**
+	 * @param creator
+	 */
+	public void setCreator(String creator) {
+		this.creator = creator;
 	}
 
 	/*
