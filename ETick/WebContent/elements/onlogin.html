@@ -25,6 +25,7 @@
 				this.$.loginAjax.go();
 			},
 			loginResponse: function() {
+				this.ldap = this.$.loginAjax.response;
 				// Do somthing with this.$.loginAjax.response if needed. 
 
 				this.$.sidebarAjax.go();

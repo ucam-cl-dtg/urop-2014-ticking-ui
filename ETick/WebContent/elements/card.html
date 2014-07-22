@@ -2,27 +2,28 @@
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
-<polymer-element name="user-card" 
-	attributes="crsid name college email institutions college isStudent">
+<polymer-element name="user-card" attributes="ldap">
 	<template>
 		<style>
 			:host {
 				display: block;
 				position: relative;
-			    background-color: #f0f0f0;
-			    padding: 20px;
+				background: linear-gradient(to bottom left, rgba(216, 255, 252, 0.39) , rgba(114, 250, 223, 0.20));	    
+			    padding: 50px;
+			    height: 100%;
+			    font-size: 1.0rem;
 			}
 			.card-header {
 				margin-bottom: 10px;
 		    }
 		    .card-header h2 {
 		    	margin: 0;
-		    	font-size: 1.8rem;
+		    	font-size: 2.1rem;
 		    	font-weight: 300;
 		    }
 		    .card-header h3 {
 		    	margin: 0;
-		    	font-size: 1.6rem;
+		    	font-size: 1.8rem;
 		    	font-weight: 100;
 		    }
 		    .card-header img {
@@ -31,24 +32,29 @@
 		    	margin: 10px;
 		    }	
 
+		    tr > td {
+		    	vertical-align: top;
+		    	padding-bottom: 5px;
+		    }
+
 		</style>
 		<div class="card-header" layout horizontal center end-justified>
 				<div flex><h3>Welcome</h3></div>
-				<template if="{{isStudent}}">
+				<template if="{{ldap.isStudent}}">
 					<img src="../images/temp_student.svg"></img>
 				</template>
-				<template if="{{!isStudent}}">
+				<template if="{{!ldap.isStudent}}">
 					<img src="../images/temp_staff.svg"></img>
 				</template>
-				<h2>{{name}}</h2>
+				<h2>{{ldap.displayName}}</h2>
 		</div>
-		<table>
-			<tr><td><b>CRSID:</b></td><td>{{crsid}}</td></tr>
-			<tr><td><b>Email:</b></td><td>{{email}}</td></tr>
-			<tr><td><b>College:</b></td><td>{{college}}</td></tr>
+		<table width="50%">
+			<tr><td><b>CRSID:</b></td><td>{{ldap.crsid}}</td></tr>
+			<tr><td><b>Email:</b></td><td>{{ldap.email}}</td></tr>
+			<tr><td><b>College:</b></td><td>{{ldap.college}}</td></tr>
 			<tr><td><b>Institutions:</b></td><td>
-				<template repeat="{{inst in institutions.institutions}}">
-					<p>{{inst}}</p>
+				<template repeat="{{inst in ldap.institutions}}">
+					{{inst}}<br>
 				</template>
 			</td></tr>
 		</table>
@@ -56,6 +62,7 @@
 	<script>
 		Polymer('user-card', {
 			ready: function() {
+				this.ldap = { foo: "bar" };
 			}
 		});
 	</script>
