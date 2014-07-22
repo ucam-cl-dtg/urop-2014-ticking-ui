@@ -14,16 +14,30 @@
 	</style>
 </head>
 <body>
+	<core-ajax id="loginAjax"
+		url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+		on-core-response="{{loginResponse}}">
+	</core-ajax>
 	<script>
-		var card = document.createElement('user-card');
-		card.setAttribute('crsid', "rds46");
-		card.setAttribute('name', "Raahil Shah" );
-		card.setAttribute('email', "rds46@cam.ac.uk");
-		card.setAttribute('college', "Churchill");
-		card.setAttribute('isStudent', true);
-		card.setAttribute('institutions', ["Churchill College - Undergraduates", "Foo - Bar"]);
-		console.log(card);
-		document.body.appendChild(card);
+		window.addEventListener('polymer-ready', function(e) {
+	        var loginAjax = document.querySelector('#loginAjax');
+
+	        // LDAP API response.
+	        loginAjax.addEventListener('core-response', function(e) {
+	        	var ldap = this.response;
+	        	makeCard(ldap);
+	        });
+
+	        loginAjax.go(); // Call its API methods.
+	    });
+	    var makeCard = function(data) {
+	    	var card = document.createElement('user-card');
+	    	card.setAttribute('crsid', data.crsid);
+	    	card.setAttribute('name', data.displayName);
+	    	card.setAttribute('email', data.email);
+	    	card.setAttribute('college', data.college);
+	    	document.body.appendChild(card);
+	    };
 	</script>
 </body>
 </html>

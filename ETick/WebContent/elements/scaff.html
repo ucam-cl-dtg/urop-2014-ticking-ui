@@ -15,8 +15,13 @@
 			href="../css/elements/scaff.css" shim-shadowdom>
 
 			<!-- Run API calls. -->
-			<on-login id="onlogin"></on-login>
-
+			<core-ajax id="sidebarAjax"
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/groups"
+				handleAs="json"
+				on-core-response="{{sidebarResponse}}">
+			</core-ajax>
+<!-- 			<on-login id="onlogin"></on-login>
+ -->
 			<core-scaffold mode="standard" id="scaffold">
 
 				<!-- Sidebar element. -->
@@ -35,7 +40,7 @@
 		  	<!-- Page Content -->
 		  	<div id="card" class="move-up">
 		  		<div id="frameContainer">
-		          <iframe id="frame" on-load="{{frameLoaded}}"></iframe>
+		          <iframe id="frame"></iframe>
 		        </div>
 		  	</div>
 			</core-scaffold>
@@ -48,7 +53,6 @@
 
 			observe: {
 				'$.sidebar.selected' : 'selectedChanged',
-				'$.onlogin.sidebarItems' : 'sidebarItemsChanged'
 			},
 
 			// Handles changes in sidebar item selection (updates top toolbar heading).
@@ -58,6 +62,9 @@
 					this.currentGroupID = newValue.getAttribute('gid');
 					this.$.frame.contentWindow.location.replace(newValue.getAttribute('url'));
 					this.animateCard();
+				}
+				if (newValue.label === "Groups" && !this.$.sidebar.items) {
+					this.$.sidebarAjax.go();
 				}
 			},
 
@@ -85,9 +92,9 @@
 		    },
 
 		    // Handles changes in sidebar items list population. 
-		    sidebarItemsChanged: function(oldValue, newValue) {
-		    	this.$.sidebar.items = newValue;
-		    }
+		    sidebarResponse: function() {
+		    	this.$.sidebar.items = this.$.sidebarAjax.response;
+		    },
 		});
 	</script>
 </polymer-element>
