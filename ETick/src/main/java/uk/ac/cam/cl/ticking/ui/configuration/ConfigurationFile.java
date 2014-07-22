@@ -10,6 +10,8 @@ public class ConfigurationFile
 {
 	private String uiApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/";
     private String gitApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP_GIT/rest/";
+    private String uiMongoBroadcast = "localhost";
+    private int uiMongoPort = 27017;
     
     
 	/**
@@ -35,6 +37,30 @@ public class ConfigurationFile
 	 */
 	public void setGitApiLocation(String gitApiLocation) {
 		this.gitApiLocation = gitApiLocation;
+	}
+	/**
+	 * @return where to find the MongoDB
+	 */
+	public String getUiMongoBroadcast() {
+		return uiMongoBroadcast;
+	}
+	/**
+	 * @param uiMongoBroadcast
+	 */
+	public void setUiMongoBroadcast(String uiMongoBroadcast) {
+		this.uiMongoBroadcast = uiMongoBroadcast;
+	}
+	/**
+	 * @return the port that the MongoDB is broadcasting on
+	 */
+	public int getUiMongoPort() {
+		return uiMongoPort;
+	}
+	/**
+	 * @param uiMongoPort
+	 */
+	public void setUiMongoPort(int uiMongoPort) {
+		this.uiMongoPort = uiMongoPort;
 	}
     
 }

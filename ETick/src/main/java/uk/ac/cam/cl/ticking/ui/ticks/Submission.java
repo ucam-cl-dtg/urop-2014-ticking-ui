@@ -55,6 +55,13 @@ public class Submission {
 		this.setUnitPass(unitPass);
 		this.setHumanPass(false);
 	}
+	
+	/**
+	 * Default constructor for Jackson JSON to POJO because java
+	 */
+	public Submission() {
+
+	}
 
 	/**
 	 * @return repo

@@ -91,6 +91,11 @@ public class RavenManager {
 	 * Strings in Strings.ACADEMICINSTITUTIONS in the user's list of
 	 * institutions.
 	 * 
+	 * This is a GET request as no sensitive information is passed in this
+	 * request. The function is to add a user to the database if this is their
+	 * first time visiting and so caching is allowed as it is idempotent due to
+	 * the mongo save call.
+	 * 
 	 * @param request
 	 * @return response
 	 */

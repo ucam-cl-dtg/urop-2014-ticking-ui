@@ -4,14 +4,15 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
+import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
 
@@ -27,7 +28,7 @@ public class UserApiFacade implements IUserApiFacade {
 	}
 
 	@Override
-	public Response getGroups(@Context HttpServletRequest request) {
+	public Response getGroups(HttpServletRequest request) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		List<Group> groups = db.getGroups(crsid);
@@ -41,5 +42,17 @@ public class UserApiFacade implements IUserApiFacade {
 				"RavenRemoteUser");
 		List<Role> roles = db.getRoles(gid, crsid);
 		return Response.ok(roles).build();
+	}
+
+	@Override
+	public Response addGrouping(HttpServletRequest request, Grouping grouping) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		List<Role> roles = db.getRoles(grouping.getGroup(), crsid);
+		if (!roles.contains(Role.AUTHOR)) {
+			return Response.status(400).entity(Strings.INVALIDROLE).build();
+		}
+		db.saveGrouping(grouping);
+		return Response.status(201).entity(grouping).build();
 	}
 }

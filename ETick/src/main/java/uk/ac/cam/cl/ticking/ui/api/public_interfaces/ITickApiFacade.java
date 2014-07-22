@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 @Path("/tick")
@@ -23,44 +24,46 @@ public interface ITickApiFacade {
 	 * @return The Tick object with {tick} as it's tid.
 	 */
 	@GET
-	@Path("/{tick}")
+	@Path("/{tid}")
 	@Produces("application/json")
-	public abstract Response getTick(@PathParam("tick") String tick);
+	public abstract Response getTick(@PathParam("tid") String tid);
 
 	/**
 	 * @param group
 	 * @return All Tick objects in {group} where {group} is a gid
 	 */
 	@GET
-	@Path("/{group}")
+	@Path("/{gid}")
 	@Produces("application/json")
-	public abstract Response getTicks(@PathParam("group") String group);
+	public abstract Response getTicks(@PathParam("gid") String gid);
 
 	/**
 	 * @param request
 	 * @param tick
 	 * @return response
 	 * @throws IOException
+	 * @throws DuplicateRepoNameException 
 	 * 
 	 */
 	@POST
-	@Path("/new")
+	@Path("/")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response newTick(@Context HttpServletRequest request,
-			Tick tick) throws IOException;
+			Tick tick) throws IOException, DuplicateRepoNameException;
 
 	/**
 	 * @param request
 	 * @param name
 	 * @return URL of the new repository to clone
 	 * @throws IOException
+	 * @throws DuplicateRepoNameException 
 	 * 
 	 */
-	@GET
-	@Path("/fork/{name}")
+	@POST
+	@Path("/fork/{tid}")
 	@Produces("application/json")
 	public abstract Response forkTick(@Context HttpServletRequest request,
-			@PathParam("name") String name) throws IOException;
+			@PathParam("tid") String tid) throws IOException, DuplicateRepoNameException;
 
 }

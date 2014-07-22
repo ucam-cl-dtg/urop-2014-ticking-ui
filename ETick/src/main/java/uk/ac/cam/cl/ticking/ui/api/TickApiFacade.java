@@ -4,17 +4,16 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
-import uk.ac.cam.cl.git.AddRequestBean;
-import uk.ac.cam.cl.git.ForkRequestBean;
-import uk.ac.cam.cl.git.public_interfaces.WebInterface;
+import uk.ac.cam.cl.git.api.AddRequestBean;
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.git.api.ForkRequestBean;
+import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -34,20 +33,20 @@ public class TickApiFacade implements ITickApiFacade {
 	}
 
 	@Override
-	public Response getTick(@PathParam("tick") String tick) {
-		Tick t = db.getTick(tick);
+	public Response getTick(String tid) {
+		Tick t = db.getTick(tid);
 		return Response.ok().entity(t).build();
 	}
 
 	@Override
-	public Response getTicks(@PathParam("group") String group) {
-		List<Tick> tks = db.getGroupTicks(group);
+	public Response getTicks(String gid) {
+		List<Tick> tks = db.getGroupTicks(gid);
 		return Response.ok().entity(tks).build();
 	}
 
 	@Override
-	public Response newTick(@Context HttpServletRequest request, Tick tick)
-			throws IOException {
+	public Response newTick(HttpServletRequest request, Tick tick)
+			throws IOException, DuplicateRepoNameException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
@@ -55,29 +54,29 @@ public class TickApiFacade implements ITickApiFacade {
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 
 		WebInterface proxy = target.proxy(WebInterface.class);
-		proxy.addRepository(new AddRequestBean(tick.getName(), crsid));
+		String repo = proxy.addRepository(new AddRequestBean(tick.getName(), crsid));
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
 		tick.setAuthor(crsid);
+		tick.setRepo(repo);
 		db.saveTick(tick);
-		return Response.ok().build();
+		return Response.status(201).entity(tick).build();
 	}
 
 	@Override
-	public Response forkTick(@Context HttpServletRequest request,
-			@PathParam("name") String name) throws IOException {
+	public Response forkTick(HttpServletRequest request, String tid)
+			throws IOException, DuplicateRepoNameException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 		WebInterface proxy = target.proxy(WebInterface.class);
-		Response output = null;
-		output = proxy.getForkURL(new ForkRequestBean(null, crsid, name, null));
+		String output = proxy.fork(new ForkRequestBean(null, crsid, tid, null));
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
-		return output;
+		return Response.status(201).entity(output).build();
 	}
 }
