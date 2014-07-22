@@ -1,4 +1,29 @@
 <!doctype html>
 <html>
-	Dashboard page.
+<head>
+	<script src="../bower_components/platform/platform.js"></script>
+	<link rel="import" href="../bower_components/font-roboto/roboto.html">
+	<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+	<link rel="import" href="../elements/card.html">
+	<style>
+		html, body {
+			font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+			margin: 0;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<script>
+		var card = document.createElement('user-card');
+		card.setAttribute('crsid', "rds46");
+		card.setAttribute('name', "Raahil Shah" );
+		card.setAttribute('email', "rds46@cam.ac.uk");
+		card.setAttribute('college', "Churchill");
+		card.setAttribute('isStudent', true);
+		card.setAttribute('institutions', ["Churchill College - Undergraduates", "Foo - Bar"]);
+		console.log(card);
+		document.body.appendChild(card);
+	</script>
+</body>
 </html>

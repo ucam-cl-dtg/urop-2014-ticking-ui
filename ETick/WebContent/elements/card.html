@@ -1,0 +1,62 @@
+<!-- Element representing user information card. -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<polymer-element name="user-card" 
+	attributes="crsid name college email institutions college isStudent">
+	<template>
+		<style>
+			:host {
+				display: block;
+				position: relative;
+			    background-color: #f0f0f0;
+			    padding: 20px;
+			}
+			.card-header {
+				margin-bottom: 10px;
+		    }
+		    .card-header h2 {
+		    	margin: 0;
+		    	font-size: 1.8rem;
+		    	font-weight: 300;
+		    }
+		    .card-header h3 {
+		    	margin: 0;
+		    	font-size: 1.6rem;
+		    	font-weight: 100;
+		    }
+		    .card-header img {
+		    	width: 70px;
+		    	border-radius: 50%;
+		    	margin: 10px;
+		    }	
+
+		</style>
+		<div class="card-header" layout horizontal center end-justified>
+				<div flex><h3>Welcome</h3></div>
+				<template if="{{isStudent}}">
+					<img src="../images/temp_student.svg"></img>
+				</template>
+				<template if="{{!isStudent}}">
+					<img src="../images/temp_staff.svg"></img>
+				</template>
+				<h2>{{name}}</h2>
+		</div>
+		<table>
+			<tr><td><b>CRSID:</b></td><td>{{crsid}}</td></tr>
+			<tr><td><b>Email:</b></td><td>{{email}}</td></tr>
+			<tr><td><b>College:</b></td><td>{{college}}</td></tr>
+			<tr><td><b>Institutions:</b></td><td>
+				<template repeat="{{inst in institutions.institutions}}">
+					<p>{{inst}}</p>
+				</template>
+			</td></tr>
+		</table>
+	</template>
+	<script>
+		Polymer('user-card', {
+			ready: function() {
+			}
+		});
+	</script>
+</polymer-element>
