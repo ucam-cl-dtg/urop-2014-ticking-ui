@@ -18,6 +18,7 @@
 <body>
 	<core-ajax id="loginAjax"
 		url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+		handleAs="json"
 		on-core-response="{{loginResponse}}">
 	</core-ajax>
 	<template id="ldapBind" is="auto-binding">
