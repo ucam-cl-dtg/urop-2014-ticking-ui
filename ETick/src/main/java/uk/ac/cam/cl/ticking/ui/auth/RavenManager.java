@@ -91,6 +91,11 @@ public class RavenManager {
 	 * Strings in Strings.ACADEMICINSTITUTIONS in the user's list of
 	 * institutions.
 	 * 
+	 * This is a GET request as no sensitive information is passed in this
+	 * request. The function is to add a user to the database if this is their
+	 * first time visiting and so caching is allowed as it is idempotent due to
+	 * the mongo save call.
+	 * 
 	 * @param request
 	 * @return response
 	 */
@@ -103,29 +108,34 @@ public class RavenManager {
 				"RavenRemoteUser");
 		User user = db.getUser(crsid);
 		if (user == null) {
-			LDAPUser u;
 			try {
-				u = LDAPQueryManager.getUser(crsid);
+				user = ldapProduceUser(crsid);
 			} catch (LDAPObjectNotFoundException e) {
-				return Response.status(600).entity(e.getMessage()).build();
+				user = new User(crsid);
+				e.printStackTrace();
+			} finally {
+				db.saveUser(user);
 			}
-
-			boolean notStudent = false;
-			for (String inst : Strings.ACADEMICINSTITUTIONS) {
-				notStudent = u.getInstitutions().contains(inst);
-				if (notStudent) {
-					break;
-				}
-			}
-
-			user = new User(crsid, u.getSurname(), u.getRegName(),
-					u.getDisplayName(), u.getEmail(), u.getInstitutions(),
-					u.getCollegeName(), !notStudent);
-			db.saveUser(user);
 			DatabasePopulator.testPopulate(user);
 		}
 
-		return Response.ok().entity(user).build();
+		return Response.status(201).entity(user).build();
+	}
+	
+	public User ldapProduceUser(String crsid) throws LDAPObjectNotFoundException {
+		LDAPUser u;
+		u = LDAPQueryManager.getUser(crsid);
+		boolean notStudent = false;
+		for (String inst : Strings.ACADEMICINSTITUTIONS) {
+			notStudent = u.getInstitutions().contains(inst);
+			if (notStudent) {
+				break;
+			}
+		}
+
+		return new User(crsid, u.getSurname(), u.getRegName(),
+				u.getDisplayName(), u.getEmail(), u.getInstitutions(),
+				u.getCollegeName(), !notStudent);
 	}
 
 }

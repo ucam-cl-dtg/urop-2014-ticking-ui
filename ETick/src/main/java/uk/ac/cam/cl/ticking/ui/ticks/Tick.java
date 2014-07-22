@@ -1,5 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.ticks;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -19,7 +21,7 @@ public class Tick {
 	private String author;
 
 	private String repo, name;
-	private String deadline;
+	private Date deadline;
 
 	/**
 	 * 
@@ -40,7 +42,7 @@ public class Tick {
 			@JsonProperty("group") String group,
 			@JsonProperty("author") String author,
 			@JsonProperty("repo") String repo,
-			@JsonProperty("deadline") String deadline) {
+			@JsonProperty("deadline") Date deadline) {
 
 		this.tid = group + "_" + name;
 		this.setName(name);
@@ -78,7 +80,7 @@ public class Tick {
 	 * @return deadline
 	 */
 	@JsonProperty("deadline")
-	public String getDeadline() {
+	public Date getDeadline() {
 		return deadline;
 	}
 
@@ -86,7 +88,7 @@ public class Tick {
 	 * @param deadline
 	 */
 	@JsonProperty("deadline")
-	public void setDeadline(String deadline) {
+	public void setDeadline(Date deadline) {
 		this.deadline = deadline;
 	}
 
