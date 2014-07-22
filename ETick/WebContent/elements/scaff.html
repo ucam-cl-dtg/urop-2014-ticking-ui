@@ -15,13 +15,8 @@
 			href="../css/elements/scaff.css" shim-shadowdom>
 
 			<!-- Run API calls. -->
-			<core-ajax id="sidebarAjax"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/groups"
-				handleAs="json"
-				on-core-response="{{sidebarResponse}}">
-			</core-ajax>
-<!-- 			<on-login id="onlogin"></on-login>
- -->
+			<on-login id="onlogin"></on-login>
+
 			<core-scaffold mode="standard" id="scaffold">
 
 				<!-- Sidebar element. -->
@@ -39,19 +34,20 @@
 
 		  	<!-- Page Content -->
 		  	<div id="card" class="move-up">
-		  		<div id="frameContainer">
-		          <iframe id="frame"></iframe>
-		        </div>
+		          <iframe id="frame" on-load="{{frameLoaded}}"></iframe>
 		  	</div>
 			</core-scaffold>
 	</template>
 	<script>
 		Polymer('my-scaffold', {
 			ready: function () {
+
+
 			},	
 
 			observe: {
 				'$.sidebar.selected' : 'selectedChanged',
+				'$.onlogin.sidebarItems' : 'sidebarItemsChanged'
 			},
 
 			// Handles changes in sidebar item selection (updates top toolbar heading).
@@ -61,9 +57,6 @@
 					this.currentGroupID = newValue.getAttribute('gid');
 					this.$.frame.contentWindow.location.replace(newValue.getAttribute('url'));
 					this.animateCard();
-				}
-				if (newValue.label === "Groups" && !this.$.sidebar.items) {
-					this.$.sidebarAjax.go();
 				}
 			},
 
@@ -91,8 +84,8 @@
 		    },
 
 		    // Handles changes in sidebar items list population. 
-		    sidebarResponse: function() {
-		    	this.$.sidebar.items = this.$.sidebarAjax.response;
+		    sidebarItemsChanged: function(oldValue, newValue) {
+		    	this.$.sidebar.items = newValue;
 		    },
 		});
 	</script>

@@ -17,7 +17,7 @@
 </head>
 <body>
 	<core-ajax id="loginAjax"
-		url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+		url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user"
 		handleAs="json"
 		on-core-response="{{loginResponse}}">
 	</core-ajax>
@@ -33,7 +33,6 @@
 	        // LDAP API response.
 	        loginAjax.addEventListener('core-response', function(e) {
 	        	t.data = loginAjax.response;
-	        	console.log(t.data);
 	        });
 
 	        loginAjax.go(); // Call its API methods.

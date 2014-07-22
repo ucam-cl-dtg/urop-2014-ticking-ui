@@ -59,10 +59,6 @@ paper-button {
   border: none;
 }
 
-#frameContainer {
-  height: 100%;
-}
-
 #sidebar {
   overflow: auto;
 }
