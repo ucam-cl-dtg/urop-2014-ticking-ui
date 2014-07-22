@@ -30,7 +30,7 @@ public class Group implements Comparable<Group>{
 	public Group(@JsonProperty("name") String name, @JsonProperty("creator") String creator) {
 		this.setName(name);
 		this.setCreator(creator);
-		this.gid = creator + "/" + name;
+		this.gid = name;
 	}
 
 	/**

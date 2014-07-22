@@ -1,10 +1,10 @@
 package uk.ac.cam.cl.ticking.ui.exceptions;
 
-public class DuplicateException extends Exception {
+public class DuplicateDataEntryException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	public DuplicateException(String message) {
+	public DuplicateDataEntryException(String message) {
 		super(message);
 	}
 }
