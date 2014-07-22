@@ -10,34 +10,38 @@
 			font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
 			margin: 0;
 			width: 100%;
+			height: 100%;
 		}
 	</style>
 </head>
 <body>
 	<core-ajax id="loginAjax"
-		url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+		url="../temp.html"
+		handleAs="json"
 		on-core-response="{{loginResponse}}">
 	</core-ajax>
+	<!-- <core-ajax id="loginAjax"
+		url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+		on-core-response="{{loginResponse}}">
+	</core-ajax> -->
+	<template id="ldapBind" bind="{{data}}">
+		<user-card id="card" ldap="{{data}}"></user-card>
+	</template>
 	<script>
 		window.addEventListener('polymer-ready', function(e) {
-	        var loginAjax = document.querySelector('#loginAjax');
+			var t = document.getElementById('ldapBind');
+			t.model = {	data : {} }
+	        var loginAjax = document.getElementById('loginAjax');
+	        var card = document.getElementById('card')
 
 	        // LDAP API response.
 	        loginAjax.addEventListener('core-response', function(e) {
-	        	var ldap = this.response;
-	        	makeCard(ldap);
+	        	t.model.data.push(loginAjax.response);
+	        	console.log(card.ldap);
 	        });
 
 	        loginAjax.go(); // Call its API methods.
 	    });
-	    var makeCard = function(data) {
-	    	var card = document.createElement('user-card');
-	    	card.setAttribute('crsid', data.crsid);
-	    	card.setAttribute('name', data.displayName);
-	    	card.setAttribute('email', data.email);
-	    	card.setAttribute('college', data.college);
-	    	document.body.appendChild(card);
-	    };
 	</script>
 </body>
 </html>
