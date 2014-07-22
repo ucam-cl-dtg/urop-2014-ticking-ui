@@ -1,7 +1,6 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import uk.ac.cam.cl.git.AddRequestBean;
 import uk.ac.cam.cl.git.ForkRequestBean;
 import uk.ac.cam.cl.git.public_interfaces.WebInterface;
-import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
