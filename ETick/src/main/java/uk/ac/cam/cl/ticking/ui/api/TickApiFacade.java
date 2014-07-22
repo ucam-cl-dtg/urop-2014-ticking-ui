@@ -10,9 +10,9 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
-import uk.ac.cam.cl.git.api.AddRequestBean;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
+import uk.ac.cam.cl.git.api.RepoUserRequestBean;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
@@ -54,7 +54,7 @@ public class TickApiFacade implements ITickApiFacade {
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 
 		WebInterface proxy = target.proxy(WebInterface.class);
-		String repo = proxy.addRepository(new AddRequestBean(tick.getName(), crsid));
+		String repo = proxy.addRepository(new RepoUserRequestBean(tick.getName(), crsid));
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
@@ -73,7 +73,7 @@ public class TickApiFacade implements ITickApiFacade {
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 		WebInterface proxy = target.proxy(WebInterface.class);
-		String output = proxy.fork(new ForkRequestBean(null, crsid, tid, null));
+		String output = proxy.forkRepository(new ForkRequestBean(null, crsid, tid, null));
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown

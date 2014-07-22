@@ -43,16 +43,4 @@ public class UserApiFacade implements IUserApiFacade {
 		List<Role> roles = db.getRoles(gid, crsid);
 		return Response.ok(roles).build();
 	}
-
-	@Override
-	public Response addGrouping(HttpServletRequest request, Grouping grouping) {
-		String crsid = (String) request.getSession().getAttribute(
-				"RavenRemoteUser");
-		List<Role> roles = db.getRoles(grouping.getGroup(), crsid);
-		if (!roles.contains(Role.AUTHOR)) {
-			return Response.status(400).entity(Strings.INVALIDROLE).build();
-		}
-		db.saveGrouping(grouping);
-		return Response.status(201).entity(grouping).build();
-	}
 }

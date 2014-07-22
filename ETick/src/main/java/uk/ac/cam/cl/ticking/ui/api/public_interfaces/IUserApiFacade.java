@@ -43,11 +43,4 @@ public interface IUserApiFacade {
 	public abstract Response getGroupRoles(@Context HttpServletRequest request,
 			@PathParam("gid") String gid);
 
-	@POST
-	@Path("/grouping")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public abstract Response addGrouping(@Context HttpServletRequest request,
-			Grouping grouping);
-
 }
