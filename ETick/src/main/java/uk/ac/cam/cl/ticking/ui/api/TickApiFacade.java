@@ -54,7 +54,8 @@ public class TickApiFacade implements ITickApiFacade {
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 
 		WebInterface proxy = target.proxy(WebInterface.class);
-		String repo = proxy.addRepository(new RepoUserRequestBean(tick.getName(), crsid));
+		String repo = proxy.addRepository(new RepoUserRequestBean(tick
+				.getName(), crsid));
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
@@ -66,14 +67,21 @@ public class TickApiFacade implements ITickApiFacade {
 
 	@Override
 	public Response forkTick(HttpServletRequest request, String tid)
-			throws IOException, DuplicateRepoNameException {
+			throws IOException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 		WebInterface proxy = target.proxy(WebInterface.class);
-		String output = proxy.forkRepository(new ForkRequestBean(null, crsid, tid, null));
+		String output;
+		try {
+			output = proxy.forkRepository(new ForkRequestBean(null, crsid, tid,
+					null));
+		} catch (DuplicateRepoNameException e) {
+			output = e.getMessage()
+					+ "(This is not your first fork, however previous data has not been cleared)";
+		}
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown

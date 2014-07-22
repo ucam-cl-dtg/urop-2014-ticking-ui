@@ -61,9 +61,9 @@ public interface ITickApiFacade {
 	 * 
 	 */
 	@POST
-	@Path("/fork/{tid}")
+	@Path("/{tid}")
 	@Produces("application/json")
 	public abstract Response forkTick(@Context HttpServletRequest request,
-			@PathParam("tid") String tid) throws IOException, DuplicateRepoNameException;
+			@PathParam("tid") String tid) throws IOException;
 
 }

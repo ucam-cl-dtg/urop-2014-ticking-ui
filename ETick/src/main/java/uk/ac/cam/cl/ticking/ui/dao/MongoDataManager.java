@@ -10,6 +10,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
+import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateException;
 import uk.ac.cam.cl.ticking.ui.ticks.Submission;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
@@ -17,6 +18,7 @@ import uk.ac.cam.cl.ticking.ui.util.Strings;
 import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.MongoException;
 
 public class MongoDataManager implements IDataManager {
 
@@ -68,6 +70,51 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public void saveGrouping(Grouping g) {
 		groupingColl.save(g);
+	}
+	
+	@Override
+	public void insertUser(User cp) throws DuplicateException {
+		try {
+			userColl.insert(cp);
+		} catch (MongoException duplicate) {
+			throw new DuplicateException("User");
+		}
+	}
+
+	@Override
+	public void insertTick(Tick t) throws DuplicateException {
+		try{
+			tickColl.save(t);
+		} catch (MongoException duplicate) {
+			throw new DuplicateException("Tick");
+		}
+	}
+
+	@Override
+	public void insertSubmission(Submission m) throws DuplicateException {
+		try {
+			subColl.save(m);
+		} catch (MongoException duplicate) {
+			throw new DuplicateException("Submission");
+		}
+	}
+
+	@Override
+	public void insertGroup(Group g) throws DuplicateException {
+		try {
+			groupColl.save(g);
+		} catch (MongoException duplicate) {
+			throw new DuplicateException("Group");
+		}
+	}
+
+	@Override
+	public void insertGrouping(Grouping g) throws DuplicateException {
+		try {
+			groupingColl.save(g);
+		} catch (MongoException duplicate) {
+			throw new DuplicateException("Grouping");
+		}
 	}
 
 	// People getters

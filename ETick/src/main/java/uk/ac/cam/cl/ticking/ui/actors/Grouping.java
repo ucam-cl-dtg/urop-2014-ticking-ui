@@ -43,11 +43,25 @@ public class Grouping {
 	 * @param role
 	 */
 	public Grouping(Group group, User user, Role role) {
-		this.setGroup(group.getGid());
-		this.setUser(user.getCrsid());
+		this(group.getGid(), user.getCrsid(), role);
+	}
+
+	/**
+	 * Create a new instance of a Grouping object
+	 * 
+	 * This will generate a grouping identifier automatically and should only be
+	 * used when a user is being added to a group.
+	 * 
+	 * @param group
+	 * @param user
+	 * @param role
+	 */
+	public Grouping(String gid, String crsid, Role role) {
+		this.setGroup(gid);
+		this.setUser(crsid);
 		this.setRole(role);
-		this._id = group.getGid() + "_" + role.toString() + "_"
-				+ user.getCrsid();
+		this._id = gid + "_" + role.toString() + "_"
+				+ crsid;
 	}
 
 	/**
