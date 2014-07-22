@@ -10,7 +10,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
-import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateException;
+import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Submission;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
@@ -73,47 +73,47 @@ public class MongoDataManager implements IDataManager {
 	}
 	
 	@Override
-	public void insertUser(User cp) throws DuplicateException {
+	public void insertUser(User cp) throws DuplicateDataEntryException {
 		try {
 			userColl.insert(cp);
 		} catch (MongoException duplicate) {
-			throw new DuplicateException("User");
+			throw new DuplicateDataEntryException("User");
 		}
 	}
 
 	@Override
-	public void insertTick(Tick t) throws DuplicateException {
+	public void insertTick(Tick t) throws DuplicateDataEntryException {
 		try{
 			tickColl.save(t);
 		} catch (MongoException duplicate) {
-			throw new DuplicateException("Tick");
+			throw new DuplicateDataEntryException("Tick");
 		}
 	}
 
 	@Override
-	public void insertSubmission(Submission m) throws DuplicateException {
+	public void insertSubmission(Submission m) throws DuplicateDataEntryException {
 		try {
 			subColl.save(m);
 		} catch (MongoException duplicate) {
-			throw new DuplicateException("Submission");
+			throw new DuplicateDataEntryException("Submission");
 		}
 	}
 
 	@Override
-	public void insertGroup(Group g) throws DuplicateException {
+	public void insertGroup(Group g) throws DuplicateDataEntryException {
 		try {
 			groupColl.save(g);
 		} catch (MongoException duplicate) {
-			throw new DuplicateException("Group");
+			throw new DuplicateDataEntryException("Group");
 		}
 	}
 
 	@Override
-	public void insertGrouping(Grouping g) throws DuplicateException {
+	public void insertGrouping(Grouping g) throws DuplicateDataEntryException {
 		try {
 			groupingColl.save(g);
 		} catch (MongoException duplicate) {
-			throw new DuplicateException("Grouping");
+			throw new DuplicateDataEntryException("Grouping");
 		}
 	}
 

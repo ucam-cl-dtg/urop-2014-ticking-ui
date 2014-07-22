@@ -6,7 +6,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
-import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateException;
+import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Submission;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
@@ -56,37 +56,37 @@ public interface IDataManager {
 	/**
 	 * @param cp
 	 *            - User object to be saved into storage.
-	 * @throws DuplicateException 
+	 * @throws DuplicateDataEntryException 
 	 */
-	public void insertUser(User cp) throws DuplicateException;
+	public void insertUser(User cp) throws DuplicateDataEntryException;
 
 	/**
 	 * @param t
 	 *            - Tick object to be saved into storage.
-	 * @throws DuplicateException 
+	 * @throws DuplicateDataEntryException 
 	 */
-	public void insertTick(Tick t) throws DuplicateException;
+	public void insertTick(Tick t) throws DuplicateDataEntryException;
 
 	/**
 	 * @param m
 	 *            - Submission object to be saved into storage.
-	 * @throws DuplicateException 
+	 * @throws DuplicateDataEntryException 
 	 */
-	public void insertSubmission(Submission m) throws DuplicateException;
+	public void insertSubmission(Submission m) throws DuplicateDataEntryException;
 
 	/**
 	 * @param g
 	 *            - Group object to be saved into storage.
-	 * @throws DuplicateException 
+	 * @throws DuplicateDataEntryException 
 	 */
-	public void insertGroup(Group g) throws DuplicateException;
+	public void insertGroup(Group g) throws DuplicateDataEntryException;
 
 	/**
 	 * @param g
 	 *            - Grouping object to be saved into storage.
-	 * @throws DuplicateException 
+	 * @throws DuplicateDataEntryException 
 	 */
-	public void insertGrouping(Grouping g) throws DuplicateException;
+	public void insertGrouping(Grouping g) throws DuplicateDataEntryException;
 
 	/**
 	 * Goes to the configured storage and attempts to find a user with the

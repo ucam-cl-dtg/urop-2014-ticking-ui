@@ -31,7 +31,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 				"RavenRemoteUser");
 		List<Role> roles = db.getRoles(grouping.getGroup(), crsid);
 		if (!roles.contains(Role.AUTHOR)) {
-			return Response.status(400).entity(Strings.INVALIDROLE).build();
+			return Response.status(401).entity(Strings.INVALIDROLE).build();
 		}
 		db.saveGrouping(grouping);
 		return Response.status(201).entity(grouping).build();

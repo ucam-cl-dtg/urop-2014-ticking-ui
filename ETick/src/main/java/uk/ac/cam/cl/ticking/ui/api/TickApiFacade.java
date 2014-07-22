@@ -17,6 +17,7 @@ import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 import com.google.inject.Inject;
@@ -61,7 +62,11 @@ public class TickApiFacade implements ITickApiFacade {
 		// IOException is thrown
 		tick.setAuthor(crsid);
 		tick.setRepo(repo);
-		db.saveTick(tick);
+		try {
+			db.insertTick(tick);
+		} catch (DuplicateDataEntryException de) {
+			return Response.status(409).build();
+		}
 		return Response.status(201).entity(tick).build();
 	}
 
