@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
@@ -40,6 +41,7 @@ public class ApplicationRegister extends Application {
 		this.singletons.add(injector.getInstance(ITickApiFacade.class));
 		this.singletons.add(injector.getInstance(IUserApiFacade.class));
 		this.singletons.add(injector.getInstance(IGroupingApiFacade.class));
+		this.singletons.add(injector.getInstance(IGroupApiFacade.class));
 		return this.singletons;
 	}
 

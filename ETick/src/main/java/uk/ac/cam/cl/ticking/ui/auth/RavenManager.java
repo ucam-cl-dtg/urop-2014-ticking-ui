@@ -107,35 +107,33 @@ public class RavenManager {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		User user = db.getUser(crsid);
-		if (user == null) {
-			try {
-				user = ldapProduceUser(crsid);
-			} catch (LDAPObjectNotFoundException e) {
-				user = new User(crsid);
-				e.printStackTrace();
-			} finally {
-				db.saveUser(user);
-			}
+		if (user == null || !user.isLdap()) {
+			user = ldapProduceUser(crsid);
+			db.saveUser(user);
 			DatabasePopulator.testPopulate(user);
-		}
-
+		}		
 		return Response.status(201).entity(user).build();
 	}
 	
-	public User ldapProduceUser(String crsid) throws LDAPObjectNotFoundException {
+	public User ldapProduceUser(String crsid) {
 		LDAPUser u;
-		u = LDAPQueryManager.getUser(crsid);
-		boolean notStudent = false;
-		for (String inst : Strings.ACADEMICINSTITUTIONS) {
-			notStudent = u.getInstitutions().contains(inst);
-			if (notStudent) {
-				break;
+		User user;
+		try {
+			u = LDAPQueryManager.getUser(crsid);
+			boolean notStudent = false;
+			for (String inst : Strings.ACADEMICINSTITUTIONS) {
+				notStudent = u.getInstitutions().contains(inst);
+				if (notStudent) {
+					break;
+				}
 			}
+			user = new User(crsid, u.getSurname(), u.getRegName(),
+					u.getDisplayName(), u.getEmail(), u.getInstitutions(),
+					u.getCollegeName(), !notStudent);
+		} catch (LDAPObjectNotFoundException e) {
+			user = new User(crsid);
 		}
-
-		return new User(crsid, u.getSurname(), u.getRegName(),
-				u.getDisplayName(), u.getEmail(), u.getInstitutions(),
-				u.getCollegeName(), !notStudent);
+		return user;
 	}
 
 }

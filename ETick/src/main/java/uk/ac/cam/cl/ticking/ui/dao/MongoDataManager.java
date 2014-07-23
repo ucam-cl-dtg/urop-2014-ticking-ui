@@ -185,6 +185,13 @@ public class MongoDataManager implements IDataManager {
 		g = groupColl.findOne(new BasicDBObject("_id", gid));
 		return g;
 	}
+	
+	@Override
+	public Group getGroupByName(String name) {
+		Group g = null;
+		g = groupColl.findOne(new BasicDBObject("name", name));
+		return g;
+	}
 
 	@Override
 	public List<Group> getGroups() {
