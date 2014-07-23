@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -14,11 +16,14 @@ import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.RepoUserRequestBean;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
+import uk.ac.cam.cl.ticking.ui.actors.Group;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
 
@@ -46,7 +51,7 @@ public class TickApiFacade implements ITickApiFacade {
 	}
 
 	@Override
-	public Response newTick(HttpServletRequest request, Tick tick)
+	public Response newTick(HttpServletRequest request, String gid, Tick tick)
 			throws IOException, DuplicateRepoNameException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
@@ -67,7 +72,24 @@ public class TickApiFacade implements ITickApiFacade {
 		} catch (DuplicateDataEntryException de) {
 			return Response.status(409).build();
 		}
+		if (!gid.equals("")) {
+			return addTick(request, tick.getTID(),gid);
+		}
 		return Response.status(201).entity(tick).build();
+	}
+	
+	@Override
+	public Response addTick(HttpServletRequest request, String tid, String gid) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		List<Role> roles = db.getRoles(gid, crsid);
+		if (!roles.contains(Role.AUTHOR)) {
+			return Response.status(401).entity(Strings.INVALIDROLE).build();
+		}
+		Group g = db.getGroup(gid);
+		g.addTick(tid);
+		db.saveGroup(g);
+		return Response.status(201).entity(g).build();
 	}
 
 	@Override

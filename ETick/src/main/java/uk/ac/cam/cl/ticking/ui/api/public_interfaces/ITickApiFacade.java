@@ -4,11 +4,13 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -42,7 +44,7 @@ public interface ITickApiFacade {
 	 * @param tick
 	 * @return response
 	 * @throws IOException
-	 * @throws DuplicateRepoNameException 
+	 * @throws DuplicateRepoNameException
 	 * 
 	 */
 	@POST
@@ -50,14 +52,31 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response newTick(@Context HttpServletRequest request,
-			Tick tick) throws IOException, DuplicateRepoNameException;
+			@DefaultValue("") @QueryParam("gid") String gid, Tick tick)
+			throws IOException, DuplicateRepoNameException;
+
+	/**
+	 * @param request
+	 * @param tick
+	 * @return response
+	 * @throws IOException
+	 * @throws DuplicateRepoNameException
+	 * 
+	 */
+	@POST
+	@Path("/{gid}/")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public abstract Response addTick(@Context HttpServletRequest request,
+			@PathParam("gid") String gid, String tid) throws IOException,
+			DuplicateRepoNameException;
 
 	/**
 	 * @param request
 	 * @param name
 	 * @return URL of the new repository to clone
 	 * @throws IOException
-	 * @throws DuplicateRepoNameException 
+	 * @throws DuplicateRepoNameException
 	 * 
 	 */
 	@POST
