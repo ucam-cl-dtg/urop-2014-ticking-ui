@@ -23,11 +23,14 @@ public class User implements Comparable<User> {
 	private String email;
 	private List<String> institutions;
 	private String college;
+	
+	private boolean ldap;
 
 	private boolean isStudent;
 
 	public User(String crsid) {
 		this.setCrsid(crsid);
+		this.setLdap(false);
 	}
 
 	/**
@@ -62,6 +65,7 @@ public class User implements Comparable<User> {
 		this.setInstitutions(institutions);
 		this.setCollege(college);
 		this.setIsStudent(isStudent);
+		this.setLdap(true);
 	}
 
 	/**
@@ -188,6 +192,20 @@ public class User implements Comparable<User> {
 	@JsonProperty("is_student")
 	public void setIsStudent(boolean isStudent) {
 		this.isStudent = isStudent;
+	}
+	
+	/**
+	 * @return isStudent
+	 */
+	public boolean isLdap() {
+		return ldap;
+	}
+
+	/**
+	 * @param isStudent
+	 */
+	public void setLdap(boolean ldap) {
+		this.ldap = ldap;
 	}
 	
 	@Override

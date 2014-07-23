@@ -71,44 +71,49 @@ public class GuiceConfigurationModule extends AbstractModule {
 		bind(IGroupingApiFacade.class).to(GroupingApiFacade.class);
 		bind(IGroupApiFacade.class).to(GroupApiFacade.class);
 	}
-	
+
 	/**
 	 * Deals with configuration file
 	 */
 	private void configureConfiguration() {
-		bind(ConfigurationFile.class).toInstance(ConfigurationLoader.getConfig());
+		bind(ConfigurationFile.class).toInstance(
+				ConfigurationLoader.getConfig());
 	}
 
 	@Inject
 	@Provides
-	private static TickApiFacade getTickApiSingleton(IDataManager db, ConfigurationFile config) {
+	private static TickApiFacade getTickApiSingleton(IDataManager db,
+			ConfigurationFile config) {
 		if (tickApiFacade == null) {
 			tickApiFacade = new TickApiFacade(db, config);
 		}
 		return tickApiFacade;
 	}
-	
+
 	@Inject
 	@Provides
-	private static UserApiFacade getUserApiSingleton(IDataManager db, ConfigurationFile config) {
+	private static UserApiFacade getUserApiSingleton(IDataManager db,
+			ConfigurationFile config) {
 		if (userApiFacade == null) {
 			userApiFacade = new UserApiFacade(db, config);
 		}
 		return userApiFacade;
 	}
-	
+
 	@Inject
 	@Provides
-	private static GroupingApiFacade getGroupingApiSingleton(IDataManager db, ConfigurationFile config) {
+	private static GroupingApiFacade getGroupingApiSingleton(IDataManager db,
+			ConfigurationFile config, RavenManager raven) {
 		if (groupingApiFacade == null) {
-			groupingApiFacade = new GroupingApiFacade(db, config);
+			groupingApiFacade = new GroupingApiFacade(db, config, raven);
 		}
 		return groupingApiFacade;
 	}
-	
+
 	@Inject
 	@Provides
-	private static GroupApiFacade getGroupApiSingleton(IDataManager db, ConfigurationFile config) {
+	private static GroupApiFacade getGroupApiSingleton(IDataManager db,
+			ConfigurationFile config) {
 		if (groupApiFacade == null) {
 			groupApiFacade = new GroupApiFacade(db, config);
 		}
