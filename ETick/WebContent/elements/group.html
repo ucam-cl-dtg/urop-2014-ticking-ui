@@ -3,7 +3,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
-<link rel="import" href="../person-list.html">
+
+
+<link rel="import" href="person-list.html">
 
 <polymer-element name="x-group" attributes="gid">
 	<template>
@@ -20,10 +22,15 @@
 			</template>
 		</paper-tabs>
 
+		<div style="width: 240px; padding: 20px 0 0 3px;">
+			<person-list listURL="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"></person-list>
+		<div>
+
 	</template>
 	<script>
 		Polymer('x-group', {
 			ready: function() {
+				console.log(this.$.roleAjax.url);
 				this.$.roleAjax.go();
 			},
 
@@ -32,7 +39,7 @@
 			},
 
 			tabSelectedAction: function(e, detail) {
-				console.log(detail);
+				console.log(detail.item.innerHTML);
 			}
 		});
 	</script>
