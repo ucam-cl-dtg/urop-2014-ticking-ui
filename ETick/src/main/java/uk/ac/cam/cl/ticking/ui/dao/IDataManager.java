@@ -214,6 +214,14 @@ public interface IDataManager {
 	 * @return List of ticks in the given group
 	 */
 	public List<Tick> getGroupTicks(String group);
+	
+	/**
+	 * Goes to the configured storage and finds all of the stored ticks
+	 * 
+	 * @param group
+	 * @return List of all ticks
+	 */
+	public List<Tick> getTicks();
 
 	/**
 	 * Goes to the configured storage and attempts to find the submissions

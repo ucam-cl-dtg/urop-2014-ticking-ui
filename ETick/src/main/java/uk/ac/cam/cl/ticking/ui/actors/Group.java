@@ -1,5 +1,10 @@
 package uk.ac.cam.cl.ticking.ui.actors;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bson.types.ObjectId;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,11 +16,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Group implements Comparable<Group>{
 
-	// FORMAT: 'creator'/'name'
 	@JsonProperty("_id")
 	private String gid;
 
 	private String name, creator;
+	
+	private List<String> ticks = new ArrayList<String>();
 
 	/**
 	 * Create a new instance of a Group object
@@ -30,7 +36,7 @@ public class Group implements Comparable<Group>{
 	public Group(@JsonProperty("name") String name, @JsonProperty("creator") String creator) {
 		this.setName(name);
 		this.setCreator(creator);
-		this.gid = name;
+		this.gid = ObjectId.get().toString();
 	}
 
 	/**
@@ -53,13 +59,6 @@ public class Group implements Comparable<Group>{
 	public String getGid() {
 		return gid;
 	}
-
-	/**
-	 * @param gid
-	 */
-	public void setGid(String gid) {
-		this.gid = gid;
-	}
 	
 	/**
 	 * @return creator
@@ -74,15 +73,19 @@ public class Group implements Comparable<Group>{
 	public void setCreator(String creator) {
 		this.creator = creator;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
+	
+	/**
+	 * @return ticks
 	 */
-	@Override
-	public boolean equals(Object g) {
-		return (g instanceof Group && this.gid.equals(((Group) g).gid));
+	public List<String> getTicks() {
+		return ticks;
+	}
+	
+	/**
+	 * @param tid
+	 */
+	public void addTick(String tid) {
+		ticks.add(tid);
 	}
 
 	@Override

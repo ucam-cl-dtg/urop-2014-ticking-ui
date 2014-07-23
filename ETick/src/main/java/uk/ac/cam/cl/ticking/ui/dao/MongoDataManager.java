@@ -64,6 +64,7 @@ public class MongoDataManager implements IDataManager {
 
 	@Override
 	public void saveGroup(Group g) {
+		groupColl.ensureIndex(new BasicDBObject("name", 1), null, true); // each group name must be unique
 		groupColl.save(g);
 	}
 
@@ -84,7 +85,7 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public void insertTick(Tick t) throws DuplicateDataEntryException {
 		try{
-			tickColl.save(t);
+			tickColl.insert(t);
 		} catch (MongoException duplicate) {
 			throw new DuplicateDataEntryException("Tick");
 		}
@@ -93,7 +94,7 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public void insertSubmission(Submission m) throws DuplicateDataEntryException {
 		try {
-			subColl.save(m);
+			subColl.insert(m);
 		} catch (MongoException duplicate) {
 			throw new DuplicateDataEntryException("Submission");
 		}
@@ -102,7 +103,8 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public void insertGroup(Group g) throws DuplicateDataEntryException {
 		try {
-			groupColl.save(g);
+			groupColl.ensureIndex(new BasicDBObject("name", 1), null, true); // each group name must be unique
+			groupColl.insert(g);
 		} catch (MongoException duplicate) {
 			throw new DuplicateDataEntryException("Group");
 		}
@@ -111,7 +113,7 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public void insertGrouping(Grouping g) throws DuplicateDataEntryException {
 		try {
-			groupingColl.save(g);
+			groupingColl.insert(g);
 		} catch (MongoException duplicate) {
 			throw new DuplicateDataEntryException("Grouping");
 		}
@@ -279,8 +281,22 @@ public class MongoDataManager implements IDataManager {
 
 	@Override
 	public List<Tick> getGroupTicks(String gid) {
+		Group g = getGroup(gid);
 		List<Tick> ts = new ArrayList<Tick>();
-		DBCursor<Tick> cursor = tickColl.find().is("group", gid);
+		for (String s : g.getTicks()) {
+			ts.add(getTick(s));
+		}		
+		return ts;
+	}
+	
+	@Override
+	public List<Tick> getTicks() {
+		DBCursor<Tick> cursor = tickColl.find();
+		return getTicks(cursor);
+	}
+
+	private List<Tick> getTicks(DBCursor<Tick> cursor) {
+		List<Tick> ts = new ArrayList<Tick>();
 		while (cursor.hasNext()) {
 			Tick t = cursor.next();
 			ts.add(t);

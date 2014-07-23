@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author tl364
  *
  */
-public class User {
+public class User implements Comparable<User> {
 
 	// FORMAT: crsid
 	@JsonProperty("_id")
@@ -188,6 +188,13 @@ public class User {
 	@JsonProperty("is_student")
 	public void setIsStudent(boolean isStudent) {
 		this.isStudent = isStudent;
+	}
+	
+	@Override
+	public int compareTo(User o) {
+		if (surname == null) return -1;
+		if (o.surname == null) return 1;
+		return this.surname.compareToIgnoreCase(o.surname);
 	}
 
 }

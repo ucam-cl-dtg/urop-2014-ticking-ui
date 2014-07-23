@@ -17,10 +17,10 @@ public class Tick {
 	@JsonProperty("_id")
 	private String tid;
 
-	private String group;
+	private String name;
 	private String author;
 
-	private String repo, name;
+	private String repo;
 	private Date deadline;
 
 	/**
@@ -32,21 +32,18 @@ public class Tick {
 	 * 
 	 * 
 	 * @param name
-	 * @param group
 	 * @param repo
 	 * @param deadline
 	 * @param files
 	 */
 	@JsonCreator
 	public Tick(@JsonProperty("name") String name,
-			@JsonProperty("group") String group,
 			@JsonProperty("author") String author,
 			@JsonProperty("repo") String repo,
 			@JsonProperty("deadline") Date deadline) {
 
-		this.tid = group + "/" + author + "/" + name;
+		this.tid = author + "_" + name;
 		this.setName(name);
-		this.setGroup(group);
 		this.setAuthor(author);
 		this.setRepo(repo);
 		this.setDeadline(deadline);
@@ -106,22 +103,6 @@ public class Tick {
 	@JsonProperty("name")
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	/**
-	 * @return group
-	 */
-	@JsonProperty("group")
-	public String getGroup() {
-		return group;
-	}
-
-	/**
-	 * @param group
-	 */
-	@JsonProperty("group")
-	public void setGroup(String group) {
-		this.group = group;
 	}
 
 	/**
