@@ -195,14 +195,14 @@ public class User implements Comparable<User> {
 	}
 	
 	/**
-	 * @return isStudent
+	 * @return ldap
 	 */
 	public boolean isLdap() {
 		return ldap;
 	}
 
 	/**
-	 * @param isStudent
+	 * @param ldap
 	 */
 	public void setLdap(boolean ldap) {
 		this.ldap = ldap;
@@ -210,9 +210,9 @@ public class User implements Comparable<User> {
 	
 	@Override
 	public int compareTo(User o) {
-		if (surname == null) return -1;
-		if (o.surname == null) return 1;
-		return this.surname.compareToIgnoreCase(o.surname);
+		String compareMe = (surname == null) ? crsid :surname;
+		String compareThem = (o.surname == null) ? o.crsid :o.surname;
+		return compareMe.compareToIgnoreCase(compareThem);
 	}
 
 }

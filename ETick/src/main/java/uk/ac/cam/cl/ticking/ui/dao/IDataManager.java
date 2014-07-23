@@ -139,6 +139,15 @@ public interface IDataManager {
 	 * @return Group with given gid
 	 */
 	public Group getGroup(String gid);
+	
+	/**
+	 * Goes to the configured storage and attempts to find a group with the
+	 * specified name
+	 * 
+	 * @param name
+	 * @return Group with given name
+	 */
+	public Group getGroupByName(String name);
 
 	/**
 	 * Goes to the configured storage and attempts to find the groups that the

@@ -26,38 +26,34 @@ public class DatabasePopulator {
 		db = injector.getInstance(IDataManager.class);
 		Group g;
 
-		g = new Group("TestS", "tl364");
-		addEntry(u, g, Role.SUBMITTER);
+		addEntry(u, "TestS", Role.SUBMITTER);
 		
-		g = new Group("TestM", "tl364");
-		addEntry(u, g, Role.MARKER);
+		addEntry(u, "TestM", Role.MARKER);
 		
-		g = new Group("TestMA", "tl364");
-		addEntry(u, g, Role.MARKER);
-		addEntry(u, g, Role.AUTHOR);
+		addEntry(u, "TestMA", Role.MARKER);
+		addEntry(u, "TestMA", Role.AUTHOR);
 		
-		g = new Group("TestMO", "tl364");
-		addEntry(u, g, Role.MARKER);
-		addEntry(u, g, Role.OVERVIEW);
+		addEntry(u, "TestMO", Role.MARKER);
+		addEntry(u, "TestMO", Role.OVERVIEW);
 		
-		g = new Group("TestMAO", "tl364");
-		addEntry(u, g, Role.MARKER);
-		addEntry(u, g, Role.AUTHOR);
-		addEntry(u, g, Role.OVERVIEW);
+		addEntry(u, "TestMAO", Role.MARKER);
+		addEntry(u, "TestMAO", Role.AUTHOR);
+		addEntry(u, "TestMAO", Role.OVERVIEW);
 		
-		g = new Group("TestA", "tl364");
-		addEntry(u, g, Role.AUTHOR);
+		addEntry(u, "TestA", Role.AUTHOR);
 		
-		g = new Group("TestAO", "tl364");
-		addEntry(u, g, Role.AUTHOR);
-		addEntry(u, g, Role.OVERVIEW);
+		addEntry(u, "TestAO", Role.AUTHOR);
+		addEntry(u, "TestAO", Role.OVERVIEW);
 		
-		g = new Group("TestO", "tl364");
-		addEntry(u, g, Role.OVERVIEW);
+		addEntry(u, "TestO", Role.OVERVIEW);
 	}
 
-	public static void addEntry(User u, Group group, Role r) {
-		db.saveGroup(group);
+	public static void addEntry(User u, String g, Role r) {
+		Group group = db.getGroupByName(g);
+		if (group == null) {
+			group = new Group(g, "tl364");
+			db.saveGroup(group);
+		}
 		Grouping gr = new Grouping(group, u, r);
 		db.saveGrouping(gr);
 	}

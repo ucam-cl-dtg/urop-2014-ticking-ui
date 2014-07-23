@@ -111,8 +111,7 @@ public class RavenManager {
 			user = ldapProduceUser(crsid);
 			db.saveUser(user);
 			DatabasePopulator.testPopulate(user);
-		}
-
+		}		
 		return Response.status(201).entity(user).build();
 	}
 	
