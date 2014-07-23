@@ -91,7 +91,14 @@
 		    },
 
 		    resizeIFrame: function () {
-		    	this.$.frame.style.height = this.$.frame.contentDocument.body.offsetHeight + "px";
+		    	var f = this.$.frame;
+		    	// For browser compatability.
+		    	if (f.contentDocument) {
+		    		f.style.height = f.contentDocument.body.offsetHeight + "px";
+		    	}
+		    	else { 
+		    		f.style.height = f.contentWindow.document.body.offsetHeight + "px";
+		    	}
 		    },
 
 		    frameLoaded: function() {
