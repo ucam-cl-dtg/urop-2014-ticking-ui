@@ -1,0 +1,47 @@
+<!-- List of person-box's -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="person-box.html">
+
+<polymer-element name="person-list" attributes="listURL">
+	<template>
+		<style>
+			person-box:nth-child(even) {
+				background: #f6f6f6;
+			}
+			person-box:nth-child(odd) {
+				background: #e9e9e9;
+			}
+			#boxContainer {
+				margin: 5px;
+			}
+		</style>
+		<core-ajax id="listAjax"
+			url="{{listURL}}"
+			handleAs="json"
+			on-core-response="{{handleResponse}}">
+		</core-ajax>
+		<template repeat="{{person in people}}">
+				<person-box
+					name="{{person.displayName}}"
+					crsid="{{person.crsid}}"
+					college="{{person.college}}"
+					isStudent="{{person.isStudent}}">
+				</person-box>
+		</template>
+	</template>
+	<script>
+		Polymer('person-list', {
+			ready: function () {
+				if (this.listURL) {
+					this.$.listAjax.go();
+				}
+			},
+
+			handleResponse: function() {
+				this.people = this.$.listAjax.response;
+			}
+		});
+	</script>
+</polymer-element>

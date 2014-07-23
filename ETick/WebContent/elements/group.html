@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../person-list.html">
 
 <polymer-element name="x-group" attributes="gid">
 	<template>
@@ -13,7 +14,7 @@
 			handleAs="json" on-core-response="{{roleResponse}}">
 		</core-ajax>
 
-		<paper-tabs selected=0>
+		<paper-tabs selected=0 on-core-select="{{tabSelectedAction}}">
 			<template repeat="{{role in roles}}">
 				<paper-tab>{{role}}</paper-tab>
 			</template>
@@ -28,6 +29,10 @@
 
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
+			},
+
+			tabSelectedAction: function(e, detail) {
+				console.log(detail);
 			}
 		});
 	</script>
