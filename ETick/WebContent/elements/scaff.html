@@ -33,7 +33,7 @@
 			  	</div>
 
 		  	<!-- Page Content -->
-		  	<div id="card" class="move-up">
+		  	<div id="card" on-transitionend="{{cardTransitionDone}}" class="move-up">
 		          <iframe id="frame" on-load="{{frameLoaded}}"></iframe>
 		  	</div>
 			</core-scaffold>
@@ -41,8 +41,6 @@
 	<script>
 		Polymer('my-scaffold', {
 			ready: function () {
-
-
 			},	
 
 			observe: {
@@ -87,6 +85,22 @@
 		    sidebarItemsChanged: function(oldValue, newValue) {
 		    	this.$.sidebar.items = newValue;
 		    },
+
+		    cardTransitionDone: function() {
+		    	this.resizeIFrame();
+		    },
+
+		    resizeIFrame: function () {
+		    	this.$.frame.style.height = this.$.frame.contentDocument.body.offsetHeight + "px";
+		    },
+
+		    frameLoaded: function() {
+		    	if (this.$) {
+		    		this.$.frame.contentWindow.addEventListener('polymer-ready', function() {
+		    			setTimeout(this.resizeIFrame.bind(this), 100); 
+		    		}.bind(this));
+		    	}
+		    }
 		});
 	</script>
 </polymer-element>
