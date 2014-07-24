@@ -23,3 +23,7 @@ paper-tabs::shadow #selectionBar {
 #frameContainer {
 	width: 100%;
 }
+
+.hidden {
+	display: none;
+}
