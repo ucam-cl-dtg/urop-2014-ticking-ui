@@ -24,6 +24,12 @@ public class GroupApiFacade implements IGroupApiFacade {
 		this.db = db;
 		this.config = config;
 	}
+	
+	@Override
+	public Response getGroup(String gid, boolean byName) {
+		Group group = byName ? db.getGroupByName(gid) : db.getGroup(gid);
+		return Response.ok(group).build();
+	}
 
 	@Override
 	public Response getUsers(String gid) {

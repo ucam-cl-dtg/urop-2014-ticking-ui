@@ -80,7 +80,7 @@
 	    <dependency>
 	      <groupId>uk.ac.cam.cl.git</groupId>
 	      <artifactId>remote</artifactId>
-	      <version>0.0.1-SNAPSHOT</version>
+	      <version>0.0.2-SNAPSHOT</version>
 	    </dependency>
 	    
 	    <dependency>
@@ -143,12 +143,12 @@
 	</build>
 	
 	<distributionManagement>
-        <!-- use the following if you're not using a snapshot version. -->
+        <!-- use the following if you're not using a snapshot version.
         <repository>
             <id>dtg-code</id>
             <name>RepositoryProxy</name>
 			<url>http://maven.dtg.cl.cam.ac.uk/content/repositories/releases</url>
-        </repository>
+        </repository>-->
         
         <!-- use the following if you ARE using a snapshot version. -->
         <snapshotRepository>

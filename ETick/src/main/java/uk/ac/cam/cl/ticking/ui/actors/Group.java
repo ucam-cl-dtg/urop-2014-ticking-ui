@@ -88,6 +88,9 @@ public class Group implements Comparable<Group>{
 		ticks.add(tid);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(Group o) {
 		return this.name.compareToIgnoreCase(o.name);

@@ -51,11 +51,11 @@
   	<proxy>
       <active>true</active>
       <protocol>http</protocol>
-      <host>maven.dtg.cl.cam.ac.uk</host>
-      <port>8080</port>
+      <host>localhost</host>
+      <port>9000</port>
       <!--<username>proxyuser</username>
-      <password>somepassword</password>
-      <nonProxyHosts>www.google.com|*.somewhere.com</nonProxyHosts>-->
+      <password>somepassword</password>-->
+      <nonProxyHosts>urop2014.dtg.cl.cam.ac.uk</nonProxyHosts>
     </proxy>
   </proxies>
 </settings>
