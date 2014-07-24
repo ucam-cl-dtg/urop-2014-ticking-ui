@@ -27,14 +27,13 @@
 
 			<!-- Dashboard and Settings items permanent. -->
 			<core-menu id="menu" valueattr="label" selected=0 on-core-select="{{selectAction}}">
-				<core-item icon="apps" label="Dashboard" url="../pages/dashboard.html"></core-item>
+				<core-item icon="apps" label="Dashboard"></core-item>
 				<core-submenu icon="social:group" label="Groups" selected="Foo">
 					<template repeat="{{item in items}}">
-						<core-item icon="folder-shared" label="{{item.name}}" 
-							url="../pages/group.html" gid="{{item.gid}}"></core-item>
+						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item.gid}}"></core-item>
 					</template>
 				</core-submenu>
-				<core-item icon="settings" label="Settings" url="../pages/settings.html"></core-item>
+				<core-item icon="settings" label="Settings"></core-item>
 			</core-menu>	
 
 	</template>
