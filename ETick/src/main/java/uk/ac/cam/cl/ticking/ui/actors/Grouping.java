@@ -60,8 +60,7 @@ public class Grouping {
 		this.setGroup(gid);
 		this.setUser(crsid);
 		this.setRole(role);
-		this._id = gid + "_" + role.toString() + "_"
-				+ crsid;
+		this._id = gid + "_" + role.toString() + "_" + crsid;
 	}
 
 	/**

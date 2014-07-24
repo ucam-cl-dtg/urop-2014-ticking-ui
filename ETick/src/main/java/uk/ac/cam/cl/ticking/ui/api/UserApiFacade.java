@@ -18,14 +18,29 @@ import com.google.inject.Inject;
 public class UserApiFacade implements IUserApiFacade {
 
 	private IDataManager db;
+
+	@SuppressWarnings("unused")
+	// Currently not needed but these classes are still not final and it is
+	// quite likely to be required in future
 	private ConfigurationFile config;
 
+	/**
+	 * @param db
+	 * @param config
+	 */
 	@Inject
 	public UserApiFacade(IDataManager db, ConfigurationFile config) {
 		this.db = db;
 		this.config = config;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#getUser(
+	 * javax.servlet.http.HttpServletRequest)
+	 */
 	@Override
 	public Response getUser(HttpServletRequest request) {
 		String crsid = (String) request.getSession().getAttribute(
@@ -34,6 +49,13 @@ public class UserApiFacade implements IUserApiFacade {
 		return Response.ok(user).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#getGroups
+	 * (javax.servlet.http.HttpServletRequest)
+	 */
 	@Override
 	public Response getGroups(HttpServletRequest request) {
 		String crsid = (String) request.getSession().getAttribute(
@@ -43,6 +65,13 @@ public class UserApiFacade implements IUserApiFacade {
 		return Response.ok(groups).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#getGroupRoles
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
+	 */
 	@Override
 	public Response getGroupRoles(HttpServletRequest request, String gid) {
 		String crsid = (String) request.getSession().getAttribute(

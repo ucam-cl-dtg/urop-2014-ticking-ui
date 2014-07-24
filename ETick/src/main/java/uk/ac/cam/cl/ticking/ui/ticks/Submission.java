@@ -5,6 +5,8 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * TODO Decide whether we actually need this
+ * 
  * This class stores information regarding a submission for a tick
  * 
  * @author tl364
@@ -55,7 +57,7 @@ public class Submission {
 		this.setUnitPass(unitPass);
 		this.setHumanPass(false);
 	}
-	
+
 	/**
 	 * Default constructor for Jackson JSON to POJO because java
 	 */
@@ -94,7 +96,7 @@ public class Submission {
 	public void setSubmitted(Date submitted) {
 		this.submitted = submitted;
 	}
-	
+
 	/**
 	 * @response tick
 	 */

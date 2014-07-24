@@ -8,10 +8,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+/**
+ * A RESTful interface for requests regarding the current user. The methods use
+ * raven session information to determine the user's crsid.
+ * 
+ * @author tl364
+ *
+ */
 @Path("/user")
 @Produces("application/json")
 public interface IUserApiFacade {
-	
+
 	/**
 	 * Returns the User object for the current user
 	 * 
@@ -22,7 +29,7 @@ public interface IUserApiFacade {
 	@Path("/")
 	@Produces("application/json")
 	public abstract Response getUser(@Context HttpServletRequest request);
-	
+
 	/**
 	 * Uses the user's session to determine the crsid and then returns all
 	 * groups which that user is a member of.
