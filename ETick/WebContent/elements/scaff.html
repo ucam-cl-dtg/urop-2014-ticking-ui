@@ -87,7 +87,7 @@
 		    },
 
 		    cardTransitionDone: function() {
-		    	this.resizeIFrame();
+		    	// this.resizeIFrame();
 		    },
 
 		    resizeIFrame: function () {
@@ -107,6 +107,7 @@
 		    		this.$.frame.contentWindow.addEventListener('polymer-ready', function() {
 		    			setTimeout(this.resizeIFrame.bind(this), 100); 
 		    		}.bind(this));
+		    		this.resizeIFrame();
 		    	}
 		    }
 		});

@@ -1,0 +1,9 @@
+:host {
+	display: block;
+	width: 100%;
+}
+
+#personListContainer {
+	width: 240px;
+	/*padding: 20px 0 0 3px;*/
+}

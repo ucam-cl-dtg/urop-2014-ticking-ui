@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="author-pane.html">
 
 
 <link rel="import" href="person-list.html">
@@ -12,7 +13,6 @@
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
 
 		<core-ajax id="roleAjax"
-			auto
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/' + gid + '/roles'}}"
 			handleAs="json" on-core-response="{{roleResponse}}">
 		</core-ajax>
@@ -23,19 +23,34 @@
 			</template>
 		</paper-tabs>
 
-		<div style="width: 240px; padding: 20px 0 0 3px;">
-			<person-list listURL="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"></person-list>
-		<div>
+		<author-pane id="authorPane" gid="{{gid}}" class="hidden"></author-pane>
 
 	</template>
 	<script>
-		Polymer('x-group', {
+		Polymer('x-group', {  
+
+			ready: function () {
+				this.$.roleAjax.go();
+			},
 
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
 			},
 
 			tabSelectedAction: function(e, detail) {
+				if (this.pane) {
+					console.log(this.pane);
+					this.pane.classList.add('hidden');
+				}
+				var role = detail.item.innerHTML;
+				switch(role) {
+					case "AUTHOR": this.pane = this.$.authorPane; break;
+					case "MARKER": this.pane = this.$.markerPane; break;
+					case "OVERVIEW": this.pane = this.$.overviewPane; break;
+					case "SUBMITTER": this.pane = this.$.submitterPane; break;
+				}
+				this.pane.classList.remove('hidden');
+				console.log(this.pane);
 			}
 		});
 	</script>
