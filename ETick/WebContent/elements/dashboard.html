@@ -1,0 +1,31 @@
+<link rel="import" href="../bower_components./polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="user-card.html">
+<link rel="import" href="main-card.html">
+
+<polymer-element name="user-dash" attributes="">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<core-ajax id="loginAjax"
+			auto
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user"
+			handleAs="json"
+			on-core-response="{{loginResponse}}">
+		</core-ajax>
+		<main-card animated>
+			<user-card id="card" ldap="{{data}}"></user-card>
+		</main-card>
+	</template>
+
+	<script>
+		Polymer('user-dash', {
+			loginResponse: function() {
+				this.data = this.$.loginAjax.response;
+			}
+		});
+	</script>
+</polymer-element>

@@ -8,8 +8,8 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="sidebar.html">
 <link rel="import" href="onlogin.html">
-<link rel="import" href="main-card.html">
 <link rel="import" href="group.html">
+<link rel="import" href="dashboard.html">
 
 <polymer-element name="my-scaffold">
 	<template>
@@ -35,6 +35,10 @@
 			  	</div>
 
 		  	<!-- Page Content -->
+		  	<template id="dashTemplate" bind if="{{showDash}}">
+		  		<user-dash></user-dash>
+		  	</template>
+
 		  	<template id="groupTemplate" bind if="{{gid}}">
 		  		<x-group gid="{{gid}}"></x-group>
 		  	</template>
@@ -57,7 +61,11 @@
 				if (newValue.tagName === 'CORE-ITEM') {
 					this.heading = newValue.label;
 					this.currentGroupID = newValue.getAttribute('gid');
+
+					// Update template bindings.
 					this.$.groupTemplate.model = { gid: this.currentGroupID };
+					this.showDash = (this.heading === "Dashboard");
+					
 					console.log(this.currentGroupID);
 				}
 			},
