@@ -6,6 +6,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
@@ -13,6 +14,11 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 @Path("/group")
 @Produces("application/json")
 public interface IGroupApiFacade {
+	
+	@GET
+	@Path("/{gid}")
+	@Produces("application/json")
+	public abstract Response getGroup(@PathParam("gid")String gid, @QueryParam("byName")boolean byName);
 	
 	@GET
 	@Path("/{gid}/users")
