@@ -23,20 +23,40 @@
 			</template>
 		</paper-tabs>
 
-		<div style="width: 240px; padding: 20px 0 0 3px;">
-			<person-list listURL="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"></person-list>
-		<div>
+		<div id="frameContainer">
+			<iframe id="frame" on-load="{{frameLoaded}}"></iframe>
+		</div>
 
 	</template>
 	<script>
-		Polymer('x-group', {
+		Polymer('x-group', {  
 
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
 			},
 
 			tabSelectedAction: function(e, detail) {
-			}
+				var role = detail.item.innerHTML;
+				var url = "../pages/" + role + ".html";
+				this.$.frame.contentWindow.location.replace(url);
+			},
+			resizeIFrame: function () {
+		    	var frame = this.$.frame;
+		    	var doc = frame.contentDocument;
+		    	if (doc) {
+		    		var docElt = doc.documentElement;
+		    		frame.style.height = 'auto';
+		    		frame.style.height = docElt.offsetHeight + 'px';
+		    	}
+		    },
+
+		    frameLoaded: function() {
+		    	if (this.$) {
+		    		this.$.frame.contentWindow.addEventListener('polymer-ready', function() {
+		    			setTimeout(this.resizeIFrame.bind(this), 100); 
+		    		}.bind(this));
+		    	}
+		    }
 		});
 	</script>
 </polymer-element>

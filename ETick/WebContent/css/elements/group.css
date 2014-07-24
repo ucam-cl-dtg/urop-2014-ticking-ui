@@ -13,3 +13,13 @@ paper-tab::shadow #ink {
 paper-tabs::shadow #selectionBar {
   background-color: #ffff8d;
 }
+
+#frame {
+  display: block;
+  width: 100%;
+  border: none;
+}
+
+#frameContainer {
+	width: 100%;
+}
