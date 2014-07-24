@@ -3,7 +3,6 @@
 	<name>UROP_UI</name>
 	<comment></comment>
 	<projects>
-		<project>interfaces</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

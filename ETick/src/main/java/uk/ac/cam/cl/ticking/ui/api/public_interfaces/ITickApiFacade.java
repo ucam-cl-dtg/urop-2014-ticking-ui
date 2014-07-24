@@ -17,6 +17,16 @@ import javax.ws.rs.core.Response;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
+/**
+ * A RESTful interface for requests regarding ticks. Many methods act as
+ * abstractions over the GitAPI, storing references to their stored repositories
+ * in our own Database through Tick objects. Consistency is maintained by
+ * ensuring any actions return successfully through the API before committing
+ * them to our records.
+ * 
+ * @author tl364
+ *
+ */
 @Path("/tick")
 @Produces("application/json")
 public interface ITickApiFacade {
@@ -40,9 +50,14 @@ public interface ITickApiFacade {
 	public abstract Response getTicks(@PathParam("gid") String gid);
 
 	/**
+	 * Commits the given tick object to the database, but only after a
+	 * repository has been successfully created for it via the GitAPI. If a gid
+	 * is given as a queryparam, the Tick will also be added to that group via
+	 * the addTick method.
+	 * 
 	 * @param request
 	 * @param tick
-	 * @return response
+	 * @return the tick object that has been committed to the database
 	 * @throws IOException
 	 * @throws DuplicateRepoNameException
 	 * 
@@ -56,19 +71,21 @@ public interface ITickApiFacade {
 			throws IOException, DuplicateRepoNameException;
 
 	/**
+	 * Adds a Tick to a Group given a tid and gid
+	 * 
 	 * @param request
 	 * @param tick
-	 * @return response
+	 * @return the group object that the tick has been added to
 	 * @throws IOException
 	 * @throws DuplicateRepoNameException
 	 * 
 	 */
 	@POST
-	@Path("/{gid}/")
+	@Path("/{tid}/{gid}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response addTick(@Context HttpServletRequest request,
-			@PathParam("gid") String gid, String tid) throws IOException,
+			@PathParam("gid") String gid, @PathParam("tid") String tid) throws IOException,
 			DuplicateRepoNameException;
 
 	/**
