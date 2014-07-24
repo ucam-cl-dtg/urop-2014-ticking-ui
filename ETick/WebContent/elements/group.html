@@ -12,6 +12,7 @@
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
 
 		<core-ajax id="roleAjax"
+			auto
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/' + gid + '/roles'}}"
 			handleAs="json" on-core-response="{{roleResponse}}">
 		</core-ajax>
@@ -29,17 +30,12 @@
 	</template>
 	<script>
 		Polymer('x-group', {
-			ready: function() {
-				console.log(this.$.roleAjax.url);
-				this.$.roleAjax.go();
-			},
 
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
 			},
 
 			tabSelectedAction: function(e, detail) {
-				console.log(detail.item.innerHTML);
 			}
 		});
 	</script>
