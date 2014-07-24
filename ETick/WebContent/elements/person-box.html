@@ -1,0 +1,57 @@
+<!-- Box/card element representing a person in a list of people in a group. -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/core-icons/iconsets/social-icons.html">
+
+<polymer-element name="person-box" attributes="name crsid college isStudent">
+	<template>
+		<style>
+			:host {
+				display: block;
+				box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.26);
+				border-radius: 2px;
+				padding: 10px;
+				margin-bottom: 5px;
+			}
+
+			h1 {
+				margin: 0;
+				font-size: 1.6rem;
+				font-weight: 100;
+			}
+
+			h2 {
+				margin: 0;
+				font-size: 0.8rem;
+				color: #808080;
+				font-weight: 300;
+			}
+
+			core-icon {
+				fill: rgb(112, 81, 236);
+			}
+
+		</style>
+		<div layout horizontal center>
+			<core-icon flex icon="{{icon}}" size="40"></core-icon>
+			<div layout vertical>
+				<h1>{{name}}</h1>
+				<div layout horizontal center>
+					<h2 flex>{{college}}</h2>
+					<h2>{{crsid}}</h2>
+				</div>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer('person-box', {
+			ready: function() {
+				this.icon = "social:person"
+				if (this.isStudent) {
+					this.icon = "social:school";
+				}
+			}
+		});
+	</script>
+</polymer-element>
