@@ -1,0 +1,19 @@
+#card {
+	display: block;
+	margin: 20px;
+	background-color: #fff;
+	box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.26);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+#card.move-up {
+  transition: all 0.4s ease-in-out;
+  -webkit-transition: all 0.4s ease-in-out; /** Chrome & Safari **/
+  -moz-transition: all 0.4s ease-in-out; /** Firefox **/
+  -o-transition: all 0.4s ease-in-out; /** Opera **/
+}
+
+#card.hidden {
+	display none;
+}

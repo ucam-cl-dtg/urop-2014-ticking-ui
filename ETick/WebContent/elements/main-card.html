@@ -1,0 +1,47 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<polymer-element name="main-card" attributes="animated">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/elements/main-card.css">
+
+		<div id="card">
+			<content></content>
+		<div>
+
+	</template>
+	<script>
+		Polymer('main-card', {
+
+			ready: function () {
+				if (this.animated) {
+					this.animateCard();
+				}
+			},
+
+			animated: false,
+
+			moveCard: function (y) {
+				var s = this.$.card.style;
+				s.webkitTransform = s.transform = y ? 'translate(0, ' + y + 'px)': '';
+			},
+			animateCard: function() {
+				this.$.card.classList.remove('move-up');
+		    	this.$.card.style.display = 'none';
+		    	this.async(function () {
+		    		this.$.card.style.display = 'block'
+		    		this.moveCard(500);
+		    		this.async(function () {
+		    			this.$.card.classList.add('move-up');
+		    			this.moveCard(null);
+		    		}, null, 300);
+	    		});
+		    },
+
+		    cardTransitionDone: function() {
+		    	if (this.$.card.classList.contains('move-up')) {
+		    		this.$.card.classList.remove('move-up');
+		    	}
+		    }
+		});
+	</script>
+</polymer-element>
