@@ -8,6 +8,8 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="sidebar.html">
 <link rel="import" href="onlogin.html">
+<link rel="import" href="main-card.html">
+<link rel="import" href="group.html">
 
 <polymer-element name="my-scaffold">
 	<template>
@@ -33,8 +35,10 @@
 			  	</div>
 
 		  	<!-- Page Content -->
-		  	<div id="card" on-transitionend="{{cardTransitionDone}}" class="move-up">
-		  	</div>
+		  	<template id="groupTemplate" bind if="{{gid}}">
+		  		<x-group gid="{{gid}}"></x-group>
+		  	</template>
+
 			</core-scaffold>
 	</template>
 	<script>
@@ -49,31 +53,14 @@
 
 			// Handles changes in sidebar item selection (updates top toolbar heading).
 			selectedChanged: function(oldValue, newValue) {
-				if (newValue.getAttribute('url')) {
+				this.$.groupTemplate.model = { gid: null };
+				if (newValue.tagName === 'CORE-ITEM') {
 					this.heading = newValue.label;
 					this.currentGroupID = newValue.getAttribute('gid');
-					this.$.frame.contentWindow.location.replace(newValue.getAttribute('url'));
-					this.animateCard();
+					this.$.groupTemplate.model = { gid: this.currentGroupID };
+					console.log(this.currentGroupID);
 				}
 			},
-
-			// Animates page card. 
-			moveCard: function (y) {
-				var s = this.$.card.style;
-				s.webkitTransform = s.transform = y ? 'translate(0, ' + y + 'px)': '';
-			},
-			animateCard: function() {
-		    	this.$.card.classList.remove('move-up');
-		    	this.$.card.style.display = 'none';
-		    	this.async(function () {
-		    		this.$.card.style.display = 'block'
-		    		this.moveCard(this.$.scaffold.offsetHeight);
-		    		this.async(function () {
-		    			this.$.card.classList.add('move-up');
-		    			this.moveCard(null);
-		    		}, null, 300);
-		    	});
-		    },
 
 		    // Handles logout button action. 
 		    logoutClicked: function() {
@@ -83,31 +70,6 @@
 		    // Handles changes in sidebar items list population. 
 		    sidebarItemsChanged: function(oldValue, newValue) {
 		    	this.$.sidebar.items = newValue;
-		    },
-
-		    cardTransitionDone: function() {
-		    	// this.resizeIFrame();
-		    },
-
-		    resizeIFrame: function () {
-		    	var frame = this.$.frame;
-		    	var doc = frame.contentDocument;
-		    	if (doc) {
-		    		var docElt = doc.documentElement;
-		    		frame.style.height = 'auto';
-		    		frame.style.height = docElt.offsetHeight + 'px';
-		    	}
-		    	// var f = this.$.frame;
-		    	// f.style.height = f.contentWindow.document.body.offsetHeight + "px";
-		    },
-
-		    frameLoaded: function() {
-		    	if (this.$) {
-		    		this.$.frame.contentWindow.addEventListener('polymer-ready', function() {
-		    			setTimeout(this.resizeIFrame.bind(this), 100); 
-		    		}.bind(this));
-		    		this.resizeIFrame();
-		    	}
 		    }
 		});
 	</script>

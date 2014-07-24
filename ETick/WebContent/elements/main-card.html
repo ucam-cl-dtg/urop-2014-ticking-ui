@@ -29,7 +29,7 @@
 		    	this.$.card.style.display = 'none';
 		    	this.async(function () {
 		    		this.$.card.style.display = 'block'
-		    		this.moveCard(500);
+		    		this.moveCard(window.innerHeight);
 		    		this.async(function () {
 		    			this.$.card.classList.add('move-up');
 		    			this.moveCard(null);

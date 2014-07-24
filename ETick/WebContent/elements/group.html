@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="author-pane.html">
+<link rel="import" href="main-card.html">
 
 
 <link rel="import" href="person-list.html">
@@ -17,13 +18,21 @@
 			handleAs="json" on-core-response="{{roleResponse}}">
 		</core-ajax>
 
-		<paper-tabs selected=0 on-core-select="{{tabSelectedAction}}">
-			<template repeat="{{role in roles}}">
-				<paper-tab>{{role}}</paper-tab>
-			</template>
-		</paper-tabs>
+		<!-- Group content card. -->
+		<main-card animated>
+			<paper-tabs selected=0 on-core-select="{{tabSelectedAction}}">
+				<template repeat="{{role in roles}}">
+					<paper-tab>{{role}}</paper-tab>
+				</template>
+			</paper-tabs>
 
-		<author-pane id="authorPane" gid="{{gid}}" class="hidden"></author-pane>
+			<author-pane id="authorPane" gid="{{gid}}" class="hidden"></author-pane>
+
+			<!-- Testing only: -->
+			<div id="markerPane" class="hidden">Marker Pane</div>
+			<div id="overviewPane" class="hidden">Overview Pane</div>
+			<div id="submitterPane" class="hidden">Submitter Pane</div>
+		</main-card>
 
 	</template>
 	<script>
@@ -39,7 +48,6 @@
 
 			tabSelectedAction: function(e, detail) {
 				if (this.pane) {
-					console.log(this.pane);
 					this.pane.classList.add('hidden');
 				}
 				var role = detail.item.innerHTML;
@@ -50,7 +58,6 @@
 					case "SUBMITTER": this.pane = this.$.submitterPane; break;
 				}
 				this.pane.classList.remove('hidden');
-				console.log(this.pane);
 			}
 		});
 	</script>
