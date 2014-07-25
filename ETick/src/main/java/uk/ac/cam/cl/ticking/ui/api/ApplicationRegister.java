@@ -7,6 +7,7 @@ import javax.ws.rs.core.Application;
 
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
@@ -42,6 +43,7 @@ public class ApplicationRegister extends Application {
 		this.singletons.add(injector.getInstance(IUserApiFacade.class));
 		this.singletons.add(injector.getInstance(IGroupingApiFacade.class));
 		this.singletons.add(injector.getInstance(IGroupApiFacade.class));
+		this.singletons.add(injector.getInstance(ISubmissionApiFacade.class));
 		return this.singletons;
 	}
 

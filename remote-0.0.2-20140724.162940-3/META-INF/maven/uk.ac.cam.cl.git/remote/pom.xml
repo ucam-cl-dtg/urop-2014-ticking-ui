@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.ac.cam.cl.git</groupId>
+  <artifactId>remote</artifactId>
+  <version>0.0.2-SNAPSHOT</version>
+  <name>Git service interfaces</name>
+  <description>Interfaces for using web proxy (REST based RPC) calls on this library.</description>
+  <packaging>jar</packaging>
+
+  <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <version>3.0.8.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.4.1</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.1.1</version>
+        <configuration>
+          <!-- Not needed due to webappDirectory
+            <webXml>WebContent/WEB-INF/web.xml</webXml>
+            -->
+          <webappDirectory>WebContent</webappDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <!-- use the following if you're not using a snapshot version.
+      <repository>
+        <id>dtg-code</id>
+          <name>RepositoryProxy</name>
+            <url>http://maven.dtg.cl.cam.ac.uk/content/repositories/releases</url>
+            </repository>
+          -->
+    <!-- use the following if you ARE using a snapshot version. -->
+    <snapshotRepository>
+      <id>dtg-code</id>
+      <name>RepositoryProxy</name>
+      <url>http://maven.dtg.cl.cam.ac.uk/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+</project>
+<!-- vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab : -->

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * This class stores information regarding a submission for a tick
  * 
+ * NOT CURRENTLY USED, RETAINING UNTIL CERTAIN THIS IS NOT REQUIRED
+ * 
  * @author tl364
  *
  */

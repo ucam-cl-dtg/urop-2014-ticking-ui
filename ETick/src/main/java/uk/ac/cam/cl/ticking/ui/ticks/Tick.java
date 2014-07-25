@@ -42,11 +42,11 @@ public class Tick {
 			@JsonProperty("repo") String repo,
 			@JsonProperty("deadline") Date deadline) {
 
-		this.tid = author + "_" + name;
 		this.setName(name);
 		this.setAuthor(author);
 		this.setRepo(repo);
 		this.setDeadline(deadline);
+		initTID();
 
 	}
 
@@ -126,5 +126,16 @@ public class Tick {
 	 */
 	public String getTID() {
 		return tid;
+	}
+	
+	/**
+	 * Initialises the TID field for the Tick object
+	 */
+	public void initTID() {
+		this.tid = author + "," + name;
+	}
+
+	public static String replaceDelimeter(String tid) {
+		return tid.replace(',', '/');
 	}
 }
