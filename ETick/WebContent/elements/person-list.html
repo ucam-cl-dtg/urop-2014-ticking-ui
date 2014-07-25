@@ -7,14 +7,15 @@
 <polymer-element name="person-list" attributes="listURL">
 	<template>
 		<style>
-			person-box:nth-child(even) {
-				background: #f6f6f6;
+			person-box {	
+				width: 100%;
+				min-width: 240px;
 			}
 			person-box:nth-child(odd) {
-				background: #e9e9e9;
+				background: #f6f6f6;
 			}
-			#boxContainer {
-				margin: 5px;
+			person-box:nth-child(even) {
+				background: #e9e9e9;
 			}
 		</style>
 		<core-ajax id="listAjax"
@@ -22,14 +23,16 @@
 			handleAs="json"
 			on-core-response="{{handleResponse}}">
 		</core-ajax>
-			<template repeat="{{person in people}}">
+		<div id="listEnclosure" layout horizontal center wrap>
+			<template repeat="{{person, i in people}}">
 					<person-box
 						name="{{person.displayName}}"
 						crsid="{{person.crsid}}"
 						college="{{person.college}}"
 						isStudent="{{person.isStudent}}">
-					</person-box>
+					</person-box>	
 			</template>
+		</div>
 	</template>
 	<script>
 		Polymer('person-list', {
@@ -37,10 +40,13 @@
 				if (this.listURL) {
 					this.$.listAjax.go();
 				}
-			},
 
+			},
+			
 			handleResponse: function() {
 				this.people = this.$.listAjax.response;
+				this.number = this.people.length;
+				console.log(this.$.listEnclosure.clientWidth);
 			}
 		});
 	</script>
