@@ -2,10 +2,12 @@ package uk.ac.cam.cl.ticking.ui.injection;
 
 import uk.ac.cam.cl.ticking.ui.api.GroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.GroupingApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.SubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.TickApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.UserApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
@@ -33,6 +35,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static UserApiFacade userApiFacade = null;
 	private static GroupingApiFacade groupingApiFacade = null;
 	private static GroupApiFacade groupApiFacade = null;
+	private static SubmissionApiFacade submissionApiFacade = null;
 	private static RavenManager ravenManager = null;
 
 	/*
@@ -70,6 +73,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 		bind(IUserApiFacade.class).to(UserApiFacade.class);
 		bind(IGroupingApiFacade.class).to(GroupingApiFacade.class);
 		bind(IGroupApiFacade.class).to(GroupApiFacade.class);
+		bind(ISubmissionApiFacade.class).to(SubmissionApiFacade.class);
 	}
 
 	/**
@@ -118,6 +122,16 @@ public class GuiceConfigurationModule extends AbstractModule {
 			groupApiFacade = new GroupApiFacade(db, config);
 		}
 		return groupApiFacade;
+	}
+	
+	@Inject
+	@Provides
+	private static SubmissionApiFacade getSubmissionApiSingleton(IDataManager db,
+			ConfigurationFile config) {
+		if (submissionApiFacade == null) {
+			submissionApiFacade = new SubmissionApiFacade(db, config);
+		}
+		return submissionApiFacade;
 	}
 
 	@Inject
