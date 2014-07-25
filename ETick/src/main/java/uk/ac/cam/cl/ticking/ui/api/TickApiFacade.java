@@ -79,18 +79,18 @@ public class TickApiFacade implements ITickApiFacade {
 			throws IOException, DuplicateRepoNameException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 
 		WebInterface proxy = target.proxy(WebInterface.class);
-		String repo = proxy.addRepository(new RepoUserRequestBean(tick
+		String repo = proxy.addRepository(new RepoUserRequestBean(crsid+"/"+tick
 				.getName(), crsid));
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
 		tick.setAuthor(crsid);
 		tick.setRepo(repo);
+		tick.initTID();
 		try {
 			db.insertTick(tick);
 		} catch (DuplicateDataEntryException de) {
@@ -141,8 +141,7 @@ public class TickApiFacade implements ITickApiFacade {
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 		WebInterface proxy = target.proxy(WebInterface.class);
 		String output;
-		String[] repoNameParts = tid.split("_");
-		String repoName = repoNameParts[0] + "/" + repoNameParts[1];
+		String repoName = Tick.replaceDelimeter(tid);
 		try {
 			output = proxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));

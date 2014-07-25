@@ -39,7 +39,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 			return Response.status(401).entity(Strings.INVALIDROLE).build();
 		}
 		try {
-			db.insertUser(raven.ldapProduceUser(crsid));
+			db.insertUser(raven.ldapProduceUser(grouping.getUser()));
 		} catch (DuplicateDataEntryException e) {
 			//Do nothing
 			//The user is already in the database and so we don't need to add them.
