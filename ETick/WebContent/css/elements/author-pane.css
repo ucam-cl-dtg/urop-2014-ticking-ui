@@ -4,5 +4,6 @@
 }
 
 #personListContainer {
-	padding: 20px 0 0 3px;
+	width: 240px;
+	/*padding: 20px 0 0 3px;*/
 }
