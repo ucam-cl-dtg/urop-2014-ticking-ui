@@ -1,7 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="person-list.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
+
+<link rel="import" href="person-list.html">
+<link rel="import" href="dialog.html">
 
 <polymer-element name="group-members" attributes="gid allowAdd rows">
 	<template>
@@ -10,32 +12,73 @@
 				display: block;
 				width: 100%;
 			}
-			h1 {
-				font-size: 1.8rem;
-				font-weight: 100;
-				padding: 0 0 0 10px;
-			}
+
 			#personListContainer {
 				width: 100%;
 				height: calc(60px * {{rows}});
 				overflow: auto;
 			}
-			/**/
+
+			h1 {
+				font-size: 1.8rem;
+				font-weight: 200;
+				padding: 0 0 0 10px;
+			}
+
+			table {
+				float: center;
+			}
+
+			td {
+				color: #555555;
+				padding: 0 10px 15px 10px;
+				width: 25;	
+				text-align: center;
+			}
 		</style>
+
+		<!-- Card heading. -->
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>Members ({{$.members.number}})</h1>
 			<template if="{{allowAdd}}">
-				<paper-icon-button icon="add" on-click="{{addMemberClicked}}"></paper-icon-button>
+				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>
 			</template>
 		</div>
+
+		<!-- Member list. -->
 		<div id="personListContainer">
 			<person-list id="members" listURL="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"></person-list>
 		</div>
+
+		<!-- Add Member dialog. -->
+		<my-dialog id="addDialog" transition="core-transition-top">
+			<h2>Add Member</h2>
+			<div layout vertical>
+				<paper-input id="addCRSID"
+					floatingLabel
+					label="CRSid..."
+					validate="^[a-zA-Z]+[0-9]*$"
+					error="Invalid CRSid.">
+				</paper-input>
+				<h3>Roles:</h3>
+				<table>
+					<tr><td>Author: </td><td><paper-checkbox id="auth"></paper-checkbox></td></tr>
+					<tr><td>Submitter: </td><td><paper-checkbox id="subm"></paper-checkbox></td></tr>
+					<tr><td>Marker: </td><td><paper-checkbox id="mark"></paper-checkbox></td></tr>
+					<tr><td>Overview: </td><td><paper-checkbox id="over"></paper-checkbox></td></tr>
+				</table>
+				<div layout end-justified horizontal>
+					<div flex></div>
+					<paper-button class="button" label="ADD" core-overlay-toggle></paper-button>
+				</div>
+			</div>
+		</my-dialog>
+
 	</template>
 	<script>
 		Polymer('group-members', {
 			addMemberClicked: function () {
-				console.log('buttonClicked');
+				this.$.addDialog.toggle();			
 			}
 		});
 	</script>
