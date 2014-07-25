@@ -1,54 +1,21 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-overlay/core-overlay.html">
 <link rel="import" href="../bower_components/core-transition/core-transition-css.html">
-
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 
 <polymer-element name="my-dialog" attributes="transition">
 	<template>
-		<style>
-
-			:host {
-				box-sizing: border-box;
-				-moz-box-sizing: border-box;
-				-webkit-user-select: none;
-				-moz-user-select: none;
-				overflow: auto;
-				background: white;
-				padding:30px 42px;
-				outline: 1px solid rgba(0,0,0,0.2);
-				box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-			}
-
-			polyfill-next-selector { content: ':host .button'; }
-			::content .button {
-				margin: 1em;
-				background: #4285f4;
-				color: #fff;
-			}
-
-			polyfill-next-selector { content: ':host .hidden'; }
-			::content .hidden {
-				display: none;
-			}
-			
-			#cancel {
-				fill:red;
-				border-radius: 20px;
-				border: 0;
-				position: absolute;
-				top: 0px;
-				right: 0px;
-			}
-
-		</style>
+		<link rel="stylesheet" type="text/css" href="../css/elements/dialog.css" shim-shadowdom>
 		
 		<core-overlay id="overlay" layered backdrop transition="{{transition}}">
 		</core-overlay>
+
 		<!-- Top right cancel button -->
-			<paper-icon-button icon="cancel" id="cancel" on-click="{{toggle}}"></paper-icon-button>
-		<content></content>
+		<paper-icon-button icon="cancel" id="cancel" on-click="{{toggle}}"></paper-icon-button>
+			<content></content>
 	</template>
 	<script>
 
