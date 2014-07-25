@@ -22,14 +22,16 @@
 			handleAs="json"
 			on-core-response="{{handleResponse}}">
 		</core-ajax>
-		<template repeat="{{person in people}}">
-				<person-box
-					name="{{person.displayName}}"
-					crsid="{{person.crsid}}"
-					college="{{person.college}}"
-					isStudent="{{person.isStudent}}">
-				</person-box>
-		</template>
+		<div layout horizontal center>
+			<template repeat="{{person in people}}">
+					<person-box
+						name="{{person.displayName}}"
+						crsid="{{person.crsid}}"
+						college="{{person.college}}"
+						isStudent="{{person.isStudent}}">
+					</person-box>
+			</template>
+		</div>
 	</template>
 	<script>
 		Polymer('person-list', {
