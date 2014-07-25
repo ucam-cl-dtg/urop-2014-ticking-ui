@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Tick {
 
-	// FORMAT: 'group'_'name'
+	// FORMAT: 'author','name'
 	@JsonProperty("_id")
 	private String tid;
 

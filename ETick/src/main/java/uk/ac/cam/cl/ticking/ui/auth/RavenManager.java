@@ -1,8 +1,11 @@
 package uk.ac.cam.cl.ticking.ui.auth;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -102,7 +105,7 @@ public class RavenManager {
 	@GET
 	@Path("/login")
 	@Produces("application/json")
-	public Response Login(@Context HttpServletRequest request) {
+	public Response login(@Context HttpServletRequest request) {
 
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
@@ -113,6 +116,15 @@ public class RavenManager {
 			DatabasePopulator.testPopulate(user);
 		}		
 		return Response.status(201).entity(user).build();
+	}
+	
+	@DELETE
+	@Path("/logout")
+	@Produces("application/json")
+	public Response logout(@Context HttpServletRequest request) {
+		request.getSession().invalidate();
+		return Response.ok().build();
+		
 	}
 	
 	public User ldapProduceUser(String crsid) {

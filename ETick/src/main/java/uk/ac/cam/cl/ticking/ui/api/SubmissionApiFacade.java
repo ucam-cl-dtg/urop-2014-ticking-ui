@@ -1,6 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
@@ -9,6 +10,14 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import publicinterfaces.AbstractReport;
+import publicinterfaces.ITestService;
+import publicinterfaces.NoSuchTestException;
+import publicinterfaces.Status;
+import publicinterfaces.TestIDNotFoundException;
+import publicinterfaces.TestStillRunningException;
+import publicinterfaces.TickNotInDBException;
+import publicinterfaces.UserNotInDBException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
@@ -84,7 +93,12 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		
-		Status status = testProxy.pollStatus(crsid,repoName);
+		Status status;
+		try {
+			status = testProxy.pollStatus(crsid,repoName);
+		} catch (NoSuchTestException e) {
+			return Response.status(404).entity(e).build();
+		}
 		
 		return Response.ok(status).build();
 	}
@@ -104,7 +118,12 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		
-		AbstractReport status = testProxy.getLastReport(crsid,repoName);
+		AbstractReport status;
+		try {
+			status = testProxy.getLastReport(crsid,repoName);
+		} catch (UserNotInDBException | TickNotInDBException e) {
+			return Response.status(404).entity(e).build();
+		}
 		
 		return Response.ok(status).build();
 	}
@@ -124,7 +143,12 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		
-		List<AbstractReport> status = testProxy.getAllReports(crsid,repoName);
+		List<AbstractReport> status;
+		try {
+			status = testProxy.getAllReports(crsid,repoName);
+		} catch (UserNotInDBException | TickNotInDBException e) {
+			return Response.status(404).entity(e).build();
+		}
 		
 		return Response.ok(status).build();
 	}
