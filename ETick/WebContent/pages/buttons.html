@@ -111,9 +111,8 @@ paper-button.colored {
 	<my-dialog>
 
 	<core-ajax  id="forkAPI" 
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/fork" 
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/" 
 				handleAs="json"
-				contentType="application/json"
 				method="POST"></core-ajax>
 
 	<script>
@@ -124,6 +123,7 @@ paper-button.colored {
 		var create = document.querySelector('#create');
 		var forkify = document.querySelector('#forkify');
 		var call = document.querySelector('#addAPI');
+		var forkAPI = document.querySelector('#forkAPI');
 		
 		addInput.addEventListener('input', function() {
 			if(addInput.invalid) {
@@ -148,7 +148,11 @@ paper-button.colored {
 		});
 
 		fork.addEventListener('click', function() {
-			document.querySelector('#forkOverlay').toggle();
+			forkAPI.go();
+		});
+
+		forkAPI.addEventListener('core-response', function() {
+			console.log(forkAPI.response);
 		});
 
 		create.addEventListener('click', function() {

@@ -1,7 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
-
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="dialog.html">
 
@@ -36,6 +37,22 @@
 				text-align: center;
 			}
 		</style>
+		
+		<!-- Add Member Ajax call. -->
+		<core-ajax id="addMemberAjax"
+			method="POST"
+			contentType="application/json"
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping">
+		</core-ajax>
+
+		<!-- Member list Ajax call. -->
+		<core-ajax id="listAjax"
+			auto
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"
+			handleAs="json"
+			on-core-response="{{listResponse}}">
+		</core-ajax>
+
 
 		<!-- Card heading. -->
 		<div id="headerBar" layout horizontal center>
@@ -51,34 +68,21 @@
 		</div>
 
 		<!-- Add Member dialog. -->
-		<my-dialog id="addDialog" transition="core-transition-top">
-			<h2>Add Member</h2>
-			<div layout vertical>
-				<paper-input id="addCRSID"
-					floatingLabel
-					label="CRSid..."
-					validate="^[a-zA-Z]+[0-9]*$"
-					error="Invalid CRSid.">
-				</paper-input>
-				<h3>Roles:</h3>
-				<table>
-					<tr><td>Author: </td><td><paper-checkbox id="auth"></paper-checkbox></td></tr>
-					<tr><td>Submitter: </td><td><paper-checkbox id="subm"></paper-checkbox></td></tr>
-					<tr><td>Marker: </td><td><paper-checkbox id="mark"></paper-checkbox></td></tr>
-					<tr><td>Overview: </td><td><paper-checkbox id="over"></paper-checkbox></td></tr>
-				</table>
-				<div layout end-justified horizontal>
-					<div flex></div>
-					<paper-button class="button" label="ADD" core-overlay-toggle></paper-button>
-				</div>
-			</div>
-		</my-dialog>
+
 
 	</template>
 	<script>
 		Polymer('group-members', {
 			addMemberClicked: function () {
-				this.$.addDialog.toggle();			
+				// this.$.addDialog.toggle();
+				this.$.addMemberAjax.body = '{"user":"arb33", "group":"' + this.gid + '", "role":"OVERVIEW"}';
+				this.$.addMemberAjax.go();
+				this.$.listAjax.go();
+			},
+
+			listResponse: function() {
+				console.log('got list response');
+				this.$.members.people = this.$.listAjax.response;
 			}
 		});
 	</script>
