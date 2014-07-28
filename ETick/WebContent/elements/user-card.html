@@ -49,7 +49,7 @@
 				<h2>{{ldap.displayName}}</h2>
 		</div>
 		<table width="50%">
-			<tr><td><b>CRSID:</b></td><td>{{ldap.crsid}}</td></tr>
+			<tr><td><b>CRSID:</b></td><td>{{ldap._id}}</td></tr>
 			<tr><td><b>Email:</b></td><td>{{ldap.email}}</td></tr>
 			<tr><td><b>College:</b></td><td>{{ldap.college}}</td></tr>
 			<tr><td><b>Institutions:</b></td><td>
@@ -62,8 +62,8 @@
 	<script>
 		Polymer('user-card', {
 			ready: function() {
-				this.ldap = { foo: "bar" };
-			}
+
+			}	
 		});
 	</script>
 </polymer-element>

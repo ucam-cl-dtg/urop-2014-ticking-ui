@@ -1,0 +1,49 @@
+:host {
+	display: block;
+	width: 100%;
+}
+
+#personListContainer {
+	width: 100%;
+	height: calc(60px * {{rows}});
+	overflow: auto;
+}
+
+h1 {
+	font-size: 1.8rem;
+	font-weight: 200;
+	padding: 0 0 0 10px;
+}
+
+paper-dialog /deep/ h1 {
+	font-weight: 200;
+	margin-bottom: 10px;
+}
+
+paper-dialog /deep/ h2 {
+	font-weight: 200;
+	font-size: 1.4rem;
+}
+
+/*Fix for paper-checkbox issue #6*/
+paper-checkbox::shadow #ink {
+    top: -16px;
+    left: -16px;
+    width: 50px;
+    height: 50px;
+}
+
+table {
+	width: 100%;
+}
+
+table td {
+	vertical-align: middle;
+	text-align: center;
+}
+
+.dialogSubmit {
+	margin: 5px;
+	background: #4285f4;
+	color: #fff;
+}

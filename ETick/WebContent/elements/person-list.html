@@ -4,7 +4,7 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="person-box.html">
 
-<polymer-element name="person-list" attributes="listURL">
+<polymer-element name="person-list" attributes="people">
 	<template>
 		<style>
 			person-box {	
@@ -18,16 +18,11 @@
 				background: #e9e9e9;
 			}
 		</style>
-		<core-ajax id="listAjax"
-			url="{{listURL}}"
-			handleAs="json"
-			on-core-response="{{handleResponse}}">
-		</core-ajax>
 		<div id="listEnclosure" layout horizontal center wrap>
 			<template repeat="{{person, i in people}}">
 					<person-box
 						name="{{person.displayName}}"
-						crsid="{{person.crsid}}"
+						crsid="{{person._id}}"
 						college="{{person.college}}"
 						isStudent="{{person.isStudent}}">
 					</person-box>	
@@ -37,16 +32,16 @@
 	<script>
 		Polymer('person-list', {
 			ready: function () {
-				if (this.listURL) {
-					this.$.listAjax.go();
-				}
-
+				this.people = [];
 			},
-			
-			handleResponse: function() {
-				this.people = this.$.listAjax.response;
+
+			observe: {
+				'people': 'peopleChanged'
+			},
+
+			peopleChanged: function() {
+				console.log(this.people);
 				this.number = this.people.length;
-				console.log(this.$.listEnclosure.clientWidth);
 			}
 		});
 	</script>
