@@ -24,27 +24,26 @@ public class DatabasePopulator {
 		Injector injector = Guice
 				.createInjector(new GuiceConfigurationModule());
 		db = injector.getInstance(IDataManager.class);
-		Group g;
 
 		addEntry(u, "TestS", Role.SUBMITTER);
-		
+
 		addEntry(u, "TestM", Role.MARKER);
-		
+
 		addEntry(u, "TestMA", Role.MARKER);
 		addEntry(u, "TestMA", Role.AUTHOR);
-		
+
 		addEntry(u, "TestMO", Role.MARKER);
 		addEntry(u, "TestMO", Role.OVERVIEW);
-		
+
 		addEntry(u, "TestMAO", Role.MARKER);
 		addEntry(u, "TestMAO", Role.AUTHOR);
 		addEntry(u, "TestMAO", Role.OVERVIEW);
-		
+
 		addEntry(u, "TestA", Role.AUTHOR);
-		
+
 		addEntry(u, "TestAO", Role.AUTHOR);
 		addEntry(u, "TestAO", Role.OVERVIEW);
-		
+
 		addEntry(u, "TestO", Role.OVERVIEW);
 	}
 

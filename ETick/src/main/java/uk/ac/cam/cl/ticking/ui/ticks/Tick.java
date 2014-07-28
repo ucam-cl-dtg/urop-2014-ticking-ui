@@ -127,7 +127,7 @@ public class Tick {
 	public String getTID() {
 		return tid;
 	}
-	
+
 	/**
 	 * Initialises the TID field for the Tick object
 	 */

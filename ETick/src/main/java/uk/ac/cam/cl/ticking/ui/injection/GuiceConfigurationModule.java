@@ -123,11 +123,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 		}
 		return groupApiFacade;
 	}
-	
+
 	@Inject
 	@Provides
-	private static SubmissionApiFacade getSubmissionApiSingleton(IDataManager db,
-			ConfigurationFile config) {
+	private static SubmissionApiFacade getSubmissionApiSingleton(
+			IDataManager db, ConfigurationFile config) {
 		if (submissionApiFacade == null) {
 			submissionApiFacade = new SubmissionApiFacade(db, config);
 		}

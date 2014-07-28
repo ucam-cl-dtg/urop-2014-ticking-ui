@@ -85,8 +85,8 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response addTick(@Context HttpServletRequest request,
-			@PathParam("gid") String gid, @PathParam("tid") String tid) throws IOException,
-			DuplicateRepoNameException;
+			@PathParam("gid") String gid, @PathParam("tid") String tid)
+			throws IOException, DuplicateRepoNameException;
 
 	/**
 	 * @param request
