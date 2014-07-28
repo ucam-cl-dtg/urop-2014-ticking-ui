@@ -1,7 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
-<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog-transition.html">
+<link rel="import" href="../bower_components/core-transition/core-transition.html">
+
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="dialog.html">
@@ -42,27 +44,28 @@
 		</div>
 
 		<!-- Add Member dialog. -->
-		<paper-dialog id="addDialog" heading="Add new member:" backdrop>
+		<paper-dialog id="addDialog" heading="Add new member:" backdrop	
+				transition="core-transition-top">
 			<paper-input id="addInput" class="dialogInput"
-				transition="core-transition-top"
 				floatingLabel
 				label="CRSid..."
 				error="Invalid CRSid."
-				validate="^[a-zA-Z]+\d+$">
+				validate="^[a-zA-Z]+\d+$"
+				on-input="{{handleAddInput}}">
 			</paper-input>
-			<h2>Roles:</h2>
+			<h2 class="subtitle">Roles:</h2>
 			<table>
 				<tr>
-					<td>Author: <paper-checkbox id="authBox"></paper-checkbox></td>
-					<td>Marker: <paper-checkbox id="markBox"></paper-checkbox></td>
+					<td>Author:</td><td><paper-checkbox id="authBox"></paper-checkbox></td>
+					<td>Marker:</td><td><paper-checkbox id="markBox"></paper-checkbox></td>
 				</tr>
 				<tr>
-					<td>Overview: <paper-checkbox id="overBox"></paper-checkbox></td>
-					<td>Submitter: <paper-checkbox id="subBox"></paper-checkbox></td>
+					<td>Overview:</td><td><paper-checkbox id="overBox"></paper-checkbox></td>
+					<td>Submitter:</td><td><paper-checkbox id="subBox"></paper-checkbox></td>
 				</tr>
 			</table>
 			<template if="{{showSubmit}}">
-				<paper-button id="addSubmit" class="dialogSubmit" label="ADD" on-click="{{addMemberClicked}}" affirmative></paper-button>
+				<paper-button id="addSubmit" class="dialogSubmit" label="ADD" on-click="{{addMember}}" affirmative></paper-button>
 			</template>
 		</paper-dialog>
 
@@ -71,20 +74,31 @@
 	<script>
 		Polymer('group-members', {
 			ready: function () {
-				this.$.addInput.addEventListener('input', function() {
-					if (this.$.addInput.invalid) {
-						this.showSubmit = false;
-					}
-					else {
-						this.showSubmit = true;
-					}
-				});
+			},
+
+			addMember: function() {
+				var newCRSID = this.$.addInput.value;
+				var roles = [];
+				if (this.$.authBox.checked) roles.push('AUTHOR');
+				if (this.$.markBox.checked) roles.push('MARKER');
+				if (this.$.overBox.checked) roles.push('OVERVIEW');
+				if (this.$.subBox.checked) roles.push('SUBMITTER');
+				this.$.addMemberAjax.body = JSON.stringify(roles);
+				this.$.addMemberAjax.url += '?gid=' + this.gid + '&crsid=' + newCRSID;
+				this.$.addMemberAjax.go();
+			},
+
+			handleAddInput: function () {
+				if (this.$.addInput.invalid || this.$.addInput.inputValue === "") {
+					this.showSubmit = false;
+				}
+				else {
+					this.showSubmit = true;
+				}
 			},
 
 			addMemberClicked: function () {
-				// this.$.addDialog.toggle();
-				this.$.addMemberAjax.body = '{"user":"jkf21", "group":"' + this.gid + '", "role":"OVERVIEW"}';
-				this.$.addMemberAjax.go();
+				this.$.addDialog.toggle();
 			},
 
 			listResponse: function() {
