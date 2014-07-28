@@ -45,7 +45,8 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 			//The user is already in the database and so we don't need to add them.
 		}
 		db.saveGrouping(grouping);
-		return Response.status(201).entity(grouping).build();
+		List<User> users = db.getUsers(grouping.getGroup());
+		return Response.status(201).entity(users).build();
 	}
 
 }

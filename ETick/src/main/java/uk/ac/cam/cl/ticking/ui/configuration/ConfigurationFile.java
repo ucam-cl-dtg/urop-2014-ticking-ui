@@ -10,7 +10,7 @@ public class ConfigurationFile
 {
 	private String uiApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_UI/api/";
     private String gitApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_GIT/rest/";
-    private String testApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/TestingSystem/rest/testerAPI/v2";
+    private String testApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/";
     private String uiMongoBroadcast = "localhost";
     private int uiMongoPort = 27017;
     

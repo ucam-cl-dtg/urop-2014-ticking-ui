@@ -136,7 +136,7 @@ public class MongoDataManager implements IDataManager {
 
 	@Override
 	public List<User> getStudents() {
-		DBCursor<User> cursor = userColl.find().is("is_student", true);
+		DBCursor<User> cursor = userColl.find().is("isStudent", true);
 		return getUsers(cursor);
 	}
 

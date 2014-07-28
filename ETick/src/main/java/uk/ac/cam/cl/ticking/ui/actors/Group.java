@@ -14,13 +14,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author tl364
  *
  */
-public class Group implements Comparable<Group>{
+public class Group implements Comparable<Group> {
 
 	@JsonProperty("_id")
 	private String gid;
 
 	private String name, creator;
-	
+
 	private List<String> ticks = new ArrayList<String>();
 
 	/**
@@ -33,7 +33,8 @@ public class Group implements Comparable<Group>{
 	 *            - desired name for the group
 	 */
 	@JsonCreator
-	public Group(@JsonProperty("name") String name, @JsonProperty("creator") String creator) {
+	public Group(@JsonProperty("name") String name,
+			@JsonProperty("creator") String creator) {
 		this.setName(name);
 		this.setCreator(creator);
 		this.gid = ObjectId.get().toString();
@@ -59,7 +60,7 @@ public class Group implements Comparable<Group>{
 	public String getGid() {
 		return gid;
 	}
-	
+
 	/**
 	 * @return creator
 	 */
@@ -73,14 +74,14 @@ public class Group implements Comparable<Group>{
 	public void setCreator(String creator) {
 		this.creator = creator;
 	}
-	
+
 	/**
 	 * @return ticks
 	 */
 	public List<String> getTicks() {
 		return ticks;
 	}
-	
+
 	/**
 	 * @param tid
 	 */
@@ -88,7 +89,9 @@ public class Group implements Comparable<Group>{
 		ticks.add(tid);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override

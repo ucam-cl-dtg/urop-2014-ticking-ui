@@ -54,19 +54,13 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		
 		String forkRepoName = crsid+"/"+repoName;
 		
-		ResteasyClient gitClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget gitTarget = gitClient.target(config.getGitApiLocation());
-
-		WebInterface gitProxy = gitTarget.proxy(WebInterface.class);
-		String URI = gitProxy.getRepoURI(forkRepoName);
-		
 		//Execution will not reach this point unless the repo can be found by the GitAPI
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
 		ResteasyWebTarget testTarget = testClient.target(config.getTestApiLocation());
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		try {
-			testProxy.runNewTest(crsid, repoName, URI);
+			testProxy.runNewTest(crsid, repoName, forkRepoName);
 		} catch (IOException e) {
 			return Response.status(500).entity(e).build();
 		} catch (TestStillRunningException e) {

@@ -51,12 +51,12 @@ public class User implements Comparable<User> {
 	@JsonCreator
 	public User(@JsonProperty("_id") String crsid,
 			@JsonProperty("surname") String surname,
-			@JsonProperty("reg_name") String regName,
-			@JsonProperty("display_name") String displayName,
+			@JsonProperty("regName") String regName,
+			@JsonProperty("displayName") String displayName,
 			@JsonProperty("email") String email,
 			@JsonProperty("institutions") List<String> institutions,
 			@JsonProperty("college") String college,
-			@JsonProperty("is_student") boolean isStudent) {
+			@JsonProperty("isStudent") boolean isStudent) {
 		this.setCrsid(crsid);
 		this.setSurname(surname);
 		this.setRegName(regName);
@@ -101,7 +101,7 @@ public class User implements Comparable<User> {
 	/**
 	 * @return regName
 	 */
-	@JsonProperty("reg_name")
+	@JsonProperty("regName")
 	public String getRegName() {
 		return regName;
 	}
@@ -109,7 +109,7 @@ public class User implements Comparable<User> {
 	/**
 	 * @param regName
 	 */
-	@JsonProperty("reg_name")
+	@JsonProperty("regName")
 	public void setRegName(String regName) {
 		this.regName = regName;
 	}
@@ -117,7 +117,7 @@ public class User implements Comparable<User> {
 	/**
 	 * @return displayName
 	 */
-	@JsonProperty("display_name")
+	@JsonProperty("displayName")
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -125,7 +125,7 @@ public class User implements Comparable<User> {
 	/**
 	 * @param displayName
 	 */
-	@JsonProperty("display_name")
+	@JsonProperty("displayName")
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
@@ -181,7 +181,7 @@ public class User implements Comparable<User> {
 	/**
 	 * @return isStudent
 	 */
-	@JsonProperty("is_student")
+	@JsonProperty("isStudent")
 	public boolean getIsStudent() {
 		return isStudent;
 	}
@@ -189,7 +189,7 @@ public class User implements Comparable<User> {
 	/**
 	 * @param isStudent
 	 */
-	@JsonProperty("is_student")
+	@JsonProperty("isStudent")
 	public void setIsStudent(boolean isStudent) {
 		this.isStudent = isStudent;
 	}
