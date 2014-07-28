@@ -15,7 +15,14 @@ h1 {
 	padding: 0 0 0 10px;
 }
 
-paper-dialog /deep/ h1 {
+
+
+paper-dialog .subtitle {
+	font-weight: 200;
+	font-size: 1.2rem;
+}
+
+paper-dialog::shadow h1 {
 	font-weight: 200;
 	margin-bottom: 10px;
 }
@@ -39,7 +46,6 @@ table {
 
 table td {
 	vertical-align: middle;
-	text-align: center;
 }
 
 .dialogSubmit {
