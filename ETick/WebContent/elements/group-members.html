@@ -8,41 +8,15 @@
 
 <polymer-element name="group-members" attributes="gid allowAdd rows">
 	<template>
-		<style>
-			:host {
-				display: block;
-				width: 100%;
-			}
+		<link rel="stylesheet" type="text/css" href="../css/elements/group-members.css">
 
-			#personListContainer {
-				width: 100%;
-				height: calc(60px * {{rows}});
-				overflow: auto;
-			}
-
-			h1 {
-				font-size: 1.8rem;
-				font-weight: 200;
-				padding: 0 0 0 10px;
-			}
-
-			table {
-				float: center;
-			}
-
-			td {
-				color: #555555;
-				padding: 0 10px 15px 10px;
-				width: 25;	
-				text-align: center;
-			}
-		</style>
-		
 		<!-- Add Member Ajax call. -->
 		<core-ajax id="addMemberAjax"
 			method="POST"
 			contentType="application/json"
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping">
+			handleAs="json"
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping"
+			on-core-response="{{addMemberResponse}}">
 		</core-ajax>
 
 		<!-- Member list Ajax call. -->
@@ -68,21 +42,57 @@
 		</div>
 
 		<!-- Add Member dialog. -->
+		<paper-dialog id="addDialog" heading="Add new member:" backdrop>
+			<paper-input id="addInput" class="dialogInput"
+				transition="core-transition-top"
+				floatingLabel
+				label="CRSid..."
+				error="Invalid CRSid."
+				validate="^[a-zA-Z]+\d+$">
+			</paper-input>
+			<h2>Roles:</h2>
+			<table>
+				<tr>
+					<td>Author: <paper-checkbox id="authBox"></paper-checkbox></td>
+					<td>Marker: <paper-checkbox id="markBox"></paper-checkbox></td>
+				</tr>
+				<tr>
+					<td>Overview: <paper-checkbox id="overBox"></paper-checkbox></td>
+					<td>Submitter: <paper-checkbox id="subBox"></paper-checkbox></td>
+				</tr>
+			</table>
+			<template if="{{showSubmit}}">
+				<paper-button id="addSubmit" class="dialogSubmit" label="ADD" on-click="{{addMemberClicked}}" affirmative></paper-button>
+			</template>
+		</paper-dialog>
 
 
 	</template>
 	<script>
 		Polymer('group-members', {
+			ready: function () {
+				this.$.addInput.addEventListener('input', function() {
+					if (this.$.addInput.invalid) {
+						this.showSubmit = false;
+					}
+					else {
+						this.showSubmit = true;
+					}
+				});
+			},
+
 			addMemberClicked: function () {
 				// this.$.addDialog.toggle();
-				this.$.addMemberAjax.body = '{"user":"arb33", "group":"' + this.gid + '", "role":"OVERVIEW"}';
+				this.$.addMemberAjax.body = '{"user":"jkf21", "group":"' + this.gid + '", "role":"OVERVIEW"}';
 				this.$.addMemberAjax.go();
-				this.$.listAjax.go();
 			},
 
 			listResponse: function() {
-				console.log('got list response');
 				this.$.members.people = this.$.listAjax.response;
+			},
+
+			addMemberResponse: function() {
+				this.$.members.people = this.$.addMemberAjax.response;
 			}
 		});
 	</script>

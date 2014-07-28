@@ -22,7 +22,7 @@
 			<template repeat="{{person, i in people}}">
 					<person-box
 						name="{{person.displayName}}"
-						crsid="{{person.crsid}}"
+						crsid="{{person._id}}"
 						college="{{person.college}}"
 						isStudent="{{person.isStudent}}">
 					</person-box>	
@@ -40,6 +40,7 @@
 			},
 
 			peopleChanged: function() {
+				console.log(this.people);
 				this.number = this.people.length;
 			}
 		});
