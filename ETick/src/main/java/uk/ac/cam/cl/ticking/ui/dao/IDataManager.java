@@ -52,39 +52,40 @@ public interface IDataManager {
 	 *            exists it will be updated, else it will be created
 	 */
 	public void saveGrouping(Grouping g);
-	
+
 	/**
 	 * @param cp
 	 *            - User object to be saved into storage.
-	 * @throws DuplicateDataEntryException 
+	 * @throws DuplicateDataEntryException
 	 */
 	public void insertUser(User cp) throws DuplicateDataEntryException;
 
 	/**
 	 * @param t
 	 *            - Tick object to be saved into storage.
-	 * @throws DuplicateDataEntryException 
+	 * @throws DuplicateDataEntryException
 	 */
 	public void insertTick(Tick t) throws DuplicateDataEntryException;
 
 	/**
 	 * @param m
 	 *            - Submission object to be saved into storage.
-	 * @throws DuplicateDataEntryException 
+	 * @throws DuplicateDataEntryException
 	 */
-	public void insertSubmission(Submission m) throws DuplicateDataEntryException;
+	public void insertSubmission(Submission m)
+			throws DuplicateDataEntryException;
 
 	/**
 	 * @param g
 	 *            - Group object to be saved into storage.
-	 * @throws DuplicateDataEntryException 
+	 * @throws DuplicateDataEntryException
 	 */
 	public void insertGroup(Group g) throws DuplicateDataEntryException;
 
 	/**
 	 * @param g
 	 *            - Grouping object to be saved into storage.
-	 * @throws DuplicateDataEntryException 
+	 * @throws DuplicateDataEntryException
 	 */
 	public void insertGrouping(Grouping g) throws DuplicateDataEntryException;
 
@@ -139,7 +140,7 @@ public interface IDataManager {
 	 * @return Group with given gid
 	 */
 	public Group getGroup(String gid);
-	
+
 	/**
 	 * Goes to the configured storage and attempts to find a group with the
 	 * specified name
@@ -223,7 +224,7 @@ public interface IDataManager {
 	 * @return List of ticks in the given group
 	 */
 	public List<Tick> getGroupTicks(String group);
-	
+
 	/**
 	 * Goes to the configured storage and finds all of the stored ticks
 	 * 

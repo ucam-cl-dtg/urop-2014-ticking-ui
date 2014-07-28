@@ -45,7 +45,7 @@ import com.google.inject.Inject;
 public class APIOverviewResource {
 	private static final Logger log = LoggerFactory
 			.getLogger(APIOverviewResource.class);
-	
+
 	private ConfigurationFile config;
 
 	@Inject

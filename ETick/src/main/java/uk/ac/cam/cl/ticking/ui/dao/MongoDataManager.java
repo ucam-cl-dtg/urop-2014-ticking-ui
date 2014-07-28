@@ -64,7 +64,8 @@ public class MongoDataManager implements IDataManager {
 
 	@Override
 	public void saveGroup(Group g) {
-		groupColl.ensureIndex(new BasicDBObject("name", 1), null, true); // each group name must be unique
+		// each group name must be unique
+		groupColl.ensureIndex(new BasicDBObject("name", 1), null, true);
 		groupColl.save(g);
 	}
 
@@ -72,7 +73,7 @@ public class MongoDataManager implements IDataManager {
 	public void saveGrouping(Grouping g) {
 		groupingColl.save(g);
 	}
-	
+
 	@Override
 	public void insertUser(User cp) throws DuplicateDataEntryException {
 		try {
@@ -84,7 +85,7 @@ public class MongoDataManager implements IDataManager {
 
 	@Override
 	public void insertTick(Tick t) throws DuplicateDataEntryException {
-		try{
+		try {
 			tickColl.insert(t);
 		} catch (MongoException duplicate) {
 			throw new DuplicateDataEntryException("Tick");
@@ -92,7 +93,8 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	@Override
-	public void insertSubmission(Submission m) throws DuplicateDataEntryException {
+	public void insertSubmission(Submission m)
+			throws DuplicateDataEntryException {
 		try {
 			subColl.insert(m);
 		} catch (MongoException duplicate) {
@@ -103,7 +105,8 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public void insertGroup(Group g) throws DuplicateDataEntryException {
 		try {
-			groupColl.ensureIndex(new BasicDBObject("name", 1), null, true); // each group name must be unique
+			// each group name must be unique
+			groupColl.ensureIndex(new BasicDBObject("name", 1), null, true);
 			groupColl.insert(g);
 		} catch (MongoException duplicate) {
 			throw new DuplicateDataEntryException("Group");
@@ -168,8 +171,8 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public List<User> getUsers(String gid, Role role) {
 		List<User> us = new ArrayList<User>();
-		DBCursor<Grouping> cursor = groupingColl.find()
-				.is("group", gid).is("role", role);
+		DBCursor<Grouping> cursor = groupingColl.find().is("group", gid)
+				.is("role", role);
 		List<Grouping> grs = getGroupings(cursor);
 		for (Grouping gr : grs) {
 			us.add(getUser(gr.getUser()));
@@ -185,7 +188,7 @@ public class MongoDataManager implements IDataManager {
 		g = groupColl.findOne(new BasicDBObject("_id", gid));
 		return g;
 	}
-	
+
 	@Override
 	public Group getGroupByName(String name) {
 		Group g = null;
@@ -228,8 +231,8 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public List<Group> getGroups(String crsid, Role role) {
 		List<Group> gs = new ArrayList<Group>();
-		DBCursor<Grouping> cursor = groupingColl.find()
-				.is("user", crsid).is("role", role);
+		DBCursor<Grouping> cursor = groupingColl.find().is("user", crsid)
+				.is("role", role);
 		List<Grouping> grs = getGroupings(cursor);
 		for (Grouping gr : grs) {
 			gs.add(getGroup(gr.getGroup()));
@@ -242,10 +245,10 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public List<Role> getRoles(String gid, String crsid) {
 		List<Role> rs = new ArrayList<Role>();
-		DBCursor<Grouping> cursor = groupingColl.find()
-				.is("user", crsid).is("group", gid);
+		DBCursor<Grouping> cursor = groupingColl.find().is("user", crsid)
+				.is("group", gid);
 		List<Grouping> grs = getGroupings(cursor);
-		for (Grouping gr :grs) {
+		for (Grouping gr : grs) {
 			rs.add(gr.getRole());
 		}
 		return rs;
@@ -256,8 +259,7 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public List<Grouping> getGroupings(String param, boolean field) {
 		String sField = field ? "user" : "group";
-		DBCursor<Grouping> cursor = groupingColl.find().is(sField,
-				param);
+		DBCursor<Grouping> cursor = groupingColl.find().is(sField, param);
 		return getGroupings(cursor);
 	}
 
@@ -292,10 +294,10 @@ public class MongoDataManager implements IDataManager {
 		List<Tick> ts = new ArrayList<Tick>();
 		for (String s : g.getTicks()) {
 			ts.add(getTick(s));
-		}		
+		}
 		return ts;
 	}
-	
+
 	@Override
 	public List<Tick> getTicks() {
 		DBCursor<Tick> cursor = tickColl.find();

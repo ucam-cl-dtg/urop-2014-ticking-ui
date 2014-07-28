@@ -1,7 +1,5 @@
 package uk.ac.cam.cl.ticking.ui.auth;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import uk.ac.cam.cl.dtg.ldap.LDAPObjectNotFoundException;
 import uk.ac.cam.cl.dtg.ldap.LDAPQueryManager;
@@ -83,7 +82,7 @@ public class RavenManager {
 		html += "</table>";
 
 		html += "</body></html>";
-		return Response.status(200).entity(html).build();
+		return Response.ok(html).build();
 	}
 
 	/**
@@ -114,19 +113,20 @@ public class RavenManager {
 			user = ldapProduceUser(crsid);
 			db.saveUser(user);
 			DatabasePopulator.testPopulate(user);
-		}		
-		return Response.status(201).entity(user).build();
+			return Response.status(Status.CREATED).entity(user).build();
+		}
+		return Response.ok(user).build();
 	}
-	
+
 	@DELETE
 	@Path("/logout")
 	@Produces("application/json")
 	public Response logout(@Context HttpServletRequest request) {
 		request.getSession().invalidate();
 		return Response.ok().build();
-		
+
 	}
-	
+
 	public User ldapProduceUser(String crsid) {
 		LDAPUser u;
 		User user;

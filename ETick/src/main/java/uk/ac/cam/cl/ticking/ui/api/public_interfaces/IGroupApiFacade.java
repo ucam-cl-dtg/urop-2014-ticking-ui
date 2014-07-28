@@ -20,7 +20,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 @Path("/group")
 @Produces("application/json")
 public interface IGroupApiFacade {
-	
+
 	/**
 	 * 
 	 * @param gid
@@ -30,8 +30,9 @@ public interface IGroupApiFacade {
 	@GET
 	@Path("/{gid}")
 	@Produces("application/json")
-	public abstract Response getGroup(@PathParam("gid")String gid, @QueryParam("byName")boolean byName);
-	
+	public abstract Response getGroup(@PathParam("gid") String gid,
+			@QueryParam("byName") boolean byName);
+
 	/**
 	 * 
 	 * @param gid
@@ -40,8 +41,8 @@ public interface IGroupApiFacade {
 	@GET
 	@Path("/{gid}/users")
 	@Produces("application/json")
-	public abstract Response getUsers(@PathParam("gid")String gid);
-	
+	public abstract Response getUsers(@PathParam("gid") String gid);
+
 	/**
 	 * 
 	 * @return all groups
@@ -50,7 +51,7 @@ public interface IGroupApiFacade {
 	@Path("/")
 	@Produces("application/json")
 	public abstract Response getGroups();
-	
+
 	/**
 	 * Commits the given group object to the database
 	 * 

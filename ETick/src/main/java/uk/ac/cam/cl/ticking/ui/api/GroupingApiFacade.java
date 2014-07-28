@@ -20,6 +20,9 @@ import com.google.inject.Inject;
 public class GroupingApiFacade implements IGroupingApiFacade {
 	
 	private IDataManager db;
+	@SuppressWarnings("unused")
+	// not currently used but could quite possibly be needed in the future, will
+	// remove if not
 	private ConfigurationFile config;
 	private RavenManager raven;
 

@@ -15,8 +15,11 @@ import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import com.google.inject.Inject;
 
 public class GroupApiFacade implements IGroupApiFacade {
-	
+
 	private IDataManager db;
+	@SuppressWarnings("unused")
+	// not currently used but could quite possibly be needed in the future, will
+	// remove if not
 	private ConfigurationFile config;
 
 	@Inject
@@ -24,7 +27,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		this.db = db;
 		this.config = config;
 	}
-	
+
 	@Override
 	public Response getGroup(String gid, boolean byName) {
 		Group group = byName ? db.getGroupByName(gid) : db.getGroup(gid);

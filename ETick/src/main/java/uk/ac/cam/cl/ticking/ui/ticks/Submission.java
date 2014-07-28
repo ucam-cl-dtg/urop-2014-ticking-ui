@@ -57,7 +57,7 @@ public class Submission {
 		this.setUnitPass(unitPass);
 		this.setHumanPass(false);
 	}
-	
+
 	/**
 	 * Default constructor for Jackson JSON to POJO because java
 	 */
@@ -96,7 +96,7 @@ public class Submission {
 	public void setSubmitted(Date submitted) {
 		this.submitted = submitted;
 	}
-	
+
 	/**
 	 * @response tick
 	 */

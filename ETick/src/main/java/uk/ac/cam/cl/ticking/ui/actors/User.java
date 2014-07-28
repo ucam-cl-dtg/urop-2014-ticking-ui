@@ -23,7 +23,7 @@ public class User implements Comparable<User> {
 	private String email;
 	private List<String> institutions;
 	private String college;
-	
+
 	private boolean ldap;
 
 	private boolean isStudent;
@@ -193,7 +193,7 @@ public class User implements Comparable<User> {
 	public void setIsStudent(boolean isStudent) {
 		this.isStudent = isStudent;
 	}
-	
+
 	/**
 	 * @return ldap
 	 */
@@ -207,11 +207,11 @@ public class User implements Comparable<User> {
 	public void setLdap(boolean ldap) {
 		this.ldap = ldap;
 	}
-	
+
 	@Override
 	public int compareTo(User o) {
-		String compareMe = (surname == null) ? crsid :surname;
-		String compareThem = (o.surname == null) ? o.crsid :o.surname;
+		String compareMe = (surname == null) ? crsid : surname;
+		String compareThem = (o.surname == null) ? o.crsid : o.surname;
 		return compareMe.compareToIgnoreCase(compareThem);
 	}
 
