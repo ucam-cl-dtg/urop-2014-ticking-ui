@@ -10,7 +10,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
-import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
+import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 
 import com.google.inject.Inject;
@@ -22,14 +22,14 @@ public class UserApiFacade implements IUserApiFacade {
 	@SuppressWarnings("unused")
 	// Currently not needed but these classes are still not final and it is
 	// quite likely to be required in future
-	private ConfigurationFile config;
+	private Configuration config;
 
 	/**
 	 * @param db
 	 * @param config
 	 */
 	@Inject
-	public UserApiFacade(IDataManager db, ConfigurationFile config) {
+	public UserApiFacade(IDataManager db, Configuration config) {
 		this.db = db;
 		this.config = config;
 	}
@@ -73,10 +73,10 @@ public class UserApiFacade implements IUserApiFacade {
 	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response getGroupRoles(HttpServletRequest request, String gid) {
+	public Response getGroupRoles(HttpServletRequest request, String groupId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		List<Role> roles = db.getRoles(gid, crsid);
+		List<Role> roles = db.getRoles(groupId, crsid);
 		return Response.ok(roles).build();
 	}
 }

@@ -214,5 +214,19 @@ public class User implements Comparable<User> {
 		String compareThem = (o.surname == null) ? o.crsid : o.surname;
 		return compareMe.compareToIgnoreCase(compareThem);
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof User)) {
+			return false;
+		}
+		return this.crsid == ((User)o).crsid;
+	}
+	
+	@Override
+	public int hashCode() {
+		return crsid.hashCode();
+	}
 
 }

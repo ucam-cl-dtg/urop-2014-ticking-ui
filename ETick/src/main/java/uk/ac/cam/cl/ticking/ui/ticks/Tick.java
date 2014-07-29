@@ -2,6 +2,8 @@ package uk.ac.cam.cl.ticking.ui.ticks;
 
 import java.util.Date;
 
+import uk.ac.cam.cl.ticking.ui.actors.User;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,7 +17,7 @@ public class Tick {
 
 	// FORMAT: 'author','name'
 	@JsonProperty("_id")
-	private String tid;
+	private String tickId;
 
 	private String name;
 	private String author;
@@ -46,7 +48,7 @@ public class Tick {
 		this.setAuthor(author);
 		this.setRepo(repo);
 		this.setDeadline(deadline);
-		initTID();
+		initTickId();
 
 	}
 
@@ -124,18 +126,50 @@ public class Tick {
 	/**
 	 * @return tid
 	 */
-	public String getTID() {
-		return tid;
+	public String getTickId() {
+		return tickId;
 	}
 
 	/**
-	 * Initialises the TID field for the Tick object
+	 * Initialises the tickId field for the Tick object
 	 */
-	public void initTID() {
-		this.tid = author + "," + name;
+	public void initTickId() {
+		this.tickId = author + "," + name;
 	}
 
-	public static String replaceDelimeter(String tid) {
-		return tid.replace(',', '/');
+	/**
+	 * Takes , separated tickIds as they are stored in our system and turns them
+	 * into / separated ids for use with the other APIs
+	 * 
+	 * @param tickId
+	 * @return tickId in / separated format
+	 */
+	public static String replaceDelimeter(String tickId) {
+		return tickId.replace(',', '/');
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Tick)) {
+			return false;
+		}
+		return this.tickId == ((Tick) o).tickId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return tickId.hashCode();
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -17,7 +18,7 @@ import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
-import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
+import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
@@ -28,14 +29,14 @@ import com.google.inject.Inject;
 public class TickApiFacade implements ITickApiFacade {
 
 	private IDataManager db;
-	private ConfigurationFile config;
+	private Configuration config;
 
 	/**
 	 * @param db
 	 * @param config
 	 */
 	@Inject
-	public TickApiFacade(IDataManager db, ConfigurationFile config) {
+	public TickApiFacade(IDataManager db, Configuration config) {
 		this.db = db;
 		this.config = config;
 	}
@@ -48,9 +49,9 @@ public class TickApiFacade implements ITickApiFacade {
 	 * java.lang.String)
 	 */
 	@Override
-	public Response getTick(String tid) {
-		Tick t = db.getTick(tid);
-		return Response.ok().entity(t).build();
+	public Response getTick(String tickId) {
+		Tick tick = db.getTick(tickId);
+		return Response.ok().entity(tick).build();
 	}
 
 	/*
@@ -61,9 +62,9 @@ public class TickApiFacade implements ITickApiFacade {
 	 * (java.lang.String)
 	 */
 	@Override
-	public Response getTicks(String gid) {
-		List<Tick> tks = db.getGroupTicks(gid);
-		return Response.ok().entity(tks).build();
+	public Response getTicks(String groupId) {
+		List<Tick> ticks = db.getGroupTicks(groupId);
+		return Response.ok().entity(ticks).build();
 	}
 
 	/*
@@ -75,7 +76,7 @@ public class TickApiFacade implements ITickApiFacade {
 	 * uk.ac.cam.cl.ticking.ui.ticks.Tick)
 	 */
 	@Override
-	public Response newTick(HttpServletRequest request, String gid, Tick tick)
+	public Response newTick(HttpServletRequest request, String groupId, Tick tick)
 			throws IOException, DuplicateRepoNameException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
@@ -90,16 +91,16 @@ public class TickApiFacade implements ITickApiFacade {
 		// IOException is thrown
 		tick.setAuthor(crsid);
 		tick.setRepo(repo);
-		tick.initTID();
+		tick.initTickId();
 		try {
 			db.insertTick(tick);
 		} catch (DuplicateDataEntryException de) {
-			return Response.status(409).build();
+			return Response.status(Status.CONFLICT).build();
 		}
-		if (!gid.equals("")) {
-			return addTick(request, tick.getTID(), gid);
+		if (!groupId.equals("")) {
+			return addTick(request, tick.getTickId(), groupId);
 		}
-		return Response.status(201).entity(tick).build();
+		return Response.status(Status.CREATED).entity(tick).build();
 	}
 
 	/*
@@ -111,17 +112,17 @@ public class TickApiFacade implements ITickApiFacade {
 	 * java.lang.String)
 	 */
 	@Override
-	public Response addTick(HttpServletRequest request, String tid, String gid) {
+	public Response addTick(HttpServletRequest request, String tickId, String groupId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		List<Role> roles = db.getRoles(gid, crsid);
+		List<Role> roles = db.getRoles(groupId, crsid);
 		if (!roles.contains(Role.AUTHOR)) {
-			return Response.status(401).entity(Strings.INVALIDROLE).build();
+			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
 		}
-		Group g = db.getGroup(gid);
-		g.addTick(tid);
+		Group g = db.getGroup(groupId);
+		g.addTick(tickId);
 		db.saveGroup(g);
-		return Response.status(201).entity(g).build();
+		return Response.status(Status.CREATED).entity(g).build();
 	}
 
 	/*
@@ -132,7 +133,7 @@ public class TickApiFacade implements ITickApiFacade {
 	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response forkTick(HttpServletRequest request, String tid)
+	public Response forkTick(HttpServletRequest request, String tickId)
 			throws IOException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
@@ -141,17 +142,17 @@ public class TickApiFacade implements ITickApiFacade {
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 		WebInterface proxy = target.proxy(WebInterface.class);
 		String output;
-		String repoName = Tick.replaceDelimeter(tid);
+		String repoName = Tick.replaceDelimeter(tickId);
 		try {
 			output = proxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));
 		} catch (DuplicateRepoNameException e) {
 			output = e.getMessage()
-					+ "(This is not your first fork, however previous data has not been cleared)";
+					+ Strings.FORKED;
 		}
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
-		return Response.status(201).entity(output).build();
+		return Response.status(Status.CREATED).entity(output).build();
 	}
 }

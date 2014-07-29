@@ -24,48 +24,48 @@ public interface ISubmissionApiFacade {
 
 	/**
 	 * @param request
-	 * @param tid
+	 * @param tickId
 	 * @return Response
 	 * @throws RepositoryNotFoundException
 	 */
 	@POST
-	@Path("/{tid}/")
+	@Path("/{tickId}/")
 	@Produces("application/json")
 	public abstract Response submit(@Context HttpServletRequest request,
-			@PathParam("tid") String tid) throws RepositoryNotFoundException;
+			@PathParam("tickId") String tickId) throws RepositoryNotFoundException;
 
 	/**
 	 * @param request
-	 * @param tid
+	 * @param tickId
 	 * @return Status of the submission in the ticker from the test team
 	 */
 	@GET
-	@Path("/{tid}/running")
+	@Path("/{tickId}/running")
 	@Produces("application/json")
 	public abstract Response getStatus(@Context HttpServletRequest request,
-			@PathParam("tid") String tid);
+			@PathParam("tickId") String tickId);
 
 	/**
 	 * @param request
-	 * @param tid
+	 * @param tickId
 	 * @return The most recent report in the Test database for the session
 	 *         user's given tick
 	 */
 	@GET
-	@Path("/{tid}/last")
+	@Path("/{tickId}/last")
 	@Produces("application/json")
 	public abstract Response getLast(@Context HttpServletRequest request,
-			@PathParam("tid") String tid);
+			@PathParam("tickId") String tickId);
 
 	/**
 	 * @param request
-	 * @param tid
+	 * @param tickId
 	 * @return All of the reports for the session user's given tick
 	 */
 	@GET
-	@Path("/{tid}")
+	@Path("/{tickId}")
 	@Produces("application/json")
 	public abstract Response getAll(@Context HttpServletRequest request,
-			@PathParam("tid") String tid);
+			@PathParam("tickId") String tickId);
 
 }

@@ -48,8 +48,8 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	@Override
-	public void saveUser(User cp) {
-		userColl.save(cp);
+	public void saveUser(User u) {
+		userColl.save(u);
 	}
 
 	@Override
@@ -58,8 +58,8 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	@Override
-	public void saveSubmission(Submission m) {
-		subColl.save(m);
+	public void saveSubmission(Submission s) {
+		subColl.save(s);
 	}
 
 	@Override
@@ -75,9 +75,9 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	@Override
-	public void insertUser(User cp) throws DuplicateDataEntryException {
+	public void insertUser(User u) throws DuplicateDataEntryException {
 		try {
-			userColl.insert(cp);
+			userColl.insert(u);
 		} catch (MongoException duplicate) {
 			throw new DuplicateDataEntryException("User");
 		}
@@ -93,10 +93,10 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	@Override
-	public void insertSubmission(Submission m)
+	public void insertSubmission(Submission s)
 			throws DuplicateDataEntryException {
 		try {
-			subColl.insert(m);
+			subColl.insert(s);
 		} catch (MongoException duplicate) {
 			throw new DuplicateDataEntryException("Submission");
 		}
@@ -126,9 +126,9 @@ public class MongoDataManager implements IDataManager {
 
 	@Override
 	public User getUser(String crsid) {
-		User p = null;
-		p = userColl.findOne(new BasicDBObject("_id", crsid));
-		return p;
+		User u = null;
+		u = userColl.findOne(new BasicDBObject("_id", crsid));
+		return u;
 	}
 
 	@Override
@@ -144,56 +144,56 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	private List<User> getUsers(DBCursor<User> cursor) {
-		List<User> us = new ArrayList<User>();
+		List<User> users = new ArrayList<User>();
 		while (cursor.hasNext()) {
 			User u = cursor.next();
-			us.add(u);
+			users.add(u);
 		}
 		cursor.close();
-		return us;
+		return users;
 	}
 
 	@Override
-	public List<User> getUsers(String gid) {
-		List<User> us = new ArrayList<User>();
-		List<Grouping> grs = getGroupings(gid, false);
-		List<String> ss = new ArrayList<String>();
-		for (Grouping gr : grs) {
-			String u = gr.getUser();
-			if (!ss.contains(u)) {
-				ss.add(u);
-				us.add(getUser(u));
+	public List<User> getUsers(String groupId) {
+		List<User> users = new ArrayList<User>();
+		List<Grouping> groupings = getGroupings(groupId, false);
+		List<String> added = new ArrayList<String>();
+		for (Grouping grouping : groupings) {
+			String crsid = grouping.getUser();
+			if (!added.contains(crsid)) {
+				added.add(crsid);
+				users.add(getUser(crsid));
 			}
 		}
-		return us;
+		return users;
 	}
 
 	@Override
-	public List<User> getUsers(String gid, Role role) {
-		List<User> us = new ArrayList<User>();
-		DBCursor<Grouping> cursor = groupingColl.find().is("group", gid)
+	public List<User> getUsers(String groupId, Role role) {
+		List<User> users = new ArrayList<User>();
+		DBCursor<Grouping> cursor = groupingColl.find().is("group", groupId)
 				.is("role", role);
-		List<Grouping> grs = getGroupings(cursor);
-		for (Grouping gr : grs) {
-			us.add(getUser(gr.getUser()));
+		List<Grouping> groupings = getGroupings(cursor);
+		for (Grouping grouping : groupings) {
+			users.add(getUser(grouping.getUser()));
 		}
-		return us;
+		return users;
 	}
 
 	// Group getters
 
 	@Override
-	public Group getGroup(String gid) {
-		Group g = null;
-		g = groupColl.findOne(new BasicDBObject("_id", gid));
-		return g;
+	public Group getGroup(String groupId) {
+		Group group = null;
+		group = groupColl.findOne(new BasicDBObject("_id", groupId));
+		return group;
 	}
 
 	@Override
 	public Group getGroupByName(String name) {
-		Group g = null;
-		g = groupColl.findOne(new BasicDBObject("name", name));
-		return g;
+		Group group = null;
+		group = groupColl.findOne(new BasicDBObject("name", name));
+		return group;
 	}
 
 	@Override
@@ -203,55 +203,55 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	private List<Group> getGroups(DBCursor<Group> cursor) {
-		List<Group> gs = new ArrayList<Group>();
+		List<Group> groups = new ArrayList<Group>();
 		while (cursor.hasNext()) {
-			Group g = cursor.next();
-			gs.add(g);
+			Group group = cursor.next();
+			groups.add(group);
 		}
 		cursor.close();
-		return gs;
+		return groups;
 	}
 
 	@Override
 	public List<Group> getGroups(String crsid) {
-		List<Group> gs = new ArrayList<Group>();
-		List<String> ss = new ArrayList<String>();
-		List<Grouping> grs = getGroupings(crsid, true);
-		for (Grouping gr : grs) {
-			String g = gr.getGroup();
-			if (!ss.contains(g)) {
-				ss.add(g);
-				gs.add(getGroup(g));
+		List<Group> groups = new ArrayList<Group>();		
+		List<Grouping> groupings = getGroupings(crsid, true);
+		List<String> added = new ArrayList<String>();
+		for (Grouping grouping : groupings) {
+			String groupId = grouping.getGroup();
+			if (!added.contains(groupId)) {
+				added.add(groupId);
+				groups.add(getGroup(groupId));
 			}
 		}
-		return gs;
+		return groups;
 
 	}
 
 	@Override
 	public List<Group> getGroups(String crsid, Role role) {
-		List<Group> gs = new ArrayList<Group>();
+		List<Group> groups = new ArrayList<Group>();
 		DBCursor<Grouping> cursor = groupingColl.find().is("user", crsid)
 				.is("role", role);
-		List<Grouping> grs = getGroupings(cursor);
-		for (Grouping gr : grs) {
-			gs.add(getGroup(gr.getGroup()));
+		List<Grouping> groupings = getGroupings(cursor);
+		for (Grouping grouping : groupings) {
+			groups.add(getGroup(grouping.getGroup()));
 		}
-		return gs;
+		return groups;
 	}
 
 	// Role getters
 
 	@Override
-	public List<Role> getRoles(String gid, String crsid) {
-		List<Role> rs = new ArrayList<Role>();
+	public List<Role> getRoles(String groupId, String crsid) {
+		List<Role> roles = new ArrayList<Role>();
 		DBCursor<Grouping> cursor = groupingColl.find().is("user", crsid)
-				.is("group", gid);
-		List<Grouping> grs = getGroupings(cursor);
-		for (Grouping gr : grs) {
-			rs.add(gr.getRole());
+				.is("group", groupId);
+		List<Grouping> groupings = getGroupings(cursor);
+		for (Grouping grouping : groupings) {
+			roles.add(grouping.getRole());
 		}
-		return rs;
+		return roles;
 	}
 
 	// Grouping getters
@@ -270,32 +270,32 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	private List<Grouping> getGroupings(DBCursor<Grouping> cursor) {
-		List<Grouping> gs = new ArrayList<Grouping>();
+		List<Grouping> groupings = new ArrayList<Grouping>();
 		while (cursor.hasNext()) {
-			Grouping g = cursor.next();
-			gs.add(g);
+			Grouping grouping = cursor.next();
+			groupings.add(grouping);
 		}
 		cursor.close();
-		return gs;
+		return groupings;
 	}
 
 	// Tick getters
 
 	@Override
-	public Tick getTick(String tid) {
-		Tick t = null;
-		t = tickColl.findOne(new BasicDBObject("_id", tid));
-		return t;
+	public Tick getTick(String tickId) {
+		Tick tick = null;
+		tick = tickColl.findOne(new BasicDBObject("_id", tickId));
+		return tick;
 	}
 
 	@Override
-	public List<Tick> getGroupTicks(String gid) {
-		Group g = getGroup(gid);
-		List<Tick> ts = new ArrayList<Tick>();
-		for (String s : g.getTicks()) {
-			ts.add(getTick(s));
+	public List<Tick> getGroupTicks(String groupId) {
+		Group group = getGroup(groupId);
+		List<Tick> ticks = new ArrayList<Tick>();
+		for (String tickId : group.getTicks()) {
+			ticks.add(getTick(tickId));
 		}
-		return ts;
+		return ticks;
 	}
 
 	@Override
@@ -305,39 +305,39 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	private List<Tick> getTicks(DBCursor<Tick> cursor) {
-		List<Tick> ts = new ArrayList<Tick>();
+		List<Tick> ticks = new ArrayList<Tick>();
 		while (cursor.hasNext()) {
-			Tick t = cursor.next();
-			ts.add(t);
+			Tick tick = cursor.next();
+			ticks.add(tick);
 		}
 		cursor.close();
-		return ts;
+		return ticks;
 	}
 
 	// Submission getters
 
 	@Override
-	public List<Submission> getGroupSubmissions(String gid) {
-		List<Submission> ss = new ArrayList<Submission>();
-		DBCursor<Submission> cursor = subColl.find().is("group", gid);
+	public List<Submission> getGroupSubmissions(String groupId) {
+		List<Submission> submissions = new ArrayList<Submission>();
+		DBCursor<Submission> cursor = subColl.find().is("group", groupId);
 		while (cursor.hasNext()) {
-			Submission s = cursor.next();
-			ss.add(s);
+			Submission submission = cursor.next();
+			submissions.add(submission);
 		}
 		cursor.close();
-		return ss;
+		return submissions;
 	}
 
 	@Override
 	public List<Submission> getSubmissions(String author) {
-		List<Submission> ss = new ArrayList<Submission>();
+		List<Submission> submissions = new ArrayList<Submission>();
 		DBCursor<Submission> cursor = subColl.find().is("author", author);
 		while (cursor.hasNext()) {
-			Submission s = cursor.next();
-			ss.add(s);
+			Submission submission = cursor.next();
+			submissions.add(submission);
 		}
 		cursor.close();
-		return ss;
+		return submissions;
 	}
 
 }

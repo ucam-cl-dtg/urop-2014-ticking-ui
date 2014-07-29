@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Group implements Comparable<Group> {
 
 	@JsonProperty("_id")
-	private String gid;
+	private String groupId;
 
 	private String name, creator;
 
@@ -37,7 +37,7 @@ public class Group implements Comparable<Group> {
 			@JsonProperty("creator") String creator) {
 		this.setName(name);
 		this.setCreator(creator);
-		this.gid = ObjectId.get().toString();
+		this.groupId = ObjectId.get().toString();
 	}
 
 	/**
@@ -55,10 +55,10 @@ public class Group implements Comparable<Group> {
 	}
 
 	/**
-	 * @return gid
+	 * @return groupId
 	 */
-	public String getGid() {
-		return gid;
+	public String getGroupId() {
+		return groupId;
 	}
 
 	/**
@@ -97,5 +97,19 @@ public class Group implements Comparable<Group> {
 	@Override
 	public int compareTo(Group o) {
 		return this.name.compareToIgnoreCase(o.name);
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Group)) {
+			return false;
+		}
+		return this.groupId == ((Group)o).groupId;
+	}
+	
+	@Override
+	public int hashCode() {
+		return groupId.hashCode();
 	}
 }
