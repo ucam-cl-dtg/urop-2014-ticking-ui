@@ -5,7 +5,7 @@
 
 #personListContainer {
 	width: 100%;
-	height: calc(60px * {{rows}});
+	max-height: calc(60px * {{rows}});
 	overflow: auto;
 }
 
@@ -15,8 +15,7 @@ h1 {
 	padding: 0 0 0 10px;
 }
 
-
-
+/* Styles for add member dialog. */
 paper-dialog .subtitle {
 	font-weight: 200;
 	font-size: 1.2rem;

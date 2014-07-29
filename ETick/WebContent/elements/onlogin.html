@@ -17,6 +17,12 @@
 				on-core-response="{{sidebarResponse}}">
 			</core-ajax>
 
+			<!-- API call to logout. -->
+			<core-ajax id="logoutAjax"
+				method="delete"
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/logout">
+			</core-ajax>
+
 
 	</template>
 	<script>

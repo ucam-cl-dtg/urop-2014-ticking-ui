@@ -4,11 +4,15 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="person-box.html">
 
-<polymer-element name="person-list" attributes="people">
+<polymer-element name="person-list" attributes="people boxWidth">
 	<template>
 		<style>
-			person-box {	
+			:host {
+				display: block;
 				width: 100%;
+			}
+			person-box {	
+				width: 33.33%;
 				min-width: 240px;
 			}
 			person-box:nth-child(odd) {
@@ -31,17 +35,6 @@
 	</template>
 	<script>
 		Polymer('person-list', {
-			ready: function () {
-				this.people = [];
-			},
-
-			observe: {
-				'people': 'peopleChanged'
-			},
-
-			peopleChanged: function() {
-				this.number = this.people.length;
-			}
 		});
 	</script>
 </polymer-element>

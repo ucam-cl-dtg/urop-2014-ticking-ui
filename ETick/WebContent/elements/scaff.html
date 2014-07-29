@@ -19,11 +19,6 @@
 			<!-- Run API calls. -->
 			<on-login id="onlogin"></on-login>
 
-			<core-ajax id="logoutAjax"
-				method="delete"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/logout">
-			</core-ajax>
-
 			<core-scaffold mode="standard" id="scaffold">
 
 				<!-- Sidebar element. -->
@@ -75,7 +70,7 @@
 
 		    // Handles logout button action. 
 		    logoutClicked: function() {
-		    	this.$.logoutAjax.go();
+		    	this.$.onlogin.$.logoutAjax.go();
 		    	window.location.href = 'https://raven.cam.ac.uk/auth/logout.html'
 		    },
 
