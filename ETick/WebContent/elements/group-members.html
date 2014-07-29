@@ -3,7 +3,7 @@
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog-transition.html">
 <link rel="import" href="../bower_components/core-transition/core-transition.html">
-
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="dialog.html">
@@ -17,8 +17,8 @@
 			method="POST"
 			contentType="application/json"
 			handleAs="json"
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping"
-			on-core-response="{{addMemberResponse}}">
+			on-core-response="{{addMemberResponse}}"
+			on-core-error="{{addMemberError}}">
 		</core-ajax>
 
 		<!-- Member list Ajax call. -->
@@ -32,7 +32,7 @@
 
 		<!-- Card heading. -->
 		<div id="headerBar" layout horizontal center>
-			<h1 flex>Members ({{$.members.number}})</h1>
+			<h1 flex>Members ({{number}})</h1>
 			<template if="{{allowAdd}}">
 				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>
 			</template>
@@ -60,7 +60,7 @@
 					<td>Marker:</td><td><paper-checkbox id="markBox"></paper-checkbox></td>
 				</tr>
 				<tr>
-					<td>Overview:</td><td><paper-checkbox id="overBox"></paper-checkbox></td>
+					<td>Overview:</td><td><paper-checkbox checked id="overBox"></paper-checkbox></td>
 					<td>Submitter:</td><td><paper-checkbox id="subBox"></paper-checkbox></td>
 				</tr>
 			</table>
@@ -69,6 +69,9 @@
 			</template>
 		</paper-dialog>
 
+		<!-- Add member success/error toasts. -->
+		<paper-toast id="addErrorToast" text="Error adding new member." duration="3000"></paper-toast>
+		<paper-toast id="addSuccessToast" text="Successfully added new member." dutration="3000"></paper-toast>
 
 	</template>
 	<script>
@@ -76,7 +79,14 @@
 			ready: function () {
 			},
 
+			resetAddMemberAjax: function () {
+				this.$.addMemberAjax.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping?gid=" + this.gid; 
+				this.$.addMemberAjax.body = "";
+			},
+
 			addMember: function() {
+				this.resetAddMemberAjax();
+
 				var newCRSID = this.$.addInput.value;
 				var roles = [];
 				if (this.$.authBox.checked) roles.push('AUTHOR');
@@ -84,7 +94,7 @@
 				if (this.$.overBox.checked) roles.push('OVERVIEW');
 				if (this.$.subBox.checked) roles.push('SUBMITTER');
 				this.$.addMemberAjax.body = JSON.stringify(roles);
-				this.$.addMemberAjax.url += '?gid=' + this.gid + '&crsid=' + newCRSID;
+				this.$.addMemberAjax.url += '&crsid=' + newCRSID;
 				this.$.addMemberAjax.go();
 			},
 
@@ -102,12 +112,24 @@
 			},
 
 			listResponse: function() {
-				this.$.members.people = this.$.listAjax.response;
+				var list = this.$.listAjax.response;
+				this.number = list.length;
+				this.$.members.people = list;
 			},
 
 			addMemberResponse: function() {
-				this.$.members.people = this.$.addMemberAjax.response;
+				var list = this.$.addMemberAjax.response;
+				this.number = list.length;
+				this.$.members.people = list;
+
+				this.$.addSuccessToast.show();
+			},
+
+			addMemberError: function(e, detail) {
+				this.$.addErrorToast.text = detail.xhr.responseText;
+				this.$.addErrorToast.show();
 			}
+
 		});
 	</script>
 </polymer-element>
