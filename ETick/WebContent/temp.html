@@ -4,22 +4,17 @@
 	<script src="bower_components/platform/platform.js"></script>
 	<link rel="import" href="elements/main-card.html">
 	<link rel="import" href="elements/dialog.html">
+	<link rel="import" href="elements/scaffold.html">
 	<link rel="stylesheet" type="text/css" href="css/font.css">
 	<style>
-		h1 {
-			font-weight: 100;
+		html, body {
+			margin: 0;
+			height: 100%;
 		}
 	</style>
 </head>
 <body>
-	<h1>Test</h1>
-	<my-dialog>
-		<h1>Hi</h1>
-	</my-dialog>
-	<script type="text/javascript">
-		var d = document.querySelector('my-dialog');
-		d.toggle();
-	</script>
+	<page-scaffold></page-scaffold>
 </body>
 
 </html>

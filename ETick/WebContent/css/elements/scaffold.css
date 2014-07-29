@@ -1,0 +1,32 @@
+:host {
+	display: block;
+	height: 100%;
+}
+
+core-header-panel {
+	height: 100%;
+	background: #eee;
+}
+
+core-toolbar {
+	background: #2D91EC;
+	color: #fff;
+}
+
+#title {
+	font-size: 2.2rem;
+	font-weight: 100;
+}
+
+paper-button, menu-button::shadow paper-button {
+	font-size: 1rem;
+	font-weight: 200;
+}
+
+core-item {
+	color: #7171DF;
+}
+
+core-item:hover, core-item.core-selected {
+	color: #05007A;
+}
