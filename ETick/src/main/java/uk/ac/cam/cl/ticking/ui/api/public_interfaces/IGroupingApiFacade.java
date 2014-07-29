@@ -1,14 +1,17 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import uk.ac.cam.cl.ticking.ui.actors.Grouping;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
 
 /**
  * A RESTful interface for requests regarding groupings of Users, Groups and
@@ -37,6 +40,7 @@ public interface IGroupingApiFacade {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response addGrouping(@Context HttpServletRequest request,
-			Grouping grouping);
+			@QueryParam("crsid") String crsid, @QueryParam("gid") String gid,
+			List<Role> roles);
 
 }

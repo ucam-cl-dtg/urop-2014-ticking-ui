@@ -9,5 +9,6 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 		@WebInitParam(name = "javax.ws.rs.Application", value = "uk.ac.cam.cl.ticking.ui.api.ApplicationRegister"),
 		@WebInitParam(name = "resteasy.servlet.mapping.prefix", value = "/api") })
 public class HttpServletDispatcherV3 extends HttpServletDispatcher {
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = -4372001075760879707L;
 }

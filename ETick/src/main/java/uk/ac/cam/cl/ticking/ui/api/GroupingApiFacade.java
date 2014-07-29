@@ -34,21 +34,23 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 	}
 
 	@Override
-	public Response addGrouping(HttpServletRequest request, Grouping grouping) {
-		String crsid = (String) request.getSession().getAttribute(
+	public Response addGrouping(HttpServletRequest request, String crsid, String gid, List<Role> roles) {
+		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		List<Role> roles = db.getRoles(grouping.getGroup(), crsid);
-		if (!roles.contains(Role.AUTHOR)) {
+		List<Role> myRoles = db.getRoles(gid, myCrsid);
+		if (!myRoles.contains(Role.AUTHOR)) {
 			return Response.status(401).entity(Strings.INVALIDROLE).build();
 		}
 		try {
-			db.insertUser(raven.ldapProduceUser(grouping.getUser()));
+			db.insertUser(raven.ldapProduceUser(crsid));
 		} catch (DuplicateDataEntryException e) {
 			//Do nothing
 			//The user is already in the database and so we don't need to add them.
 		}
-		db.saveGrouping(grouping);
-		List<User> users = db.getUsers(grouping.getGroup());
+		for (Role r : roles) {
+			db.saveGrouping(new Grouping(gid, crsid, r));
+		}
+		List<User> users = db.getUsers(gid);
 		return Response.status(201).entity(users).build();
 	}
 
