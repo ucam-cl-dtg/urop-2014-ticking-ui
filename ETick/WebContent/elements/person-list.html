@@ -33,14 +33,6 @@
 		Polymer('person-list', {
 			ready: function () {
 				this.people = [];
-			},
-
-			observe: {
-				'people': 'peopleChanged'
-			},
-
-			peopleChanged: function() {
-				this.number = this.people.length;
 			}
 		});
 	</script>
