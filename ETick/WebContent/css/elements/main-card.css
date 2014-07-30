@@ -1,5 +1,9 @@
 :host {
 	display: block;
+	-webkit-transition: all 0.30s ease-out; /** Chrome & Safari **/
+	-moz-transition: all 0.30s ease-out; /** Firefox **/
+	-o-transition: all 0.30s ease-out; /** Opera **/
+	transition: all 0.30s ease-out;
 }
 
 #card {
