@@ -1,15 +1,14 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
-import javax.ws.rs.Consumes;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-
-import uk.ac.cam.cl.ticking.ui.actors.Group;
 
 /**
  * A RESTful interface for requests regarding groups.
@@ -61,7 +60,7 @@ public interface IGroupApiFacade {
 	@POST
 	@Path("/")
 	@Produces("application/json")
-	@Consumes("application/json")
-	public abstract Response addGroup(Group group);
+	public abstract Response addGroup(@Context HttpServletRequest request,
+			@QueryParam("name") String name);
 
 }

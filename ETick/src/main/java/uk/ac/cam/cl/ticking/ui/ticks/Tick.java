@@ -41,12 +41,10 @@ public class Tick {
 	@JsonCreator
 	public Tick(@JsonProperty("name") String name,
 			@JsonProperty("author") String author,
-			@JsonProperty("repo") String repo,
 			@JsonProperty("deadline") DateTime deadline) {
 
 		this.setName(name);
 		this.setAuthor(author);
-		this.setRepo(repo);
 		this.setDeadline(deadline);
 		initTickId();
 

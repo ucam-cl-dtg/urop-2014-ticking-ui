@@ -3,10 +3,13 @@ package uk.ac.cam.cl.ticking.ui.api;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
+import uk.ac.cam.cl.ticking.ui.actors.Grouping;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
@@ -51,12 +54,17 @@ public class GroupApiFacade implements IGroupApiFacade {
 	}
 
 	@Override
-	public Response addGroup(Group group) {
+	public Response addGroup(HttpServletRequest request, String name) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		Group group = new Group(name, crsid);
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException de) {
 			return Response.status(Status.CONFLICT).build();
 		}
+		Grouping grouping = new Grouping(group.getGroupId(), crsid, Role.AUTHOR);
+		db.saveGrouping(grouping);
 		return Response.status(Status.CREATED).entity(group).build();
 	}
 
