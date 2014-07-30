@@ -147,7 +147,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static RavenManager getRavenManager(IDataManager db,
-			ConfigurationLoader<Academic> academicConfig) {
+			ConfigurationLoader<AcademicTemplate> academicConfig) {
 		if (ravenManager == null) {
 			ravenManager = new RavenManager(db, academicConfig);
 		}
