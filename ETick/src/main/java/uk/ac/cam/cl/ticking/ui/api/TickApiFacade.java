@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.joda.time.DateTime;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
@@ -155,5 +159,18 @@ public class TickApiFacade implements ITickApiFacade {
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
 		return Response.status(Status.CREATED).entity(output).build();
+	}
+	
+	@Override
+	public Response setDeadline(HttpServletRequest request, String tickId, DateTime date) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		Tick tick = db.getTick(tickId);
+		if (!tick.getAuthor().equals(crsid)) {
+			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+		}
+		tick.setDeadline(date);
+		db.saveTick(tick);
+		return Response.status(Status.CREATED).entity(tick).build();
 	}
 }

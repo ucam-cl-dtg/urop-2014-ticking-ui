@@ -21,18 +21,15 @@ import publicinterfaces.UserNotInDBException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
-import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
 
 public class SubmissionApiFacade implements ISubmissionApiFacade {
 	
-	@SuppressWarnings("unused")
-	// not currently used but could quite possibly be needed in the future, will
-	// remove if not
 	private IDataManager db;
 	private ConfigurationLoader<Configuration> config;
 
@@ -54,11 +51,16 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		
+		Tick tick = db.getTick(tickId);
+		
+		if (tick.getDeadline()!=null && tick.getDeadline().isBeforeNow()) {
+			return Response.status(400).entity(Strings.DEADLINE).build();
+		}
+		
 		String repoName = Tick.replaceDelimeter(tickId);
 		
 		String forkRepoName = crsid+"/"+repoName;
 		
-		//Execution will not reach this pointunless the repo can be found by the GitAPI
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
 		ResteasyWebTarget testTarget = testClient.target(config.getConfig().getTestApiLocation());
 

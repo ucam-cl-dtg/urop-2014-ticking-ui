@@ -2,7 +2,7 @@ package uk.ac.cam.cl.ticking.ui.ticks;
 
 import java.util.Date;
 
-import uk.ac.cam.cl.ticking.ui.actors.User;
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,7 +23,7 @@ public class Tick {
 	private String author;
 
 	private String repo;
-	private Date deadline;
+	private DateTime deadline;
 
 	/**
 	 * 
@@ -42,7 +42,7 @@ public class Tick {
 	public Tick(@JsonProperty("name") String name,
 			@JsonProperty("author") String author,
 			@JsonProperty("repo") String repo,
-			@JsonProperty("deadline") Date deadline) {
+			@JsonProperty("deadline") DateTime deadline) {
 
 		this.setName(name);
 		this.setAuthor(author);
@@ -79,7 +79,7 @@ public class Tick {
 	 * @return deadline
 	 */
 	@JsonProperty("deadline")
-	public Date getDeadline() {
+	public DateTime getDeadline() {
 		return deadline;
 	}
 
@@ -87,7 +87,7 @@ public class Tick {
 	 * @param deadline
 	 */
 	@JsonProperty("deadline")
-	public void setDeadline(Date deadline) {
+	public void setDeadline(DateTime deadline) {
 		this.deadline = deadline;
 	}
 

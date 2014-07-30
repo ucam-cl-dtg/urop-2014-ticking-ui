@@ -7,12 +7,15 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
+import org.joda.time.DateTime;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
@@ -45,15 +48,15 @@ public interface ITickApiFacade {
 	 * @return All Tick objects in {group} where {group} is a groupId
 	 */
 	@GET
-	@Path("/{groupId}")
+	@Path("/list/{groupId}")
 	@Produces("application/json")
 	public abstract Response getTicks(@PathParam("groupId") String groupId);
 
 	/**
 	 * Commits the given tick object to the database, but only after a
-	 * repository has been successfully created for it via the GitAPI. If a groupId
-	 * is given as a queryparam, the Tick will also be added to that group via
-	 * the addTick method.
+	 * repository has been successfully created for it via the GitAPI. If a
+	 * groupId is given as a queryparam, the Tick will also be added to that
+	 * group via the addTick method.
 	 * 
 	 * @param request
 	 * @param tick
@@ -85,8 +88,9 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response addTick(@Context HttpServletRequest request,
-			@PathParam("groupId") String groupId, @PathParam("tickId") String tickId)
-			throws IOException, DuplicateRepoNameException;
+			@PathParam("groupId") String groupId,
+			@PathParam("tickId") String tickId) throws IOException,
+			DuplicateRepoNameException;
 
 	/**
 	 * @param request
@@ -101,5 +105,11 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	public abstract Response forkTick(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId) throws IOException;
+
+	@PUT
+	@Path("/{tickId}/deadline")
+	@Produces("application/json")
+	public abstract Response setDeadline(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId, DateTime date);
 
 }
