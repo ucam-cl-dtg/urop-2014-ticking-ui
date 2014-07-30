@@ -1,0 +1,61 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../bower_components/core-overlay/core-overlay.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/core-icon-button/core-icon-button.html">
+
+
+<polymer-element name="menu-button" attributes="label selected opened valueattr">
+	<template>
+		<style>
+			:host {
+				display: inline-block;
+				position: relative;
+				margin: 0;
+				padding: 0;
+			}
+
+			#overlay {
+				position: absolute;
+				left: 0px;
+				top: 40px;
+				background: #fff;
+				border: 1px solid #ccc;
+				border-radius: 3px;
+				font-size: 1rem;
+			}
+
+			core-menu {
+				margin: 0;
+			}
+		</style>
+
+		<core-overlay id="dropdown" target="{{$.overlay}}"></core-overlay>
+		<paper-button id="button" on-tap="{{toggle}}" label="{{label}}" active="{{opened}}"></paper-button>
+		
+		<div id="overlay">
+			
+			<core-menu id="menu" selected="{{selected}}" selectedItem="{{selectedItem}}" selectedClass="{{selectedClass}}" valueattr="{{valueattr}}" on-core-select="{{closeAction}}">
+				<content select="*"></content>
+			</core-menu>
+
+		</div>
+	</template>
+	<script>
+	Polymer('menu-button', {
+		opened: false,
+
+		closeAction: function() {
+			this.$.dropdown.opened = false;
+		},
+
+		toggle: function() {
+			this.$.dropdown.toggle();
+		},
+
+		get selection() {
+			return this.$.menu.selection;
+		}
+	});
+	</script>
+</polymer-element>

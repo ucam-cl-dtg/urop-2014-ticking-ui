@@ -11,8 +11,9 @@
 				display: block;
 				width: 100%;
 			}
-			person-box {	
-				width: 33.33%;
+			person-box {
+				/* TODO:// Get 50% or 33% working */	
+				width: 100%;
 				min-width: 240px;
 			}
 			person-box:nth-child(odd) {
@@ -27,7 +28,7 @@
 					<person-box
 						name="{{person.displayName}}"
 						crsid="{{person._id}}"
-						college="{{person.college}}"
+						college="{{person.college == 'Unknown' ? '' : person.college}}"
 						isStudent="{{person.isStudent}}">
 					</person-box>	
 			</template>

@@ -2,7 +2,7 @@
 
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="on-login">
+<polymer-element name="on-login" attributes="groupItems">
 	<template>
 			<!-- API call: adds user if not already registered. -->
 			<core-ajax id="loginAjax"
@@ -37,7 +37,7 @@
 				this.$.sidebarAjax.go();
 			},
 			sidebarResponse: function() {
-				this.sidebarItems = this.$.sidebarAjax.response;
+				this.groupItems = this.$.sidebarAjax.response;
 			}
 		});
 	</script>
