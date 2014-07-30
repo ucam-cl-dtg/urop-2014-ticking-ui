@@ -22,15 +22,9 @@ paper-dialog .subtitle {
 }
 
 paper-dialog::shadow h1 {
-	font-weight: 200;
+	font-weight: 100;
 	margin-bottom: 10px;
 }
-
-paper-dialog /deep/ h2 {
-	font-weight: 200;
-	font-size: 1.4rem;
-}
-
 /*Fix for paper-checkbox issue #6*/
 paper-checkbox::shadow #ink {
     top: -16px;
