@@ -13,6 +13,11 @@ core-toolbar {
 	color: #fff;
 }
 
+core-selector {
+	/* To remove space between inline-block elements. */
+	font-size: 0;
+}
+
 #title {
 	font-size: 2.2rem;
 	font-weight: 100;
@@ -22,6 +27,13 @@ paper-button, menu-button::shadow paper-button {
 	font-size: 1rem;
 	font-weight: 200;
 }
+
+menu-button.core-selected, paper-button.core-selected {
+	background: #2a56c6;
+}
+ paper-button[active] {
+
+ }
 
 core-item {
 	color: #5252C5;

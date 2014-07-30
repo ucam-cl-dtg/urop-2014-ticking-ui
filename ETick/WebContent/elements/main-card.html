@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
 
 <polymer-element name="main-card" attributes="animated swipeable"
 on-trackstart="{{trackStart}}" on-track="{{track}}" on-trackend="{{trackEnd}}" on-flick="{{flick}}">
@@ -95,7 +96,7 @@ on-trackstart="{{trackStart}}" on-track="{{track}}" on-trackend="{{trackEnd}}" o
 					this.classList.add('dragging');
 				}
 			},
-			
+
 			track: function(e) {
 				if (this.swipeable) {
 					this.animate(e.dx);
@@ -128,9 +129,8 @@ on-trackstart="{{trackStart}}" on-track="{{track}}" on-trackend="{{trackEnd}}" o
 			},
 
 			transitionEnd: function(e) {
-				if (this.away) {
+				if (this.away && e.propertyName === "transform") {
 					this.fire('main-card-swipe-away');
-					this.style.display = 'none';
 				}
 			}
 		});
