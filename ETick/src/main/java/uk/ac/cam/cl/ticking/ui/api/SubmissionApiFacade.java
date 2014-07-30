@@ -60,7 +60,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		
 		//Execution will not reach this pointunless the repo can be found by the GitAPI
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getTestApiLocation());
+		ResteasyWebTarget testTarget = testClient.target(config.getConfig().getTestApiLocation());
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		try {
@@ -87,7 +87,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		String repoName = Tick.replaceDelimeter(tickId);
 		
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getTestApiLocation());
+		ResteasyWebTarget testTarget = testClient.target(config.getConfig().getTestApiLocation());
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		
@@ -112,7 +112,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		String repoName = Tick.replaceDelimeter(tickId);
 		
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getTestApiLocation());
+		ResteasyWebTarget testTarget = testClient.target(config.getConfig().getTestApiLocation());
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		
@@ -137,7 +137,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		String repoName = Tick.replaceDelimeter(tickId);
 		
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getTestApiLocation());
+		ResteasyWebTarget testTarget = testClient.target(config.getConfig().getTestApiLocation());
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		

@@ -14,7 +14,8 @@ public class Mongo {
 	private static DB db;
 
 	static {
-		Configuration config = (Configuration) ConfigurationRegister.getConfig(Configuration.class);
+		Configuration config = (Configuration) ConfigurationRegister.getLoader(
+				Configuration.class).getConfig();
 		try {
 			MongoClient client = new MongoClient(config.getUiMongoBroadcast(),
 					config.getUiMongoPort());
