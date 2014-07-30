@@ -14,6 +14,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.joda.time.DateTime;
+
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
@@ -51,9 +53,9 @@ public interface ITickApiFacade {
 
 	/**
 	 * Commits the given tick object to the database, but only after a
-	 * repository has been successfully created for it via the GitAPI. If a groupId
-	 * is given as a queryparam, the Tick will also be added to that group via
-	 * the addTick method.
+	 * repository has been successfully created for it via the GitAPI. If a
+	 * groupId is given as a queryparam, the Tick will also be added to that
+	 * group via the addTick method.
 	 * 
 	 * @param request
 	 * @param tick
@@ -85,8 +87,9 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response addTick(@Context HttpServletRequest request,
-			@PathParam("groupId") String groupId, @PathParam("tickId") String tickId)
-			throws IOException, DuplicateRepoNameException;
+			@PathParam("groupId") String groupId,
+			@PathParam("tickId") String tickId) throws IOException,
+			DuplicateRepoNameException;
 
 	/**
 	 * @param request
@@ -101,5 +104,11 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	public abstract Response forkTick(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId) throws IOException;
+
+	@POST
+	@Path("/{tickId}/deadline")
+	@Produces("application/json")
+	public abstract Response setDeadline(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId, DateTime date);
 
 }

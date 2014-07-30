@@ -44,7 +44,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 				"RavenRemoteUser");
 		List<Role> myRoles = db.getRoles(groupId, myCrsid);
 		if (!myRoles.contains(Role.AUTHOR)) {
-			return Response.status(401).entity(Strings.INVALIDROLE).build();
+			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
 		}
 		try {
 			db.insertUser(raven.ldapProduceUser(crsid));
