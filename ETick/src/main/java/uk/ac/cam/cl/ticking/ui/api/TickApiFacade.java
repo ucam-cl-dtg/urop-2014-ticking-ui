@@ -19,6 +19,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
@@ -29,14 +30,14 @@ import com.google.inject.Inject;
 public class TickApiFacade implements ITickApiFacade {
 
 	private IDataManager db;
-	private Configuration config;
+	private ConfigurationLoader<Configuration> config;
 
 	/**
 	 * @param db
 	 * @param config
 	 */
 	@Inject
-	public TickApiFacade(IDataManager db, Configuration config) {
+	public TickApiFacade(IDataManager db, ConfigurationLoader<Configuration> config) {
 		this.db = db;
 		this.config = config;
 	}
@@ -81,7 +82,7 @@ public class TickApiFacade implements ITickApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getGitApiLocation());
+		ResteasyWebTarget target = client.target(config.getConfig().getGitApiLocation());
 
 		WebInterface proxy = target.proxy(WebInterface.class);
 		String repo = proxy.addRepository(new RepoUserRequestBean(crsid+"/"+tick
@@ -139,7 +140,7 @@ public class TickApiFacade implements ITickApiFacade {
 				"RavenRemoteUser");
 
 		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getGitApiLocation());
+		ResteasyWebTarget target = client.target(config.getConfig().getGitApiLocation());
 		WebInterface proxy = target.proxy(WebInterface.class);
 		String output;
 		String repoName = Tick.replaceDelimeter(tickId);

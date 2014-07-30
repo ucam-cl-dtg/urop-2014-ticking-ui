@@ -12,6 +12,7 @@ import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
@@ -24,11 +25,11 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 	@SuppressWarnings("unused")
 	// not currently used but could quite possibly be needed in the future, will
 	// remove if not
-	private Configuration config;
+	private ConfigurationLoader<Configuration> config;
 	private RavenManager raven;
 
 	@Inject
-	public GroupingApiFacade(IDataManager db, Configuration config, RavenManager raven) {
+	public GroupingApiFacade(IDataManager db, ConfigurationLoader<Configuration> config, RavenManager raven) {
 		this.db = db;
 		this.config = config;
 		this.raven = raven;

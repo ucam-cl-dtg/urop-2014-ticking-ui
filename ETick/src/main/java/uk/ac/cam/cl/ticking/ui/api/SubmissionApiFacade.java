@@ -22,6 +22,7 @@ import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
@@ -33,14 +34,14 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	// not currently used but could quite possibly be needed in the future, will
 	// remove if not
 	private IDataManager db;
-	private Configuration config;
+	private ConfigurationLoader<Configuration> config;
 
 	/**
 	 * @param db
 	 * @param config
 	 */
 	@Inject
-	public SubmissionApiFacade(IDataManager db, Configuration config) {
+	public SubmissionApiFacade(IDataManager db, ConfigurationLoader<Configuration> config) {
 		this.db = db;
 		this.config = config;
 	}

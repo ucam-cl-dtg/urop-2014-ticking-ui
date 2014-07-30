@@ -19,6 +19,8 @@ import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.configuration.AcademicTemplate;
+import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.DatabasePopulator;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
@@ -29,15 +31,15 @@ import com.google.inject.Inject;
 public class RavenManager {
 
 	private IDataManager db;
-	private AcademicTemplate academicTemplate;
+	private ConfigurationLoader<AcademicTemplate> academicConfig;
 
 	/**
 	 * @param db
 	 */
 	@Inject
-	public RavenManager(IDataManager db, AcademicTemplate academicTemplate) {
+	public RavenManager(IDataManager db, ConfigurationLoader<AcademicTemplate> academicConfig) {
 		this.db = db;
-		this.academicTemplate = academicTemplate;
+		this.academicConfig = academicConfig;
 	}
 
 	/**
@@ -150,7 +152,7 @@ public class RavenManager {
 		User user;
 		try {
 			u = LDAPQueryManager.getUser(crsid);
-			boolean notStudent = academicTemplate.represents(u);
+			boolean notStudent = academicConfig.getConfig().represents(u);
 			user = new User(crsid, u.getSurname(), u.getRegName(),
 					u.getDisplayName(), u.getEmail(), u.getInstitutions(),
 					u.getCollegeName(), !notStudent);

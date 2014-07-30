@@ -16,9 +16,9 @@ public class ConfigurationRegister {
 						AcademicTemplate.class));
 	}
 
-	public static ConfigurationFile getConfig(
+	public static ConfigurationLoader<? extends ConfigurationFile> getLoader(
 			Class<? extends ConfigurationFile> clazz) {
-		return loaders.get(clazz).getConfig();
+		return loaders.get(clazz);
 	}
 
 }

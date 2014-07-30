@@ -10,6 +10,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 
@@ -21,10 +22,10 @@ public class GroupApiFacade implements IGroupApiFacade {
 	@SuppressWarnings("unused")
 	// not currently used but could quite possibly be needed in the future, will
 	// remove if not
-	private Configuration config;
+	private ConfigurationLoader<Configuration> config;
 
 	@Inject
-	public GroupApiFacade(IDataManager db, Configuration config) {
+	public GroupApiFacade(IDataManager db, ConfigurationLoader<Configuration> config) {
 		this.db = db;
 		this.config = config;
 	}

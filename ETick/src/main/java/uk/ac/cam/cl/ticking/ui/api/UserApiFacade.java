@@ -11,6 +11,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 
 import com.google.inject.Inject;
@@ -22,14 +23,14 @@ public class UserApiFacade implements IUserApiFacade {
 	@SuppressWarnings("unused")
 	// Currently not needed but these classes are still not final and it is
 	// quite likely to be required in future
-	private Configuration config;
+	private ConfigurationLoader<Configuration> config;
 
 	/**
 	 * @param db
 	 * @param config
 	 */
 	@Inject
-	public UserApiFacade(IDataManager db, Configuration config) {
+	public UserApiFacade(IDataManager db, ConfigurationLoader<Configuration> config) {
 		this.db = db;
 		this.config = config;
 	}

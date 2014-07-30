@@ -13,6 +13,7 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 import uk.ac.cam.cl.ticking.ui.configuration.AcademicTemplate;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
@@ -21,6 +22,7 @@ import uk.ac.cam.cl.ticking.ui.database.Mongo;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
+import com.google.inject.TypeLiteral;
 import com.mongodb.DB;
 
 /**
@@ -78,19 +80,24 @@ public class GuiceConfigurationModule extends AbstractModule {
 	}
 
 	/**
-	 * Deals with configuration file
+	 * Deals with configuration files
 	 */
+	@SuppressWarnings("unchecked")
 	private void configureConfiguration() {
-		bind(Configuration.class).toInstance(
-				(Configuration) ConfigurationRegister.getConfig(Configuration.class));
-		bind(AcademicTemplate.class).toInstance(
-				(AcademicTemplate) ConfigurationRegister.getConfig(AcademicTemplate.class));
+		bind(new TypeLiteral<ConfigurationLoader<Configuration>>() {
+		}).toInstance(
+				(ConfigurationLoader<Configuration>) ConfigurationRegister
+						.getLoader(Configuration.class));
+		bind(new TypeLiteral<ConfigurationLoader<AcademicTemplate>>() {
+		}).toInstance(
+				(ConfigurationLoader<AcademicTemplate>) ConfigurationRegister
+						.getLoader(AcademicTemplate.class));
 	}
 
 	@Inject
 	@Provides
 	private static TickApiFacade getTickApiSingleton(IDataManager db,
-			Configuration config) {
+			ConfigurationLoader<Configuration> config) {
 		if (tickApiFacade == null) {
 			tickApiFacade = new TickApiFacade(db, config);
 		}
@@ -100,7 +107,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static UserApiFacade getUserApiSingleton(IDataManager db,
-			Configuration config) {
+			ConfigurationLoader<Configuration> config) {
 		if (userApiFacade == null) {
 			userApiFacade = new UserApiFacade(db, config);
 		}
@@ -110,7 +117,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static GroupingApiFacade getGroupingApiSingleton(IDataManager db,
-			Configuration config, RavenManager raven) {
+			ConfigurationLoader<Configuration> config, RavenManager raven) {
 		if (groupingApiFacade == null) {
 			groupingApiFacade = new GroupingApiFacade(db, config, raven);
 		}
@@ -120,7 +127,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static GroupApiFacade getGroupApiSingleton(IDataManager db,
-			Configuration config) {
+			ConfigurationLoader<Configuration> config) {
 		if (groupApiFacade == null) {
 			groupApiFacade = new GroupApiFacade(db, config);
 		}
@@ -130,7 +137,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static SubmissionApiFacade getSubmissionApiSingleton(
-			IDataManager db, Configuration config) {
+			IDataManager db, ConfigurationLoader<Configuration> config) {
 		if (submissionApiFacade == null) {
 			submissionApiFacade = new SubmissionApiFacade(db, config);
 		}
@@ -139,9 +146,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 
 	@Inject
 	@Provides
-	private static RavenManager getRavenManager(IDataManager db, AcademicTemplate a) {
+	private static RavenManager getRavenManager(IDataManager db,
+			ConfigurationLoader<Academic> academicConfig) {
 		if (ravenManager == null) {
-			ravenManager = new RavenManager(db, a);
+			ravenManager = new RavenManager(db, academicConfig);
 		}
 		return ravenManager;
 	}
