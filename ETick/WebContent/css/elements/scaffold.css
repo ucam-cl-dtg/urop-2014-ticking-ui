@@ -24,7 +24,7 @@ paper-button, menu-button::shadow paper-button {
 }
 
 core-item {
-	color: #7171DF;
+	color: #5252C5;
 }
 
 core-item:hover, core-item.core-selected {

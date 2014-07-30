@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="../bower_components/core-item/core-item.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/core-selector/core-selector.html">
 <link rel="import" href="menu-button.html">
 <link rel="import" href="dashboard.html">
 <link rel="import" href="onlogin.html">
@@ -23,7 +24,7 @@
 			<div id="title">Otter</div>
 
 			<div flex layout horizontal end-justified>
-
+			<core-selector>
 				<menu-button id="groupsMenu" label="Groups" selected="-1">
 					<template repeat="{{item in $.loginAPIs.groupItems}}">
 						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}"></core-item>
@@ -32,7 +33,7 @@
 
 
 				<paper-button id="dashButton" label="DASHBOARD" on-click="{{dashClicked}}"></paper-button>
-
+			</core-selector>
 			</div>
 
 			<div layout horizontal end-justified>

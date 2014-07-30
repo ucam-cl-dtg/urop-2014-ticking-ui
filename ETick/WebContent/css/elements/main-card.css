@@ -1,6 +1,7 @@
 :host {
 	display: block;
 }
+
 #card {
 	display: block;
 	margin: 20px;
@@ -20,4 +21,9 @@
 
 #card.hidden {
 	display none;
+}
+
+:host(.dragging:host) {
+  -webkit-transition: none;
+  transition: none;
 }
