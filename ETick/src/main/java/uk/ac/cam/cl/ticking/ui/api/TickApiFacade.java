@@ -166,10 +166,11 @@ public class TickApiFacade implements ITickApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		Tick tick = db.getTick(tickId);
-		if (tick.getAuthor() != crsid) {
+		if (!tick.getAuthor().equals(crsid)) {
 			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
 		}
 		tick.setDeadline(date);
+		db.saveTick(tick);
 		return Response.status(Status.CREATED).entity(tick).build();
 	}
 }

@@ -7,6 +7,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -47,7 +48,7 @@ public interface ITickApiFacade {
 	 * @return All Tick objects in {group} where {group} is a groupId
 	 */
 	@GET
-	@Path("/{groupId}")
+	@Path("/list/{groupId}")
 	@Produces("application/json")
 	public abstract Response getTicks(@PathParam("groupId") String groupId);
 
@@ -105,7 +106,7 @@ public interface ITickApiFacade {
 	public abstract Response forkTick(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId) throws IOException;
 
-	@POST
+	@PUT
 	@Path("/{tickId}/deadline")
 	@Produces("application/json")
 	public abstract Response setDeadline(@Context HttpServletRequest request,

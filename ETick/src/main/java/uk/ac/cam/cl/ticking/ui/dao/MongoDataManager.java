@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
+import org.mongojack.internal.MongoJackModule;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
@@ -15,6 +16,9 @@ import uk.ac.cam.cl.ticking.ui.ticks.Submission;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -30,21 +34,26 @@ public class MongoDataManager implements IDataManager {
 
 	@Inject
 	public MongoDataManager(DB database) {
+		ObjectMapper objectMapper = new ObjectMapper().registerModule(
+				new JodaModule()).configure(
+				SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		MongoJackModule.configure(objectMapper);
+		
 		tickColl = JacksonDBCollection.wrap(
 				database.getCollection(Strings.TICKSCOLLECTION), Tick.class,
-				String.class);
+				String.class, objectMapper);
 		subColl = JacksonDBCollection.wrap(
 				database.getCollection(Strings.SUBMISSIONSCOLLECTION),
-				Submission.class, String.class);
+				Submission.class, String.class, objectMapper);
 		userColl = JacksonDBCollection.wrap(
 				database.getCollection(Strings.USERSCOLLECTION), User.class,
-				String.class);
+				String.class, objectMapper);
 		groupColl = JacksonDBCollection.wrap(
 				database.getCollection(Strings.GROUPSCOLLECTION), Group.class,
-				String.class);
+				String.class, objectMapper);
 		groupingColl = JacksonDBCollection.wrap(
 				database.getCollection(Strings.GROUPINGSCOLLECTION),
-				Grouping.class, String.class);
+				Grouping.class, String.class, objectMapper);
 	}
 
 	@Override
@@ -214,7 +223,7 @@ public class MongoDataManager implements IDataManager {
 
 	@Override
 	public List<Group> getGroups(String crsid) {
-		List<Group> groups = new ArrayList<Group>();		
+		List<Group> groups = new ArrayList<Group>();
 		List<Grouping> groupings = getGroupings(crsid, true);
 		List<String> added = new ArrayList<String>();
 		for (Grouping grouping : groupings) {
