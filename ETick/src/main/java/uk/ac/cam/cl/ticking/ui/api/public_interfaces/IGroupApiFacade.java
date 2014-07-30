@@ -23,25 +23,25 @@ public interface IGroupApiFacade {
 
 	/**
 	 * 
-	 * @param gid
+	 * @param groupId
 	 * @param byName
-	 * @return the group object, found either by gid or name as specified
+	 * @return the group object, found either by groupId or name as specified
 	 */
 	@GET
-	@Path("/{gid}")
+	@Path("/{groupId}")
 	@Produces("application/json")
-	public abstract Response getGroup(@PathParam("gid") String gid,
+	public abstract Response getGroup(@PathParam("groupId") String groupId,
 			@QueryParam("byName") boolean byName);
 
 	/**
 	 * 
-	 * @param gid
-	 * @return all users in the group, given by gid
+	 * @param groupId
+	 * @return all users in the group, given by groupId
 	 */
 	@GET
-	@Path("/{gid}/users")
+	@Path("/{groupId}/users")
 	@Produces("application/json")
-	public abstract Response getUsers(@PathParam("gid") String gid);
+	public abstract Response getUsers(@PathParam("groupId") String groupId);
 
 	/**
 	 * 
@@ -62,6 +62,6 @@ public interface IGroupApiFacade {
 	@Path("/")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public abstract Response addGroup(Group g);
+	public abstract Response addGroup(Group group);
 
 }

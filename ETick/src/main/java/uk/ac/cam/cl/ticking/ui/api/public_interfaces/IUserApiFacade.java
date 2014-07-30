@@ -40,13 +40,13 @@ public interface IUserApiFacade {
 	 * which that user has for the specified group
 	 * 
 	 * @param request
-	 * @param gid
+	 * @param groupId
 	 * @return the list of roles that the current user has for the given group
 	 */
 	@GET
-	@Path("/{gid}/roles")
+	@Path("/{groupId}/roles")
 	@Produces("application/json")
 	public abstract Response getGroupRoles(@Context HttpServletRequest request,
-			@PathParam("gid") String gid);
+			@PathParam("groupId") String groupId);
 
 }

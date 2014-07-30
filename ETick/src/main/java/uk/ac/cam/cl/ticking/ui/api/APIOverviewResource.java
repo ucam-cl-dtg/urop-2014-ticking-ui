@@ -24,6 +24,7 @@ import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
 
 import com.google.common.collect.Lists;
@@ -46,10 +47,10 @@ public class APIOverviewResource {
 	private static final Logger log = LoggerFactory
 			.getLogger(APIOverviewResource.class);
 
-	private ConfigurationFile config;
+	private Configuration config;
 
 	@Inject
-	public APIOverviewResource(ConfigurationFile config) {
+	public APIOverviewResource(Configuration config) {
 		this.config = config;
 	}
 

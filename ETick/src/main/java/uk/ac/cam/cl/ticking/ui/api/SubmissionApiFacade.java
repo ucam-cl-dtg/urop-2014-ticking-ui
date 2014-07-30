@@ -20,7 +20,9 @@ import publicinterfaces.TickNotInDBException;
 import publicinterfaces.UserNotInDBException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
+import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
@@ -32,14 +34,14 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	// not currently used but could quite possibly be needed in the future, will
 	// remove if not
 	private IDataManager db;
-	private ConfigurationFile config;
+	private ConfigurationLoader<Configuration> config;
 
 	/**
 	 * @param db
 	 * @param config
 	 */
 	@Inject
-	public SubmissionApiFacade(IDataManager db, ConfigurationFile config) {
+	public SubmissionApiFacade(IDataManager db, ConfigurationLoader<Configuration> config) {
 		this.db = db;
 		this.config = config;
 	}
@@ -48,11 +50,11 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#submit(javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response submit(HttpServletRequest request, String tid) throws RepositoryNotFoundException {
+	public Response submit(HttpServletRequest request, String tickId) throws RepositoryNotFoundException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		
-		String repoName = Tick.replaceDelimeter(tid);
+		String repoName = Tick.replaceDelimeter(tickId);
 		
 		String forkRepoName = crsid+"/"+repoName;
 		
@@ -78,11 +80,11 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#getStatus(javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response getStatus(HttpServletRequest request, String tid) {
+	public Response getStatus(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		
-		String repoName = Tick.replaceDelimeter(tid);
+		String repoName = Tick.replaceDelimeter(tickId);
 		
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
 		ResteasyWebTarget testTarget = testClient.target(config.getTestApiLocation());
@@ -103,11 +105,11 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#getLast(javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response getLast(HttpServletRequest request, String tid) {
+	public Response getLast(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		
-		String repoName = Tick.replaceDelimeter(tid);
+		String repoName = Tick.replaceDelimeter(tickId);
 		
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
 		ResteasyWebTarget testTarget = testClient.target(config.getTestApiLocation());
@@ -128,11 +130,11 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#getAll(javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response getAll(HttpServletRequest request, String tid) {
+	public Response getAll(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		
-		String repoName = Tick.replaceDelimeter(tid);
+		String repoName = Tick.replaceDelimeter(tickId);
 		
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
 		ResteasyWebTarget testTarget = testClient.target(config.getTestApiLocation());

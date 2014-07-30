@@ -33,25 +33,25 @@ public interface ITickApiFacade {
 
 	/**
 	 * @param tick
-	 * @return The Tick object with {tick} as it's tid.
+	 * @return The Tick object with {tick} as it's tickId.
 	 */
 	@GET
-	@Path("/{tid}")
+	@Path("/{tickId}")
 	@Produces("application/json")
-	public abstract Response getTick(@PathParam("tid") String tid);
+	public abstract Response getTick(@PathParam("tickId") String tickId);
 
 	/**
 	 * @param group
-	 * @return All Tick objects in {group} where {group} is a gid
+	 * @return All Tick objects in {group} where {group} is a groupId
 	 */
 	@GET
-	@Path("/{gid}")
+	@Path("/{groupId}")
 	@Produces("application/json")
-	public abstract Response getTicks(@PathParam("gid") String gid);
+	public abstract Response getTicks(@PathParam("groupId") String groupId);
 
 	/**
 	 * Commits the given tick object to the database, but only after a
-	 * repository has been successfully created for it via the GitAPI. If a gid
+	 * repository has been successfully created for it via the GitAPI. If a groupId
 	 * is given as a queryparam, the Tick will also be added to that group via
 	 * the addTick method.
 	 * 
@@ -67,11 +67,11 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response newTick(@Context HttpServletRequest request,
-			@DefaultValue("") @QueryParam("gid") String gid, Tick tick)
+			@DefaultValue("") @QueryParam("groupId") String groupId, Tick tick)
 			throws IOException, DuplicateRepoNameException;
 
 	/**
-	 * Adds a Tick to a Group given a tid and gid
+	 * Adds a Tick to a Group given a tickId and groupId
 	 * 
 	 * @param request
 	 * @param tick
@@ -81,11 +81,11 @@ public interface ITickApiFacade {
 	 * 
 	 */
 	@POST
-	@Path("/{tid}/{gid}")
+	@Path("/{tickId}/{groupId}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response addTick(@Context HttpServletRequest request,
-			@PathParam("gid") String gid, @PathParam("tid") String tid)
+			@PathParam("groupId") String groupId, @PathParam("tickId") String tickId)
 			throws IOException, DuplicateRepoNameException;
 
 	/**
@@ -97,9 +97,9 @@ public interface ITickApiFacade {
 	 * 
 	 */
 	@POST
-	@Path("/{tid}")
+	@Path("/{tickId}")
 	@Produces("application/json")
 	public abstract Response forkTick(@Context HttpServletRequest request,
-			@PathParam("tid") String tid) throws IOException;
+			@PathParam("tickId") String tickId) throws IOException;
 
 }
