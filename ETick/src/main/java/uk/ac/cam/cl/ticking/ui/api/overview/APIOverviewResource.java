@@ -1,4 +1,4 @@
-package uk.ac.cam.cl.ticking.ui.api;
+package uk.ac.cam.cl.ticking.ui.api.overview;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -25,7 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
-import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -50,8 +51,9 @@ public class APIOverviewResource {
 	private Configuration config;
 
 	@Inject
-	public APIOverviewResource(Configuration config) {
-		this.config = config;
+	public APIOverviewResource() {
+		config = (Configuration) ConfigurationRegister.getLoader(
+				Configuration.class).getConfig();
 	}
 
 	/**
@@ -289,7 +291,8 @@ public class APIOverviewResource {
 				sb.append(method.getMethod()).append(" ");
 
 				sb.append(
-						"<strong> <a href='" + config.getUiApiLocation()
+						"<strong> <a href='"
+								+ config.getUiApiLocation()
 								+ method.getFullPath().substring(1) + "'>")
 						.append(method.fullPath).append("</a></strong>");
 
