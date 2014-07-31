@@ -32,6 +32,10 @@
 				background: #4285f4;
 				color: #fff;
 			}
+
+			.disabledLabel {
+				color: #eaeaea;
+			}
 		</style>
 
 		<core-ajax id="createGroupAPI"
@@ -62,7 +66,7 @@
 			<div layout vertical style="width: 100%;">
 				<div layout horizontal center style="width: 100%;">
 					<paper-checkbox checked disabled id="authBox"></paper-checkbox>
-					<div flex>Author</div>
+					<div flex class="disabledLabel">Author</div>
 					<paper-checkbox id="markBox"></paper-checkbox>
 					<div flex>Marker</div>
 				</div>
