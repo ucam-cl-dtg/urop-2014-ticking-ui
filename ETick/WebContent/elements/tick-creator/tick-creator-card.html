@@ -119,9 +119,9 @@
             <paper-toggle-button id="groupsSwitch" on-change="{{toggleGroups}}"></paper-toggle-button>
         </div>
         <core-collapse id="collapseGroups">
-            <div layout horizontal wrap>
+            <div layout horizontal wrap style="padding-left: 20px; padding-bottom: 20px;">
             <template repeat="{{group in groups}}">
-                    <span layout horizontal style="margin-top: 40px;">
+                    <span layout horizontal style="margin-top: 20px;">
                         <paper-checkbox checked="{{group.selected}}"></paper-checkbox>
                         <span style="padding-left: 15px; margin-right: 20px; width: 250px;">{{group.text}}</span>
                     </span>
@@ -129,7 +129,7 @@
             </div>
         </core-collapse>
 
-        <br>
+
 
         <core-collapse id="collapseCorrectness" opened="false">
             <h4>CORRECTNESS CHECKS REPOSITORY</h4>
@@ -174,8 +174,8 @@
             this.tickName = "";
             this.groups = [];
 
-            for (var i = 0; i < 50; i++)
-            this.groups[this.groups.length] = {selected: false, text: "1A Programming in Java Tick " + i};
+            for (var i = 1; i < 8; i++)
+            this.groups[this.groups.length] = {selected: false, text: "Java Tick " + i};
         },
         /**
          * Once the ajax get request is complete, bind the fields on this card to the received data
@@ -227,7 +227,7 @@
                 }
             }
 
-            //TODO: add to groups
+            //TODO: add groups
             console.log(tickData.groups.length);
             if (!newTick) {
                 if (tickData.groups.length == 0) { //TODO: change to > 0
@@ -235,12 +235,9 @@
                 }
             }
 
-            //If the tick is not being created then a correctness tests repo should exist, so show its cloneable path
-
             //TODO: correctness tests
 
             //TODO: stylistic checks
-
         },
         toggleStylistic: function() {
             this.$.collapseStylistic.toggle();
