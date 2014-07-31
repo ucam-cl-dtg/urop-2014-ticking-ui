@@ -1,6 +1,9 @@
 package uk.ac.cam.cl.ticking.ui.ticks;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 
@@ -22,8 +25,13 @@ public class Tick {
 	private String name;
 	private String author;
 
-	private String repo;
+	private String stubRepo, correctnessRepo;
 	private DateTime deadline;
+	private List<String> groups = new ArrayList<>();
+	
+	private Map<String, DateTime> extensions = new HashMap<>();
+	
+	private DateTime edited;
 
 	/**
 	 * 
@@ -34,7 +42,7 @@ public class Tick {
 	 * 
 	 * 
 	 * @param name
-	 * @param repo
+	 * @param stubRepo
 	 * @param deadline
 	 * @param files
 	 */
@@ -58,19 +66,35 @@ public class Tick {
 	}
 
 	/**
-	 * @return repo
+	 * @return stubRepo
 	 */
-	@JsonProperty("repo")
-	public String getRepo() {
-		return repo;
+	@JsonProperty("stubRepo")
+	public String getStubRepo() {
+		return stubRepo;
 	}
 
 	/**
-	 * @param repo
+	 * @param stubRepo
 	 */
-	@JsonProperty("repo")
-	public void setRepo(String repo) {
-		this.repo = repo;
+	@JsonProperty("stubRepo")
+	public void setStubRepo(String stubRepo) {
+		this.stubRepo = stubRepo;
+	}
+	
+	/**
+	 * @return correctnessRepo
+	 */
+	@JsonProperty("correctnessRepo")
+	public String getCorrectnessRepo() {
+		return correctnessRepo;
+	}
+
+	/**
+	 * @param correctnessRepo
+	 */
+	@JsonProperty("correctnessRepo")
+	public void setCorrectnessRepo(String correctnessRepo) {
+		this.correctnessRepo = correctnessRepo;
 	}
 
 	/**
@@ -120,9 +144,62 @@ public class Tick {
 	public void setAuthor(String author) {
 		this.author = author;
 	}
+	 /**
+	  * @return edited
+	  */
+	public DateTime getEdited() {
+		return edited;
+	}
 
 	/**
-	 * @return tid
+	 * @param edited
+	 */
+	public void setEdited(DateTime edited) {
+		this.edited = edited;
+	}
+
+	/**
+	 * @return groups
+	 */
+	public List<String> getGroups() {
+		return groups;
+	}
+	
+	/**
+	 * @param groups
+	 */
+	public void setGroups(List<String> groups) {
+		this.groups = groups;
+	}
+
+	/**
+	 * @param groupId
+	 */
+	public void addGroup(String groupId) {
+		groups.add(groupId);
+	}
+	
+	/**
+	 * @param groupId
+	 */
+	public void removeGroup(String groupId) {
+		groups.remove(groupId);
+	}
+
+	public Map<String, DateTime> getExtensions() {
+		return extensions;
+	}
+
+	public void setExtensions(Map<String, DateTime> extensions) {
+		this.extensions = extensions;
+	}
+	
+	public void addExtension(String crsid, DateTime extension) {
+		this.extensions.put(crsid, extension);
+	}
+
+	/**
+	 * @return tickId
 	 */
 	public String getTickId() {
 		return tickId;

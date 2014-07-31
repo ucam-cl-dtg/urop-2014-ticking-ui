@@ -80,4 +80,13 @@ public class UserApiFacade implements IUserApiFacade {
 		List<Role> roles = db.getRoles(groupId, crsid);
 		return Response.ok(roles).build();
 	}
+	
+	@Override
+	public Response getRoleGroups(HttpServletRequest request, String stringRole) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		Role role = Role.valueOf(stringRole);
+		List<Group> groups = db.getGroups(crsid, role);
+		return Response.ok(groups).build();
+	}
 }
