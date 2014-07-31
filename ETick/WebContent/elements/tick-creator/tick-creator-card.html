@@ -7,215 +7,227 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
 <polymer-element name="tick-creator-card">
-    <template>
-        <style>
-            .checkboxContainer {
-                padding: 20px 20px 20px 0;
-                margin: 0;
-            }
-            h4 {
-                padding: 0;
-                margin-bottom: -10px;
-            }
-            #mainContainer {
-                margin-top: 0;
-                padding: 0 20px;
-            }
-            paper-checkbox::shadow #ink {
-                top: -16px;
-                left: -16px;
-                width: 50px;
-                height: 50px;
-            }
-            paper-checkbox {
-                /* Firefox/IE compatibility */
-                width: 15px;
-                height: 15px;
-            }
-            paper-button {
-                margin: 20px;
-                width: 10em;
-                height: 35px; /* Firefox/IE compatibility */
-            }
-            paper-button.colored {
-                background: #009933;
-                color: #fff;
-            }
-            paper-toggle-button {
-                margin-top: 23px;
-                margin-left: 8px;
-            }
-            #cmdRestoreDefaults {
-                width: 165px;
-                margin: 0;
-                font-size: 15px;
-            }
-            #day, #month {
-                width: 50px;
-            }
-            #year {
-                width: 100px;
-            }
-        </style>
+<template>
+    <style>
+        .checkboxContainer {
+            padding: 20px 20px 20px 0;
+            margin: 0;
+        }
+        h4 {
+            padding: 0;
+            margin-bottom: -10px;
+        }
+        #mainContainer {
+            margin-top: 0;
+            padding: 0 20px;
+        }
+        paper-checkbox::shadow #ink {
+            top: -16px;
+            left: -16px;
+            width: 50px;
+            height: 50px;
+        }
+        paper-checkbox {
+            /* Firefox/IE compatibility */
+            width: 15px;
+            height: 15px;
+        }
+        paper-button {
+            margin: 20px;
+            width: 10em;
+            height: 35px; /* Firefox/IE compatibility */
+        }
+        paper-button.colored {
+            background: #009933;
+            color: #fff;
+        }
+        paper-toggle-button {
+            margin-top: 23px;
+            margin-left: 8px;
+        }
+        #cmdRestoreDefaults {
+            width: 165px;
+            margin: 0;
+            font-size: 15px;
+        }
+        #day, #month {
+            width: 50px;
+        }
+        #year {
+            width: 100px;
+        }
+    </style>
 
-        <!-- GET all possible groups a tick can be in -->
-        <core-ajax
-                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/">
+    <!-- GET all possible groups a tick can be in -->
+    <core-ajax
+            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/">
 
-        </core-ajax>
+    </core-ajax>
 
-        <!-- get all other existing tick data -->
-        <core-ajax
-                id="ajaxLoadTickData"
-                auto
-                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester"
-                handleAs="json"
-                on-core-response="{{tickDataLoaded}}">
-        </core-ajax>
+    <!-- get all other existing tick data -->
+    <core-ajax
+            id="ajaxLoadTickData"
+            auto
+            url="http://localhost:8000/testTickData.json"
+            handleAs="json"
+            on-core-response="{{tickDataLoaded}}">
+    </core-ajax>
 
-       <!-- <core-ajax
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId}}"> -->
+    <!-- <core-ajax
+             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId}}"> -->
 
 
 
-        <div id="mainContainer">
-            <h4>DIPLAY NAME</h4>
+    <div id="mainContainer">
+        <h4>DIPLAY NAME</h4>
+        <br>
+        <div layout horizontal>
+            <div id="divDisplayName" flex>{{tickName}}</div>
+            <paper-input hidden id="inputTemplateRepo" flex label="e.g. Programming in Java Tick 1" inputValue="{{tickName}}"></paper-input>
+        </div>
+
+        <core-collapse id="collapseCodeTemplate" opened="true">
+            <h4>CORRECTNESS CHECKS</h4>
             <br>
             <div layout horizontal>
-                <div id="divDisplayName" flex>{{tickName}}</div>
-                <paper-input hidden id="inputTemplateRepo" flex label="e.g. Programming in Java Tick 1" inputValue="{{tickName}}"></paper-input>
+                <div style="color: #808080">Repository Address:&nbsp;</div>
+                <div id="codeTemplateAddress" flex>http://stuff</div>
             </div>
+        </core-collapse>
 
-            <core-collapse id="collapseCodeTemplate" opened="true">
-                <h4>CORRECTNESS CHECKS</h4>
-                <br>
-                <div layout horizontal>
-                    <div style="color: #808080">Repository Address:&nbsp;</div>
-                    <div id="codeTemplateAddress" flex>http://stuff</div>
-                </div>
-            </core-collapse>
-
-            <div layout horizontal>
-                <h4>DEADLINE</h4>
-                <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
-            </div>
-            <core-collapse id="collapseDeadline">
-                <br>
+        <div layout horizontal>
+            <h4>DEADLINE</h4>
+            <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
+        </div>
+        <core-collapse id="collapseDeadline">
+            <br>
                 <span layout horizontal>
                     <paper-input id="day" label="DD" floatinglabel="true"></paper-input>
                     <paper-input id="month" label="MM" floatinglabel="true"></paper-input>
                     <paper-input id="year" label="YYYY" floatinglabel="true"></paper-input>
                 </span>
-            </core-collapse>
-            <br>
+        </core-collapse>
+        <br>
 
-            <div layout horizontal>
-                <h4>ADD TO GROUPS</h4>
-                <paper-toggle-button id="groupsSwitch" on-change="{{toggleGroups}}"></paper-toggle-button>
-            </div>
-            <core-collapse id="collapseGroups">
-                <br>
-                <template repeat="{{group in groups}}">
+        <div layout horizontal>
+            <h4>ADD TO GROUPS</h4>
+            <paper-toggle-button id="groupsSwitch" on-change="{{toggleGroups}}"></paper-toggle-button>
+        </div>
+        <core-collapse id="collapseGroups">
+            <br>
+            <template repeat="{{group in groups}}">
                     <span layout horizontal style="margin-left: 20px;">
                         <paper-checkbox checked="{{group.selected}}"></paper-checkbox>
                         <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">{{group.text}}</span>
                     </span>
-                </template>
-            </core-collapse>
+            </template>
+        </core-collapse>
+        <br>
+
+        <core-collapse id="collapseCorrectness" opened="true">
+            <h4>CORRECTNESS CHECKS</h4>
             <br>
-
-            <core-collapse id="collapseCorrectness" opened="true">
-                <h4>CORRECTNESS CHECKS</h4>
-                <br>
-                <div layout horizontal>
-                    <div style="color: #808080">Repository Address:&nbsp;</div>
-                    <div id="correctnessAddress" flex>http://stuff</div>
-                </div>
-            </core-collapse>
-
-            <h4>STYLISTIC CHECKS</h4>
-            <div class="checkboxContainer" layout horizontal>
-                <paper-checkbox checked="{{useDefaults}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
-                <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Use Defaults</span>
-                <paper-button
-                        id="cmdRestoreDefaults"
-                        label="RESTORE DEFAULTS"
-                        raisedButton
-                        end-justified
-                        hidden?="{{useDefaults}}">
-                    </paper-button>
+            <div layout horizontal>
+                <div style="color: #808080">Repository Address:&nbsp;</div>
+                <div id="correctnessAddress" flex>http://stuff</div>
             </div>
-            <core-collapse id="collapseStylistic">
-                <static-list-labels></static-list-labels>
-                <static-list id="staticList"></static-list>
-            </core-collapse>
+        </core-collapse>
 
-            <!-- SAVE button -->
+        <h4>STYLISTIC CHECKS</h4>
+        <div class="checkboxContainer" layout horizontal>
+            <paper-checkbox checked="{{useDefaults}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
+            <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Use Defaults</span>
+            <paper-button
+                    id="cmdRestoreDefaults"
+                    label="RESTORE DEFAULTS"
+                    raisedButton
+                    end-justified
+                    hidden?="{{useDefaults}}">
+            </paper-button>
+        </div>
+        <core-collapse id="collapseStylistic">
+            <static-list-labels></static-list-labels>
+            <static-list id="staticList"></static-list>
+        </core-collapse>
+
+        <!-- SAVE button -->
             <span layout horizontal>
                 <span flex></span>
                 <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveTick}}"></paper-button>
                 <span flex></span>
             </span>
-        </div>
-    </template>
-    <script>
-        Polymer('tick-creator-card', {
-            ready: function() {
-                this.useDefaults = true;
-                this.tickName="Test";
-                this.groups = [];
+    </div>
+</template>
+<script>
+    Polymer('tick-creator-card', {
+        ready: function() {
+            this.useDefaults = true;
+            this.tickName="";
+            this.groups = [];
 
-                this.groups[0] = {selected: false, text: "Tick 1"}
-                this.groups[1] = {selected: false, text: "Tick 2"}
-                this.groups[2] = {selected: false, text: "Tick 3"}
-            },
-            tickDataLoaded: function() {
-                console.log(this.$.ajaxLoadTickData.response);
-            },
-            toggleStylistic: function() {
-                this.$.collapseStylistic.toggle();
-            },
-            toggleCodeTemplate: function() {
-                this.$.collapseCodeTemplate.opened = this.$.codeTemplateSwitch.checked;
-            },
-            toggleDeadline: function() {
-                this.$.collapseDeadline.opened = this.$.deadlineSwitch.checked;
-            },
-            toggleGroups: function() {
-                this.$.collapseGroups.opened = this.$.groupsSwitch.checked;
-            },
-            saveTick: function () {
-                //TODO: actually save the tick. For now, print all required data to console
-                console.log();
-                console.log("Code template repo: " + this.$.inputTemplateRepo.inputValue);
+            this.groups[0] = {selected: false, text: "Tick 1"};
+            this.groups[1] = {selected: false, text: "Tick 2"};
+            this.groups[2] = {selected: false, text: "Tick 3"};
+        },
+        /**
+         * Once the ajax get request is complete, bind the fields on this card to the received data
+         */
+        tickDataLoaded: function() {
+            console.log(this.$.ajaxLoadTickData.response);
 
-                console.log("Deadline? " + this.$.deadlineSwitch.checked);
-                if (this.$.deadlineSwitch.checked) {
-                    var year = this.$.year.inputValue;
-                    var month = this.$.month.inputValue;
-                    var day = this.$.day.inputValue;
-                    var date = new Date(year, month - 1, day);
-                    console.log(date.toISOString());
-                    console.log(date.toDateString());
+            var tickData = this.$.ajaxLoadTickData.response;
+
+            //Otherwise,
+            if (tickData.name.valueOf() === "") {
+                //if the tick name is blank, then a new tick is being created, so show the tick naming input
+
+            }
+
+        },
+        toggleStylistic: function() {
+            this.$.collapseStylistic.toggle();
+        },
+        toggleCodeTemplate: function() {
+            this.$.collapseCodeTemplate.opened = this.$.codeTemplateSwitch.checked;
+        },
+        toggleDeadline: function() {
+            this.$.collapseDeadline.opened = this.$.deadlineSwitch.checked;
+        },
+        toggleGroups: function() {
+            this.$.collapseGroups.opened = this.$.groupsSwitch.checked;
+        },
+        saveTick: function () {
+            //TODO: actually save the tick. For now, print all required data to console
+            console.log();
+            console.log("Code template repo: " + this.$.inputTemplateRepo.inputValue);
+
+            console.log("Deadline? " + this.$.deadlineSwitch.checked);
+            if (this.$.deadlineSwitch.checked) {
+                var year = this.$.year.inputValue;
+                var month = this.$.month.inputValue;
+                var day = this.$.day.inputValue;
+                var date = new Date(year, month - 1, day);
+                console.log(date.toISOString());
+                console.log(date.toDateString());
+            }
+
+            console.log("Correctness tests repo: " + this.$.inputCorrectnessRepo.inputValue);
+
+            console.log("Use defaults? " + this.useDefaults);
+            if (!this.useDefaults) {
+                var saveOptions = [];
+                for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
+                    if (!(this.$.staticList.staticOptions.closed)) {
+                        saveOptions[saveOptions.length] = {text: this.$.staticList.staticOptions[i].text,
+                            checkedIndex: this.$.staticList.staticOptions[i].checkedIndex};
+                    }
                 }
 
-                console.log("Correctness tests repo: " + this.$.inputCorrectnessRepo.inputValue);
-
-                console.log("Use defaults? " + this.useDefaults);
-                if (!this.useDefaults) {
-                    var saveOptions = [];
-                    for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
-                        if (!(this.$.staticList.staticOptions.closed)) {
-                            saveOptions[saveOptions.length] = {text: this.$.staticList.staticOptions[i].text,
-                                checkedIndex: this.$.staticList.staticOptions[i].checkedIndex};
-                        }
-                    }
-
-                    for (i = 0; i < saveOptions.length; i++) {
-                        console.log(saveOptions[i]);
-                    }
+                for (i = 0; i < saveOptions.length; i++) {
+                    console.log(saveOptions[i]);
                 }
             }
-        });
-    </script>
+        }
+    });
+</script>
 </polymer-element>
