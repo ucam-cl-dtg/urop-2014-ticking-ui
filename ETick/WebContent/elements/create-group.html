@@ -1,0 +1,90 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<polymer-element name="create-group" attributes="">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			paper-dialog .subtitle {
+				font-weight: 200;
+				font-size: 1.2rem;
+			}
+
+			paper-dialog::shadow h1 {
+				font-weight: 100;
+				margin-bottom: 10px;
+			}
+
+			/*Fix for paper-checkbox issue #6*/
+			paper-checkbox::shadow #ink {
+			    top: -16px;
+			    left: -16px;
+			    width: 50px;
+			    height: 50px;
+			}
+
+			paper-checkbox {
+				padding: 5px;
+			}
+
+			.dialogSubmit {
+				background: #4285f4;
+				color: #fff;
+			}
+		</style>
+
+		<paper-dialog id="createGroupDialog" heading="New Group:" backdrop	
+				transition="core-transition-top">
+			<paper-input id="newGroupName"
+				floatingLabel
+				label="Group name..."
+				error="Invalid group name."
+				on-input="{{handleNameInput}}">
+			</paper-input>
+			<h2 class="subtitle">Group Info:</h2>
+			<paper-input id="newGroupInfo"
+				multiline
+				maxRows="5"
+				label=""
+				error="Invalid group name.">
+			</paper-input>
+
+			<h2 class="subtitle">Your Roles:</h2>
+			<div layout vertical style="width: 100%;">
+				<div layout horizontal center style="width: 100%;">
+					<paper-checkbox checked disabled id="authBox"></paper-checkbox>
+					<div flex>Author</div>
+					<paper-checkbox id="markBox"></paper-checkbox>
+					<div flex>Marker</div>
+				</div>
+				<div layout horizontal center style="width: 100%;">
+					<paper-checkbox id="overBox"></paper-checkbox>
+					<div flex>Overview</div>
+					<paper-checkbox id="subBox"></paper-checkbox>
+					<div flex>Submitter</div>
+				</div>
+			</div>
+			<template if="{{showSubmit}}">
+				<paper-button id="addSubmit" class="dialogSubmit" label="ADD" on-click="{{addMember}}" affirmative></paper-button>
+			</template>
+		</paper-dialog>
+	</template>
+	<script>
+		Polymer('create-group', {
+			handleNameInput: function () {
+				if (this.$.newGroupName.inputValue === "") {
+					this.showSubmit = false;
+				}
+				else {
+					this.showSubmit = true;
+				}
+			},
+
+			toggleDialog: function () {
+				this.$.createGroupDialog.toggle();
+			}
+
+		});
+	</script>
+</polymer-element>

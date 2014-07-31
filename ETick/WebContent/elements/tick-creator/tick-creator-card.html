@@ -59,16 +59,32 @@
     </style>
 
     <!-- GET all possible groups a tick can be in -->
+    <!--<core-ajax
+            id="ajaxLoadGroups"
+            url="http://localhost:8000/testGroups.json"
+            handleAs="json"
+            on-core-response="{{groupsDataLoaded}}">
+    </core-ajax>-->
+    <!-- get all other existing tick data -->
+    <!--<core-ajax
+            id="ajaxLoadTickData"
+            auto
+            url="http://localhost:8000/testTickData.json"
+            handleAs="json"
+            on-core-response="{{tickDataLoaded}}">
+    </core-ajax>-->
+
     <core-ajax
-            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/">
-
+        id="ajaxLoadGroups"
+        url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/"
+        handleAs="json"
+        on-core-response="{{groupsDataLoaded}}">
     </core-ajax>
-
     <!-- get all other existing tick data -->
     <core-ajax
             id="ajaxLoadTickData"
             auto
-            url="http://localhost:8000/testTickData.json"
+            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester"
             handleAs="json"
             on-core-response="{{tickDataLoaded}}">
     </core-ajax>
@@ -82,11 +98,12 @@
         <h4>DISPLAY NAME</h4>
         <br>
         <div layout horizontal>
-            <div id="divDisplayName" flex>{{tickName}}</div>
+            <div id="divDisplayName" flex>
+                <div>{{tickName}}</div>
+                <br>
+            </div>
             <paper-input id="inputDisplayName" flex label="e.g. Programming in Java Tick 1" inputValue="{{tickName}}"></paper-input>
         </div>
-
-        <br>
 
         <core-collapse id="collapseCodeTemplate" opened="false">
             <h4>TEMPLATE REPOSITORY</h4>
@@ -95,9 +112,8 @@
                 <!--<div style="color: #808080">Repository Address:&nbsp;</div>-->
                 <div id="codeTemplateAddress" flex>http://stuff</div>
             </div>
+            <br>
         </core-collapse>
-
-        <br>
 
         <div layout horizontal>
             <h4>MASTER DEADLINE</h4>
@@ -129,6 +145,8 @@
             </div>
         </core-collapse>
 
+        <br>
+
         <core-collapse id="collapseCorrectness" opened="false">
             <h4>CORRECTNESS CHECKS REPOSITORY</h4>
             <br>
@@ -136,9 +154,10 @@
                 <!--<div style="color: #808080">Repository Address:&nbsp;</div>-->
                 <div id="correctnessAddress" flex>TODO</div>
             </div>
+            <br>
         </core-collapse>
 
-        <br>
+
 
         <h4>STYLISTIC CHECKS</h4>
         <div class="checkboxContainer" layout horizontal>
@@ -158,11 +177,11 @@
         </core-collapse>
 
         <!-- SAVE button -->
-            <span layout horizontal>
-                <span flex></span>
-                <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveTick}}"></paper-button>
-                <span flex></span>
-            </span>
+        <span layout horizontal>
+            <span flex></span>
+            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveTick}}"></paper-button>
+            <span flex></span>
+        </span>
     </div>
 </template>
 <script>
@@ -174,8 +193,27 @@
             this.newTick = null;
             this.tickData = null;
 
-            for (var i = 1; i < 8; i++)
-            this.groups[this.groups.length] = {selected: false, text: "Java Tick " + i};
+            //for (var i = 1; i < 8; i++)
+            //this.groups[this.groups.length] = {selected: false, text: "Java Tick " + i};
+        },
+        /**
+         * Load group data and figure out which groups have been selected
+         * Assert tickDataLoaded has already run.
+         */
+        groupsDataLoaded: function() {
+            var loadedGroups = this.$.ajaxLoadGroups.response.slice(0);
+
+            for (var i = 0; i < loadedGroups.length; i++) {
+                this.groups[this.groups.length] = {_id: loadedGroups[i]._id, selected: false, text: loadedGroups[i].name};
+            }
+
+            for (var g = 0; g < this.tickData.groups.length; g++) {
+                for (var k = 0; k < this.groups.length; k++) {
+                    if (this.tickData.groups[g] == this.groups[k]._id) {
+                        this.groups[k].selected = true;
+                    }
+                }
+            }
         },
         /**
          * Once the ajax get request is complete, bind the fields on this card to the received data
@@ -206,6 +244,11 @@
                 this.$.codeTemplateAddress.innerHTML = tickData.stubRepo;
             }
 
+            if (!this.newTick) {
+                this.$.collapseCorrectness.opened = true;
+                this.$.correctnessAddress.innerHTML = tickData.correctnessRepo;
+            }
+
             //if the tick is not being created and it currently has a deadline, show it
             if (!this.newTick) {
                 if (tickData.deadline != null) {
@@ -231,7 +274,7 @@
             //TODO: add groups
             console.log(tickData.groups.length);
             if (!this.newTick) {
-                if (tickData.groups.length == 0) { //TODO: change to > 0
+                if (tickData.groups.length > 0) {
                     this.$.groupsSwitch.checked = true;
                 }
             }
@@ -239,6 +282,8 @@
             //TODO: correctness tests
 
             //TODO: stylistic checks
+
+            this.$.ajaxLoadGroups.go();
         },
         toggleStylistic: function() {
             this.$.collapseStylistic.toggle();
@@ -282,7 +327,7 @@
 
             //TODO: Update groups
 
-            //TODO: get stylistic options (but probably make two ajax calls)
+            //TODO: update stylistic options (probably by making two ajax calls)
 
             console.log(this.tickData);
         }
