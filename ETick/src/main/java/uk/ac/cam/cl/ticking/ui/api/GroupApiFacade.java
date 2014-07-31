@@ -60,19 +60,20 @@ public class GroupApiFacade implements IGroupApiFacade {
 	}
 
 	@Override
-	public Response addGroup(HttpServletRequest request,
-			String name, List<String> roles, String info) {
+	public Response addGroup(HttpServletRequest request, List<String> roles,
+			Group groupBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		Group group = new Group(name, crsid);
-		group.setInfo(info);
+		Group group = new Group(groupBean.getName(), crsid);
+		group.setInfo(groupBean.getInfo());
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException de) {
-			return Response.status(Status.CONFLICT).build();
+			return Response.status(Status.CONFLICT).entity(Strings.GROUPNAMECLASH).build();
 		}
-		for (String role: roles) {
-			Grouping grouping = new Grouping(group.getGroupId(), crsid, Role.valueOf(role));
+		for (String role : roles) {
+			Grouping grouping = new Grouping(group.getGroupId(), crsid,
+					Role.valueOf(role));
 			db.saveGrouping(grouping);
 		}
 		return Response.status(Status.CREATED).entity(group).build();
@@ -96,7 +97,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.saveGroup(prevGroup);
 			return Response.status(Status.CREATED).entity(prevGroup).build();
 		} else {
-			return addGroup(request, group.getName(), new ArrayList<String>(), group.getInfo());
+			return addGroup(request, new ArrayList<String>(),
+					group);
 		}
 
 	}
