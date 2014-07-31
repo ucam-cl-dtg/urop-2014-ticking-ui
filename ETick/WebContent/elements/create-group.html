@@ -34,6 +34,14 @@
 			}
 		</style>
 
+		<core-ajax id="createGroupAPI"
+			contentType="application/json"
+			handleAs="json"
+			method="POST"
+			on-core-response="{{createResponse}}"
+			on-core-error="{{createError}}">
+		</core-ajax>
+
 		<paper-dialog id="createGroupDialog" heading="New Group:" backdrop	
 				transition="core-transition-top">
 			<paper-input id="newGroupName"
@@ -66,9 +74,13 @@
 				</div>
 			</div>
 			<template if="{{showSubmit}}">
-				<paper-button id="addSubmit" class="dialogSubmit" label="ADD" on-click="{{addMember}}" affirmative></paper-button>
+				<paper-button id="addSubmit" class="dialogSubmit" label="CREATE" on-click="{{createButtonClicked}}" affirmative></paper-button>
 			</template>
 		</paper-dialog>
+
+		<paper-toast id="createGroupError" text="Error creating group." duration="3000"></paper-toast>
+		<paper-toast id="createGroupSuccess" text="Created new group." dutration="3000"></paper-toast>
+
 	</template>
 	<script>
 		Polymer('create-group', {
@@ -83,6 +95,43 @@
 
 			toggleDialog: function () {
 				this.$.createGroupDialog.toggle();
+			},
+
+			resetAPI: function () {
+				var api = this.$.createGroupAPI;
+				api.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/";
+				api.body = "";
+			},
+
+			createButtonClicked: function () {
+				this.resetAPI();
+
+				var name = this.$.newGroupName.inputValue;
+				var info = encodeURI(this.$.newGroupInfo.inputValue);
+				var api = this.$.createGroupAPI;
+
+				console.log(info);
+				api.body = '{"name":"' + name + '", "info":"' + info + '"}';
+				api.url += '?roles=AUTHOR';
+				if (this.$.markBox.checked) api.url += "&roles=MARKER";
+				if (this.$.subBox.checked) api.url += "&roles=SUBMITTER";
+				if (this.$.overBox.checked) api.url += "&roles=OVERVIEW";
+				api.go();
+			},
+
+			createResponse: function() {
+				var toast = this.$.createGroupSuccess;
+				var response = this.$.createGroupAPI.response;
+				toast.text = 'Created new group "' + response.name + '".';
+				toast.show();
+
+				this.fire('group-created', {gid: response._id});
+			},
+
+			createError: function(e, detail) {
+				var toast = this.$.createGroupError;
+				toast.text = detail.xhr.responseText;
+				toast.show();
 			}
 
 		});

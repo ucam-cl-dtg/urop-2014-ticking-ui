@@ -7,6 +7,7 @@
 			<!-- API call: adds user if not already registered. -->
 			<core-ajax id="loginAjax"
 				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+				handleAs="json"
 				on-core-response="{{loginResponse}}">
 			</core-ajax>
 
@@ -32,8 +33,7 @@
 			},
 			loginResponse: function() {
 				this.ldap = this.$.loginAjax.response;
-				// Do somthing with this.$.loginAjax.response if needed. 
-
+				// Do somthing with this.$.loginAjax.response if needed.
 				this.$.sidebarAjax.go();
 			},
 			sidebarResponse: function() {
