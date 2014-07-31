@@ -1,7 +1,10 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -66,7 +69,7 @@ public interface IGroupApiFacade {
 	@Produces("application/json")
 	@Consumes("text/html")
 	public abstract Response addGroup(@Context HttpServletRequest request,
-			@PathParam("name") String name, String info);
+			@PathParam("name") String name, @DefaultValue("AUTHOR") @QueryParam("roles") List<String> roles, String info);
 	
 	/**
 	 * Commits the given group object to the database

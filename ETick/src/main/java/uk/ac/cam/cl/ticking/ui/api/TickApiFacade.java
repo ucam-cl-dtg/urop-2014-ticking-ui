@@ -102,7 +102,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		WebInterface proxy = target.proxy(WebInterface.class);
 		String repo;
-		//TODO not this \/
+		//TODO sort out ACID problems here
 		try {
 			repo = proxy.addRepository(new RepoUserRequestBean(crsid + "/"
 						+ tick.getName(), crsid));
