@@ -79,24 +79,28 @@
 
 
     <div id="mainContainer">
-        <h4>DIPLAY NAME</h4>
+        <h4>DISPLAY NAME</h4>
         <br>
         <div layout horizontal>
             <div id="divDisplayName" flex>{{tickName}}</div>
-            <paper-input hidden id="inputTemplateRepo" flex label="e.g. Programming in Java Tick 1" inputValue="{{tickName}}"></paper-input>
+            <paper-input id="inputDisplayName" flex label="e.g. Programming in Java Tick 1" inputValue="{{tickName}}"></paper-input>
         </div>
 
-        <core-collapse id="collapseCodeTemplate" opened="true">
-            <h4>CORRECTNESS CHECKS</h4>
+        <br>
+
+        <core-collapse id="collapseCodeTemplate" opened="false">
+            <h4>TEMPLATE REPOSITORY</h4>
             <br>
             <div layout horizontal>
-                <div style="color: #808080">Repository Address:&nbsp;</div>
+                <!--<div style="color: #808080">Repository Address:&nbsp;</div>-->
                 <div id="codeTemplateAddress" flex>http://stuff</div>
             </div>
         </core-collapse>
 
+        <br>
+
         <div layout horizontal>
-            <h4>DEADLINE</h4>
+            <h4>MASTER DEADLINE</h4>
             <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
         </div>
         <core-collapse id="collapseDeadline">
@@ -107,6 +111,7 @@
                     <paper-input id="year" label="YYYY" floatinglabel="true"></paper-input>
                 </span>
         </core-collapse>
+
         <br>
 
         <div layout horizontal>
@@ -122,16 +127,19 @@
                     </span>
             </template>
         </core-collapse>
+
         <br>
 
-        <core-collapse id="collapseCorrectness" opened="true">
-            <h4>CORRECTNESS CHECKS</h4>
+        <core-collapse id="collapseCorrectness" opened="false">
+            <h4>CORRECTNESS CHECKS REPOSITORY</h4>
             <br>
             <div layout horizontal>
-                <div style="color: #808080">Repository Address:&nbsp;</div>
-                <div id="correctnessAddress" flex>http://stuff</div>
+                <!--<div style="color: #808080">Repository Address:&nbsp;</div>-->
+                <div id="correctnessAddress" flex>TODO</div>
             </div>
         </core-collapse>
+
+        <br>
 
         <h4>STYLISTIC CHECKS</h4>
         <div class="checkboxContainer" layout horizontal>
@@ -162,7 +170,7 @@
     Polymer('tick-creator-card', {
         ready: function() {
             this.useDefaults = true;
-            this.tickName="";
+            this.tickName = "";
             this.groups = [];
 
             this.groups[0] = {selected: false, text: "Tick 1"};
@@ -175,13 +183,63 @@
         tickDataLoaded: function() {
             console.log(this.$.ajaxLoadTickData.response);
 
-            var tickData = this.$.ajaxLoadTickData.response;
+           var tickData = this.$.ajaxLoadTickData.response;
 
-            //Otherwise,
-            if (tickData.name.valueOf() === "") {
+            //if the name is blank, then assume the user is creating a new tick
+            var newTick = tickData.name.valueOf() === "";
+
+            //Set up display name
+            if (newTick) {
                 //if the tick name is blank, then a new tick is being created, so show the tick naming input
-
+                this.$.divDisplayName.hidden = true;
+                this.$.inputDisplayName.hidden = false;
+            } else {
+                //Otherwise, the tick already exists so show the read only field
+                this.$.divDisplayName.hidden = false;
+                this.$.inputDisplayName.hidden = true;
+                this.tickName = tickData.name;
             }
+
+            if (!newTick) {
+                this.$.collapseCodeTemplate.opened = true;
+                this.$.codeTemplateAddress.innerHTML = tickData.repo;
+            }
+
+            //if the tick is not being created and it currently has a deadline, show it
+            if (!newTick) {
+                if (tickData.deadline != null) {
+                    //By checking the deadline switch, the deadline entry fields will be shown
+                    this.$.deadlineSwitch.checked = true;
+
+                    var deadline  = new Date(tickData.deadline);
+
+                    var day = deadline.getUTCDate().toString();
+                    var month = (deadline.getUTCMonth() + 1).toString();
+                    var year = (deadline.getUTCFullYear()).toString();
+
+                    //pad day and month to include leading zero if necessary
+                    if (day.length == 1) {day = "0" + day}
+                    if (month.length == 1) {month = "0" + month}
+
+                    this.$.day.inputValue = day;
+                    this.$.month.inputValue = month;
+                    this.$.year.inputValue = year;
+                }
+            }
+
+            //TODO: add to groups
+            /*console.log(tickData.groups.length);
+            if (!newTick) {
+                if (tickData.groups.length == 0) { //TODO: change to > 0
+                    this.$.groupsSwitch.checked = true;
+                }
+            }*/
+
+            //If the tick is not being created then a correctness tests repo should exist, so show its cloneable path
+
+            //TODO: correctness tests
+
+            //TODO: stylistic checks
 
         },
         toggleStylistic: function() {
