@@ -50,7 +50,8 @@ public interface ITickApiFacade {
 	@GET
 	@Path("/list/{groupId}")
 	@Produces("application/json")
-	public abstract Response getTicks(@PathParam("groupId") String groupId);
+	public abstract Response getTicks(@Context HttpServletRequest request,
+			@PathParam("groupId") String groupId);
 
 	/**
 	 * Commits the given tick object to the database, but only after a
@@ -69,15 +70,15 @@ public interface ITickApiFacade {
 	@Path("/")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public abstract Response newTick(@Context HttpServletRequest request, Tick tick)
-			throws IOException, DuplicateRepoNameException;
-	
+	public abstract Response newTick(@Context HttpServletRequest request,
+			Tick tick) throws IOException, DuplicateRepoNameException;
+
 	@PUT
 	@Path("/")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public abstract Response updateTick(@Context HttpServletRequest request, Tick tick)
-			throws IOException, DuplicateRepoNameException;
+	public abstract Response updateTick(@Context HttpServletRequest request,
+			Tick tick) throws IOException, DuplicateRepoNameException;
 
 	/**
 	 * Adds a Tick to a Group given a tickId and groupId

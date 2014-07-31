@@ -38,7 +38,8 @@ public class TickApiFacade implements ITickApiFacade {
 	 * @param config
 	 */
 	@Inject
-	public TickApiFacade(IDataManager db, ConfigurationLoader<Configuration> config) {
+	public TickApiFacade(IDataManager db,
+			ConfigurationLoader<Configuration> config) {
 		this.db = db;
 		this.config = config;
 	}
@@ -64,8 +65,16 @@ public class TickApiFacade implements ITickApiFacade {
 	 * (java.lang.String)
 	 */
 	@Override
-	public Response getTicks(String groupId) {
+	public Response getTicks(HttpServletRequest request, String groupId) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
 		List<Tick> ticks = db.getGroupTicks(groupId);
+		for (Tick tick : ticks) {
+			DateTime extension = tick.getExtensions().get(crsid);
+			if (extension !=null) {
+				tick.setDeadline(extension);
+			}
+		}
 		return Response.ok().entity(ticks).build();
 	}
 
@@ -79,59 +88,77 @@ public class TickApiFacade implements ITickApiFacade {
 	 */
 	@Override
 	public Response newTick(HttpServletRequest request, Tick tick)
-			throws IOException, DuplicateRepoNameException {
+			 {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getConfig().getGitApiLocation());
+		ResteasyWebTarget target = client.target(config.getConfig()
+				.getGitApiLocation());
 
-		if (!validatePermissions(tick.getGroups(),crsid)) {
-			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+		if (!validatePermissions(tick.getGroups(), crsid)) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
 		}
-		
+
 		WebInterface proxy = target.proxy(WebInterface.class);
-		String repo = proxy.addRepository(new RepoUserRequestBean(crsid+"/"+tick
-				.getName(), crsid));
+		String repo;
+		//TODO not this \/
+		try {
+			repo = proxy.addRepository(new RepoUserRequestBean(crsid + "/"
+						+ tick.getName(), crsid));
+		} catch (IOException | DuplicateRepoNameException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+		}
+		String correctnessRepo;
+		try {
+			correctnessRepo = proxy.addRepository(new RepoUserRequestBean(
+					crsid + "/" + tick.getName() + "/correctness", crsid));
+		} catch (IOException | DuplicateRepoNameException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+		}
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
 		tick.setAuthor(crsid);
-		tick.setRepo(repo);
+		tick.setStubRepo(repo);
+		tick.setCorrectnessRepo(correctnessRepo);
 		tick.initTickId();
-		
+
 		for (String groupId : tick.getGroups()) {
 			Group g = db.getGroup(groupId);
 			g.addTick(tick.getTickId());
 			db.saveGroup(g);
 		}
-		
+
 		try {
 			db.insertTick(tick);
 		} catch (DuplicateDataEntryException de) {
 			return Response.status(Status.CONFLICT).build();
 		}
-		
+
 		return Response.status(Status.CREATED).entity(tick).build();
 	}
-	
+
 	@Override
 	public Response updateTick(HttpServletRequest request, Tick tick)
 			throws IOException, DuplicateRepoNameException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
-		if (!validatePermissions(tick.getGroups(),crsid)) {
-			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+		if (!validatePermissions(tick.getGroups(), crsid)) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
 		}
-		
+
 		Tick prevTick = db.getTick(tick.getTickId());
-		
+
 		if (prevTick != null) {
-			
+
 			if (!crsid.equals(prevTick.getAuthor())) {
-				return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+				return Response.status(Status.UNAUTHORIZED)
+						.entity(Strings.INVALIDROLE).build();
 			}
-			
+
 			prevTick.setEdited(DateTime.now());
 			for (String groupId : prevTick.getGroups()) {
 				Group g = db.getGroup(groupId);
@@ -150,7 +177,7 @@ public class TickApiFacade implements ITickApiFacade {
 			return newTick(request, tick);
 		}
 	}
-	
+
 	private boolean validatePermissions(List<String> groupIds, String crsid) {
 		for (String groupId : groupIds) {
 			List<Role> roles = db.getRoles(groupId, crsid);
@@ -170,13 +197,15 @@ public class TickApiFacade implements ITickApiFacade {
 	 * java.lang.String)
 	 */
 	@Override
-	public Response addTick(HttpServletRequest request, String tickId, String groupId) {
+	public Response addTick(HttpServletRequest request, String tickId,
+			String groupId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		List<Role> roles = db.getRoles(groupId, crsid);
 		Tick t = db.getTick(tickId);
 		if (!roles.contains(Role.AUTHOR) || !(t.getAuthor().equals(crsid))) {
-			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
 		}
 		Group g = db.getGroup(groupId);
 		g.addTick(tickId);
@@ -200,7 +229,8 @@ public class TickApiFacade implements ITickApiFacade {
 				"RavenRemoteUser");
 
 		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getConfig().getGitApiLocation());
+		ResteasyWebTarget target = client.target(config.getConfig()
+				.getGitApiLocation());
 		WebInterface proxy = target.proxy(WebInterface.class);
 		String output;
 		String repoName = Tick.replaceDelimeter(tickId);
@@ -208,22 +238,23 @@ public class TickApiFacade implements ITickApiFacade {
 			output = proxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));
 		} catch (DuplicateRepoNameException e) {
-			output = e.getMessage()
-					+ Strings.FORKED;
+			output = e.getMessage() + Strings.FORKED;
 		}
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
 		return Response.status(Status.CREATED).entity(output).build();
 	}
-	
+
 	@Override
-	public Response setDeadline(HttpServletRequest request, String tickId, DateTime date) {
+	public Response setDeadline(HttpServletRequest request, String tickId,
+			DateTime date) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		Tick tick = db.getTick(tickId);
 		if (!tick.getAuthor().equals(crsid)) {
-			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
 		}
 		tick.setDeadline(date);
 		db.saveTick(tick);

@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.joda.time.DateTime;
 
 import publicinterfaces.AbstractReport;
 import publicinterfaces.ITestService;
@@ -52,6 +53,11 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 				"RavenRemoteUser");
 		
 		Tick tick = db.getTick(tickId);
+		
+		DateTime extension = tick.getExtensions().get(crsid);
+		if (extension !=null) {
+			tick.setDeadline(extension);
+		}
 		
 		if (tick.getDeadline()!=null && tick.getDeadline().isBeforeNow()) {
 			return Response.status(400).entity(Strings.DEADLINE).build();
