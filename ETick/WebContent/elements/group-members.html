@@ -54,16 +54,20 @@
 				on-input="{{handleAddInput}}">
 			</paper-input>
 			<h2 class="subtitle">Roles:</h2>
-			<table>
-				<tr>
-					<td>Author:</td><td><paper-checkbox id="authBox"></paper-checkbox></td>
-					<td>Marker:</td><td><paper-checkbox id="markBox"></paper-checkbox></td>
-				</tr>
-				<tr>
-					<td>Overview:</td><td><paper-checkbox checked id="overBox"></paper-checkbox></td>
-					<td>Submitter:</td><td><paper-checkbox id="subBox"></paper-checkbox></td>
-				</tr>
-			</table>
+			<div layout vertical style="width: 100%;">
+				<div layout horizontal center style="width: 100%;">
+					<paper-checkbox id="authBox"></paper-checkbox>
+					<div flex>Author</div>
+					<paper-checkbox id="markBox"></paper-checkbox>
+					<div flex>Marker</div>
+				</div>
+				<div layout horizontal center style="width: 100%;">
+					<paper-checkbox id="overBox"></paper-checkbox>
+					<div flex>Overview</div>
+					<paper-checkbox id="subBox"></paper-checkbox>
+					<div flex>Submitter</div>
+				</div>
+			</div>
 			<template if="{{showSubmit}}">
 				<paper-button id="addSubmit" class="dialogSubmit" label="ADD" on-click="{{addMember}}" affirmative></paper-button>
 			</template>
