@@ -1,5 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +67,11 @@ public class GroupApiFacade implements IGroupApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		Group group = new Group(groupBean.getName(), crsid);
-		group.setInfo(groupBean.getInfo());
+		try {
+			group.setInfo(URLDecoder.decode(groupBean.getInfo(),"UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			//Hardcoded: known to be supported
+		}
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException de) {
