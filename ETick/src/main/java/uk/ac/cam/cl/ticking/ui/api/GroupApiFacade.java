@@ -1,11 +1,12 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -61,19 +62,26 @@ public class GroupApiFacade implements IGroupApiFacade {
 	}
 
 	@Override
-	public Response addGroup(HttpServletRequest request, String name,
-			String info) {
+	public Response addGroup(HttpServletRequest request, List<String> roles,
+			Group groupBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		Group group = new Group(name, crsid);
-		group.setInfo(info);
+		Group group = new Group(groupBean.getName(), crsid);
+		try {
+			group.setInfo(URLDecoder.decode(groupBean.getInfo(),"UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			//Hardcoded: known to be supported
+		}
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException de) {
-			return Response.status(Status.CONFLICT).build();
+			return Response.status(Status.CONFLICT).entity(Strings.GROUPNAMECLASH).build();
 		}
-		Grouping grouping = new Grouping(group.getGroupId(), crsid, Role.AUTHOR);
-		db.saveGrouping(grouping);
+		for (String role : roles) {
+			Grouping grouping = new Grouping(group.getGroupId(), crsid,
+					Role.valueOf(role));
+			db.saveGrouping(grouping);
+		}
 		return Response.status(Status.CREATED).entity(group).build();
 	}
 
@@ -83,7 +91,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 				"RavenRemoteUser");
 		List<Role> myRoles = db.getRoles(group.getGroupId(), crsid);
 		if (!myRoles.contains(Role.AUTHOR)) {
-			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
 		}
 		Group prevGroup = db.getGroup(group.getGroupId());
 		if (prevGroup != null) {
@@ -94,9 +103,10 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.saveGroup(prevGroup);
 			return Response.status(Status.CREATED).entity(prevGroup).build();
 		} else {
-			return addGroup(request, group.getName(), group.getInfo());
+			return addGroup(request, new ArrayList<String>(),
+					group);
 		}
-		
+
 	}
 
 }

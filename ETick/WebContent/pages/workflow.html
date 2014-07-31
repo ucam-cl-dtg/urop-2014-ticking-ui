@@ -2,7 +2,7 @@
 <html lang="en" ng-app="eTick">
 <html>
 <head>
-<title>Student Page</title>
+<title>Workflow</title>
 <script src="../bower_components/platform/platform.js"></script>
 <link rel="import" href="../bower_components/font-roboto/roboto.html">
 <link rel="import"
@@ -43,22 +43,70 @@ paper-button.colored {
 	display: none;
 }
 
+my-dialog h1 {
+	color: red;
+}
+
 </style>
 </head>
 <body>
-	<h1>Workflow Test Page</h1>
+	<h1>Submitter</h1>
 	<!-- page code -->
 	<table>
 		<tr>
 		<td>
-			<h2>Add Repo:</h2>
-			<paper-button raisedButton class="colored" label="ADD" id="add"></paper-button>
+			<h2>Fork a Repo:</h2>
+			<paper-button raisedButton class="colored" label="FORK" id="fork"></paper-button>
 		</td><td>
 			<h2>Submit Tick:</h2>
 			<paper-button raisedButton class="colored" label="SUBMIT" id="submit"></paper-button>
 		</td><td>
-			<h2>Fork a Repo:</h2>
-			<paper-button raisedButton class="colored" label="FORK" id="fork"></paper-button>
+			<h2>Status:</h2>
+			<paper-button raisedButton class="colored" label="STATUS" id="stat"></paper-button>
+		</td><td>
+			<h2>Last Report:</h2>
+			<paper-button raisedButton class="colored" label="LAST" id="last"></paper-button>
+		</td><td>
+			<h2>Sign up:</h2>
+			<paper-button raisedButton class="colored" label="SESSION" id="sign-up"></paper-button>
+		</td>
+		</tr>
+	</table>
+	<h1>Marker</h1>
+	<!-- page code -->
+	<table>
+		<tr>
+		<td>
+			<h2>Select Column:</h2>
+			<paper-button raisedButton class="colored" label="SELECT" id="session"></paper-button>
+		</td><td>
+			<h2>Select Slot:</h2>
+			<paper-button raisedButton class="colored" label="SELECT" id="slot"></paper-button>
+		</td><td>
+			<h2>View Report:</h2>
+			<paper-button raisedButton class="colored" label="REPORT" id="report"></paper-button>
+		</td><td>
+			<h2>Add Comments:</h2>
+			<paper-button raisedButton class="colored" label="COMMENT" id="comment"></paper-button>
+		</td><td>
+			<h2>Pass/Fail:</h2>
+			<paper-button raisedButton class="colored" label="PASS/FAIL" id="pass-fail"></paper-button>
+		</td>
+		</tr>
+	</table>
+	<h1>Author</h1>
+	<!-- page code -->
+	<table>
+		<tr>
+		<td>
+			<h2>Add Tick:</h2>
+			<paper-button raisedButton class="colored" label="ADD" id="add"></paper-button>
+		</td><td>
+			<h2>Add User:</h2>
+			<paper-button raisedButton class="colored" label="ADD" id="users"></paper-button>
+		</td><td>
+			<h2>Create Session:</h2>
+			<paper-button raisedButton class="colored" label="CREATE" id="create-session"></paper-button>
 		</td>
 		</tr>
 	</table>
@@ -111,20 +159,68 @@ paper-button.colored {
 	<my-dialog>
 
 	<core-ajax  id="forkAPI" 
-				url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + }}"
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/" 
 				handleAs="json"
-				contentType="application/json"
 				method="POST"></core-ajax>
+
+	<!-- Submit Tick -->
+	<core-ajax  id="subAPI" 
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/tester" 
+				method="POST"></core-ajax>
+
+	<core-ajax  id="statusAPI" 
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/tester/running" 
+				handleAs="json"></core-ajax>
+
+	<core-ajax  id="lastAPI" 
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/tester/last" 
+				handleAs="json"></core-ajax>
 
 	<script>
 		var fork = document.querySelector('#fork');
 		var add = document.querySelector('#add');
+		var submit = document.querySelector('#submit');
+		var stat = document.querySelector('#stat');
 		var addInput = document.querySelector('#addInput');
 		var forkInput = document.querySelector('#forkInput');
 		var create = document.querySelector('#create');
 		var forkify = document.querySelector('#forkify');
 		var call = document.querySelector('#addAPI');
-		
+		var forkAPI = document.querySelector('#forkAPI');
+		var subAPI = document.querySelector('#subAPI');
+		var statusAPI = document.querySelector('#statusAPI');
+		var last = document.querySelector('#last');
+		var lastAPI = document.querySelector('#lastAPI');
+		var poll;
+
+		last.addEventListener('click', function() {
+			lastAPI.go();
+		});
+
+		lastAPI.addEventListener('core-response', function () {
+			console.log(lastAPI.response);
+		});
+
+		submit.addEventListener('click', function () {
+			subAPI.go();
+		});
+
+		stat.addEventListener('click', function () {
+			poll = setInterval(function() {
+				statusAPI.go();
+			}, 1000);
+		});
+
+		statusAPI.addEventListener('core-response', function() {
+			var progress = statusAPI.response.progress;
+			var maxProgress = statusAPI.response.maxProgress;
+			var info = statusAPI.response.info;
+			console.log('Progress: ' + progress + '/' + maxProgress + ' : ' + info);
+			if (progress === maxProgress) {
+				clearInterval(poll);
+			}
+		});
+
 		addInput.addEventListener('input', function() {
 			if(addInput.invalid) {
 				create.style.display = 'none';
@@ -148,7 +244,11 @@ paper-button.colored {
 		});
 
 		fork.addEventListener('click', function() {
-			document.querySelector('#forkOverlay').toggle();
+			forkAPI.go();
+		});
+
+		forkAPI.addEventListener('core-response', function() {
+			console.log(forkAPI.response);
 		});
 
 		create.addEventListener('click', function() {

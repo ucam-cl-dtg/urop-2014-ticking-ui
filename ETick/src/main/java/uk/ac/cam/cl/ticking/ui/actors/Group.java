@@ -45,6 +45,11 @@ public class Group implements Comparable<Group> {
 		this.setCreator(creator);
 		this.groupId = ObjectId.get().toString();
 	}
+	
+	//Default constructor for Jackson
+	public Group() {
+		
+	}
 
 	/**
 	 * @return name

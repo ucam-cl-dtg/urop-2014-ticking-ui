@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.log4j.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -15,6 +16,7 @@ import org.joda.time.DateTime;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.RepoUserRequestBean;
+import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
@@ -30,6 +32,7 @@ import com.google.inject.Inject;
 
 public class TickApiFacade implements ITickApiFacade {
 
+	Logger log = Logger.getLogger(ConfigurationLoader.class.getName());
 	private IDataManager db;
 	private ConfigurationLoader<Configuration> config;
 
@@ -71,7 +74,7 @@ public class TickApiFacade implements ITickApiFacade {
 		List<Tick> ticks = db.getGroupTicks(groupId);
 		for (Tick tick : ticks) {
 			DateTime extension = tick.getExtensions().get(crsid);
-			if (extension !=null) {
+			if (extension != null) {
 				tick.setDeadline(extension);
 			}
 		}
@@ -87,34 +90,63 @@ public class TickApiFacade implements ITickApiFacade {
 	 * uk.ac.cam.cl.ticking.ui.ticks.Tick)
 	 */
 	@Override
-	public Response newTick(HttpServletRequest request, Tick tick)
-			 {
+	public Response newTick(HttpServletRequest request, Tick tick) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getConfig()
-				.getGitApiLocation());
+
+		if (db.getTick(tick.getTickId()) != null) {
+			return Response.status(Status.CONFLICT).entity(Strings.EXISTS)
+					.build();
+		}
 
 		if (!validatePermissions(tick.getGroups(), crsid)) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
+		ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyWebTarget target = client.target(config.getConfig()
+				.getGitApiLocation());
+
 		WebInterface proxy = target.proxy(WebInterface.class);
 		String repo;
-		//TODO not this \/
+		/*
+		 * Here we try to create two repositories. If the first create fails, we
+		 * abort. If the second fails, we abort, however the first repository
+		 * still exists. We throw this back to the user as a failure and they
+		 * must try again. On this retry we will find that the first repository
+		 * already exists as expected, hence we ignore the duplicate repository
+		 * name exception thrown
+		 */
 		try {
 			repo = proxy.addRepository(new RepoUserRequestBean(crsid + "/"
-						+ tick.getName(), crsid));
-		} catch (IOException | DuplicateRepoNameException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+					+ tick.getName(), crsid));
+		} catch (IOException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
+		} catch (DuplicateRepoNameException e) {
+			try {
+				repo = proxy.getRepoURI(crsid + "/" + tick.getName());
+			} catch (RepositoryNotFoundException e1) {
+				throw new RuntimeException("Schrodinger's repository");
+				// The repo simultaneously does and doesn't exist
+			}
+			log.info(
+					"Found a clashing repository name, assuming this is due to a previous error and continuing",
+					e);
 		}
 		String correctnessRepo;
 		try {
-			correctnessRepo = proxy.addRepository(new RepoUserRequestBean(
-					crsid + "/" + tick.getName() + "/correctness", crsid));
+			correctnessRepo = proxy.addRepository(new RepoUserRequestBean(crsid
+					+ "/" + tick.getName() + "/correctness", crsid));
 		} catch (IOException | DuplicateRepoNameException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+			/*
+			 * Here if we encounter a duplicate repository name then the second
+			 * create did not fail, and we should not be here again with the
+			 * same repo name meaning, if we are, something has gone wrong.
+			 */
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		}
 
 		// Execution will only reach this point if there are no git errors else
