@@ -7,215 +7,285 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
 <polymer-element name="tick-creator-card">
-    <template>
-        <style>
-            .checkboxContainer {
-                padding: 20px 20px 20px 0;
-                margin: 0;
-            }
-            h4 {
-                padding: 0;
-                margin-bottom: -10px;
-            }
-            #mainContainer {
-                margin-top: 0;
-                padding: 0 20px;
-            }
-            paper-checkbox::shadow #ink {
-                top: -16px;
-                left: -16px;
-                width: 50px;
-                height: 50px;
-            }
-            paper-checkbox {
-                /* Firefox/IE compatibility */
-                width: 15px;
-                height: 15px;
-            }
-            paper-button {
-                margin: 20px;
-                width: 10em;
-                height: 35px; /* Firefox/IE compatibility */
-            }
-            paper-button.colored {
-                background: #009933;
-                color: #fff;
-            }
-            paper-toggle-button {
-                margin-top: 23px;
-                margin-left: 8px;
-            }
-            #cmdRestoreDefaults {
-                width: 165px;
-                margin: 0;
-                font-size: 15px;
-            }
-            #day, #month {
-                width: 50px;
-            }
-            #year {
-                width: 100px;
-            }
-        </style>
+<template>
+    <style>
+        .checkboxContainer {
+            padding: 20px 20px 20px 0;
+            margin: 0;
+        }
+        h4 {
+            padding: 0;
+            margin-bottom: -10px;
+        }
+        #mainContainer {
+            margin-top: 0;
+            padding: 0 20px;
+        }
+        paper-checkbox::shadow #ink {
+            top: -16px;
+            left: -16px;
+            width: 50px;
+            height: 50px;
+        }
+        paper-checkbox {
+            /* Firefox/IE compatibility */
+            width: 15px;
+            height: 15px;
+        }
+        paper-button {
+            margin: 20px;
+            width: 10em;
+            height: 35px; /* Firefox/IE compatibility */
+        }
+        paper-button.colored {
+            background: #009933;
+            color: #fff;
+        }
+        paper-toggle-button {
+            margin-top: 23px;
+            margin-left: 8px;
+        }
+        #cmdRestoreDefaults {
+            width: 165px;
+            margin: 0;
+            font-size: 15px;
+        }
+        #day, #month {
+            width: 50px;
+        }
+        #year {
+            width: 100px;
+        }
+    </style>
 
-        <!-- GET all possible groups a tick can be in -->
-        <core-ajax
-                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/">
+    <!-- GET all possible groups a tick can be in -->
+    <core-ajax
+            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/">
 
-        </core-ajax>
+    </core-ajax>
 
-        <!-- get all other existing tick data -->
-        <core-ajax
-                id="ajaxLoadTickData"
-                auto
-                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester"
-                handleAs="json"
-                on-core-response="{{tickDataLoaded}}">
-        </core-ajax>
+    <!-- get all other existing tick data -->
+    <core-ajax
+            id="ajaxLoadTickData"
+            auto
+            url="http://localhost:8000/testTickData.json"
+            handleAs="json"
+            on-core-response="{{tickDataLoaded}}">
+    </core-ajax>
 
-       <!-- <core-ajax
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId}}"> -->
+    <!-- <core-ajax
+             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId}}"> -->
 
 
 
-        <div id="mainContainer">
-            <h4>DIPLAY NAME</h4>
+    <div id="mainContainer">
+        <h4>DISPLAY NAME</h4>
+        <br>
+        <div layout horizontal>
+            <div id="divDisplayName" flex>{{tickName}}</div>
+            <paper-input id="inputDisplayName" flex label="e.g. Programming in Java Tick 1" inputValue="{{tickName}}"></paper-input>
+        </div>
+
+        <br>
+
+        <core-collapse id="collapseCodeTemplate" opened="false">
+            <h4>TEMPLATE REPOSITORY</h4>
             <br>
             <div layout horizontal>
-                <div id="divDisplayName" flex>{{tickName}}</div>
-                <paper-input hidden id="inputTemplateRepo" flex label="e.g. Programming in Java Tick 1" inputValue="{{tickName}}"></paper-input>
+                <!--<div style="color: #808080">Repository Address:&nbsp;</div>-->
+                <div id="codeTemplateAddress" flex>http://stuff</div>
             </div>
+        </core-collapse>
 
-            <core-collapse id="collapseCodeTemplate" opened="true">
-                <h4>CORRECTNESS CHECKS</h4>
-                <br>
-                <div layout horizontal>
-                    <div style="color: #808080">Repository Address:&nbsp;</div>
-                    <div id="codeTemplateAddress" flex>http://stuff</div>
-                </div>
-            </core-collapse>
+        <br>
 
-            <div layout horizontal>
-                <h4>DEADLINE</h4>
-                <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
-            </div>
-            <core-collapse id="collapseDeadline">
-                <br>
+        <div layout horizontal>
+            <h4>MASTER DEADLINE</h4>
+            <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
+        </div>
+        <core-collapse id="collapseDeadline">
+            <br>
                 <span layout horizontal>
                     <paper-input id="day" label="DD" floatinglabel="true"></paper-input>
                     <paper-input id="month" label="MM" floatinglabel="true"></paper-input>
                     <paper-input id="year" label="YYYY" floatinglabel="true"></paper-input>
                 </span>
-            </core-collapse>
-            <br>
+        </core-collapse>
 
-            <div layout horizontal>
-                <h4>ADD TO GROUPS</h4>
-                <paper-toggle-button id="groupsSwitch" on-change="{{toggleGroups}}"></paper-toggle-button>
-            </div>
-            <core-collapse id="collapseGroups">
-                <br>
-                <template repeat="{{group in groups}}">
-                    <span layout horizontal style="margin-left: 20px;">
+        <br>
+
+        <div layout horizontal>
+            <h4>ADD TO GROUPS</h4>
+            <paper-toggle-button id="groupsSwitch" on-change="{{toggleGroups}}"></paper-toggle-button>
+        </div>
+        <core-collapse id="collapseGroups">
+            <div layout horizontal wrap style="padding-left: 20px; padding-bottom: 20px;">
+            <template repeat="{{group in groups}}">
+                    <span layout horizontal style="margin-top: 20px;">
                         <paper-checkbox checked="{{group.selected}}"></paper-checkbox>
-                        <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">{{group.text}}</span>
+                        <span style="padding-left: 15px; margin-right: 20px; width: 250px;">{{group.text}}</span>
                     </span>
-                </template>
-            </core-collapse>
-            <br>
-
-            <core-collapse id="collapseCorrectness" opened="true">
-                <h4>CORRECTNESS CHECKS</h4>
-                <br>
-                <div layout horizontal>
-                    <div style="color: #808080">Repository Address:&nbsp;</div>
-                    <div id="correctnessAddress" flex>http://stuff</div>
-                </div>
-            </core-collapse>
-
-            <h4>STYLISTIC CHECKS</h4>
-            <div class="checkboxContainer" layout horizontal>
-                <paper-checkbox checked="{{useDefaults}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
-                <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Use Defaults</span>
-                <paper-button
-                        id="cmdRestoreDefaults"
-                        label="RESTORE DEFAULTS"
-                        raisedButton
-                        end-justified
-                        hidden?="{{useDefaults}}">
-                    </paper-button>
+            </template>
             </div>
-            <core-collapse id="collapseStylistic">
-                <static-list-labels></static-list-labels>
-                <static-list id="staticList"></static-list>
-            </core-collapse>
+        </core-collapse>
 
-            <!-- SAVE button -->
+        <core-collapse id="collapseCorrectness" opened="false">
+            <h4>CORRECTNESS CHECKS REPOSITORY</h4>
+            <br>
+            <div layout horizontal>
+                <!--<div style="color: #808080">Repository Address:&nbsp;</div>-->
+                <div id="correctnessAddress" flex>TODO</div>
+            </div>
+        </core-collapse>
+
+        <br>
+
+        <h4>STYLISTIC CHECKS</h4>
+        <div class="checkboxContainer" layout horizontal>
+            <paper-checkbox checked="{{useDefaults}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
+            <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Use Defaults</span>
+            <paper-button
+                    id="cmdRestoreDefaults"
+                    label="RESTORE DEFAULTS"
+                    raisedButton
+                    end-justified
+                    hidden?="{{useDefaults}}">
+            </paper-button>
+        </div>
+        <core-collapse id="collapseStylistic">
+            <static-list-labels></static-list-labels>
+            <static-list id="staticList"></static-list>
+        </core-collapse>
+
+        <!-- SAVE button -->
             <span layout horizontal>
                 <span flex></span>
                 <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveTick}}"></paper-button>
                 <span flex></span>
             </span>
-        </div>
-    </template>
-    <script>
-        Polymer('tick-creator-card', {
-            ready: function() {
-                this.useDefaults = true;
-                this.tickName="Test";
-                this.groups = [];
+    </div>
+</template>
+<script>
+    Polymer('tick-creator-card', {
+        ready: function() {
+            this.useDefaults = true;
+            this.tickName = "";
+            this.groups = [];
+            this.newTick = null;
+            this.tickData = null;
 
-                this.groups[0] = {selected: false, text: "Tick 1"}
-                this.groups[1] = {selected: false, text: "Tick 2"}
-                this.groups[2] = {selected: false, text: "Tick 3"}
-            },
-            tickDataLoaded: function() {
-                console.log(this.$.ajaxLoadTickData.response);
-            },
-            toggleStylistic: function() {
-                this.$.collapseStylistic.toggle();
-            },
-            toggleCodeTemplate: function() {
-                this.$.collapseCodeTemplate.opened = this.$.codeTemplateSwitch.checked;
-            },
-            toggleDeadline: function() {
-                this.$.collapseDeadline.opened = this.$.deadlineSwitch.checked;
-            },
-            toggleGroups: function() {
-                this.$.collapseGroups.opened = this.$.groupsSwitch.checked;
-            },
-            saveTick: function () {
-                //TODO: actually save the tick. For now, print all required data to console
-                console.log();
-                console.log("Code template repo: " + this.$.inputTemplateRepo.inputValue);
+            for (var i = 1; i < 8; i++)
+            this.groups[this.groups.length] = {selected: false, text: "Java Tick " + i};
+        },
+        /**
+         * Once the ajax get request is complete, bind the fields on this card to the received data
+         */
+        tickDataLoaded: function() {
+            console.log(this.$.ajaxLoadTickData.response);
 
-                console.log("Deadline? " + this.$.deadlineSwitch.checked);
-                if (this.$.deadlineSwitch.checked) {
-                    var year = this.$.year.inputValue;
-                    var month = this.$.month.inputValue;
-                    var day = this.$.day.inputValue;
-                    var date = new Date(year, month - 1, day);
-                    console.log(date.toISOString());
-                    console.log(date.toDateString());
-                }
+            var tickData = this.$.ajaxLoadTickData.response;
+            this.tickData = tickData;
 
-                console.log("Correctness tests repo: " + this.$.inputCorrectnessRepo.inputValue);
+            //if the name is blank, then assume the user is creating a new tick
+            this.newTick = tickData.name.valueOf() === "";
 
-                console.log("Use defaults? " + this.useDefaults);
-                if (!this.useDefaults) {
-                    var saveOptions = [];
-                    for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
-                        if (!(this.$.staticList.staticOptions.closed)) {
-                            saveOptions[saveOptions.length] = {text: this.$.staticList.staticOptions[i].text,
-                                checkedIndex: this.$.staticList.staticOptions[i].checkedIndex};
-                        }
-                    }
+            //Set up display name
+            if (this.newTick) {
+                //if the tick name is blank, then a new tick is being created, so show the tick naming input
+                this.$.divDisplayName.hidden = true;
+                this.$.inputDisplayName.hidden = false;
+            } else {
+                //Otherwise, the tick already exists so show the read only field
+                this.$.divDisplayName.hidden = false;
+                this.$.inputDisplayName.hidden = true;
+                this.tickName = tickData.name;
+            }
 
-                    for (i = 0; i < saveOptions.length; i++) {
-                        console.log(saveOptions[i]);
-                    }
+            if (!this.newTick) {
+                this.$.collapseCodeTemplate.opened = true;
+                this.$.codeTemplateAddress.innerHTML = tickData.stubRepo;
+            }
+
+            //if the tick is not being created and it currently has a deadline, show it
+            if (!this.newTick) {
+                if (tickData.deadline != null) {
+                    //By checking the deadline switch, the deadline entry fields will be shown
+                    this.$.deadlineSwitch.checked = true;
+
+                    var deadline  = new Date(tickData.deadline);
+
+                    var day = deadline.getUTCDate().toString();
+                    var month = (deadline.getUTCMonth() + 1).toString();
+                    var year = (deadline.getUTCFullYear()).toString();
+
+                    //pad day and month to include leading zero if necessary
+                    if (day.length == 1) {day = "0" + day}
+                    if (month.length == 1) {month = "0" + month}
+
+                    this.$.day.inputValue = day;
+                    this.$.month.inputValue = month;
+                    this.$.year.inputValue = year;
                 }
             }
-        });
-    </script>
+
+            //TODO: add groups
+            console.log(tickData.groups.length);
+            if (!this.newTick) {
+                if (tickData.groups.length == 0) { //TODO: change to > 0
+                    this.$.groupsSwitch.checked = true;
+                }
+            }
+
+            //TODO: correctness tests
+
+            //TODO: stylistic checks
+        },
+        toggleStylistic: function() {
+            this.$.collapseStylistic.toggle();
+        },
+        toggleCodeTemplate: function() {
+            this.$.collapseCodeTemplate.opened = this.$.codeTemplateSwitch.checked;
+        },
+        toggleDeadline: function() {
+            this.$.collapseDeadline.opened = this.$.deadlineSwitch.checked;
+        },
+        toggleGroups: function() {
+            this.$.collapseGroups.opened = this.$.groupsSwitch.checked;
+        },
+        /**
+         * Update the originally sent tick object with the data the user has entered on this card, then send it to the
+         * front end's back end
+         */
+        saveTick: function () {
+            //TODO: actually save the tick. For now, print all required data to console
+
+            //Set name if a new tick
+            if (this.newTick) {
+                this.tickData.name = this.$.inputDisplayName;
+            }
+
+            //Don't set template repository (this is generated by back end)
+
+            //Update master deadline
+            if (this.$.deadlineSwitch.checked) {
+                var year = this.$.year.inputValue;
+                var month = this.$.month.inputValue - 1;
+                var day = this.$.day.inputValue;
+                var date = new Date();
+                date.setUTCDate(day);
+                date.setUTCMonth(month);
+                date.setUTCFullYear(year);
+                this.tickData.deadline = date.toISOString();
+            } else {
+                this.tickData.deadline = null;
+            }
+
+            //TODO: Update groups
+
+            //TODO: get stylistic options (but probably make two ajax calls)
+
+            console.log(this.tickData);
+        }
+    });
+</script>
 </polymer-element>
