@@ -119,13 +119,14 @@
             <paper-toggle-button id="groupsSwitch" on-change="{{toggleGroups}}"></paper-toggle-button>
         </div>
         <core-collapse id="collapseGroups">
-            <br>
+            <div layout horizontal wrap>
             <template repeat="{{group in groups}}">
-                    <span layout horizontal style="margin-left: 20px;">
+                    <span layout horizontal style="margin-top: 40px;">
                         <paper-checkbox checked="{{group.selected}}"></paper-checkbox>
-                        <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">{{group.text}}</span>
+                        <span style="padding-left: 15px; margin-right: 20px; width: 250px;">{{group.text}}</span>
                     </span>
             </template>
+            </div>
         </core-collapse>
 
         <br>
@@ -173,9 +174,8 @@
             this.tickName = "";
             this.groups = [];
 
-            this.groups[0] = {selected: false, text: "Tick 1"};
-            this.groups[1] = {selected: false, text: "Tick 2"};
-            this.groups[2] = {selected: false, text: "Tick 3"};
+            for (var i = 0; i < 50; i++)
+            this.groups[this.groups.length] = {selected: false, text: "1A Programming in Java Tick " + i};
         },
         /**
          * Once the ajax get request is complete, bind the fields on this card to the received data
@@ -228,12 +228,12 @@
             }
 
             //TODO: add to groups
-            /*console.log(tickData.groups.length);
+            console.log(tickData.groups.length);
             if (!newTick) {
                 if (tickData.groups.length == 0) { //TODO: change to > 0
                     this.$.groupsSwitch.checked = true;
                 }
-            }*/
+            }
 
             //If the tick is not being created then a correctness tests repo should exist, so show its cloneable path
 
