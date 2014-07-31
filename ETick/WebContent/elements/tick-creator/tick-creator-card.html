@@ -203,7 +203,7 @@
 
             if (!this.newTick) {
                 this.$.collapseCodeTemplate.opened = true;
-                this.$.codeTemplateAddress.innerHTML = tickData.repo;
+                this.$.codeTemplateAddress.innerHTML = tickData.stubRepo;
             }
 
             //if the tick is not being created and it currently has a deadline, show it
@@ -284,35 +284,6 @@
 
             //TODO: get stylistic options (but probably make two ajax calls)
 
-            /*console.log();
-            console.log("Code template repo: " + this.$.inputTemplateRepo.inputValue);
-
-            console.log("Deadline? " + this.$.deadlineSwitch.checked);
-            if (this.$.deadlineSwitch.checked) {
-                var year = this.$.year.inputValue;
-                var month = this.$.month.inputValue;
-                var day = this.$.day.inputValue;
-                var date = new Date(year, month - 1, day);
-                console.log(date.toISOString());
-                console.log(date.toDateString());
-            }
-
-            console.log("Correctness tests repo: " + this.$.inputCorrectnessRepo.inputValue);
-
-            console.log("Use defaults? " + this.useDefaults);
-            if (!this.useDefaults) {
-                var saveOptions = [];
-                for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
-                    if (!(this.$.staticList.staticOptions.closed)) {
-                        saveOptions[saveOptions.length] = {text: this.$.staticList.staticOptions[i].text,
-                            checkedIndex: this.$.staticList.staticOptions[i].checkedIndex};
-                    }
-                }
-
-                for (i = 0; i < saveOptions.length; i++) {
-                    console.log(saveOptions[i]);
-                }
-            }*/
             console.log(this.tickData);
         }
     });
