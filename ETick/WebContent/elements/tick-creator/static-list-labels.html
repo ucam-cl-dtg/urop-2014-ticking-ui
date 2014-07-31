@@ -1,0 +1,29 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="static-list-labels">
+    <template>
+        <style>
+            :host {
+                padding-bottom: -20px;
+                margin-bottom: -20px;
+            }
+            p {
+                font-size: 11px;
+                margin-right: 20px;
+            }
+        </style>
+
+
+        <div layout horizontal>
+            <span flex></span>
+            <span layout horizontal>
+                <p>IGNORE</p>
+                <p>WARNING</p>
+                <p>ERROR</p>
+            </span>
+        </div>
+    </template>
+    <script>
+        Polymer({});
+    </script>
+</polymer-element>
