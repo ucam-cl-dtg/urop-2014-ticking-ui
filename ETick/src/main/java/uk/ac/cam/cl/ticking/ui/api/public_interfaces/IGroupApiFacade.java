@@ -1,14 +1,18 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
+import uk.ac.cam.cl.ticking.ui.actors.Group;
 
 /**
  * A RESTful interface for requests regarding groups.
@@ -58,9 +62,22 @@ public interface IGroupApiFacade {
 	 * @return the group object that has been committed to the database
 	 */
 	@POST
+	@Path("/{name}")
+	@Produces("application/json")
+	@Consumes("text/html")
+	public abstract Response addGroup(@Context HttpServletRequest request,
+			@PathParam("name") String name, String info);
+	
+	/**
+	 * Commits the given group object to the database
+	 * 
+	 * @param g
+	 * @return the group object that has been committed to the database
+	 */
+	@PUT
 	@Path("/")
 	@Produces("application/json")
-	public abstract Response addGroup(@Context HttpServletRequest request,
-			@QueryParam("name") String name);
+	@Consumes("application/json")
+	public abstract Response updateGroup(@Context HttpServletRequest request, Group group);
 
 }

@@ -69,8 +69,14 @@ public interface ITickApiFacade {
 	@Path("/")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public abstract Response newTick(@Context HttpServletRequest request,
-			@DefaultValue("") @QueryParam("groupId") String groupId, Tick tick)
+	public abstract Response newTick(@Context HttpServletRequest request, Tick tick)
+			throws IOException, DuplicateRepoNameException;
+	
+	@PUT
+	@Path("/")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public abstract Response updateTick(@Context HttpServletRequest request, Tick tick)
 			throws IOException, DuplicateRepoNameException;
 
 	/**
@@ -86,9 +92,10 @@ public interface ITickApiFacade {
 	@POST
 	@Path("/{tickId}/{groupId}")
 	@Produces("application/json")
+	@Deprecated
 	public abstract Response addTick(@Context HttpServletRequest request,
-			@PathParam("groupId") String groupId,
-			@PathParam("tickId") String tickId) throws IOException,
+			@PathParam("tickId") String tickId,
+			@PathParam("groupId") String groupId) throws IOException,
 			DuplicateRepoNameException;
 
 	/**

@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -81,13 +78,17 @@ public class TickApiFacade implements ITickApiFacade {
 	 * uk.ac.cam.cl.ticking.ui.ticks.Tick)
 	 */
 	@Override
-	public Response newTick(HttpServletRequest request, String groupId, Tick tick)
+	public Response newTick(HttpServletRequest request, Tick tick)
 			throws IOException, DuplicateRepoNameException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget target = client.target(config.getConfig().getGitApiLocation());
 
+		if (!validatePermissions(tick.getGroups(),crsid)) {
+			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+		}
+		
 		WebInterface proxy = target.proxy(WebInterface.class);
 		String repo = proxy.addRepository(new RepoUserRequestBean(crsid+"/"+tick
 				.getName(), crsid));
@@ -97,15 +98,61 @@ public class TickApiFacade implements ITickApiFacade {
 		tick.setAuthor(crsid);
 		tick.setRepo(repo);
 		tick.initTickId();
+		
+		for (String groupId : tick.getGroups()) {
+			db.getGroup(groupId).addTick(tick.getTickId());
+		}
+		
 		try {
 			db.insertTick(tick);
 		} catch (DuplicateDataEntryException de) {
 			return Response.status(Status.CONFLICT).build();
 		}
-		if (!groupId.equals("")) {
-			return addTick(request, tick.getTickId(), groupId);
-		}
+		
 		return Response.status(Status.CREATED).entity(tick).build();
+	}
+	
+	@Override
+	public Response updateTick(HttpServletRequest request, Tick tick)
+			throws IOException, DuplicateRepoNameException {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+
+		if (!validatePermissions(tick.getGroups(),crsid)) {
+			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+		}
+		
+		Tick prevTick = db.getTick(tick.getTickId());
+		
+		if (prevTick != null) {
+			
+			if (!crsid.equals(prevTick.getAuthor())) {
+				return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+			}
+			
+			prevTick.setEdited(DateTime.now());
+			for (String groupId : prevTick.getGroups()) {
+				db.getGroup(groupId).removeTick(tick.getTickId());
+			}
+			for (String groupId : tick.getGroups()) {
+				db.getGroup(groupId).addTick(tick.getTickId());
+			}
+			prevTick.setGroups(tick.getGroups());
+			db.saveTick(prevTick);
+			return Response.status(Status.CREATED).entity(prevTick).build();
+		} else {
+			return newTick(request, tick);
+		}
+	}
+	
+	private boolean validatePermissions(List<String> groupIds, String crsid) {
+		for (String groupId : groupIds) {
+			List<Role> roles = db.getRoles(groupId, crsid);
+			if (!roles.contains(Role.AUTHOR)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/*
@@ -117,6 +164,7 @@ public class TickApiFacade implements ITickApiFacade {
 	 * java.lang.String)
 	 */
 	@Override
+	@Deprecated
 	public Response addTick(HttpServletRequest request, String tickId, String groupId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
@@ -126,7 +174,10 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 		Group g = db.getGroup(groupId);
 		g.addTick(tickId);
+		Tick t = db.getTick(tickId);
+		t.addGroup(groupId);
 		db.saveGroup(g);
+		db.saveTick(t);
 		return Response.status(Status.CREATED).entity(g).build();
 	}
 

@@ -1,6 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.ticks;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 
@@ -24,6 +25,9 @@ public class Tick {
 
 	private String repo;
 	private DateTime deadline;
+	private List<String> groups = new ArrayList<>();
+	
+	private DateTime edited;
 
 	/**
 	 * 
@@ -120,9 +124,50 @@ public class Tick {
 	public void setAuthor(String author) {
 		this.author = author;
 	}
+	 /**
+	  * @return edited
+	  */
+	public DateTime getEdited() {
+		return edited;
+	}
 
 	/**
-	 * @return tid
+	 * @param edited
+	 */
+	public void setEdited(DateTime edited) {
+		this.edited = edited;
+	}
+
+	/**
+	 * @return groups
+	 */
+	public List<String> getGroups() {
+		return groups;
+	}
+	
+	/**
+	 * @param groups
+	 */
+	public void setGroups(List<String> groups) {
+		this.groups = groups;
+	}
+
+	/**
+	 * @param groupId
+	 */
+	public void addGroup(String groupId) {
+		groups.add(groupId);
+	}
+	
+	/**
+	 * @param groupId
+	 */
+	public void removeGroup(String groupId) {
+		groups.remove(groupId);
+	}
+
+	/**
+	 * @return tickId
 	 */
 	public String getTickId() {
 		return tickId;

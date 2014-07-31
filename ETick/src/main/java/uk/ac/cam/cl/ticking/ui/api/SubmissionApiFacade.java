@@ -66,7 +66,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		try {
-			testProxy.runNewTest(crsid, repoName, forkRepoName);
+			testProxy.runNewTest(crsid, tickId, forkRepoName);
 		} catch (IOException e) {
 			return Response.status(500).entity(e).build();
 		} catch (TestStillRunningException e) {

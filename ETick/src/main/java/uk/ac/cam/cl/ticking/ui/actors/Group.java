@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,6 +21,11 @@ public class Group implements Comparable<Group> {
 	private String groupId;
 
 	private String name, creator;
+	
+	private String info;
+	
+	private DateTime edited;
+	private String editedBy;
 
 	private List<String> ticks = new ArrayList<String>();
 
@@ -83,10 +89,59 @@ public class Group implements Comparable<Group> {
 	}
 
 	/**
-	 * @param tid
+	 * @param tickId
 	 */
-	public void addTick(String tid) {
-		ticks.add(tid);
+	public void addTick(String tickId) {
+		ticks.add(tickId);
+	}
+	
+	/**
+	 * @param tickId
+	 */
+	public void removeTick(String tickId) {
+		ticks.remove(tickId);
+	}
+
+	/**
+	 * @return info
+	 */
+	public String getInfo() {
+		return info;
+	}
+
+	/**
+	 * @param info
+	 */
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	/**
+	 * @return edited
+	 */
+	public DateTime getEdited() {
+		return edited;
+	}
+
+	/**
+	 * @param edited
+	 */
+	public void setEdited(DateTime edited) {
+		this.edited = edited;
+	}
+
+	/**
+	 * @return editedBy
+	 */
+	public String getEditedBy() {
+		return editedBy;
+	}
+
+	/**
+	 * @param editedBy
+	 */
+	public void setEditedBy(String editedBy) {
+		this.editedBy = editedBy;
 	}
 
 	/*

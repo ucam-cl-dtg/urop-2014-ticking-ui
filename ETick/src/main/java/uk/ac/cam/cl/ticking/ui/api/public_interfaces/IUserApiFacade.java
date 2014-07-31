@@ -48,5 +48,19 @@ public interface IUserApiFacade {
 	@Produces("application/json")
 	public abstract Response getGroupRoles(@Context HttpServletRequest request,
 			@PathParam("groupId") String groupId);
+	
+	/**
+	 * Uses the user's session to determine the crsid and then returns all groups
+	 * for which the user has the specified role
+	 * 
+	 * @param request
+	 * @param groupId
+	 * @return the list of groups that the current user has the given role for
+	 */
+	@GET
+	@Path("/{stringRole}")
+	@Produces("application/json")
+	public abstract Response getRoleGroups(@Context HttpServletRequest request,
+			@PathParam("stringRole") String stringRole);
 
 }
