@@ -92,7 +92,6 @@ public interface ITickApiFacade {
 	@POST
 	@Path("/{tickId}/{groupId}")
 	@Produces("application/json")
-	@Deprecated
 	public abstract Response addTick(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId,
 			@PathParam("groupId") String groupId) throws IOException,

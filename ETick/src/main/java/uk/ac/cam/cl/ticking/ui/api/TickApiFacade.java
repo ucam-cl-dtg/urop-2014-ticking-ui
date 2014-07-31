@@ -100,7 +100,9 @@ public class TickApiFacade implements ITickApiFacade {
 		tick.initTickId();
 		
 		for (String groupId : tick.getGroups()) {
-			db.getGroup(groupId).addTick(tick.getTickId());
+			Group g = db.getGroup(groupId);
+			g.addTick(tick.getTickId());
+			db.saveGroup(g);
 		}
 		
 		try {
@@ -132,10 +134,14 @@ public class TickApiFacade implements ITickApiFacade {
 			
 			prevTick.setEdited(DateTime.now());
 			for (String groupId : prevTick.getGroups()) {
-				db.getGroup(groupId).removeTick(tick.getTickId());
+				Group g = db.getGroup(groupId);
+				g.removeTick(tick.getTickId());
+				db.saveGroup(g);
 			}
 			for (String groupId : tick.getGroups()) {
-				db.getGroup(groupId).addTick(tick.getTickId());
+				Group g = db.getGroup(groupId);
+				g.addTick(tick.getTickId());
+				db.saveGroup(g);
 			}
 			prevTick.setGroups(tick.getGroups());
 			db.saveTick(prevTick);
@@ -164,17 +170,16 @@ public class TickApiFacade implements ITickApiFacade {
 	 * java.lang.String)
 	 */
 	@Override
-	@Deprecated
 	public Response addTick(HttpServletRequest request, String tickId, String groupId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		List<Role> roles = db.getRoles(groupId, crsid);
-		if (!roles.contains(Role.AUTHOR)) {
+		Tick t = db.getTick(tickId);
+		if (!roles.contains(Role.AUTHOR) || !(t.getAuthor().equals(crsid))) {
 			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
 		}
 		Group g = db.getGroup(groupId);
 		g.addTick(tickId);
-		Tick t = db.getTick(tickId);
 		t.addGroup(groupId);
 		db.saveGroup(g);
 		db.saveTick(t);
