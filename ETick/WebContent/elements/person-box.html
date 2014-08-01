@@ -44,7 +44,7 @@
 	</template>
 	<script>
 		Polymer('person-box', {
-			ready: function() {
+			domReady: function() {
 				this.icon = "social:person"
 				if (this.isStudent) {
 					this.icon = "social:school";
