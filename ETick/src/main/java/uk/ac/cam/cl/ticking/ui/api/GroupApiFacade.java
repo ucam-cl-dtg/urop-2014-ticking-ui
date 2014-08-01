@@ -7,6 +7,11 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -47,6 +52,31 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.ok(group).build();
 	}
 
+	public Response deleteGroup(HttpServletRequest request, String groupId) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		Group group = db.getGroup(groupId);
+		if (!crsid.equals(group.getCreator())) {
+			//return Response.status(Status.UNAUTHORIZED)
+			//		.entity(Strings.INVALIDROLE).build();
+		}
+		db.removeGroup(groupId);
+		return Response.ok().build();
+	}
+
+	public Response deleteUser(HttpServletRequest request, String groupId,
+			String crsid) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		Group group = db.getGroup(groupId);
+		if (!myCrsid.equals(group.getCreator())) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		db.removeUserGroup(crsid,groupId);
+		return Response.ok().build();
+	}
+
 	@Override
 	public Response getUsers(String groupId) {
 		List<User> users = db.getUsers(groupId);
@@ -68,14 +98,15 @@ public class GroupApiFacade implements IGroupApiFacade {
 				"RavenRemoteUser");
 		Group group = new Group(groupBean.getName(), crsid);
 		try {
-			group.setInfo(URLDecoder.decode(groupBean.getInfo(),"UTF-8"));
+			group.setInfo(URLDecoder.decode(groupBean.getInfo(), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
-			//Hardcoded: known to be supported
+			// Hardcoded: known to be supported
 		}
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException de) {
-			return Response.status(Status.CONFLICT).entity(Strings.GROUPNAMECLASH).build();
+			return Response.status(Status.CONFLICT)
+					.entity(Strings.GROUPNAMECLASH).build();
 		}
 		for (String role : roles) {
 			Grouping grouping = new Grouping(group.getGroupId(), crsid,
@@ -103,8 +134,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.saveGroup(prevGroup);
 			return Response.status(Status.CREATED).entity(prevGroup).build();
 		} else {
-			return addGroup(request, new ArrayList<String>(),
-					group);
+			return addGroup(request, new ArrayList<String>(), group);
 		}
 
 	}

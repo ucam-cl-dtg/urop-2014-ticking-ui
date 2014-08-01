@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -39,6 +40,18 @@ public interface IGroupApiFacade {
 	public abstract Response getGroup(@PathParam("groupId") String groupId,
 			@QueryParam("byName") boolean byName);
 
+	@DELETE
+	@Path("/{groupId}")
+	@Produces("application/json")
+	public abstract Response deleteGroup(@Context HttpServletRequest request,
+			@PathParam("groupId") String groupId);
+	
+	@DELETE
+	@Path("/{groupId}/{crsid}")
+	@Produces("application/json")
+	public abstract Response deleteUser(@Context HttpServletRequest request,
+			@PathParam("groupId") String groupId, @PathParam("crsid") String crsid);
+	
 	/**
 	 * 
 	 * @param groupId

@@ -74,25 +74,39 @@
             on-core-response="{{tickDataLoaded}}">
     </core-ajax>-->
 
+    <!-- Get groups for this author -->
     <core-ajax
         id="ajaxLoadGroups"
-        url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/"
+        url="{{pathLoadGroups}}"
         handleAs="json"
         on-core-response="{{groupsDataLoaded}}">
     </core-ajax>
-    <!-- get all other existing tick data -->
+
+    <!-- get and update all other existing tick data -->
     <core-ajax
             id="ajaxLoadTickData"
             auto
-            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester"
+            url="{{pathLoadTickData}}"
             handleAs="json"
             on-core-response="{{tickDataLoaded}}">
     </core-ajax>
+    <core-ajax
+            id="ajaxPutTickData"
+            url="{{pathPutTickData}}"
+            handleAs="json"
+            contentType="application/json"
+            method="PUT">
+    </core-ajax>
+
+
+    <!-- TODO: get default settings / settings for this tick
+
+
+
+
 
     <!-- <core-ajax
              url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId}}"> -->
-
-
 
     <div id="mainContainer">
         <h4>DISPLAY NAME</h4>
@@ -116,7 +130,7 @@
         </core-collapse>
 
         <div layout horizontal>
-            <h4>MASTER DEADLINE</h4>
+            <h4 style="height: 19px;">MASTER DEADLINE</h4>
             <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
         </div>
         <core-collapse id="collapseDeadline">
@@ -131,7 +145,7 @@
         <br>
 
         <div layout horizontal>
-            <h4>ADD TO GROUPS</h4>
+            <h4 style="height: 19px;">ADD TO GROUPS</h4>
             <paper-toggle-button id="groupsSwitch" on-change="{{toggleGroups}}"></paper-toggle-button>
         </div>
         <core-collapse id="collapseGroups">
@@ -187,6 +201,16 @@
 <script>
     Polymer('tick-creator-card', {
         ready: function() {
+
+            this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/";
+            this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
+            this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
+
+            /*this.pathLoadGroups = "http://localhost:8000/testGroups.json";
+            this.pathLoadTickData = "http://localhost:8000/testTickData.json";
+            this.pathPutTickData = "http://localhost:8000/UROP_UI/api/tick";*/
+
+
             this.useDefaults = true;
             this.tickName = "";
             this.groups = [];
@@ -283,6 +307,7 @@
 
             //TODO: stylistic checks
 
+            //load groups which user is an author for
             this.$.ajaxLoadGroups.go();
         },
         toggleStylistic: function() {
@@ -302,8 +327,6 @@
          * front end's back end
          */
         saveTick: function () {
-            //TODO: actually save the tick. For now, print all required data to console
-
             //Set name if a new tick
             if (this.newTick) {
                 this.tickData.name = this.$.inputDisplayName;
@@ -325,11 +348,22 @@
                 this.tickData.deadline = null;
             }
 
-            //TODO: Update groups
+            //update groups
+            this.tickData.groups = [];
+            if (this.$.groupsSwitch.checked) {
+                for (var i = 0; i < this.groups.length; i++) {
+                    if (this.groups[i].selected) {
+                        this.tickData.groups[this.tickData.groups.length] = this.groups[i]._id;
+                    }
+                }
+            }
 
             //TODO: update stylistic options (probably by making two ajax calls)
 
             console.log(this.tickData);
+
+            this.$.ajaxPutTickData.body = JSON.stringify(this.tickData);
+            this.$.ajaxPutTickData.go();
         }
     });
 </script>
