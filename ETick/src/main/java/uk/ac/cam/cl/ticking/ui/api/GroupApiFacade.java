@@ -96,7 +96,15 @@ public class GroupApiFacade implements IGroupApiFacade {
 			Group groupBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+		User user = db.getUser(crsid);
+		if (user.getIsStudent()) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
 		Group group = new Group(groupBean.getName(), crsid);
+		if (groupBean.getName().equals("xyzzy")) {
+			//return Response.status(Status.)
+		}
 		try {
 			group.setInfo(URLDecoder.decode(groupBean.getInfo(), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
