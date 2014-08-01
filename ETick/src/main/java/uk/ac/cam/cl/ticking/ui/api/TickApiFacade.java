@@ -218,6 +218,7 @@ public class TickApiFacade implements ITickApiFacade {
 				db.saveGroup(g);
 			}
 			prevTick.setGroups(tick.getGroups());
+			prevTick.setDeadline(tick.getDeadline());
 			db.saveTick(prevTick);
 			return Response.status(Status.CREATED).entity(prevTick).build();
 		} else {

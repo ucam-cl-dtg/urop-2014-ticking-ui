@@ -92,8 +92,9 @@
     </core-ajax>
     <core-ajax
             id="ajaxPutTickData"
-            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester"
+            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick"
             handleAs="json"
+            contentType="application/json"
             method="PUT">
     </core-ajax>
 
@@ -344,7 +345,7 @@
 
             console.log(this.tickData);
 
-            this.$.ajaxPutTickData.body = this.tickData;
+            this.$.ajaxPutTickData.body = JSON.stringify(this.tickData);
             this.$.ajaxPutTickData.go();
         }
     });
