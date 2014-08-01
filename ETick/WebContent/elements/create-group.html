@@ -114,7 +114,6 @@
 				var info = encodeURI(this.$.newGroupInfo.inputValue);
 				var api = this.$.createGroupAPI;
 
-				console.log(info);
 				api.body = '{"name":"' + name + '", "info":"' + info + '"}';
 				api.url += '?roles=AUTHOR';
 				if (this.$.markBox.checked) api.url += "&roles=MARKER";
