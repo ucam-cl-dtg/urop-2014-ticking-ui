@@ -1,0 +1,48 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<polymer-element name="search-box" attributes="placeholder query">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			#queryField {
+				font-weight: 200;
+			}
+
+			.hidden {
+				display: none;
+			}
+		</style>
+		<core-input
+			class="hidden"
+			id="queryField"
+			placeholder="{{placeholder}}"
+			on-input="{{inputChangeHandler}}"
+			on-change="{{hideBox}}">
+		</core-input>
+		<paper-icon-button id="searchButton" icon="search" on-click="{{showBox}}"></paper-icon-button>
+	</template>
+	<script>
+		Polymer('search-box', {
+			hideBox: true,
+
+			showBox: function () {
+				this.$.searchButton.classList.add('hidden');
+				this.$.queryField.classList.remove('hidden');
+			},
+
+			hideBox: function() {
+				this.$.queryField.classList.add('hidden');
+				this.$.searchButton.classList.remove('hidden');
+				this.query = "";
+			},
+
+			inputChangeHandler: function () {
+				this.query = this.$.queryField.inputValue;
+			},
+		});
+	</script>
+</polymer-element>

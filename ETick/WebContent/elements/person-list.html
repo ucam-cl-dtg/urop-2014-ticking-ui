@@ -4,7 +4,7 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="person-box.html">
 
-<polymer-element name="person-list" attributes="people boxWidth">
+<polymer-element name="person-list" attributes="people boxWidth query">
 	<template>
 		<style>
 			:host {
@@ -24,7 +24,7 @@
 			}
 		</style>
 		<div id="listEnclosure" layout horizontal center wrap>
-			<template repeat="{{person, i in people}}">
+			<template repeat="{{person in people | filter(query) }}">
 					<person-box
 						name="{{person.displayName}}"
 						crsid="{{person._id}}"
@@ -36,6 +36,20 @@
 	</template>
 	<script>
 		Polymer('person-list', {
+
+			listFilter: function(item) {
+				var q = this.query;
+				return (item.displayName.toLowerCase().indexOf(q.toLowerCase()) > -1 ||
+						item._id.toLowerCase().indexOf(q.toLowerCase()) > -1 ||
+						item.college.toLowerCase().indexOf(q.toLowerCase()) > -1);
+			},
+
+			filter: function(items, q) {
+				if (items && q) {
+					return items.filter(this.listFilter.bind(this));
+				}
+				return items;
+			}
 		});
 	</script>
 </polymer-element>
