@@ -128,6 +128,8 @@
             on-core-response="{{defaultsLoaded}}">
     </core-ajax>
 
+    <!--url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles" -->
+
     <core-ajax
             id="ajaxLoadStatic"
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
@@ -139,7 +141,7 @@
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
             handleAs="json"
             contentType="application/json"
-            method="POST">
+            method="PUT">
     </core-ajax>
 
 
@@ -244,6 +246,8 @@
 <script>
     Polymer('tick-creator-card', {
         ready: function() {
+            //TODO: change
+            this.tickId = "tester";
 
             this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/";
             this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
@@ -265,9 +269,29 @@
         },
         staticDataLoaded: function() {
             this.$.staticList.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
+
+            for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
+                this.$.staticList.staticOptions[i].closed = false;
+            }
         },
         defaultsLoaded: function() {
-            this.$.staticList.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
+            this.$.staticList.staticOptions = this.$.ajaxLoadDefaults.response.slice(0);
+
+            /*for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
+                this.$.staticList.staticOptions[i].closed = false;
+            }
+
+            console.log(this.$.staticList.staticOptions[0]);*/
+
+            console.log(JSON.stringify(this.$.staticList.staticOptions));
+            //this.$.ajaxSendStatic.body = JSON.stringify(this.$.staticList.staticOptions);
+
+            var toReturn = {text: "Test Text", checkedIndex: 1};
+            //this.$.ajaxSendStatic.body = JSON.stringify(toReturn);
+            console.log(this.$.ajaxSendStatic.body);
+
+            //this.$.ajaxSendStatic.body = null;
+            this.$.ajaxSendStatic.go();
         },
         /**
          * Load group data and figure out which groups have been selected
