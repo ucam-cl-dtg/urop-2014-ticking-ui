@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="static-list-item.html">
 
-<polymer-element name="static-list" attributes="staticOptions">
+<polymer-element name="static-list" attributes="staticOptions tickId">
     <template>
         <style>
             :host {
@@ -11,10 +11,10 @@
             }
         </style>
 
+        <!-- load default stylistic data -->
         <core-ajax
                 id="ajaxLoadDefaults"
-                auto
-                url="{{'http://localhost:8080/TestingSystem/rest/testerAPI/v2/testFiles'}}"
+                url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles"
                 handleAs="json"
                 on-core-response="{{defaultsLoaded}}">
         </core-ajax>
@@ -33,6 +33,8 @@
                     on-tap="{{addTest}}">
             </core-icon-button>
         </div>
+
+
     </template>
     <script>
         Polymer('static-list', {
