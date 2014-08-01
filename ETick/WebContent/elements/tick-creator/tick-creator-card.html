@@ -121,10 +121,17 @@
 
     <!-- get and update stylistic data -->
     <core-ajax
-            id="ajaxLoadStatic"
-            url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/"
+            id="ajaxLoadDefaults"
+            url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles"
             handleAs="json"
-          
+            auto
+            on-core-response="{{defaultsLoaded}}">
+    </core-ajax>
+
+    <core-ajax
+            id="ajaxLoadStatic"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
+            handleAs="json"
             on-core-response="{{staticDataLoaded}}">
     </core-ajax>
     <core-ajax
@@ -228,10 +235,10 @@
         </span>
     </div>
 
-    <paper-dialog id="alertRestoreDefaults" heading="Restore Defaults?">
+    <paper-dialog id="alertRestoreDefaults" heading="Restore Defaults?" backdrop="true">
         <p>This will clear your existing settings!</p>
         <paper-button id="dialogCancel" label="Cancel" dismissive autofocus></paper-button>
-        <paper-button id="dialogSubmit" label="Continue" affirmative></paper-button>
+        <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}"></paper-button>
     </paper-dialog>
 </template>
 <script>
@@ -257,6 +264,9 @@
             //this.groups[this.groups.length] = {selected: false, text: "Java Tick " + i};
         },
         staticDataLoaded: function() {
+            this.$.staticList.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
+        },
+        defaultsLoaded: function() {
             this.$.staticList.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
         },
         /**
@@ -407,6 +417,9 @@
         },
         cmdRestoreDefaults: function() {
             this.$.alertRestoreDefaults.toggle();
+        },
+        restoreDefaults: function() {
+            this.$.ajaxLoadStatic.go();
         }
     });
 </script>
