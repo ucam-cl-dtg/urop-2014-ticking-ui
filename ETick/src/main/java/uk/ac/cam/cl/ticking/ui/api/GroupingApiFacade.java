@@ -3,6 +3,7 @@ package uk.ac.cam.cl.ticking.ui.api;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -57,6 +58,19 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		}
 		List<User> users = db.getUsers(groupId);
 		return Response.status(Status.CREATED).entity(users).build();
+	}
+	
+	@Override
+	public Response deleteGrouping(HttpServletRequest request,
+			Grouping grouping) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		List<Role> myRoles = db.getRoles(grouping.getGroup(), myCrsid);
+		if (!myRoles.contains(Role.AUTHOR)) {
+			return Response.status(Status.UNAUTHORIZED).entity(Strings.INVALIDROLE).build();
+		}
+		db.removeUserGroupRole(grouping.getUser(),grouping.getGroup(),grouping.getRole());
+		return Response.ok().build();
 	}
 
 }

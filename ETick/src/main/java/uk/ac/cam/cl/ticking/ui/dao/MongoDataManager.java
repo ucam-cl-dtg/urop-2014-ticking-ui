@@ -38,7 +38,7 @@ public class MongoDataManager implements IDataManager {
 				new JodaModule()).configure(
 				SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		MongoJackModule.configure(objectMapper);
-		
+
 		tickColl = JacksonDBCollection.wrap(
 				database.getCollection(Strings.TICKSCOLLECTION), Tick.class,
 				String.class, objectMapper);
@@ -131,7 +131,17 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
-	// People getters
+	// People
+	
+	@Override
+	public void removeUser(String crsid, boolean purge) {
+		userColl.remove(new BasicDBObject().append("_id", crsid));
+		groupingColl.remove(new BasicDBObject().append("user", crsid));
+		if (purge) {
+			tickColl.remove(new BasicDBObject().append("author", crsid));
+			groupColl.remove(new BasicDBObject().append("creator", crsid));
+		}
+	}
 
 	@Override
 	public User getUser(String crsid) {
@@ -189,7 +199,25 @@ public class MongoDataManager implements IDataManager {
 		return users;
 	}
 
-	// Group getters
+	// Group
+	
+	@Override
+	public void removeGroup(String groupId) {
+		Group group = getGroup(groupId);
+		for (String tickId : group.getTicks()) {
+			Tick tick = getTick(tickId);
+			tick.removeGroup(groupId);
+			saveTick(tick);
+		}
+
+		groupColl.remove(new BasicDBObject().append("_id", groupId));
+		groupingColl.remove(new BasicDBObject().append("group", groupId));
+	}
+	
+	@Override
+	public void removeUserGroup(String crsid, String groupId) {
+		groupingColl.remove(new BasicDBObject().append("group", groupId).append("user", crsid));
+	}
 
 	@Override
 	public Group getGroup(String groupId) {
@@ -249,7 +277,13 @@ public class MongoDataManager implements IDataManager {
 		return groups;
 	}
 
-	// Role getters
+	// Roles
+	
+	@Override
+	public void removeUserGroupRole(String crsid, String groupId, Role role) {
+		groupingColl.remove(new BasicDBObject().append("user", crsid)
+				.append("group", groupId).append("role", role));
+	}
 
 	@Override
 	public List<Role> getRoles(String groupId, String crsid) {
@@ -288,7 +322,12 @@ public class MongoDataManager implements IDataManager {
 		return groupings;
 	}
 
-	// Tick getters
+	// Tick
+	
+	@Override
+	public void removeTick(String tickId) {
+		tickColl.remove(new BasicDBObject().append("_id", tickId));
+	}
 
 	@Override
 	public Tick getTick(String tickId) {

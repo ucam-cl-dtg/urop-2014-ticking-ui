@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -58,6 +60,19 @@ public class TickApiFacade implements ITickApiFacade {
 	public Response getTick(String tickId) {
 		Tick tick = db.getTick(tickId);
 		return Response.ok().entity(tick).build();
+	}
+
+	@Override
+	public Response deleteTick(HttpServletRequest request, String tickId) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		Tick tick = db.getTick(tickId);
+		if (!crsid.equals(tick.getAuthor())) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		db.removeTick(tickId);
+		return Response.ok().build();
 	}
 
 	/*

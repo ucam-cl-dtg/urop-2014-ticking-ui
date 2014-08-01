@@ -89,6 +89,8 @@ public interface IDataManager {
 	 */
 	public void insertGrouping(Grouping gr) throws DuplicateDataEntryException;
 
+	public void removeUser(String crsid, boolean purge);
+	
 	/**
 	 * Goes to the configured storage and attempts to find a user with the
 	 * specified id
@@ -132,6 +134,10 @@ public interface IDataManager {
 	 */
 	public List<User> getUsers(String groupId, Role role);
 
+	public void removeGroup(String groupId);
+	
+	public void removeUserGroup(String crsid, String groupId);
+	
 	/**
 	 * Goes to the configured storage and attempts to find a group with the
 	 * specified id
@@ -177,6 +183,8 @@ public interface IDataManager {
 	 */
 	public List<Group> getGroups(String crsid, Role role);
 
+	public void removeUserGroupRole(String crsid, String groupId, Role role);
+	
 	/**
 	 * Goes to the configured storage and attempts to find the roles for the
 	 * user with the specified crsid in the group with the specified groupId
@@ -207,6 +215,8 @@ public interface IDataManager {
 	 */
 	public List<Grouping> getGroupings(Role role);
 
+	public void removeTick(String tickId);
+	
 	/**
 	 * Goes to the configured storage and attempts to find a tick with the
 	 * specified tickId
