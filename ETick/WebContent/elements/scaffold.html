@@ -84,13 +84,13 @@
 			groupSelectionChanged: function (oldValue, newValue) {
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
+					this.$.groupsMenu.selected = "-1";
 				}
 				else {
 					this.showDash = false;
 					this.$.groupTemp.model = {gid: null};
 					this.$.groupTemp.model = {gid: newValue.getAttribute('gid')};
 				}
-				
 			},
 
 			groupCreatedHandler: function (e, detail) {
