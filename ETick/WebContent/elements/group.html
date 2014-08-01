@@ -51,8 +51,7 @@
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
 				// Check for Author (add member) permissions.
-				//this.allowAddMembers = (this.roles.indexOf('AUTHOR') > -1);
-				this.allowAddMembers = true;
+				this.allowAddMembers = (this.roles.indexOf('AUTHOR') > -1);
 				console.log(this.$.roleAjax.response);
 			},
 

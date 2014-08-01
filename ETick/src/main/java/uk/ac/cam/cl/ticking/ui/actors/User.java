@@ -25,6 +25,8 @@ public class User implements Comparable<User> {
 	private String college;
 
 	private boolean ldap;
+	
+	private boolean hasLogged;
 
 	private boolean isStudent;
 
@@ -206,6 +208,20 @@ public class User implements Comparable<User> {
 	 */
 	public void setLdap(boolean ldap) {
 		this.ldap = ldap;
+	}
+
+	/**
+	 * @return hasLogged
+	 */
+	public boolean isHasLogged() {
+		return hasLogged;
+	}
+
+	/**
+	 * @param hasLogged
+	 */
+	public void setHasLogged(boolean hasLogged) {
+		this.hasLogged = hasLogged;
 	}
 
 	@Override
