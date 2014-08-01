@@ -38,7 +38,10 @@
 		Polymer('person-list', {
 
 			listFilter: function(item) {
-				return item.displayName.toLowerCase().indexOf(this.query.toLowerCase()) > -1;
+				var q = this.query;
+				return (item.displayName.toLowerCase().indexOf(q.toLowerCase()) > -1 ||
+						item._id.toLowerCase().indexOf(q.toLowerCase()) > -1 ||
+						item.college.toLowerCase().indexOf(q.toLowerCase()) > -1);
 			},
 
 			filter: function(items, q) {
