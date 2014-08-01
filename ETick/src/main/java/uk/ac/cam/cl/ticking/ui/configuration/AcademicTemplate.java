@@ -17,6 +17,20 @@ public class AcademicTemplate implements ConfigurationFile {
 	private String[] college = {};
 
 	/**
+	 * @return crsid
+	 */
+	public String[] getCrsid() {
+		return crsid;
+	}
+
+	/**
+	 * @param crsid
+	 */
+	public void setCrsid(String[] crsid) {
+		this.crsid = crsid;
+	}
+
+	/**
 	 * @return possible surnames
 	 */
 	public String[] getSurname() {
@@ -112,7 +126,6 @@ public class AcademicTemplate implements ConfigurationFile {
 				break;
 			}
 		}
-		Logger.getLogger(ConfigurationLoader.class.getName()).info(Arrays.asList(crsid));
 		return (Arrays.asList(crsid).contains(user.getID())
 				|| Arrays.asList(surname).contains(user.getSurname())
 				|| Arrays.asList(regName).contains(user.getRegName())
