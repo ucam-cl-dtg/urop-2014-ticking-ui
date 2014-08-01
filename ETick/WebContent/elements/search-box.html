@@ -12,16 +12,11 @@
 				font-weight: 200;
 			}
 		</style>
-		<template if="{{!showBox}}">
-			<paper-icon-button id="searchButton" icon="search" on-click="{{toggleShowBox}}"></paper-icon-button>
-		</template>
-		<template if="{{showBox}}">
 			<core-input
 				id="queryField"
 				placeholder="{{placeholder}}"
 				on-input="{{inputChangeHandler}}">
 			</core-input>
-		</template>
 	</template>
 	<script>
 		Polymer('search-box', {
@@ -32,7 +27,7 @@
 			},
 
 			inputChangeHandler: function () {
-				console.log(this.$.queryField);
+				this.query = this.$.queryField.inputValue;
 			},
 		});
 	</script>

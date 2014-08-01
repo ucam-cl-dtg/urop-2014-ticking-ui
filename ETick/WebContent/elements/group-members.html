@@ -37,12 +37,13 @@
 			<template if="{{allowAdd}}">
 				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>
 			</template>
-			<search-box placeholder="Member name..."></search-box>
+			<search-box id="searchBox" placeholder="Member name..."></search-box>
 		</div>
 
 		<!-- Member list. -->
 		<div id="personListContainer">
-			<person-list id="members" listURL="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"></person-list>
+			<person-list id="members" listURL="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"
+				query="{{searchQuery}}"></person-list>
 		</div>
 
 		<!-- Add Member dialog. -->
@@ -82,7 +83,9 @@
 	</template>
 	<script>
 		Polymer('group-members', {
-			ready: function () {
+
+			observe: {
+				'$.searchBox.query' : 'searchBoxChanged'
 			},
 
 			resetAddMemberAjax: function () {
@@ -134,7 +137,12 @@
 			addMemberError: function(e, detail) {
 				this.$.addErrorToast.text = detail.xhr.responseText;
 				this.$.addErrorToast.show();
-			}
+			},
+
+			searchBoxChanged: function (oldValue, newValue) {
+				this.searchQuery = newValue;
+				console.log(this.$.members.query);
+			} 
 
 		});
 	</script>
