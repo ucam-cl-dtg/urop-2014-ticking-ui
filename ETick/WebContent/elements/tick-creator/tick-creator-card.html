@@ -77,7 +77,7 @@
     <!-- Get groups for this author -->
     <core-ajax
         id="ajaxLoadGroups"
-        url="http://urop2014.dtg.cl.cam.ac.uk//UROP_UI/api/user/AUTHOR/"
+        url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/"
         handleAs="json"
         on-core-response="{{groupsDataLoaded}}">
     </core-ajax>
@@ -86,13 +86,13 @@
     <core-ajax
             id="ajaxLoadTickData"
             auto
-            url="http://urop2014.dtg.cl.cam.ac.uk//UROP_UI/api/tick/tester"
+            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester"
             handleAs="json"
             on-core-response="{{tickDataLoaded}}">
     </core-ajax>
     <core-ajax
             id="ajaxPutTickData"
-            url="http://urop2014.dtg.cl.cam.ac.uk//UROP_UI/api/tick/tester"
+            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester"
             handleAs="json"
             method="PUT">
     </core-ajax>
