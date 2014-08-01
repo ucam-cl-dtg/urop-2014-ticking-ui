@@ -79,22 +79,6 @@
         }
     </style>
 
-    <!-- GET all possible groups a tick can be in -->
-    <!--<core-ajax
-            id="ajaxLoadGroups"
-            url="http://localhost:8000/testGroups.json"
-            handleAs="json"
-            on-core-response="{{groupsDataLoaded}}">
-    </core-ajax>-->
-    <!-- get all other existing tick data -->
-    <!--<core-ajax
-            id="ajaxLoadTickData"
-            auto
-            url="http://localhost:8000/testTickData.json"
-            handleAs="json"
-            on-core-response="{{tickDataLoaded}}">
-    </core-ajax>-->
-
     <!-- Get groups for this author -->
     <core-ajax
         id="ajaxLoadGroups"
@@ -127,8 +111,6 @@
             auto
             on-core-response="{{defaultsLoaded}}">
     </core-ajax>
-
-    <!--url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles" -->
 
     <core-ajax
             id="ajaxLoadStatic"
@@ -277,25 +259,9 @@
         defaultsLoaded: function() {
             this.$.staticList.staticOptions = this.$.ajaxLoadDefaults.response.slice(0);
 
-            /*for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
+            for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
                 this.$.staticList.staticOptions[i].closed = false;
             }
-
-            console.log(this.$.staticList.staticOptions[0]);*/
-
-            //console.log(JSON.stringify(this.$.staticList.staticOptions));
-            //this.$.ajaxSendStatic.body = JSON.stringify(this.$.staticList.staticOptions);
-
-            var toReturn = {text: "Test Text", checkedIndex: 1};
-            //this.$.ajaxSendStatic.body = JSON.stringify(toReturn);
-            //console.log(this.$.ajaxSendStatic.body);
-
-            this.$.ajaxSendStatic.body = JSON.stringify(this.$.ajaxLoadDefaults.response.slice(0));
-            console.log("EXPECTED");
-            console.log(this.$.ajaxSendStatic.body);
-
-           // this.$.ajaxSendStatic.body = this.$.staticList.staticOptions;
-            this.$.ajaxSendStatic.go();
         },
         /**
          * Load group data and figure out which groups have been selected
@@ -442,6 +408,21 @@
 
             this.$.ajaxPutTickData.body = JSON.stringify(this.tickData);
             this.$.ajaxPutTickData.go();
+        },
+        saveStaticOpts: function() {
+            var sendData = [];
+            for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
+                if (!(this.$.staticList.staticOptions.closed)) {
+                    sendData[sendData.length] = {text: this.$.staticList.staticOptions.text, checkedIndex: this.$.staticList.staticOptions.checkedIndex, code: this.$.staticList.staticOptions.code};
+                }
+            }
+
+            this.$.ajaxSendStatic.body = JSON.stringify(sendData);
+            console.log("EXPECTED");
+            console.log(this.$.ajaxSendStatic.body);
+
+            // this.$.ajaxSendStatic.body = this.$.staticList.staticOptions;
+            this.$.ajaxSendStatic.go();
         },
         cmdRestoreDefaults: function() {
             this.$.alertRestoreDefaults.toggle();
