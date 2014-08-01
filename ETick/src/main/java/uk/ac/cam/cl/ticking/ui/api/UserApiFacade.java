@@ -4,6 +4,10 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
@@ -30,7 +34,8 @@ public class UserApiFacade implements IUserApiFacade {
 	 * @param config
 	 */
 	@Inject
-	public UserApiFacade(IDataManager db, ConfigurationLoader<Configuration> config) {
+	public UserApiFacade(IDataManager db,
+			ConfigurationLoader<Configuration> config) {
 		this.db = db;
 		this.config = config;
 	}
@@ -48,6 +53,14 @@ public class UserApiFacade implements IUserApiFacade {
 				"RavenRemoteUser");
 		User user = db.getUser(crsid);
 		return Response.ok(user).build();
+	}
+
+	@Override
+	public Response deleteUser(HttpServletRequest request, String crsid,
+			boolean purge) {
+		//TODO admin check
+		db.removeUser(crsid, purge);
+		return Response.ok().build();
 	}
 
 	/*
@@ -80,7 +93,7 @@ public class UserApiFacade implements IUserApiFacade {
 		List<Role> roles = db.getRoles(groupId, crsid);
 		return Response.ok(roles).build();
 	}
-	
+
 	@Override
 	public Response getRoleGroups(HttpServletRequest request, String stringRole) {
 		String crsid = (String) request.getSession().getAttribute(

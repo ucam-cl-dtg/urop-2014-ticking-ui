@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -11,6 +13,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 
 /**
@@ -42,5 +45,12 @@ public interface IGroupingApiFacade {
 	public abstract Response addGrouping(@Context HttpServletRequest request,
 			@QueryParam("crsid") String crsid, @QueryParam("gid") String gid,
 			List<Role> roles);
+	
+	@DELETE
+	@Path("/")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public abstract Response deleteGrouping(@Context HttpServletRequest request,
+			Grouping grouping);
 
 }
