@@ -38,11 +38,11 @@
 		Polymer('person-list', {
 
 			listFilter: function(item) {
-				return item.displayName.toLowerCase().indexOf((this.query ? this.query : "").toLowerCase()) > -1;
+				return item.displayName.toLowerCase().indexOf(this.query.toLowerCase()) > -1;
 			},
 
-			filter: function(items) {
-				if (items) {
+			filter: function(items, q) {
+				if (items && q) {
 					return items.filter(this.listFilter.bind(this));
 				}
 				return items;
