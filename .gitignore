@@ -20,3 +20,6 @@ ETick/WebContent/ETick WebContent/
 # Backup and working/swap files created by some editors (e.g. vim)
 *~
 .*.swp
+
+# Bower components
+ETick/WebContent/bower_components/
