@@ -123,6 +123,8 @@ public class RavenManager {
 			DatabasePopulator.testPopulate(user);
 			return Response.status(Status.CREATED).entity(user).build();
 		}
+		user.setHasLogged(true);
+		db.saveUser(user);
 		return Response.ok(user).build();
 	}
 

@@ -57,8 +57,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 				"RavenRemoteUser");
 		Group group = db.getGroup(groupId);
 		if (!crsid.equals(group.getCreator())) {
-			//return Response.status(Status.UNAUTHORIZED)
-			//		.entity(Strings.INVALIDROLE).build();
+			// return Response.status(Status.UNAUTHORIZED)
+			// .entity(Strings.INVALIDROLE).build();
 		}
 		db.removeGroup(groupId);
 		return Response.ok().build();
@@ -73,7 +73,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		db.removeUserGroup(crsid,groupId);
+		db.removeUserGroup(crsid, groupId);
 		return Response.ok().build();
 	}
 
@@ -103,7 +103,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 		Group group = new Group(groupBean.getName(), crsid);
 		if (groupBean.getName().equalsIgnoreCase("xyzzy")) {
-			return Response.status(Status.NOT_FOUND).entity("Nothing happens...").build();
+			return Response.status(Status.NOT_FOUND)
+					.entity("Nothing happens...").build();
 		}
 		try {
 			group.setInfo(URLDecoder.decode(groupBean.getInfo(), "UTF-8"));

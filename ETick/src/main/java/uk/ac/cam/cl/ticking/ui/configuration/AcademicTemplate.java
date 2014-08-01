@@ -2,16 +2,33 @@ package uk.ac.cam.cl.ticking.ui.configuration;
 
 import java.util.Arrays;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.cam.cl.dtg.ldap.LDAPUser;
 
 public class AcademicTemplate implements ConfigurationFile {
 	
+	private String[] crsid = {};
 	private String[] surname = {};
 	private String[] regName = {};
 	private String[] displayName = {};
 	private String[] email = {};
 	private String[] institutions = {};
 	private String[] college = {};
+
+	/**
+	 * @return crsid
+	 */
+	public String[] getCrsid() {
+		return crsid;
+	}
+
+	/**
+	 * @param crsid
+	 */
+	public void setCrsid(String[] crsid) {
+		this.crsid = crsid;
+	}
 
 	/**
 	 * @return possible surnames
@@ -109,7 +126,8 @@ public class AcademicTemplate implements ConfigurationFile {
 				break;
 			}
 		}
-		return (Arrays.asList(surname).contains(user.getSurname())
+		return (Arrays.asList(crsid).contains(user.getID())
+				|| Arrays.asList(surname).contains(user.getSurname())
 				|| Arrays.asList(regName).contains(user.getRegName())
 				|| Arrays.asList(displayName).contains(user.getDisplayName())
 				|| Arrays.asList(email).contains(user.getEmail())
