@@ -102,8 +102,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 					.entity(Strings.INVALIDROLE).build();
 		}
 		Group group = new Group(groupBean.getName(), crsid);
-		if (groupBean.getName().equals("xyzzy")) {
-			//return Response.status(Status.)
+		if (groupBean.getName().equalsIgnoreCase("xyzzy")) {
+			return Response.status(Status.NOT_FOUND).entity("Nothing happens...").build();
 		}
 		try {
 			group.setInfo(URLDecoder.decode(groupBean.getInfo(), "UTF-8"));
