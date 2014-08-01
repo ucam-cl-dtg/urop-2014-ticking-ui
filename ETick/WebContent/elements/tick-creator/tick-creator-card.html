@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 
 <polymer-element name="tick-creator-card">
 <template>
@@ -56,6 +57,26 @@
         #year {
             width: 100px;
         }
+        /* Styles for add member dialog. */
+        paper-dialog .subtitle {
+            font-weight: 200;
+            font-size: 1.2rem;
+        }
+        polyfill-next-selector {shadow: "paper-dialog h1"}
+        paper-dialog::shadow h1 {
+            font-weight: 100;
+            margin-bottom: 10px;
+        }
+        #dialogCancel {
+            margin: 5px;
+            background: #4285f4;
+            color: #fff;
+        }
+        #dialogSubmit {
+            margin: 5px;
+            background: #4285f4;
+            color: #fff;
+        }
     </style>
 
     <!-- GET all possible groups a tick can be in -->
@@ -98,15 +119,23 @@
             method="PUT">
     </core-ajax>
 
+    <!-- get and update stylistic data -->
+    <core-ajax
+            id="ajaxLoadStatic"
+            url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/"
+            handleAs="json"
+          
+            on-core-response="{{staticDataLoaded}}">
+    </core-ajax>
+    <core-ajax
+            id="ajaxSendStatic"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
+            handleAs="json"
+            contentType="application/json"
+            method="POST">
+    </core-ajax>
 
-    <!-- TODO: get default settings / settings for this tick
 
-
-
-
-
-    <!-- <core-ajax
-             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId}}"> -->
 
     <div id="mainContainer">
         <h4>DISPLAY NAME</h4>
@@ -129,8 +158,8 @@
             <br>
         </core-collapse>
 
-        <div layout horizontal>
-            <h4 style="height: 19px;">MASTER DEADLINE</h4>
+        <div style="font-size: 19px;" layout horizontal>
+            <h4>MASTER DEADLINE</h4>
             <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
         </div>
         <core-collapse id="collapseDeadline">
@@ -182,6 +211,7 @@
                     label="RESTORE DEFAULTS"
                     raisedButton
                     end-justified
+                    on-tap="{{cmdRestoreDefaults}}"
                     hidden?="{{useDefaults}}">
             </paper-button>
         </div>
@@ -197,6 +227,12 @@
             <span flex></span>
         </span>
     </div>
+
+    <paper-dialog id="alertRestoreDefaults" heading="Restore Defaults?">
+        <p>This will clear your existing settings!</p>
+        <paper-button id="dialogCancel" label="Cancel" dismissive autofocus></paper-button>
+        <paper-button id="dialogSubmit" label="Continue" affirmative></paper-button>
+    </paper-dialog>
 </template>
 <script>
     Polymer('tick-creator-card', {
@@ -219,6 +255,9 @@
 
             //for (var i = 1; i < 8; i++)
             //this.groups[this.groups.length] = {selected: false, text: "Java Tick " + i};
+        },
+        staticDataLoaded: function() {
+            this.$.staticList.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
         },
         /**
          * Load group data and figure out which groups have been selected
@@ -268,11 +307,6 @@
                 this.$.codeTemplateAddress.innerHTML = tickData.stubRepo;
             }
 
-            if (!this.newTick) {
-                this.$.collapseCorrectness.opened = true;
-                this.$.correctnessAddress.innerHTML = tickData.correctnessRepo;
-            }
-
             //if the tick is not being created and it currently has a deadline, show it
             if (!this.newTick) {
                 if (tickData.deadline != null) {
@@ -295,7 +329,7 @@
                 }
             }
 
-            //TODO: add groups
+            //Init groups
             console.log(tickData.groups.length);
             if (!this.newTick) {
                 if (tickData.groups.length > 0) {
@@ -303,9 +337,15 @@
                 }
             }
 
-            //TODO: correctness tests
+           //correctness tests
+            if (!this.newTick) {
+                this.$.collapseCorrectness.opened = true;
+                this.$.correctnessAddress.innerHTML = tickData.correctnessRepo;
+            }
 
             //TODO: stylistic checks
+
+
 
             //load groups which user is an author for
             this.$.ajaxLoadGroups.go();
@@ -364,6 +404,9 @@
 
             this.$.ajaxPutTickData.body = JSON.stringify(this.tickData);
             this.$.ajaxPutTickData.go();
+        },
+        cmdRestoreDefaults: function() {
+            this.$.alertRestoreDefaults.toggle();
         }
     });
 </script>
