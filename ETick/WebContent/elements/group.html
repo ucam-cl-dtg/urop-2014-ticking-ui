@@ -51,7 +51,9 @@
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
 				// Check for Author (add member) permissions.
-				this.allowAddMembers = (this.roles.indexOf('AUTHOR') > -1);
+				//this.allowAddMembers = (this.roles.indexOf('AUTHOR') > -1);
+				this.allowAddMembers = true;
+				console.log(this.$.roleAjax.response);
 			},
 
 			tabSelectedAction: function(e, detail) {
