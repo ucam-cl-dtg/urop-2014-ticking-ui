@@ -283,14 +283,18 @@
 
             console.log(this.$.staticList.staticOptions[0]);*/
 
-            console.log(JSON.stringify(this.$.staticList.staticOptions));
+            //console.log(JSON.stringify(this.$.staticList.staticOptions));
             //this.$.ajaxSendStatic.body = JSON.stringify(this.$.staticList.staticOptions);
 
             var toReturn = {text: "Test Text", checkedIndex: 1};
             //this.$.ajaxSendStatic.body = JSON.stringify(toReturn);
+            //console.log(this.$.ajaxSendStatic.body);
+
+            this.$.ajaxSendStatic.body = JSON.stringify(this.$.ajaxLoadDefaults.response.slice(0));
+            console.log("EXPECTED");
             console.log(this.$.ajaxSendStatic.body);
 
-            this.$.ajaxSendStatic.body = this.$.staticList.staticOptions;
+           // this.$.ajaxSendStatic.body = this.$.staticList.staticOptions;
             this.$.ajaxSendStatic.go();
         },
         /**
