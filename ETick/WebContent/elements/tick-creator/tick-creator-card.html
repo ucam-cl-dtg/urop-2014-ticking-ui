@@ -413,11 +413,11 @@
         saveStaticOpts: function() {
             var sendData = [];
             for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
-                if (!(this.$.staticList.staticOptions.closed)) {
+                if (!(this.$.staticList.staticOptions[i].closed)) {
                     sendData[sendData.length] = {
-                        text: this.$.staticList.staticOptions.text,
-                        checkedIndex: this.$.staticList.staticOptions.checkedIndex,
-                        code: this.$.staticList.staticOptions.code};
+                        text: this.$.staticList.staticOptions[i].text,
+                        checkedIndex: this.$.staticList.staticOptions[i].checkedIndex,
+                        code: this.$.staticList.staticOptions[i].code};
                 }
             }
 
