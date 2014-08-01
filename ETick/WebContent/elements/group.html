@@ -44,13 +44,12 @@
 	<script>
 		Polymer('x-group', {  
 
-			ready: function () {
+			domReady: function () {
 				this.$.roleAjax.go();
 			},
 
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
-
 				// Check for Author (add member) permissions.
 				this.allowAddMembers = (this.roles.indexOf('AUTHOR') > -1);
 			},

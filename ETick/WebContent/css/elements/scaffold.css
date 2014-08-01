@@ -1,6 +1,8 @@
 :host {
 	display: block;
 	height: 100%;
+	width: 100%;
+	min-width: 900px;
 }
 
 core-header-panel {
@@ -31,9 +33,6 @@ paper-button, menu-button::shadow paper-button {
 menu-button.core-selected, paper-button.core-selected {
 	background: #2a56c6;
 }
- paper-button[active] {
-
- }
 
 core-item {
 	color: #5252C5;
