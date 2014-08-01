@@ -13,3 +13,7 @@ ETick/WebContent/codemirror-4.4/
 ETick/WebContent/ETick WebContent/
 ETick/.classpath
 ETick/.settings/org.eclipse.wst.common.component
+
+# Backup and working/swap files created by some editors (e.g. vim)
+*~
+.*.swp
