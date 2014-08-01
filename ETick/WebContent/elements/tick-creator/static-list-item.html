@@ -9,7 +9,7 @@
 <polymer-element name="static-list-item" attributes="text checkedIndex closed">
     <template>
         <link rel="stylesheet" href="static-list-item.css" shim-shadowdom>
-        <link rel="stylesheet" href="../../codemirror.css"> <!-- Custom-styled CodeMirror -->
+        <!--<link rel="stylesheet" href="../../codemirror.css"> <!-- Custom-styled CodeMirror -->
 
         <span layout horizontal hidden?="{{closed}}">
              <core-icon-button
@@ -40,13 +40,13 @@
         </core-collapse>
         </div>
     </template>
-    <script src="../../codemirror-4.4/lib/codemirror.js"></script> <!-- CodeMirror -->
-    <script src="../../codemirror-4.4/mode/xml/xml.js"></script> <!-- CodeMirror -->
+    <!--<script src="../../codemirror-4.4/lib/codemirror.js"></script> <!-- CodeMirror -->
+    <!--<script src="../../codemirror-4.4/mode/xml/xml.js"></script> <!-- CodeMirror -->
     <script>
         Polymer('static-list-item', {
             ready: function() {
                 //Initialise code mirror (provides xml syntax highlighting of a textarea)
-                this.cmInstance = CodeMirror.fromTextArea(this.$.edit);
+                //this.cmInstance = CodeMirror.fromTextArea(this.$.edit);
             },
             /**
              * Work around for a paper-radio-button bug. Without this, the initially selected button would
