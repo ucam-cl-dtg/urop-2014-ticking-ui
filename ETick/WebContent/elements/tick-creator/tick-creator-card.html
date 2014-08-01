@@ -414,9 +414,14 @@
             var sendData = [];
             for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
                 if (!(this.$.staticList.staticOptions.closed)) {
-                    sendData[sendData.length] = {text: this.$.staticList.staticOptions.text, checkedIndex: this.$.staticList.staticOptions.checkedIndex, code: this.$.staticList.staticOptions.code};
+                    sendData[sendData.length] = {
+                        text: this.$.staticList.staticOptions.text,
+                        checkedIndex: this.$.staticList.staticOptions.checkedIndex,
+                        code: this.$.staticList.staticOptions.code};
                 }
             }
+
+            console.log(sendData);
 
             this.$.ajaxSendStatic.body = JSON.stringify(sendData);
             console.log("EXPECTED");
