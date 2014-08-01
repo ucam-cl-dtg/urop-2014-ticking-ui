@@ -24,7 +24,7 @@
 			}
 		</style>
 		<div id="listEnclosure" layout horizontal center wrap>
-			<template repeat="{{person in people | filter }}">
+			<template repeat="{{person in people | filter(query) }}">
 					<person-box
 						name="{{person.displayName}}"
 						crsid="{{person._id}}"
