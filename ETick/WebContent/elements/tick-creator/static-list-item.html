@@ -22,9 +22,9 @@
                     icon="unfold-more"
                     on-tap="{{toggle}}"></core-icon-button>
             <paper-radio-group>
-                <paper-radio-button id="none"    name="none"    checked?="{{checkedIndex == 0}}"></paper-radio-button>
-                <paper-radio-button id="warning" name="warning" checked?="{{checkedIndex == 1}}"></paper-radio-button>
-                <paper-radio-button id="error"   name="error"   checked?="{{checkedIndex == 2}}"></paper-radio-button>
+                <paper-radio-button id="none"    name="none"    on-tap="{{tapNone}}" checked?="{{checkedIndex == 0}}"></paper-radio-button>
+                <paper-radio-button id="warning" name="warning" on-tap="{{tapWarning}}" checked?="{{checkedIndex == 1}}"></paper-radio-button>
+                <paper-radio-button id="error"   name="error"   on-tap="{{tapError}}"checked?="{{checkedIndex == 2}}"></paper-radio-button>
             </paper-radio-group>
         </span>
 
@@ -66,6 +66,15 @@
                         break;
                 }
                 //this.$.edit.tap();
+            },
+            tapNone: function() {
+                this.checkedIndex = this.$.none.checked;
+            },
+            tapWarning: function() {
+                this.checkedIndex = this.$.warning.checked;
+            },
+            tapError: function() {
+                this.checkedIndex = this.$.error.checked;
             },
             toggle: function() {
                 this.$.collapse.toggle();
