@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/core-collapse/core-collapse.html">
 <polymer-element name="search-box" attributes="placeholder query">
 	<template>
 		<style>
@@ -12,39 +13,37 @@
 				font-weight: 200;
 			}
 
-			.hidden {
-				display: none;
-			}
-
 			#clearButton {
 				color: #9C9C9C;
 			}
 		</style>
-		<div layout horizontal center>
-			<core-input
-				class="hidden"
-				id="queryField"
-				placeholder="{{placeholder}}"
-				on-input="{{inputChangeHandler}}">
-			</core-input>
-			<paper-icon-button id="searchButton" icon="search" on-click="{{showBox}}"></paper-icon-button>
-			<paper-icon-button class="hidden" id="clearButton" icon="clear" on-click="{{hideBox}}"></paper-icon-button>
-		</div>
+		<core-collapse horizontal id="collapse" duration="0.2" on-core-resize="{{collapseClosed}}">
+			<div layout horizontal center>
+				<core-input
+					id="queryField"
+					placeholder="{{placeholder}}"
+					on-input="{{inputChangeHandler}}">
+				</core-input>
+				<paper-icon-button id="clearButton" icon="clear" on-click="{{hideBox}}"></paper-icon-button>
+			</div>
+		</core-collapse>	
+		<template if="{{showSearchButton}}">
+			<paper-icon-button id="searchButton" icon="search" on-click="{{showBox}}"></paper-icon-button>			
+		</template>
 	</template>
 	<script>
 		Polymer('search-box', {
-			hideBox: true,
+			domReady: function () {
+				this.showSearchButton = true;
+			},
 
 			showBox: function () {
-				this.$.searchButton.classList.add('hidden');
-				this.$.queryField.classList.remove('hidden');
-				this.$.clearButton.classList.remove('hidden');
+				this.$.collapse.toggle();
+				this.showSearchButton = false;
 			},
 
 			hideBox: function() {
-				this.$.queryField.classList.add('hidden');
-				this.$.clearButton.classList.add('hidden');
-				this.$.searchButton.classList.remove('hidden');
+				this.$.collapse.toggle();
 				this.$.queryField.inputValue = "";
 				this.query = "";
 			},
@@ -52,6 +51,12 @@
 			inputChangeHandler: function () {
 				this.query = this.$.queryField.inputValue;
 			},
+
+			collapseClosed: function () {
+				if (!this.$.collapse.opened) {
+					this.showSearchButton = true;
+				}
+			}
 		});
 	</script>
 </polymer-element>
