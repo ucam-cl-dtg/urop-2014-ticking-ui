@@ -15,15 +15,21 @@
 			.hidden {
 				display: none;
 			}
+
+			#clearButton {
+				color: #9C9C9C;
+			}
 		</style>
-		<core-input
-			class="hidden"
-			id="queryField"
-			placeholder="{{placeholder}}"
-			on-input="{{inputChangeHandler}}"
-			on-change="{{hideBox}}">
-		</core-input>
-		<paper-icon-button id="searchButton" icon="search" on-click="{{showBox}}"></paper-icon-button>
+		<div layout horizontal center>
+			<core-input
+				class="hidden"
+				id="queryField"
+				placeholder="{{placeholder}}"
+				on-input="{{inputChangeHandler}}">
+			</core-input>
+			<paper-icon-button id="searchButton" icon="search" on-click="{{showBox}}"></paper-icon-button>
+			<paper-icon-button class="hidden" id="clearButton" icon="clear" on-click="{{hideBox}}"></paper-icon-button>
+		</div>
 	</template>
 	<script>
 		Polymer('search-box', {
@@ -32,11 +38,14 @@
 			showBox: function () {
 				this.$.searchButton.classList.add('hidden');
 				this.$.queryField.classList.remove('hidden');
+				this.$.clearButton.classList.remove('hidden');
 			},
 
 			hideBox: function() {
 				this.$.queryField.classList.add('hidden');
+				this.$.clearButton.classList.add('hidden');
 				this.$.searchButton.classList.remove('hidden');
+				this.$.queryField.inputValue = "";
 				this.query = "";
 			},
 
