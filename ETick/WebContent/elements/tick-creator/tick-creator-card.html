@@ -123,7 +123,8 @@
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
             handleAs="json"
             contentType="application/json"
-            method="POST">
+            method="POST"
+            on-core-response="{{saveTickData}}">
     </core-ajax>
 
 
@@ -214,7 +215,7 @@
         <!-- SAVE button -->
         <span layout horizontal>
             <span flex></span>
-            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveTick}}"></paper-button>
+            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveTickOpts}}"></paper-button>
             <span flex></span>
         </span>
     </div>
@@ -370,7 +371,7 @@
          * Update the originally sent tick object with the data the user has entered on this card, then send it to the
          * front end's back end
          */
-        saveTick: function () {
+        saveTickData: function () {
             //Set name if a new tick
             if (this.newTick) {
                 this.tickData.name = this.$.inputDisplayName;
