@@ -1,0 +1,38 @@
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../bower_components/core-splitter/core-splitter.html"/>
+<link rel="import" href="files-service.html"/>
+<link rel="import" href="file-card.html"/>
+<link rel="stylesheet" href="style.css"/>
+
+<polymer-element name="file-browser-card">
+  <template>
+    <files-service id="service"
+                   files="{{files}}">
+    </files-service>
+    <div class="container" horizontal layout>
+      <div>
+        <!-- TODO: The following three elements -->
+        <files-list></files-list>
+        <errors-list></errors-list>
+        <warnings-list></warnings-list>
+        <!-- TODO: The preceeding three elements -->
+      </div>
+      <core-splitter direction="left"></core-splitter>
+      <div flex>
+        <template repeat="{{file in files}}">
+          <file-card content="{{file.content}}"
+                     comments="{{file.comments}}">
+            <h2>{{file.name}}</h2>
+          </file-card>
+        </template>
+      </div>
+    </div>
+
+  </template>
+  <script>
+    Polymer('file-browser-card'
+      , {
+        });
+  </script>
+</polymer-element>

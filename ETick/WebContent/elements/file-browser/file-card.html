@@ -1,0 +1,76 @@
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../bower_components/highlightjs-element/highlightjs-element.html"/>
+
+<link rel="stylesheet" href="style.css"/>
+
+<polymer-element name="file-card" attributes="content comments">
+  <template>
+    <!-- HighlightJS colourscheme -->
+    <link rel="stylesheet" href="../../bower_components/highlightjs/styles/default.css"/>
+    <!-- TODO: Dynamically load stylesheet; perhaps consider http://highlightjs.org/static/test.html -->
+    <link rel="stylesheet" href="../../bower_components/highlightjs/styles/solarized_light.css"/>
+
+    <style>
+      .file-name
+      {
+        font-variant: small-caps;
+      }
+
+      .comment
+      {
+        background-color: gray;
+      }
+
+      .warning
+      {
+        background-color: yellow;
+      }
+
+      .error
+      {
+        background-color: red;
+      }
+    </style>
+    <div class="container" vertical layout>
+      <span class="file-name">
+        <content select="h2"></content>
+      </span>
+      <pre>
+        <code>
+<content id="code" select="code"></content>
+        </code>
+      <pre>
+    </div>
+
+  </template>
+  <script src="mixin_comments_with_data.js"></script>
+  <script>
+    Polymer('file-card'
+      , {   domReady:
+            function ()
+            {
+              if (!this.content)
+              {
+                this.content = this.$.code.innerHTML;
+              }
+            }
+
+            /* http://www.polymer-project.org/docs/polymer/polymer.html#change-watchers */
+          , contentChanged:
+            function ()
+            {
+              this.$.code.innerHTML = 
+                //hljs.highlightAuto(
+                  mixin_comments_with_data(this.content,
+                    lines_to_chars(this.content, this.comments))
+                      //|| '').value;
+            }
+          , commentsChanged:
+            function ()
+            {
+              this.contentChanged();
+            }
+        });
+  </script>
+</polymer-element>

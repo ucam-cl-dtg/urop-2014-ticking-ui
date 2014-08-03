@@ -1,0 +1,31 @@
+[ {   "name"     : "README.md"
+    , "content"  : "Hello world.\n\nThis is a test file!"
+    , "comments" : [ {   "line"    : 1
+                       , "message" : "Is this really neccessary?"
+                       , "class"   : "comment1 comment"
+                   } ]
+  }
+, {   "name"     : "src/main/Test.java"
+    , "content"  : "public class Test\n{\n  public static void main(String[] args)\n  {\n    System.out.pintln(\"Hello, world!\");   \n  }\n}"
+    , "comments" : [ {   "line"    : 5
+                       , "message" : "pintln not in System.out"
+                       , "class"   : "error1 error"
+                   }
+                   , {   "line"    : 5
+                       , "message" : "Space before end of line."
+                       , "class"   : "warning1 warning"
+                   }
+                   , {   "line"    : 1
+                       , "message" : "Should make it a package"
+                       , "class"   : "comment1 comment"
+                   } ]
+  }
+, {   "name"     : "test.html"
+    , "content"  : "<ht-sml>\n  <head>\n  </head>\n  <body>\n  </body>\n</html>"
+    , "comments" : [ {   "start"   : 1
+                       , "end"     : 7
+                       , "message" : "Should be html!"
+                       , "class"   : "error1 error"
+                   } ]
+  }
+]
