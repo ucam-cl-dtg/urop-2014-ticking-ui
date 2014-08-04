@@ -76,14 +76,15 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response newTick(@Context HttpServletRequest request,
-			Tick tick) throws IOException, DuplicateRepoNameException;
+			TickBean tickBean) throws IOException, DuplicateRepoNameException;
 
 	@PUT
-	@Path("/")
+	@Path("/{tickId}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response updateTick(@Context HttpServletRequest request,
-			Tick tick) throws IOException, DuplicateRepoNameException;
+			@PathParam("tickId") String tickId, TickBean tickBean)
+			throws IOException, DuplicateRepoNameException;
 
 	/**
 	 * Adds a Tick to a Group given a tickId and groupId
