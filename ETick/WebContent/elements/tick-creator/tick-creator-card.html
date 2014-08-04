@@ -324,7 +324,9 @@
         },
         tickDataLoaded: function() {
             this.tickData = this.$.ajaxLoadTickData.response;
-            this.tickId = this.tickData._id;
+            if (!newTick){
+                this.tickId = this.tickData._id;
+            }
             this.processLoadedTickData();
         },
         tickDataSaved: function() {
