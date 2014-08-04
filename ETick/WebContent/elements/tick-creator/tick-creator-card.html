@@ -10,7 +10,7 @@
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../date-entry.html">
 
-<polymer-element name="tick-creator-card" attributes="tickName">
+<polymer-element name="tick-creator-card" attributes="tickId">
 <template>
     <style>
         .checkboxContainer {
@@ -89,7 +89,7 @@
     <!-- get and update all other existing tick data -->
     <core-ajax
             id="ajaxLoadTickData"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickName + '/'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/'}}"
             handleAs="json"
             on-core-response="{{tickDataLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
@@ -116,13 +116,14 @@
             id="ajaxSaveLoadDefaults"
             url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles"
             handleAs="json"
+            auto
             on-core-response="{{savingDefaultsLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
 <!-- url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles" -->
     <core-ajax
             id="ajaxLoadStatic"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickName + '/create'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
             handleAs="json"
             on-core-response="{{staticDataLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
@@ -130,7 +131,7 @@
     <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"-->
     <core-ajax
             id="ajaxSendStatic"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickName + '/create'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
             handleAs="json"
             contentType="application/json"
             method="POST"
@@ -224,7 +225,7 @@
         <!-- SAVE button -->
         <span layout horizontal>
             <span flex></span>
-            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveStaticOpts}}"
+            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveEverything}}"
                           disabled?="{{(dateShown && !dateValid) || !displayValid}}">
             </paper-button>
             <span flex></span>
@@ -233,12 +234,12 @@
 
     <paper-dialog id="alertRestoreDefaults" heading="Restore Defaults?" backdrop="true" transition="paper-transition-bottom">
         <p>This will clear your existing settings!</p>
-        <paper-button id="dialogCancel" label="Cancel" dismissive autofocus duration="8000"></paper-button>
-        <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}" duration="8000"></paper-button>
+        <paper-button id="dialogCancel" label="Cancel" dismissive autofocus></paper-button>
+        <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}"></paper-button>
     </paper-dialog>
 
-    <paper-toast id="toastLoadError" text="Error loading the tick."></paper-toast>
-    <paper-toast id="toastSaveError" text="Error saving the tick."></paper-toast>
+    <paper-toast id="toastLoadError" text="Error loading the tick." duration="8000"></paper-toast>
+    <paper-toast id="toastSaveError" text="Error saving the tick." duration="8000"></paper-toast>
 </template>
 <script>
     Polymer('tick-creator-card', {
@@ -263,6 +264,7 @@
                 this.$.ajaxLoadDefaults.go();
                 this.tickDataLoaded();
             } else {
+                this.newTick = false;
                 this.$.ajaxLoadStatic.go();
             }
         },
@@ -281,8 +283,8 @@
             }
         },
         savingDefaultsLoaded: function() {
-            this.defaults = this.$.ajaxLoadDefaults.response.slice(0);
-            this.saveStaticOpts();
+            this.defaults = this.$.ajaxSaveLoadDefaults.response.slice(0);
+            //this.saveStaticOpts();
         },
 
         /**
@@ -394,7 +396,8 @@
         /**
          * Update the originally sent tick object with the data the user has entered on this card, then send it to the
          * front end's back end
-         */saveTickData: function () {
+         */
+        saveTickData: function () {
             console.log("Preparing call for Tom!");
 
                 //Set name if a new tick
@@ -433,6 +436,65 @@
                 this.$.ajaxPutTickData.go();
                 console.log("ajax fired");
 
+        },
+        saveEverything: function() {
+            var masterObject = {
+                something: this.buildTickData(),
+                somethingelse: this.buildStaticData()
+            };
+            this.$.ajaxPutTickData.body = JSON.stringify(masterObject);
+            this.$.ajaxPutTickData.go();
+        },
+        buildTickData: function() {
+            //Set name if a new tick
+            if (this.newTick) {
+                this.tickData.name = this.$.inputDisplayName.inputValue.trim();
+            }
+            console.log("name set");
+            //Don't set template repository (this is generated by back end)
+
+            //Update master deadline
+            if (this.$.deadlineSwitch.checked) {
+                var year = this.year;
+                var month = this.month - 1;
+                var day = this.day;
+                var date = new Date();
+                date.setUTCDate(day);
+                date.setUTCMonth(month);
+                date.setUTCFullYear(year);
+                this.tickData.deadline = date.toISOString();
+            } else {
+                this.tickData.deadline = null;
+            }
+            console.log("deadline set");
+            //update groups
+            this.tickData.groups = [];
+            if (this.$.groupsSwitch.checked) {
+                for (var i = 0; i < this.groups.length; i++) {
+                    if (this.groups[i].selected) {
+                        this.tickData.groups[this.tickData.groups.length] = this.groups[i]._id;
+                    }
+                }
+            }
+
+            return this.tickData;
+        },
+        buildStaticData: function() {
+            var sendData = [];
+
+            if (this.useDefaults) {
+                sendData = this.defaults;
+            } else {
+                for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
+                    if (!(this.$.staticList.staticOptions[i].closed)) {
+                        sendData[sendData.length] = {
+                            text: this.$.staticList.staticOptions[i].text,
+                            checkedIndex: this.$.staticList.staticOptions[i].checkedIndex,
+                            code: this.$.staticList.staticOptions[i].code};
+                    }
+                }
+            }
+            return sendData;
         },
         saveStaticOpts: function() {
             var sendData = [];
