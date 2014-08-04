@@ -96,7 +96,6 @@
     </core-ajax>
     <core-ajax
             id="ajaxPutTickData"
-            url="{{pathPutTickData}}"
             handleAs="json"
             contentType="application/json"
             method="PUT"
@@ -107,6 +106,7 @@
             id="ajaxPostTickData"
             handleAs="json"
             contentType="application/json"
+            url="{{pathPutTickData}}"
             method="POST"
             on-core-error="{{showSaveErrorToast}}"
             on-core-response="{{tickDataSaved}}">
