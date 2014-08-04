@@ -36,7 +36,7 @@ public class Group implements Comparable<Group> {
 	 * used when a user is creating a new group.
 	 * 
 	 * @param name
-	 *            - desired name for the group
+	 * @param creator
 	 */
 	@JsonCreator
 	public Group(@JsonProperty("name") String name,
