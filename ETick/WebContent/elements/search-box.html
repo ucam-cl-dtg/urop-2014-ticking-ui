@@ -35,6 +35,7 @@
 		Polymer('search-box', {
 			domReady: function () {
 				this.showSearchButton = true;
+				this.$.queryField.$.input.autofocus = true;
 			},
 
 			showBox: function () {
