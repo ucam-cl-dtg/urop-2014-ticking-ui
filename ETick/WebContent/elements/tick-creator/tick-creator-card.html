@@ -103,6 +103,14 @@
             on-core-error="{{showSaveErrorToast}}"
             on-core-response="{{tickDataSaved}}">
     </core-ajax>
+    <core-ajax
+            id="ajaxPutTickData"
+            handleAs="json"
+            contentType="application/json"
+            method="POST"
+            on-core-error="{{showSaveErrorToast}}"
+            on-core-response="{{tickDataSaved}}">
+    </core-ajax>
 
     <!-- get and update stylistic data -->
     <core-ajax
@@ -450,8 +458,15 @@
                 groups: tickData.groups,
                 checkstyleOpts: staticData
             };
-            this.$.ajaxPutTickData.body = JSON.stringify(masterObject);
-            this.$.ajaxPutTickData.go();
+
+            if (!this.newTick) {
+                this.$.ajaxPutTickData.body = JSON.stringify(masterObject);
+                this.$.ajaxPutTickData.go();
+                this.$.ajaxPostTickData.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + this.tickId;
+            } else {
+                this.$.ajaxPostTickData.body = JSON.stringify(masterObject);
+                this.$.ajaxPostTickData.go();
+            }
         },
         buildTickData: function() {
             //Set name if a new tick
