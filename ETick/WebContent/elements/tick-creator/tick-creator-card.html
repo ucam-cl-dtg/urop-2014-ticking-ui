@@ -308,6 +308,7 @@
          */
         groupsDataLoaded: function() {
             var loadedGroups = this.$.ajaxLoadGroups.response.slice(0);
+            this.groups = [];
 
             for (var i = 0; i < loadedGroups.length; i++) {
                 this.groups[this.groups.length] = {_id: loadedGroups[i]._id, selected: false, text: loadedGroups[i].name};
@@ -323,11 +324,14 @@
         },
         tickDataLoaded: function() {
             this.tickData = this.$.ajaxLoadTickData.response;
+            this.tickId = this.tickData._id;
             this.processLoadedTickData();
         },
         tickDataSaved: function() {
             this.newTick = false;
             this.tickData = this.$.ajaxPostTickData.response;
+
+            this.tickId = this.tickData._id;
             this.processLoadedTickData();
         },
         tickDataUpdated: function() {
