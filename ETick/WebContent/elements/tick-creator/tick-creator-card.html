@@ -324,7 +324,7 @@
         },
         tickDataLoaded: function() {
             this.tickData = this.$.ajaxLoadTickData.response;
-            if (!newTick){
+            if (!this.newTick){
                 this.tickId = this.tickData._id;
             }
             this.processLoadedTickData();
