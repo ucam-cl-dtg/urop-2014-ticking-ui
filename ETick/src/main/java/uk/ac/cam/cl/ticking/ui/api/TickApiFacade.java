@@ -1,6 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -94,6 +95,7 @@ public class TickApiFacade implements ITickApiFacade {
 				tick.setDeadline(extension);
 			}
 		}
+		Collections.sort(ticks);
 		return Response.ok().entity(ticks).build();
 	}
 

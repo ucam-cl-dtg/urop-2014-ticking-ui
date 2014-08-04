@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import uk.ac.cam.cl.ticking.ui.actors.User;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author tl364
  *
  */
-public class Tick {
+public class Tick implements Comparable<Tick>{
 
 	// FORMAT: 'author','name'
 	@JsonProperty("_id")
@@ -221,6 +223,11 @@ public class Tick {
 	 */
 	public static String replaceDelimeter(String tickId) {
 		return tickId.replace(',', '/');
+	}
+	
+	@Override
+	public int compareTo(Tick o) {
+		return this.name.compareToIgnoreCase(o.name);
 	}
 
 	/*

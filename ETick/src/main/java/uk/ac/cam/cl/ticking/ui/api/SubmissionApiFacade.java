@@ -11,7 +11,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.joda.time.DateTime;
 
-import publicinterfaces.AbstractReport;
 import publicinterfaces.ITestService;
 import publicinterfaces.NoSuchTestException;
 import publicinterfaces.Report;
