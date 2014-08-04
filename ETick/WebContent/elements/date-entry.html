@@ -1,0 +1,87 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<polymer-element name="date-entry" attributes="day month year valid">
+    <template>
+        <style>
+            #day, #month {
+                width: 50px;
+            }
+            #year {
+                width: 100px;
+            }
+        </style>
+
+        <span layout horizontal>
+            <paper-input inputValue="{{day}}" id="day" label="DD" floatinglabel="true"
+                         validate="^(0?[1-9]|[12][0-9]|30|31)$" required on-blur="{{inputBlurred}}" on-keyup="{{validate}}">
+            </paper-input>
+            <paper-input inputValue="{{month}}" id="month" label="MM" floatinglabel="true"
+                         validate="^(0?[1-9]|1[012])$" required on-blur="{{inputBlurred}}" on-keyup="{{validate}}">
+            </paper-input>
+            <paper-input inputValue="{{year}}" id="year" label="YYYY" floatinglabel="true"
+                         validate="^([0-9][0-9])?[0-9][0-9]$" required on-blur="{{inputBlurred}}" on-keyup="{{validate}}">
+            </paper-input>
+        </span>
+    </template>
+    <script>
+        Polymer('date-entry',{
+            ready: function() {
+                this.validate();
+            },
+            inputBlurred: function() {
+                if (this.day.toString().length == 1) {
+                    this.day = "0" + this.day;
+                }
+                if (this.month.toString().length == 1) {
+                    this.month = "0" + this.month;
+                }
+                if (this.year.toString().length == 2) {
+                    this.year = "20" + this.year;
+                }
+
+                if (this.month == 4 | this.month == 6 | this.month == 9 | this.month == 11) {
+                    if (this.day > 30) {
+                        this.day = 30;
+                    }
+                } else {
+                    if (this.month == 2 && this.day > 28) {
+                        if (isLeapYear(this.day)) { //February is so awkward
+                            this.day = 29;
+                        } else {
+                            if (this.year != "") {
+                                this.day = 28;
+                            } else {
+                                //no information about the year is available yet, default to 29
+                                this.day = 29;
+                            }
+                        }
+                    }
+                }
+
+                this.validate();
+            },
+            validate: function() {
+                if (this.day > 0 && this.day <= 31 &&
+                        this.month > 0 && this.month <=12 &&
+                        this.year >= 0 && this.year <= 9999 && this.year != "" &&
+                        (this.year.toString().length == 4 || this.year.toString().length == 2)) {
+                    this.valid = true;
+                } else {
+                    this.valid = false;
+                }
+            },
+            isLeapYear: function(day) {
+                if (this.year % 4 != 0) {
+                    return false;
+                } else if (this.year % 100 != 0) {
+                    return true;
+                } else if (this.isLeapYear % 400 != 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        });
+    </script>
+</polymer-element>
