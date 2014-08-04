@@ -86,8 +86,6 @@
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
-				console.log(oldValue ? oldValue.label : oldValue);
-				console.log(newValue ? newValue.label : newValue);
 				if (!newValue || (oldValue && oldValue.id ==="createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
@@ -109,8 +107,9 @@
 
 			groupItemsChanged: function (oldValue, newValue) {
 				this.items = newValue;
+				console.log(this.items);
 				console.log('To select: ' + this.toSelect);
-				this.$.groupsMenu.selected = "TestAO";
+				this.$.groupsMenu.selected = this.toSelect;
 			}
 
 		});
