@@ -89,7 +89,7 @@
     <!-- get and update all other existing tick data -->
     <core-ajax
             id="ajaxLoadTickData"
-            url="{{pathLoadTickData}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/'}}"
             handleAs="json"
             on-core-response="{{tickDataLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
@@ -116,7 +116,7 @@
 
     <core-ajax
             id="ajaxLoadStatic"
-            url="http://localhost:8000/testXMLSettings.json"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
             handleAs="json"
             auto
             on-core-response="{{staticDataLoaded}}"
@@ -220,8 +220,8 @@
         <span layout horizontal>
             <span flex></span>
             <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveStaticOpts}}"
-                          disabled?="{{(dateShown && !dateValid) || !displayValid}}"
-            ></paper-button>
+                          disabled?="{{(dateShown && !dateValid) || !displayValid}}">
+            </paper-button>
             <span flex></span>
         </span>
     </div>
@@ -239,7 +239,7 @@
     Polymer('tick-creator-card', {
         ready: function() {
             this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/";
-            this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
+           // this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
             this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
 
             //for local testing, TODO: remove
@@ -247,7 +247,7 @@
             this.pathLoadTickData = "http://localhost:8000/testTickData.json";
             this.pathPutTickData = "http://localhost:8000/UROP_UI/api/tick";*/
 
-            this.useDefaults = true;
+            this.useDefaults = true; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
             this.groups = [];
             this.newTick = null;
             this.tickData = null;
@@ -300,8 +300,6 @@
             this.tickData = this.$.ajaxPutTickData.response;
             this.processLoadedTickData();
         },
-
-
         /**
          * Once the ajax get request is complete, bind the fields on this card to the received data
          */
@@ -325,11 +323,11 @@
 
             //if the tick is not being created and it currently has a deadline, show it
             if (!this.newTick) {
-                if (tickData.deadline != null) {
+                if (this.tickData.deadline != null) {
                     //By checking the deadline switch, the deadline entry fields will be shown
                     this.$.deadlineSwitch.checked = true;
 
-                    var deadline  = new Date(tickData.deadline);
+                    var deadline  = new Date(this.tickData.deadline);
 
                     var day = deadline.getUTCDate().toString();
                     var month = (deadline.getUTCMonth() + 1).toString();
@@ -347,7 +345,7 @@
 
             //Init groups
             if (!this.newTick) {
-                if (tickData.groups.length > 0) {
+                if (this.tickData.groups.length > 0) {
                     this.$.groupsSwitch.checked = true;
                 }
             }
@@ -355,7 +353,7 @@
            //correctness tests
             if (!this.newTick) {
                 this.$.collapseCorrectness.opened = true;
-                this.$.correctnessAddress.innerHTML = tickData.correctnessRepo;
+                this.$.correctnessAddress.innerHTML = this.tickData.correctnessRepo;
             }
 
             //load groups which user is an author for
@@ -442,11 +440,21 @@
         restoreDefaults: function() {
             this.$.ajaxLoadDefaults.go();
         },
-        showLoadErrorToast: function() {
+        showLoadErrorToast: function(e, detail) {
+            if (detail.xhr.responseText != null) {
+                this.$.toastLoadError.text = detail.xhr.responseText;
+            } else {
+                this.$.toastLoadError.text = "Error loading tick."
+            }
             this.$.toastLoadError.show();
         },
-        showSaveErrorToast: function() {
+        showSaveErrorToast: function(e, detail) {
             console.log("Save error!");
+            if (detail.xhr.responseText != null) {
+                this.$.toastSaveError.text = detail.xhr.responseText;
+            } else {
+                this.$.toastSaveError.text = "Error saving tick."
+            }
             this.$.toastSaveError.show();
         }
     });
