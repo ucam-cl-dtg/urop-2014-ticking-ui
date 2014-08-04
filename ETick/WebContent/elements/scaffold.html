@@ -107,11 +107,9 @@
 
 			groupItemsChanged: function (oldValue, newValue) {
 				this.items = newValue;
-				console.log(this.items);
-				console.log(this.toSelect);
-				console.log(this.$.groupsMenu);
-				this.$.groupsMenu.selected = this.toSelect;
-				console.log(this.$.groupsMenu.selected);
+				setTimeout(function () {
+					this.$.groupsMenu.selected = this.toSelect
+				}.bind(this), 100);
 			}
 
 		});
