@@ -207,7 +207,7 @@
         <h4>STYLISTIC CHECKS</h4>
         <div class="checkboxContainer" layout horizontal>
             <paper-checkbox checked="{{useDefaults}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
-            <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Use Defaults</span>
+            <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">{{styleLabel}}</span>
             <paper-button
                     id="cmdRestoreDefaults"
                     label="RESTORE DEFAULTS"
@@ -244,6 +244,8 @@
 <script>
     Polymer('tick-creator-card', {
         ready: function() {
+            this.styleLabel = "";
+
             this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/";
            // this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
             this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
@@ -265,6 +267,7 @@
                 this.tickDataLoaded();
             } else {
                 this.newTick = false;
+                this.useDefaults = false;
                 this.$.ajaxLoadStatic.go();
             }
         },
@@ -438,9 +441,14 @@
 
         },
         saveEverything: function() {
+            var tickData = this.buildTickData();
+            var staticData = this.buildStaticData();
+
             var masterObject = {
-                something: this.buildTickData(),
-                somethingelse: this.buildStaticData()
+                name: tickData.name,
+                deadline: tickData.deadline,
+                groups: tickData.groups,
+                checkstyleOpts: staticData
             };
             this.$.ajaxPutTickData.body = JSON.stringify(masterObject);
             this.$.ajaxPutTickData.go();
