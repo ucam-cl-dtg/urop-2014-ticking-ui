@@ -3,17 +3,19 @@
 <link rel="import" href="../../bower_components/core-splitter/core-splitter.html"/>
 <link rel="import" href="files-service.html"/>
 <link rel="import" href="file-card.html"/>
-<link rel="stylesheet" href="style.css"/>
+<link rel="import" href="files-list.html"/>
 
 <polymer-element name="file-browser-card">
   <template>
+    <link rel="stylesheet" href="style.css"/>
     <files-service id="service"
                    files="{{files}}">
     </files-service>
     <div class="container" horizontal layout>
-      <div>
+      <div class="sidebar">
         <!-- TODO: The following three elements -->
-        <files-list></files-list>
+        <files-list files="{{files}}"></files-list>
+        <hr/>
         <errors-list></errors-list>
         <warnings-list></warnings-list>
         <!-- TODO: The preceeding three elements -->

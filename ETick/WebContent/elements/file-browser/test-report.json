@@ -1,0 +1,60 @@
+{
+  "testResult" : "FAIL",
+  "tickerResult" : "UNDEFINED",
+  "reportResult" : "FAIL",
+  "tickerComments" : null,
+  "creationDate" : 1407145680370,
+  "noOfTests" : 2,
+  "commitId" : "c142b56bc6c292540d509a8f1e1dec329078b43e",
+  "items" : [
+    {
+      "problemDescription" : "Empty blocks",
+      "severity" : "ERROR",
+      "fileDetails" : [
+        {
+          "lineNumber" : 23,
+          "detail" : "Empty 'catch' block ~ if it should never\nrun, a justifying comment in the block is required",
+          "file" : "src/main/java/badFiles/StringConstantsUser.java"
+        }
+      ],
+      "outcome" : "ERROR"
+    },
+    {
+      "problemDescription" : "Indentation",
+      "severity" : "WARNING",
+      "fileDetails" : [
+        {
+          "lineNumber" : 11,
+          "detail" : "Bad indentation ~ expected '8' spaces,\nfound '7'",
+          "file" : "src/main/java/badFiles/StringConstants.java"
+        },
+        {
+          "lineNumber" : 20,
+          "detail" : "Bad indentation ~ expected '8' spaces,\nfound '7'",
+          "file" : "src/main/java/badFiles/StringConstants.java"
+        },
+        {
+          "lineNumber" : 1,
+          "detail" : "Bad indentation ~ expected '0' spaces,\nfound '1'",
+          "file" : "src/main/java/badFiles/StringConstantsUser.java"
+        },
+        {
+          "lineNumber" : 7,
+          "detail" : "Bad indentation ~ expected '4' spaces,\nfound '5'",
+          "file" : "src/main/java/badFiles/doubleIncDec.java"
+        },
+        {
+          "lineNumber" : 11,
+          "detail" : "Bad indentation ~ expected '12' spaces,\nfound '8'",
+          "file" : "src/main/java/badFiles/doubleIncDec.java"
+        },
+        {
+          "lineNumber" : 31,
+          "detail" : "Bad indentation ~ expected '0'\nspaces,found '1'",
+          "file" : "src/main/java/badFiles/doubleIncDec.java"
+        }
+      ],
+      "outcome" : "WARNING"
+    }
+  ]
+}

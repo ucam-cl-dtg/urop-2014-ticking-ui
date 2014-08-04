@@ -11,11 +11,12 @@
                        , "message" : "pintln not in System.out"
                        , "class"   : "error1 error"
                    }
-                   , {   "line"    : 5
+                   , {   "line"    : 6
                        , "message" : "Space before end of line."
                        , "class"   : "warning1 warning"
                    }
-                   , {   "line"    : 1
+                   , {   "start"   : 13
+                       , "end"     : 17
                        , "message" : "Should make it a package"
                        , "class"   : "comment1 comment"
                    } ]

@@ -1,0 +1,25 @@
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+
+<polymer-element name="files-list" attributes="files">
+  <template>
+    <link rel="stylesheet" href="style.css"/>
+      <ul>
+        <template repeat="{{file in files}}">
+          <li>{{file.name}}</li>
+        </template>
+      </ul>
+  </template>
+  <script>
+    Polymer('files-list'
+      , {   filesChanged:
+            function ()
+            {
+              this.files.map(function (x)
+                             {
+                               return x;
+                             })
+            }
+        });
+  </script>
+</polymer-element>

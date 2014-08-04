@@ -3,6 +3,8 @@
  * This function mixes in comments with data, on a character basis. The
  * result is similar to the following snippet. This should handle
  * improper nesting (i.e. one comment from 1-3 and another from 2-4).
+ * To use with HighlightJS, use the spans_to_comments function the
+ * output of HighlightJS and concatenate that to the comments parameter.
  *
  * Arguments:
  * [CODE]
@@ -63,7 +65,7 @@ function mixin_comments_with_data(data, comments)
                 });
 
   /* Stage 2 – Process */
-  var i, j;
+  var i;
   var len = data.length;
   for (i = 0; i < len; i++)
   {
@@ -79,8 +81,8 @@ function mixin_comments_with_data(data, comments)
       }
 
       activeComments.sort(function (a, b)
-                          {
-                            return a.end - b.end;
+                          { /* Descending sort */
+                            return b.end - a.end;
                           });
 
       rtn += "</span>";
@@ -192,4 +194,97 @@ function lines_to_chars(data, comments)
                         return x;
                       });
 
+}
+
+/**
+ * Due to the way mixin_comments_with_data works, we can not have other
+ * spans in the data, so this extracts spans from data and converts them
+ * into comments of the following form.
+ * [ {   "start" : ? Where span starts
+ *     , "end"   : ? Where span ends
+ *     , "class" : ? Class(es) of the span
+ * } ]
+ *
+ */
+function spans_to_comments(data)
+{
+  var i, j;
+  var stack = new Array(); /* For class tags */
+  var rtn = new Array();
+  var len = data.length;
+  var tmp;
+
+  /* i is text index, j is HTML index, e.g. for <b>foo</b> if i=1 then
+   * j=4 */
+  for (i = 0, j = 0; j < len; i++, j++)
+  {
+    switch (data[j])
+    {
+      case '<':
+        /* HTML comment */
+        if (data.substr(j+1, 3) == "!--")
+        {
+          /* Skips <!--...--> including '-->' due to `for` j++ */
+          while (j < len && data.substr(j+1, 3) != "-->") j++;
+          j += 2;
+        }
+        else /* HTML tag */
+        {
+          /* We know data[j] is `<` */
+          j++
+          /* Skips <...> including '>' due to `for` j++ */
+          tmp = "";
+          while (j < len && data[j] != '>') tmp += data[j++];
+
+          if (tmp.substr(0, 5) == "/span")
+          {
+            tmp = stack.pop();
+            tmp.end = i;
+            rtn.push(tmp);
+          }
+          else
+          {
+            stack.push({"start":i, "class" : []});
+            tmp = tmp.replace(/class="([^"]*)"/,
+                      function (match, capture)
+                      {
+                        stack[stack.length-1].class =
+                          stack[stack.length-1].class
+                            .concat(capture);
+                      });
+            if (stack[stack.length-1].class.length > 0)
+            {
+              stack[stack.length-1].class =
+                stack[stack.length-1].class.join(" ");
+            }
+            else
+            {
+              stack.pop();
+            }
+          }
+        }
+        /* We did not actually come across a character yet */
+        i--;
+        break;
+
+      case '&':
+        /* Skips &...; including ';' due to `continue` */
+        while (j < len && data[j] != ';')
+        {
+          j++;
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  while (stack.length > 0)
+  {
+    rtn.push(stack.pop())
+    rtn[rtn.length-1].end = i;
+  }
+
+  return rtn;
 }
