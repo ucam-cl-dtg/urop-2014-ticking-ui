@@ -112,7 +112,7 @@
             on-core-response="{{defaultsLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
-
+<!-- url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles" -->
     <core-ajax
             id="ajaxLoadStatic"
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickName + '/create'}}"
@@ -161,7 +161,7 @@
             <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
         </div>
         <core-collapse id="collapseDeadline" opened="{{dateShown}}">
-            <date-entry valid="{{dateValid}}"></date-entry>
+            <date-entry valid="{{dateValid}}" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry>
         </core-collapse>
 
         <br>
@@ -338,9 +338,9 @@
                     if (day.length == 1) {day = "0" + day}
                     if (month.length == 1) {month = "0" + month}
 
-                    this.$.day.inputValue = day;
-                    this.$.month.inputValue = month;
-                    this.$.year.inputValue = year;
+                    this.day = day;
+                    this.month = month;
+                    this.year = year;
                 }
             }
 
@@ -395,9 +395,9 @@
 
             //Update master deadline
             if (this.$.deadlineSwitch.checked) {
-                var year = this.$.year.inputValue;
-                var month = this.$.month.inputValue - 1;
-                var day = this.$.day.inputValue;
+                var year = this.year;
+                var month = this.month - 1;
+                var day = this.day;
                 var date = new Date();
                 date.setUTCDate(day);
                 date.setUTCMonth(month);
@@ -432,6 +432,8 @@
                         code: this.$.staticList.staticOptions[i].code};
                 }
             }
+
+            console.log(sendData);
 
             this.$.ajaxSendStatic.body = JSON.stringify(sendData);
 
