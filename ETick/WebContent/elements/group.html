@@ -6,6 +6,7 @@
 <link rel="import" href="author-pane.html">
 <link rel="import" href="main-card.html">
 <link rel="import" href="group-members.html">
+<link rel="import" href="tick-list.html">
 
 
 <link rel="import" href="person-list.html">
@@ -20,12 +21,14 @@
 		</core-ajax>
 
 		<!-- Group members card. -->
-		<main-card animated swipeable>
+		<main-card animated swipeable
+			on-main-card-swipe-away="{{cardSwiped}}">
 			<group-members gid="{{gid}}" allowAdd="{{allowAddMembers}}" rows="4"></group-members>
 		</main-card>
 
 		<!-- Tick list card. -->
 		<main-card animated swipeable>
+			<tick-list gid="{{gid}}"></tick-list>
 		</main-card>
 
 		<!-- Group content card. -->
@@ -71,6 +74,11 @@
 				}
 				this.pane.classList.remove('hidden');
 			},
+
+			cardSwiped: function (e, detail) {
+				// Code to get rid of the card. Consider other options.
+				detail.card.style.display = "none";
+			}
 		});
 	</script>
 </polymer-element>
