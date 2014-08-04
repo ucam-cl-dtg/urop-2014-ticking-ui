@@ -27,7 +27,7 @@
 			<div flex layout horizontal end-justified>
 			<core-selector id="navMenu" valueattr="id" selected="dashButton" selectedAttribute="">
 
-				<menu-button id="groupsMenu" label="Groups" selected="-1" valueattr="label">
+				<menu-button id="groupsMenu" label="Groups" valueattr="label">
 					<template repeat="{{item in items}}">
 						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}"></core-item>
 					</template>
@@ -86,9 +86,7 @@
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
-				console.log(oldValue ? oldValue.label : oldValue);
-				console.log(newValue ? newValue.label : newValue);
-				if (!newValue || (oldValue && oldValue.id ==="createGroupItem")) return;
+				if (!newValue || (oldValue && oldValue.id === "createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
 					this.$.groupsMenu.selected = oldValue ? oldValue.label : "-1";
@@ -109,8 +107,10 @@
 
 			groupItemsChanged: function (oldValue, newValue) {
 				this.items = newValue;
-				console.log('To select: ' + this.toSelect);
-				this.$.groupsMenu.selected = "TestAO";
+				console.log(this.toSelect);
+				console.log(this.$.groupsMenu.selected);
+				this.$.groupsMenu.selected = this.toSelect;
+				console.log(this.$.groupsMenu.selected);
 			}
 
 		});
