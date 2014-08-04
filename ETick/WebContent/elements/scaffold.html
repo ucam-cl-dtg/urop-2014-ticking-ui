@@ -27,7 +27,7 @@
 			<div flex layout horizontal end-justified>
 			<core-selector id="navMenu" valueattr="id" selected="dashButton" selectedAttribute="">
 
-				<menu-button id="groupsMenu" label="Groups" selected="-1" valueattr="label">
+				<menu-button id="groupsMenu" label="Groups" valueattr="label">
 					<template repeat="{{item in items}}">
 						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}"></core-item>
 					</template>
@@ -107,8 +107,6 @@
 
 			groupItemsChanged: function (oldValue, newValue) {
 				this.items = newValue;
-				console.log(this.items);
-				console.log('To select: ' + this.toSelect);
 				this.$.groupsMenu.selected = this.toSelect;
 			}
 
