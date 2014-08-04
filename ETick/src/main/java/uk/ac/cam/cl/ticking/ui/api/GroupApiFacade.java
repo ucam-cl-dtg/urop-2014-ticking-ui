@@ -7,11 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -21,6 +16,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.GroupBean;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
@@ -93,7 +89,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 	@Override
 	public Response addGroup(HttpServletRequest request, List<String> roles,
-			Group groupBean) {
+			GroupBean groupBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		User user = db.getUser(crsid);
@@ -126,24 +122,24 @@ public class GroupApiFacade implements IGroupApiFacade {
 	}
 
 	@Override
-	public Response updateGroup(HttpServletRequest request, Group group) {
+	public Response updateGroup(HttpServletRequest request, String groupId, GroupBean groupBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		List<Role> myRoles = db.getRoles(group.getGroupId(), crsid);
+		List<Role> myRoles = db.getRoles(groupId, crsid);
 		if (!myRoles.contains(Role.AUTHOR)) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		Group prevGroup = db.getGroup(group.getGroupId());
+		Group prevGroup = db.getGroup(groupId);
 		if (prevGroup != null) {
 			prevGroup.setEdited(DateTime.now());
 			prevGroup.setEditedBy(crsid);
-			prevGroup.setInfo(group.getInfo());
-			prevGroup.setName(group.getName());
+			prevGroup.setInfo(groupBean.getInfo());
+			prevGroup.setName(groupBean.getName());
 			db.saveGroup(prevGroup);
 			return Response.status(Status.CREATED).entity(prevGroup).build();
 		} else {
-			return addGroup(request, new ArrayList<String>(), group);
+			return addGroup(request, new ArrayList<String>(), groupBean);
 		}
 
 	}

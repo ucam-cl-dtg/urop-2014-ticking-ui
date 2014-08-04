@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
-import uk.ac.cam.cl.ticking.ui.actors.User;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.TickBean;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -65,6 +65,13 @@ public class Tick implements Comparable<Tick>{
 	 */
 	public Tick() {
 
+	}
+	
+	public Tick(TickBean bean) {
+		this.setName(bean.getName());
+		this.setDeadline(bean.getDeadline());
+		this.setGroups(bean.getGroups());
+		this.setExtensions(bean.getExtensions());
 	}
 
 	/**
