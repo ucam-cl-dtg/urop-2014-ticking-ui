@@ -130,7 +130,7 @@ on-trackstart="{{trackStart}}" on-track="{{track}}" on-trackend="{{trackEnd}}" o
 
 			transitionEnd: function(e) {
 				if (this.away && e.propertyName === "transform") {
-					this.fire('main-card-swipe-away');
+					this.fire('main-card-swipe-away', { card: this } );
 				}
 			}
 		});
