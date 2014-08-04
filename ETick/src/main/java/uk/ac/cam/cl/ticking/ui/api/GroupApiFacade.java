@@ -139,6 +139,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.saveGroup(prevGroup);
 			return Response.status(Status.CREATED).entity(prevGroup).build();
 		} else {
+			//TODO should this behave like so?
 			return addGroup(request, new ArrayList<String>(), groupBean);
 		}
 
