@@ -449,6 +449,8 @@
 
         },
         saveEverything: function() {
+            console.log("Saving everything");
+
             var tickData = this.buildTickData();
             var staticData = this.buildStaticData();
 
@@ -516,8 +518,10 @@
             var sendData = [];
 
             if (this.useDefaults) {
+                console.log("using default send data");
                 sendData = this.defaults;
             } else {
+                console.log("using custom send data");
                 for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
                     if (!(this.$.staticList.staticOptions[i].closed)) {
                         sendData[sendData.length] = {
