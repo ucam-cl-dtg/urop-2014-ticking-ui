@@ -100,7 +100,7 @@
             contentType="application/json"
             method="PUT"
             on-core-error="{{showSaveErrorToast}}"
-            on-core-response="{{tickDataSaved}}">
+            on-core-response="{{tickDataUpdated}}">
     </core-ajax>
     <core-ajax
             id="ajaxPostTickData"
@@ -157,7 +157,7 @@
                 <div>{{tickName}}</div>
                 <br>
             </div>
-            <paper-input hidden id="inputDisplayName" flex label="e.g. Programming in Java Tick 1"
+            <paper-input hidden?="{{inputDisplayNameHidden}}" id="inputDisplayName" flex label="e.g. Programming in Java Tick 1"
                          inputValue="{{tickName}}" required error="Required" validate="\S"
                          on-keyup="{{validateDisplayName}}">
             </paper-input>
@@ -234,7 +234,7 @@
         <span layout horizontal>
             <span flex></span>
             <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveEverything}}"
-                          disabled?="{{(dateShown && !dateValid) || !displayValid}}">
+                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid)}}">
             </paper-button>
             <span flex></span>
         </span>
@@ -257,11 +257,15 @@
             this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/";
            // this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
             this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
+            //"http://localhost:8000/testTickData.json";
+                    //
 
             //for local testing, TODO: remove
             /*this.pathLoadGroups = "http://localhost:8000/testGroups.json";
             this.pathLoadTickData = "http://localhost:8000/testTickData.json";
             this.pathPutTickData = "http://localhost:8000/UROP_UI/api/tick";*/
+
+
 
             this.useDefaults = true; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
             this.groups = [];
@@ -323,6 +327,11 @@
         },
         tickDataSaved: function() {
             this.newTick = false;
+            this.tickData = this.$.ajaxPostTickData.response;
+            this.processLoadedTickData();
+        },
+        tickDataUpdated: function() {
+            this.newTick = false;
             this.tickData = this.$.ajaxPutTickData.response;
             this.processLoadedTickData();
         },
@@ -334,17 +343,17 @@
             if (this.newTick) {
                 //if the tick name is blank, then a new tick is being created, so show the tick naming input
                 this.$.divDisplayName.hidden = true;
-                this.$.inputDisplayName.hidden = false;
+                this.inputDisplayNameHidden = false;
             } else {
                 //Otherwise, the tick already exists so show the read only field
                 this.$.divDisplayName.hidden = false;
-                this.$.inputDisplayName.hidden = true;
-                this.tickName = tickData.name;
+                this.inputDisplayNameHidden = true;
+                this.tickName = this.tickData.name;
             }
 
             if (!this.newTick) {
                 this.$.collapseCodeTemplate.opened = true;
-                this.$.codeTemplateAddress.innerHTML = tickData.stubRepo;
+                this.$.codeTemplateAddress.innerHTML = this.tickData.stubRepo;
             }
 
             //if the tick is not being created and it currently has a deadline, show it
