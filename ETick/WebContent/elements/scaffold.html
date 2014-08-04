@@ -65,9 +65,7 @@
 	<script>
 		Polymer('page-scaffold', {
 
-			domReady: function () {
-				this.toSelect = "-1";
-			},
+			toSelect: "-1",
 
 			observe: {
 				'$.groupsMenu.selection': 'groupSelectionChanged',
@@ -88,8 +86,8 @@
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
-				console.log(oldValue);
-				console.log(newValue);
+				console.log(oldValue ? oldValue.label : oldValue);
+				console.log(newValue ? newValue.label : newValue);
 				if (!newValue || (oldValue && oldValue.id ==="createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
@@ -111,8 +109,8 @@
 
 			groupItemsChanged: function (oldValue, newValue) {
 				this.items = newValue;
-				this.$.groupsMenu.selected = this.toSelect;
-				console.log(this.$.groupsMenu.selected);
+				console.log('To select: ' + this.toSelect);
+				this.$.groupsMenu.selected = "TestAO";
 			}
 
 		});
