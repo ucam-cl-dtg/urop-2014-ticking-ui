@@ -10,7 +10,7 @@
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../date-entry.html">
 
-<polymer-element name="tick-creator-card" attributes="tickId">
+<polymer-element name="tick-creator-card" attributes="tickName">
 <template>
     <style>
         .checkboxContainer {
@@ -89,7 +89,7 @@
     <!-- get and update all other existing tick data -->
     <core-ajax
             id="ajaxLoadTickData"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickName + '/'}}"
             handleAs="json"
             on-core-response="{{tickDataLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
@@ -109,23 +109,21 @@
             id="ajaxLoadDefaults"
             url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles"
             handleAs="json"
-
             on-core-response="{{defaultsLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
 
     <core-ajax
             id="ajaxLoadStatic"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickName + '/create'}}"
             handleAs="json"
-            auto
             on-core-response="{{staticDataLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
     <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"-->
     <core-ajax
             id="ajaxSendStatic"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickName + '/create'}}"
             handleAs="json"
             contentType="application/json"
             method="POST"
@@ -228,8 +226,8 @@
 
     <paper-dialog id="alertRestoreDefaults" heading="Restore Defaults?" backdrop="true" transition="paper-transition-bottom">
         <p>This will clear your existing settings!</p>
-        <paper-button id="dialogCancel" label="Cancel" dismissive autofocus></paper-button>
-        <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}"></paper-button>
+        <paper-button id="dialogCancel" label="Cancel" dismissive autofocus duration="8000"></paper-button>
+        <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}" duration="8000"></paper-button>
     </paper-dialog>
 
     <paper-toast id="toastLoadError" text="Error loading the tick."></paper-toast>
@@ -255,7 +253,10 @@
             if (this.tickId == null || this.tickId == "") {
                 this.newTick = true;
                 this.tickData = {};
+                this.$.ajaxLoadDefaults.go();
                 this.tickDataLoaded();
+            } else {
+                this.$.ajaxLoadStatic.go();
             }
         },
         staticDataLoaded: function() {
