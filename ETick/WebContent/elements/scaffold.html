@@ -64,7 +64,10 @@
 	</template>
 	<script>
 		Polymer('page-scaffold', {
-			toSelect: "-1",
+
+			domReady: function () {
+				this.toSelect = "-1";
+			},
 
 			observe: {
 				'$.groupsMenu.selection': 'groupSelectionChanged',
@@ -100,7 +103,6 @@
 			groupCreatedHandler: function (e, detail) {
 				this.$.loginAPIs.$.sidebarAjax.go();
 				this.showDash = false;
-				this.$.groupTemp.model = detail._id;
 				this.toSelect = detail.name;
 			},
 
