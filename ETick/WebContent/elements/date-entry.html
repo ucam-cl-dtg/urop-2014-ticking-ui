@@ -46,7 +46,7 @@
                     }
                 } else {
                     if (this.month == 2 && this.day > 28) {
-                        if (isLeapYear(this.day)) { //February is so awkward
+                        if (this.isLeapYear(this.day)) { //February is so awkward
                             this.day = 29;
                         } else {
                             if (this.year != "") {
@@ -71,16 +71,12 @@
                     this.valid = false;
                 }
             },
-            isLeapYear: function(day) {
+            isLeapYear: function() {
                 if (this.year % 4 != 0) {
                     return false;
                 } else if (this.year % 100 != 0) {
                     return true;
-                } else if (this.isLeapYear % 400 != 0) {
-                    return false;
-                } else {
-                    return true;
-                }
+                } else return this.isLeapYear % 400 == 0;
             }
         });
     </script>
