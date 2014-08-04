@@ -86,7 +86,7 @@
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
-				if (!newValue || (oldValue && oldValue.id ==="createGroupItem")) return;
+				if (!newValue || (oldValue && oldValue.id === "createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
 					this.$.groupsMenu.selected = oldValue ? oldValue.label : "-1";
@@ -107,7 +107,10 @@
 
 			groupItemsChanged: function (oldValue, newValue) {
 				this.items = newValue;
+				console.log(this.toSelect);
+				console.log(this.$.groupsMenu.selected);
 				this.$.groupsMenu.selected = this.toSelect;
+				console.log(this.$.groupsMenu.selected);
 			}
 
 		});
