@@ -23,7 +23,7 @@ import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
-import uk.ac.cam.cl.ticking.ui.api.public_interfaces.TickBean;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;

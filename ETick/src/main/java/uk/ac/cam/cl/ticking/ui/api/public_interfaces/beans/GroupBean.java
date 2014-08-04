@@ -1,4 +1,4 @@
-package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
+package uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans;
 
 import java.util.ArrayList;
 import java.util.List;

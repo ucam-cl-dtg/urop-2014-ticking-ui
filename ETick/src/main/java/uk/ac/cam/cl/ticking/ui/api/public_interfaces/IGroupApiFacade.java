@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean;
 
 /**
  * A RESTful interface for requests regarding groups.

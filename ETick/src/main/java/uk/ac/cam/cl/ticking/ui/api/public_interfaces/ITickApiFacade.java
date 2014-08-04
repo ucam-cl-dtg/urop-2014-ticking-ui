@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import org.joda.time.DateTime;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 /**
