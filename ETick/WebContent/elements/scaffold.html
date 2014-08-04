@@ -107,7 +107,7 @@
 
 			groupItemsChanged: function (oldValue, newValue) {
 				this.items = newValue;
-				setTimout(function () {
+				setTimeout(function () {
 					this.$.groupsMenu.selected = this.toSelect
 				}.bind(this), 100);
 			}
