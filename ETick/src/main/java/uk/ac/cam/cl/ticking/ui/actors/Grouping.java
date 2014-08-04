@@ -43,7 +43,7 @@ public class Grouping {
 	 * @param role
 	 */
 	public Grouping(Group group, User user, Role role) {
-		this(group.getGid(), user.getCrsid(), role);
+		this(group.getGroupId(), user.getCrsid(), role);
 	}
 
 	/**
@@ -56,11 +56,11 @@ public class Grouping {
 	 * @param user
 	 * @param role
 	 */
-	public Grouping(String gid, String crsid, Role role) {
-		this.setGroup(gid);
+	public Grouping(String groupId, String crsid, Role role) {
+		this.setGroup(groupId);
 		this.setUser(crsid);
 		this.setRole(role);
-		this._id = gid + "_" + role.toString() + "_" + crsid;
+		this._id = groupId + "_" + role.toString() + "_" + crsid;
 	}
 
 	/**
@@ -109,6 +109,20 @@ public class Grouping {
 	@JsonProperty("role")
 	public void setRole(Role role) {
 		this.role = role;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Grouping)) {
+			return false;
+		}
+		return this._id == ((Grouping)o)._id;
+	}
+	
+	@Override
+	public int hashCode() {
+		return _id.hashCode();
 	}
 
 }

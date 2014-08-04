@@ -8,3 +8,8 @@ release.properties
 **/doc/
 **/logs/
 **/node_modules/
+ETick/WebContent/.idea
+ETick/WebContent/codemirror-4.4/
+ETick/WebContent/ETick WebContent/
+ETick/.classpath
+ETick/.settings/org.eclipse.wst.common.component

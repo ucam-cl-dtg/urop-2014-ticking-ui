@@ -4,15 +4,17 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
+import org.joda.time.DateTime;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
@@ -33,27 +35,34 @@ public interface ITickApiFacade {
 
 	/**
 	 * @param tick
-	 * @return The Tick object with {tick} as it's tid.
+	 * @return The Tick object with {tick} as it's tickId.
 	 */
 	@GET
-	@Path("/{tid}")
+	@Path("/{tickId}")
 	@Produces("application/json")
-	public abstract Response getTick(@PathParam("tid") String tid);
+	public abstract Response getTick(@PathParam("tickId") String tickId);
+
+	@DELETE
+	@Path("/{tickId}")
+	@Produces("application/json")
+	public abstract Response deleteTick(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId);
 
 	/**
 	 * @param group
-	 * @return All Tick objects in {group} where {group} is a gid
+	 * @return All Tick objects in {group} where {group} is a groupId
 	 */
 	@GET
-	@Path("/{gid}")
+	@Path("/list/{groupId}")
 	@Produces("application/json")
-	public abstract Response getTicks(@PathParam("gid") String gid);
+	public abstract Response getTicks(@Context HttpServletRequest request,
+			@PathParam("groupId") String groupId);
 
 	/**
 	 * Commits the given tick object to the database, but only after a
-	 * repository has been successfully created for it via the GitAPI. If a gid
-	 * is given as a queryparam, the Tick will also be added to that group via
-	 * the addTick method.
+	 * repository has been successfully created for it via the GitAPI. If a
+	 * groupId is given as a queryparam, the Tick will also be added to that
+	 * group via the addTick method.
 	 * 
 	 * @param request
 	 * @param tick
@@ -67,11 +76,17 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response newTick(@Context HttpServletRequest request,
-			@DefaultValue("") @QueryParam("gid") String gid, Tick tick)
-			throws IOException, DuplicateRepoNameException;
+			Tick tick) throws IOException, DuplicateRepoNameException;
+
+	@PUT
+	@Path("/")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public abstract Response updateTick(@Context HttpServletRequest request,
+			Tick tick) throws IOException, DuplicateRepoNameException;
 
 	/**
-	 * Adds a Tick to a Group given a tid and gid
+	 * Adds a Tick to a Group given a tickId and groupId
 	 * 
 	 * @param request
 	 * @param tick
@@ -81,12 +96,12 @@ public interface ITickApiFacade {
 	 * 
 	 */
 	@POST
-	@Path("/{tid}/{gid}")
+	@Path("/{tickId}/{groupId}")
 	@Produces("application/json")
-	@Consumes("application/json")
 	public abstract Response addTick(@Context HttpServletRequest request,
-			@PathParam("gid") String gid, @PathParam("tid") String tid)
-			throws IOException, DuplicateRepoNameException;
+			@PathParam("tickId") String tickId,
+			@PathParam("groupId") String groupId) throws IOException,
+			DuplicateRepoNameException;
 
 	/**
 	 * @param request
@@ -97,9 +112,15 @@ public interface ITickApiFacade {
 	 * 
 	 */
 	@POST
-	@Path("/{tid}")
+	@Path("/{tickId}")
 	@Produces("application/json")
 	public abstract Response forkTick(@Context HttpServletRequest request,
-			@PathParam("tid") String tid) throws IOException;
+			@PathParam("tickId") String tickId) throws IOException;
+
+	@PUT
+	@Path("/{tickId}/deadline")
+	@Produces("application/json")
+	public abstract Response setDeadline(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId, DateTime date);
 
 }

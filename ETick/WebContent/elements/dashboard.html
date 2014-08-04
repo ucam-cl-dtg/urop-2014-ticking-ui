@@ -17,7 +17,7 @@
 			on-core-response="{{loginResponse}}">
 		</core-ajax>
 		<main-card animated>
-			<user-card id="card" ldap="{{data}}"></user-card>
+			<user-card id="userCard" ldap="{{data}}"></user-card>
 		</main-card>
 	</template>
 
@@ -25,7 +25,7 @@
 		Polymer('user-dash', {
 			loginResponse: function() {
 				this.data = this.$.loginAjax.response;
-			}
+			},
 		});
 	</script>
 </polymer-element>

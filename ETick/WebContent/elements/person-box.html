@@ -10,7 +10,6 @@
 			:host {
 				display: block;
 				border-radius: 2px;
-				padding: 10px;
 			}
 
 			h1 {
@@ -29,11 +28,15 @@
 			core-icon {
 				color: rgb(112, 81, 236);
 			}
+
+			#container {
+				padding: 10px;
+			}
 		</style>
 
 		<div layout horizontal center>
 			<core-icon flex icon="{{icon}}" size="40"></core-icon>
-			<div layout vertical>
+			<div id="container" layout vertical>
 				<h1>{{name}}</h1>
 				<div layout horizontal center>
 					<h2 flex>{{college}}</h2>
@@ -44,7 +47,7 @@
 	</template>
 	<script>
 		Polymer('person-box', {
-			ready: function() {
+			domReady: function() {
 				this.icon = "social:person"
 				if (this.isStudent) {
 					this.icon = "social:school";

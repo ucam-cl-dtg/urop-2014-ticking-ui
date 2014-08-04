@@ -11,7 +11,7 @@
 
 h1 {
 	font-size: 1.8rem;
-	font-weight: 200;
+	font-weight: 100;
 	padding: 0 0 0 10px;
 }
 
@@ -22,15 +22,9 @@ paper-dialog .subtitle {
 }
 
 paper-dialog::shadow h1 {
-	font-weight: 200;
+	font-weight: 100;
 	margin-bottom: 10px;
 }
-
-paper-dialog /deep/ h2 {
-	font-weight: 200;
-	font-size: 1.4rem;
-}
-
 /*Fix for paper-checkbox issue #6*/
 paper-checkbox::shadow #ink {
     top: -16px;
@@ -39,12 +33,8 @@ paper-checkbox::shadow #ink {
     height: 50px;
 }
 
-table {
-	width: 100%;
-}
-
-table td {
-	vertical-align: middle;
+paper-checkbox {
+	padding: 5px;
 }
 
 .dialogSubmit {

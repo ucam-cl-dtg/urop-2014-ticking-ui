@@ -1,6 +1,11 @@
 package uk.ac.cam.cl.ticking.ui.ticks;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,13 +20,18 @@ public class Tick {
 
 	// FORMAT: 'author','name'
 	@JsonProperty("_id")
-	private String tid;
+	private String tickId;
 
 	private String name;
 	private String author;
 
-	private String repo;
-	private Date deadline;
+	private String stubRepo, correctnessRepo;
+	private DateTime deadline;
+	private List<String> groups = new ArrayList<>();
+	
+	private Map<String, DateTime> extensions = new HashMap<>();
+	
+	private DateTime edited;
 
 	/**
 	 * 
@@ -32,21 +42,19 @@ public class Tick {
 	 * 
 	 * 
 	 * @param name
-	 * @param repo
+	 * @param stubRepo
 	 * @param deadline
 	 * @param files
 	 */
 	@JsonCreator
 	public Tick(@JsonProperty("name") String name,
 			@JsonProperty("author") String author,
-			@JsonProperty("repo") String repo,
-			@JsonProperty("deadline") Date deadline) {
+			@JsonProperty("deadline") DateTime deadline) {
 
 		this.setName(name);
 		this.setAuthor(author);
-		this.setRepo(repo);
 		this.setDeadline(deadline);
-		initTID();
+		initTickId();
 
 	}
 
@@ -58,26 +66,42 @@ public class Tick {
 	}
 
 	/**
-	 * @return repo
+	 * @return stubRepo
 	 */
-	@JsonProperty("repo")
-	public String getRepo() {
-		return repo;
+	@JsonProperty("stubRepo")
+	public String getStubRepo() {
+		return stubRepo;
 	}
 
 	/**
-	 * @param repo
+	 * @param stubRepo
 	 */
-	@JsonProperty("repo")
-	public void setRepo(String repo) {
-		this.repo = repo;
+	@JsonProperty("stubRepo")
+	public void setStubRepo(String stubRepo) {
+		this.stubRepo = stubRepo;
+	}
+	
+	/**
+	 * @return correctnessRepo
+	 */
+	@JsonProperty("correctnessRepo")
+	public String getCorrectnessRepo() {
+		return correctnessRepo;
+	}
+
+	/**
+	 * @param correctnessRepo
+	 */
+	@JsonProperty("correctnessRepo")
+	public void setCorrectnessRepo(String correctnessRepo) {
+		this.correctnessRepo = correctnessRepo;
 	}
 
 	/**
 	 * @return deadline
 	 */
 	@JsonProperty("deadline")
-	public Date getDeadline() {
+	public DateTime getDeadline() {
 		return deadline;
 	}
 
@@ -85,7 +109,7 @@ public class Tick {
 	 * @param deadline
 	 */
 	@JsonProperty("deadline")
-	public void setDeadline(Date deadline) {
+	public void setDeadline(DateTime deadline) {
 		this.deadline = deadline;
 	}
 
@@ -120,22 +144,107 @@ public class Tick {
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-
-	/**
-	 * @return tid
-	 */
-	public String getTID() {
-		return tid;
+	 /**
+	  * @return edited
+	  */
+	public DateTime getEdited() {
+		return edited;
 	}
 
 	/**
-	 * Initialises the TID field for the Tick object
+	 * @param edited
 	 */
-	public void initTID() {
-		this.tid = author + "," + name;
+	public void setEdited(DateTime edited) {
+		this.edited = edited;
 	}
 
-	public static String replaceDelimeter(String tid) {
-		return tid.replace(',', '/');
+	/**
+	 * @return groups
+	 */
+	public List<String> getGroups() {
+		return groups;
+	}
+	
+	/**
+	 * @param groups
+	 */
+	public void setGroups(List<String> groups) {
+		this.groups = groups;
+	}
+
+	/**
+	 * @param groupId
+	 */
+	public void addGroup(String groupId) {
+		groups.add(groupId);
+	}
+	
+	/**
+	 * @param groupId
+	 */
+	public void removeGroup(String groupId) {
+		groups.remove(groupId);
+	}
+
+	public Map<String, DateTime> getExtensions() {
+		return extensions;
+	}
+
+	public void setExtensions(Map<String, DateTime> extensions) {
+		this.extensions = extensions;
+	}
+	
+	public void addExtension(String crsid, DateTime extension) {
+		this.extensions.put(crsid, extension);
+	}
+
+	/**
+	 * @return tickId
+	 */
+	public String getTickId() {
+		return tickId;
+	}
+
+	/**
+	 * Initialises the tickId field for the Tick object
+	 */
+	public void initTickId() {
+		this.tickId = author + "," + name;
+	}
+
+	/**
+	 * Takes , separated tickIds as they are stored in our system and turns them
+	 * into / separated ids for use with the other APIs
+	 * 
+	 * @param tickId
+	 * @return tickId in / separated format
+	 */
+	public static String replaceDelimeter(String tickId) {
+		return tickId.replace(',', '/');
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Tick)) {
+			return false;
+		}
+		return this.tickId == ((Tick) o).tickId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return tickId.hashCode();
 	}
 }

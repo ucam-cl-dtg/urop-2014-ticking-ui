@@ -1,10 +1,13 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -23,6 +26,13 @@ public interface IUserApiFacade {
 	@Produces("application/json")
 	public abstract Response getUser(@Context HttpServletRequest request);
 
+	@DELETE
+	@Path("/{crsid}")
+	@Produces("application/json")
+	public abstract Response deleteUser(@Context HttpServletRequest request,
+			@PathParam("crsid") String crsid,
+			@DefaultValue("false") @QueryParam("purge") boolean purge);
+
 	/**
 	 * Uses the user's session to determine the crsid and then returns all
 	 * groups which that user is a member of.
@@ -40,13 +50,27 @@ public interface IUserApiFacade {
 	 * which that user has for the specified group
 	 * 
 	 * @param request
-	 * @param gid
+	 * @param groupId
 	 * @return the list of roles that the current user has for the given group
 	 */
 	@GET
-	@Path("/{gid}/roles")
+	@Path("/{groupId}/roles")
 	@Produces("application/json")
 	public abstract Response getGroupRoles(@Context HttpServletRequest request,
-			@PathParam("gid") String gid);
+			@PathParam("groupId") String groupId);
+
+	/**
+	 * Uses the user's session to determine the crsid and then returns all
+	 * groups for which the user has the specified role
+	 * 
+	 * @param request
+	 * @param groupId
+	 * @return the list of groups that the current user has the given role for
+	 */
+	@GET
+	@Path("/{stringRole}")
+	@Produces("application/json")
+	public abstract Response getRoleGroups(@Context HttpServletRequest request,
+			@PathParam("stringRole") String stringRole);
 
 }

@@ -23,7 +23,7 @@ public interface IDataManager {
 	 *            - User object to be saved into storage. If the user exists it
 	 *            will be updated, else it will be created
 	 */
-	public void saveUser(User cp);
+	public void saveUser(User u);
 
 	/**
 	 * @param t
@@ -37,7 +37,7 @@ public interface IDataManager {
 	 *            - Submission object to be saved into storage. If the
 	 *            submission exists it will be updated, else it will be created
 	 */
-	public void saveSubmission(Submission m);
+	public void saveSubmission(Submission s);
 
 	/**
 	 * @param g
@@ -51,14 +51,14 @@ public interface IDataManager {
 	 *            - Grouping object to be saved into storage. If the grouping
 	 *            exists it will be updated, else it will be created
 	 */
-	public void saveGrouping(Grouping g);
+	public void saveGrouping(Grouping gr);
 
 	/**
 	 * @param cp
 	 *            - User object to be saved into storage.
 	 * @throws DuplicateDataEntryException
 	 */
-	public void insertUser(User cp) throws DuplicateDataEntryException;
+	public void insertUser(User u) throws DuplicateDataEntryException;
 
 	/**
 	 * @param t
@@ -72,7 +72,7 @@ public interface IDataManager {
 	 *            - Submission object to be saved into storage.
 	 * @throws DuplicateDataEntryException
 	 */
-	public void insertSubmission(Submission m)
+	public void insertSubmission(Submission s)
 			throws DuplicateDataEntryException;
 
 	/**
@@ -87,8 +87,10 @@ public interface IDataManager {
 	 *            - Grouping object to be saved into storage.
 	 * @throws DuplicateDataEntryException
 	 */
-	public void insertGrouping(Grouping g) throws DuplicateDataEntryException;
+	public void insertGrouping(Grouping gr) throws DuplicateDataEntryException;
 
+	public void removeUser(String crsid, boolean purge);
+	
 	/**
 	 * Goes to the configured storage and attempts to find a user with the
 	 * specified id
@@ -115,31 +117,35 @@ public interface IDataManager {
 
 	/**
 	 * Goes to the configured storage and attempts to find the users belonging
-	 * to the group with the specified gid
+	 * to the group with the specified groupId
 	 * 
-	 * @param gid
+	 * @param groupId
 	 * @return List of users belonging to given group
 	 */
-	public List<User> getUsers(String gid);
+	public List<User> getUsers(String groupId);
 
 	/**
 	 * Goes to the configured storage and attempts to find the users belonging
-	 * to the group with the specified gid and having the specified role
+	 * to the group with the specified groupId and having the specified role
 	 * 
-	 * @param gid
+	 * @param groupId
 	 * @param role
 	 * @return List of users belonging to given group with given role
 	 */
-	public List<User> getUsers(String gid, Role role);
+	public List<User> getUsers(String groupId, Role role);
 
+	public void removeGroup(String groupId);
+	
+	public void removeUserGroup(String crsid, String groupId);
+	
 	/**
 	 * Goes to the configured storage and attempts to find a group with the
 	 * specified id
 	 * 
-	 * @param gid
-	 * @return Group with given gid
+	 * @param groupId
+	 * @return Group with given groupId
 	 */
-	public Group getGroup(String gid);
+	public Group getGroup(String groupId);
 
 	/**
 	 * Goes to the configured storage and attempts to find a group with the
@@ -177,15 +183,17 @@ public interface IDataManager {
 	 */
 	public List<Group> getGroups(String crsid, Role role);
 
+	public void removeUserGroupRole(String crsid, String groupId, Role role);
+	
 	/**
 	 * Goes to the configured storage and attempts to find the roles for the
-	 * user with the specified crsid in the group with the specified gid
+	 * user with the specified crsid in the group with the specified groupId
 	 * 
-	 * @param gid
+	 * @param groupId
 	 * @param crsid
 	 * @return List of roles that the given user has in the given group
 	 */
-	public List<Role> getRoles(String gid, String crsid);
+	public List<Role> getRoles(String groupId, String crsid);
 
 	/**
 	 * Goes to the configured storage and attempts to find the groupings
@@ -207,14 +215,16 @@ public interface IDataManager {
 	 */
 	public List<Grouping> getGroupings(Role role);
 
+	public void removeTick(String tickId);
+	
 	/**
 	 * Goes to the configured storage and attempts to find a tick with the
-	 * specified tid
+	 * specified tickId
 	 * 
-	 * @param tid
-	 * @return Tick with given tid
+	 * @param tickId
+	 * @return Tick with given tickId
 	 */
-	public Tick getTick(String tid);
+	public Tick getTick(String tickId);
 
 	/**
 	 * Goes to the configured storage and attempts to find the ticks belonging

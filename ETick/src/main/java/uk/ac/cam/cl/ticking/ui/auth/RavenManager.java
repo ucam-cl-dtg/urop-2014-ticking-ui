@@ -18,6 +18,9 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
+import uk.ac.cam.cl.ticking.ui.configuration.AcademicTemplate;
+import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.DatabasePopulator;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
@@ -28,10 +31,15 @@ import com.google.inject.Inject;
 public class RavenManager {
 
 	private IDataManager db;
+	private ConfigurationLoader<AcademicTemplate> academicConfig;
 
+	/**
+	 * @param db
+	 */
 	@Inject
-	public RavenManager(IDataManager db) {
+	public RavenManager(IDataManager db, ConfigurationLoader<AcademicTemplate> academicConfig) {
 		this.db = db;
+		this.academicConfig = academicConfig;
 	}
 
 	/**
@@ -115,9 +123,15 @@ public class RavenManager {
 			DatabasePopulator.testPopulate(user);
 			return Response.status(Status.CREATED).entity(user).build();
 		}
+		user.setHasLogged(true);
+		db.saveUser(user);
 		return Response.ok(user).build();
 	}
 
+	/**
+	 * @param request
+	 * @return
+	 */
 	@DELETE
 	@Path("/logout")
 	@Produces("application/json")
@@ -127,18 +141,20 @@ public class RavenManager {
 
 	}
 
+	/**
+	 * Queries LDAP for user information, if a connection to LDAp is not
+	 * available, returns a user object with only a crsid and the ldap flag set
+	 * to false.
+	 * 
+	 * @param crsid
+	 * @return A potentially populated user object
+	 */
 	public User ldapProduceUser(String crsid) {
 		LDAPUser u;
 		User user;
 		try {
 			u = LDAPQueryManager.getUser(crsid);
-			boolean notStudent = false;
-			for (String inst : Strings.ACADEMICINSTITUTIONS) {
-				notStudent = u.getInstitutions().contains(inst);
-				if (notStudent) {
-					break;
-				}
-			}
+			boolean notStudent = academicConfig.getConfig().represents(u);
 			user = new User(crsid, u.getSurname(), u.getRegName(),
 					u.getDisplayName(), u.getEmail(), u.getInstitutions(),
 					u.getCollegeName(), !notStudent);
@@ -147,5 +163,6 @@ public class RavenManager {
 		}
 		return user;
 	}
+
 
 }

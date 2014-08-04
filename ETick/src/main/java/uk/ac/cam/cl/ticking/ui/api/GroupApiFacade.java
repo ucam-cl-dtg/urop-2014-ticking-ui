@@ -1,16 +1,32 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.joda.time.DateTime;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
+import uk.ac.cam.cl.ticking.ui.actors.Grouping;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
-import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
+import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
+import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
 
@@ -20,23 +36,50 @@ public class GroupApiFacade implements IGroupApiFacade {
 	@SuppressWarnings("unused")
 	// not currently used but could quite possibly be needed in the future, will
 	// remove if not
-	private ConfigurationFile config;
+	private ConfigurationLoader<Configuration> config;
 
 	@Inject
-	public GroupApiFacade(IDataManager db, ConfigurationFile config) {
+	public GroupApiFacade(IDataManager db,
+			ConfigurationLoader<Configuration> config) {
 		this.db = db;
 		this.config = config;
 	}
 
 	@Override
-	public Response getGroup(String gid, boolean byName) {
-		Group group = byName ? db.getGroupByName(gid) : db.getGroup(gid);
+	public Response getGroup(String groupId, boolean byName) {
+		Group group = byName ? db.getGroupByName(groupId) : db
+				.getGroup(groupId);
 		return Response.ok(group).build();
 	}
 
+	public Response deleteGroup(HttpServletRequest request, String groupId) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		Group group = db.getGroup(groupId);
+		if (!crsid.equals(group.getCreator())) {
+			// return Response.status(Status.UNAUTHORIZED)
+			// .entity(Strings.INVALIDROLE).build();
+		}
+		db.removeGroup(groupId);
+		return Response.ok().build();
+	}
+
+	public Response deleteUser(HttpServletRequest request, String groupId,
+			String crsid) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		Group group = db.getGroup(groupId);
+		if (!myCrsid.equals(group.getCreator())) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		db.removeUserGroup(crsid, groupId);
+		return Response.ok().build();
+	}
+
 	@Override
-	public Response getUsers(String gid) {
-		List<User> users = db.getUsers(gid);
+	public Response getUsers(String groupId) {
+		List<User> users = db.getUsers(groupId);
 		Collections.sort(users);
 		return Response.ok(users).build();
 	}
@@ -49,13 +92,60 @@ public class GroupApiFacade implements IGroupApiFacade {
 	}
 
 	@Override
-	public Response addGroup(Group group) {
+	public Response addGroup(HttpServletRequest request, List<String> roles,
+			Group groupBean) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		User user = db.getUser(crsid);
+		if (user.getIsStudent()) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		Group group = new Group(groupBean.getName(), crsid);
+		if (groupBean.getName().equalsIgnoreCase("xyzzy")) {
+			return Response.status(Status.NOT_FOUND)
+					.entity("Nothing happens...").build();
+		}
+		try {
+			group.setInfo(URLDecoder.decode(groupBean.getInfo(), "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// Hardcoded: known to be supported
+		}
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException de) {
-			return Response.status(409).build();
+			return Response.status(Status.CONFLICT)
+					.entity(Strings.GROUPNAMECLASH).build();
 		}
-		return Response.status(201).entity(group).build();
+		for (String role : roles) {
+			Grouping grouping = new Grouping(group.getGroupId(), crsid,
+					Role.valueOf(role));
+			db.saveGrouping(grouping);
+		}
+		return Response.status(Status.CREATED).entity(group).build();
+	}
+
+	@Override
+	public Response updateGroup(HttpServletRequest request, Group group) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		List<Role> myRoles = db.getRoles(group.getGroupId(), crsid);
+		if (!myRoles.contains(Role.AUTHOR)) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		Group prevGroup = db.getGroup(group.getGroupId());
+		if (prevGroup != null) {
+			prevGroup.setEdited(DateTime.now());
+			prevGroup.setEditedBy(crsid);
+			prevGroup.setInfo(group.getInfo());
+			prevGroup.setName(group.getName());
+			db.saveGroup(prevGroup);
+			return Response.status(Status.CREATED).entity(prevGroup).build();
+		} else {
+			return addGroup(request, new ArrayList<String>(), group);
+		}
+
 	}
 
 }

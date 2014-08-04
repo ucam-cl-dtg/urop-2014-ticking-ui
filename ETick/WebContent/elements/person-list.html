@@ -4,16 +4,15 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="person-box.html">
 
-<polymer-element name="person-list" attributes="people boxWidth">
+<polymer-element name="person-list" attributes="people boxWidth query">
 	<template>
 		<style>
 			:host {
 				display: block;
 				width: 100%;
 			}
-			person-box {	
-				width: 33.33%;
-				min-width: 240px;
+			person-box {
+				width: calc(100% / 3);
 			}
 			person-box:nth-child(odd) {
 				background: #f6f6f6;
@@ -23,11 +22,11 @@
 			}
 		</style>
 		<div id="listEnclosure" layout horizontal center wrap>
-			<template repeat="{{person, i in people}}">
+			<template repeat="{{person in people | filter(query) }}">
 					<person-box
 						name="{{person.displayName}}"
 						crsid="{{person._id}}"
-						college="{{person.college}}"
+						college="{{person.college == 'Unknown' ? '' : person.college}}"
 						isStudent="{{person.isStudent}}">
 					</person-box>	
 			</template>
@@ -35,6 +34,20 @@
 	</template>
 	<script>
 		Polymer('person-list', {
+
+			listFilter: function(item) {
+				var q = this.query;
+				return (item.displayName.toLowerCase().indexOf(q.toLowerCase()) > -1 ||
+						item._id.toLowerCase().indexOf(q.toLowerCase()) > -1 ||
+						item.college.toLowerCase().indexOf(q.toLowerCase()) > -1);
+			},
+
+			filter: function(items, q) {
+				if (items && q) {
+					return items.filter(this.listFilter.bind(this));
+				}
+				return items;
+			}
 		});
 	</script>
 </polymer-element>

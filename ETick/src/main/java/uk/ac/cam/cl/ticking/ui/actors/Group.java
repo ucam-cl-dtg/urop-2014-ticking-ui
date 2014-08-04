@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,9 +18,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Group implements Comparable<Group> {
 
 	@JsonProperty("_id")
-	private String gid;
+	private String groupId;
 
 	private String name, creator;
+	
+	private String info;
+	
+	private DateTime edited;
+	private String editedBy;
 
 	private List<String> ticks = new ArrayList<String>();
 
@@ -37,7 +43,12 @@ public class Group implements Comparable<Group> {
 			@JsonProperty("creator") String creator) {
 		this.setName(name);
 		this.setCreator(creator);
-		this.gid = ObjectId.get().toString();
+		this.groupId = ObjectId.get().toString();
+	}
+	
+	//Default constructor for Jackson
+	public Group() {
+		
 	}
 
 	/**
@@ -55,10 +66,10 @@ public class Group implements Comparable<Group> {
 	}
 
 	/**
-	 * @return gid
+	 * @return groupId
 	 */
-	public String getGid() {
-		return gid;
+	public String getGroupId() {
+		return groupId;
 	}
 
 	/**
@@ -83,10 +94,59 @@ public class Group implements Comparable<Group> {
 	}
 
 	/**
-	 * @param tid
+	 * @param tickId
 	 */
-	public void addTick(String tid) {
-		ticks.add(tid);
+	public void addTick(String tickId) {
+		ticks.add(tickId);
+	}
+	
+	/**
+	 * @param tickId
+	 */
+	public void removeTick(String tickId) {
+		ticks.remove(tickId);
+	}
+
+	/**
+	 * @return info
+	 */
+	public String getInfo() {
+		return info;
+	}
+
+	/**
+	 * @param info
+	 */
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	/**
+	 * @return edited
+	 */
+	public DateTime getEdited() {
+		return edited;
+	}
+
+	/**
+	 * @param edited
+	 */
+	public void setEdited(DateTime edited) {
+		this.edited = edited;
+	}
+
+	/**
+	 * @return editedBy
+	 */
+	public String getEditedBy() {
+		return editedBy;
+	}
+
+	/**
+	 * @param editedBy
+	 */
+	public void setEditedBy(String editedBy) {
+		this.editedBy = editedBy;
 	}
 
 	/*
@@ -97,5 +157,19 @@ public class Group implements Comparable<Group> {
 	@Override
 	public int compareTo(Group o) {
 		return this.name.compareToIgnoreCase(o.name);
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Group)) {
+			return false;
+		}
+		return this.groupId == ((Group)o).groupId;
+	}
+	
+	@Override
+	public int hashCode() {
+		return groupId.hashCode();
 	}
 }

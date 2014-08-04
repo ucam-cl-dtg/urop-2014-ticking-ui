@@ -1,0 +1,104 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../bower_components/core-item/core-item.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/core-selector/core-selector.html">
+<link rel="import" href="menu-button.html">
+<link rel="import" href="dashboard.html">
+<link rel="import" href="onlogin.html">
+<link rel="import" href="group.html">
+<link rel="import" href="create-group.html">
+
+<polymer-element name="page-scaffold" attributes="">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/elements/scaffold.css">
+
+	<!-- API calls. -->
+	<on-login id="loginAPIs"></on-login>
+
+	<core-header-panel id="headerPanel">
+
+		<!-- Main header toolbar. -->
+		<core-toolbar id="headerToolbar">
+
+			<div id="title">Tickl</div>
+
+			<div flex layout horizontal end-justified>
+			<core-selector id="navMenu" valueattr="id" selected="dashButton" selectedAttribute="">
+
+				<menu-button id="groupsMenu" label="Groups" selected="-1">
+					<template repeat="{{item in $.loginAPIs.groupItems}}">
+						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}"></core-item>
+					</template>
+					<template if="{{!$.loginAPIs.ldap.isStudent}}">
+						<core-item id="createGroupItem" icon="add" label="Create..."></core-item>
+					</template>
+				</menu-button>
+
+				<paper-button id="dashButton" label="DASHBOARD"></paper-button>
+
+			</core-selector>
+			</div>
+
+			<div layout horizontal end-justified>
+				<div>
+					<paper-button icon="exit-to-app" id="logoutButton" on-click="{{logoutClicked}}"></paper-button>
+				</div>
+			</div>
+		</core-toolbar>
+
+		<!-- Create new group element. -->
+		<create-group id="createGroup" on-group-created="{{groupCreatedHandler}}"></create-group>
+
+		<!-- Page content cards. -->
+		<template id="dashTemp" if="{{showDash}}">
+			<user-dash id="dash"></user-dash>
+		</template>
+
+		<template id="groupTemp" if="{{gid}}">
+			<x-group gid="{{gid}}"></x-group>
+		</template>
+
+	</core-header-panel>
+	</template>
+	<script>
+		Polymer('page-scaffold', {
+			observe: {
+				'$.groupsMenu.selection': 'groupSelectionChanged',
+				'$.navMenu.selection': 'navSelectionChanged'
+			},
+
+			navSelectionChanged: function(oldValue, newValue) {
+				if (newValue.id === "dashButton") {
+					this.showDash = true;
+					this.$.groupTemp.model = {gid: null};
+				}
+			},
+
+			logoutClicked: function () {
+				this.$.loginAPIs.$.logoutAjax.go();
+		    	window.location.href = 'https://raven.cam.ac.uk/auth/logout.html';
+			},
+
+			groupSelectionChanged: function (oldValue, newValue) {
+				if (newValue.id === "createGroupItem") {
+					this.$.createGroup.toggleDialog();
+					this.$.groupsMenu.selected = "-1";
+				}
+				else {
+					this.showDash = false;
+					this.$.groupTemp.model = {gid: null};
+					this.$.groupTemp.model = {gid: newValue.getAttribute('gid')};
+				}
+			},
+
+			groupCreatedHandler: function (e, detail) {
+				this.$.loginAPIs.$.sidebarAjax.go();
+				this.showDash = false;
+				this.$.groupTemp.model = detail;
+			}
+
+		});
+	</script>
+</polymer-element>

@@ -7,6 +7,7 @@
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="dialog.html">
+<link rel="import" href="search-box.html">
 
 <polymer-element name="group-members" attributes="gid allowAdd rows">
 	<template>
@@ -36,11 +37,13 @@
 			<template if="{{allowAdd}}">
 				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>
 			</template>
+			<search-box id="searchBox" placeholder="Member name..."></search-box>
 		</div>
 
 		<!-- Member list. -->
 		<div id="personListContainer">
-			<person-list id="members" listURL="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"></person-list>
+			<person-list id="members" listURL="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"
+				query="{{searchQuery}}"></person-list>
 		</div>
 
 		<!-- Add Member dialog. -->
@@ -54,16 +57,20 @@
 				on-input="{{handleAddInput}}">
 			</paper-input>
 			<h2 class="subtitle">Roles:</h2>
-			<table>
-				<tr>
-					<td>Author:</td><td><paper-checkbox id="authBox"></paper-checkbox></td>
-					<td>Marker:</td><td><paper-checkbox id="markBox"></paper-checkbox></td>
-				</tr>
-				<tr>
-					<td>Overview:</td><td><paper-checkbox checked id="overBox"></paper-checkbox></td>
-					<td>Submitter:</td><td><paper-checkbox id="subBox"></paper-checkbox></td>
-				</tr>
-			</table>
+			<div layout vertical style="width: 100%;">
+				<div layout horizontal center style="width: 100%;">
+					<paper-checkbox id="authBox"></paper-checkbox>
+					<div flex>Author</div>
+					<paper-checkbox id="markBox"></paper-checkbox>
+					<div flex>Marker</div>
+				</div>
+				<div layout horizontal center style="width: 100%;">
+					<paper-checkbox id="overBox"></paper-checkbox>
+					<div flex>Overview</div>
+					<paper-checkbox id="subBox"></paper-checkbox>
+					<div flex>Submitter</div>
+				</div>
+			</div>
 			<template if="{{showSubmit}}">
 				<paper-button id="addSubmit" class="dialogSubmit" label="ADD" on-click="{{addMember}}" affirmative></paper-button>
 			</template>
@@ -76,7 +83,11 @@
 	</template>
 	<script>
 		Polymer('group-members', {
-			ready: function () {
+
+			allowAdd: false,
+
+			observe: {
+				'$.searchBox.query' : 'searchBoxChanged'
 			},
 
 			resetAddMemberAjax: function () {
@@ -128,7 +139,11 @@
 			addMemberError: function(e, detail) {
 				this.$.addErrorToast.text = detail.xhr.responseText;
 				this.$.addErrorToast.show();
-			}
+			},
+
+			searchBoxChanged: function (oldValue, newValue) {
+				this.searchQuery = newValue;
+			} 
 
 		});
 	</script>

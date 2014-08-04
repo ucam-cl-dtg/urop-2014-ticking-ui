@@ -110,7 +110,7 @@ public class Submission {
 	 */
 	@JsonProperty("tick")
 	public void setTick(Tick tick) {
-		this.tick = tick.getTID();
+		this.tick = tick.getTickId();
 	}
 
 	/**

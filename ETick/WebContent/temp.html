@@ -1,25 +1,31 @@
 <!doctype html>
 <html>
-<head>
-	<script src="bower_components/platform/platform.js"></script>
-	<link rel="import" href="elements/main-card.html">
-	<link rel="import" href="elements/dialog.html">
-	<link rel="stylesheet" type="text/css" href="css/font.css">
-	<style>
-		h1 {
-			font-weight: 100;
-		}
-	</style>
-</head>
-<body>
-	<h1>Test</h1>
-	<my-dialog>
-		<h1>Hi</h1>
-	</my-dialog>
-	<script type="text/javascript">
-		var d = document.querySelector('my-dialog');
-		d.toggle();
-	</script>
-</body>
+	<head>
+		<script src="bower_components/platform/platform.js"></script>
+		<link rel="import" href="bower_components/font-roboto/roboto.html">
 
-</html>
+		<!-- Stylesheets -->
+		<link rel="stylesheet" type="text/css" href="css/font.css">
+
+		<!-- My Imports -->
+		<link rel="import" href="elements/scaff.html">
+		<link rel="import" href="elements/onlogin.html">
+		<link rel="import" href="elements/group-members.html">
+
+		<style>
+			html, body {
+				height: 100%;
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- <my-scaffold>
+			<div class="content"></div>
+		</my-scaffold> -->
+		<group-members gid="53da3f11e4b01c93faa828a9" allowAdd="true" rows="10"></group-members>
+		
+		<script>
+		</script>
+	</body>
+</html>	

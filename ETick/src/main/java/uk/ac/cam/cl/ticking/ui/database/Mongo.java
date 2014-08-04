@@ -2,8 +2,8 @@ package uk.ac.cam.cl.ticking.ui.database;
 
 import java.net.UnknownHostException;
 
-import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationFile;
-import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
+import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.mongodb.DB;
@@ -14,7 +14,8 @@ public class Mongo {
 	private static DB db;
 
 	static {
-		ConfigurationFile config = ConfigurationLoader.getConfig();
+		Configuration config = (Configuration) ConfigurationRegister.getLoader(
+				Configuration.class).getConfig();
 		try {
 			MongoClient client = new MongoClient(config.getUiMongoBroadcast(),
 					config.getUiMongoPort());
