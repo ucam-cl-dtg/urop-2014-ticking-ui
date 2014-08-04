@@ -13,7 +13,7 @@
 				font-weight: 100;
 				padding: 0 0 0 10px;
 			}
-		</style>
+	</style>
 		<core-ajax
 			auto
 			id="tickListAPI"
@@ -25,12 +25,15 @@
 
 		<!-- Tick list card header. -->
 		<div id="headerBar" layout horizontal center>
-			<h1 flex>Ticks ({{number}})</h1>
+			<h1 flex>Ticks ({{ticks.length}})</h1>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
 		<!-- Tick list. -->
 		<div id="personListContainer">
+			<template repeat="{{tick in ticks | tickListFilter($.searchBox.query)}}">
+				<div>{{tick.name + ', ' + tick.author + ', ' + tick.deadline}}</div>
+			</template>
 		</div>
 
 	</template>
@@ -38,6 +41,19 @@
 		Polymer('tick-list', {
 			tickListResponse: function () {
 				this.ticks = this.$.tickListAPI.response;
+			},
+
+			tickListFilter: function(items, q) {
+				if (items && q) {
+					return items.filter(this.tickFilter.bind(this));
+				}
+				return items;
+			},
+
+			tickFilter: function(item) {
+				var q = this.$.searchBox.query.toLowerCase();
+				return (item.name.toLowerCase().indexOf(q) > -1 ||
+						item.author.toLowerCase().indexOf(q) > -1);
 			}
 		});
 	</script>
