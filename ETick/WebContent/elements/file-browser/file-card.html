@@ -60,8 +60,6 @@
               var syntax   = spans_to_comments(hljs
                                .highlightAuto(this.content || '').value)
 
-                             console.log(syntax);
-
               this.$.codeContent.innerHTML = 
                   mixin_comments_with_data(this.content
                     , comments.concat(syntax));
@@ -70,7 +68,6 @@
             function ()
             {
               this.contentChanged();
-              console.log(this.$.codeContent.innerHTML);
             }
         });
   </script>
