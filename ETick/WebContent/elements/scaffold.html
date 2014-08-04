@@ -88,6 +88,8 @@
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
+				console.log(oldValue);
+				console.log(newValue);
 				if (!newValue || (oldValue && oldValue.id ==="createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
@@ -102,13 +104,15 @@
 
 			groupCreatedHandler: function (e, detail) {
 				this.$.loginAPIs.$.sidebarAjax.go();
-				this.showDash = false;
 				this.toSelect = detail.name;
+
+				this.showDash = false;
 			},
 
 			groupItemsChanged: function (oldValue, newValue) {
 				this.items = newValue;
 				this.$.groupsMenu.selected = this.toSelect;
+				console.log(this.$.groupsMenu.selected);
 			}
 
 		});
