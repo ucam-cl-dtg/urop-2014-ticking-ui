@@ -4,7 +4,6 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
-<link rel="import" href="../ace-component.html">
 
 <polymer-element name="static-list-item" attributes="text checkedIndex closed code">
     <template>
@@ -30,7 +29,7 @@
         <div layout horizontal>
             <core-collapse id="collapse" flex collapsed>
                 <div layout horizontal>
-                    <textarea flex rows="9">{{code}}</textarea>
+                    <textarea id="editor" flex rows="9" on-keyup="{{setCode}}"></textarea>
                 </div>
             </core-collapse>
         </div>
@@ -45,6 +44,8 @@
              * buttons in the group have been clicked
              */
             domReady: function() {
+                this.$.editor.innerHTML = this.code;
+
                 switch (this.checkedIndex) {
                     case 0:
                         this.$.none.tap();
@@ -73,6 +74,10 @@
             close: function() {
                 this.closed = true;
                 this.$.collapse.hidden = true;
+            },
+            //needed because Polymer's two-way data-binding doesn't seem to be able to cope with innerHTML
+            setCode: function() {
+                this.code = this.$.editor.value;
             }
         });
     </script>
