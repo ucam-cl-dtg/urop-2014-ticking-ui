@@ -1,0 +1,30 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<polymer-element name="tick-box" attributes="tick">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/elements/tick-box.css">
+		<div layout horizontal center id="container">
+			<time datetime="{{tick.deadline}}" class="icon">
+			  <em>{{day}}</em>
+			  <strong>{{month}}</strong>
+			  <span>{{date}}</span>
+			</time>
+			<div flex></div>
+			<div layout vertical end>
+				<h1>{{tick.name}}</h1>
+				<h2>Author: {{tick.author}}</h2>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer('tick-box', {
+			domReady: function () {
+				var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+				var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+				var d = new Date(this.tick.deadline);
+				this.date = d.getDate();
+				this.day = weekdays[d.getDay()];
+				this.month = months[d.getMonth()];
+			}
+		});
+	</script>
+</polymer-element>
