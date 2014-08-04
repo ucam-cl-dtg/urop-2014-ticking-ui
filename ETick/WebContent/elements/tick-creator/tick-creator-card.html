@@ -104,7 +104,7 @@
             on-core-response="{{tickDataSaved}}">
     </core-ajax>
     <core-ajax
-            id="ajaxPutTickData"
+            id="ajaxPostTickData"
             handleAs="json"
             contentType="application/json"
             method="POST"
@@ -215,7 +215,7 @@
         <h4>STYLISTIC CHECKS</h4>
         <div class="checkboxContainer" layout horizontal>
             <paper-checkbox checked="{{useDefaults}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
-            <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">{{styleLabel}}</span>
+            <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Use Defaults</span>
             <paper-button
                     id="cmdRestoreDefaults"
                     label="RESTORE DEFAULTS"
@@ -449,8 +449,12 @@
 
         },
         saveEverything: function() {
+            console.log("Saving everything");
+
             var tickData = this.buildTickData();
             var staticData = this.buildStaticData();
+
+            console.log("built everything");
 
             var masterObject = {
                 name: tickData.name,
@@ -459,17 +463,25 @@
                 checkstyleOpts: staticData
             };
 
+            console.log("master object: ");
+            console.log(masterObject);
+
             if (!this.newTick) {
+                console.log("not a new tick");
                 this.$.ajaxPutTickData.body = JSON.stringify(masterObject);
                 this.$.ajaxPutTickData.go();
-                this.$.ajaxPostTickData.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + this.tickId;
+                this.$.ajaxPutTickData.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + this.tickId;
             } else {
+                console.log("new tick");
                 this.$.ajaxPostTickData.body = JSON.stringify(masterObject);
                 this.$.ajaxPostTickData.go();
             }
+            console.log("sent");
         },
         buildTickData: function() {
             //Set name if a new tick
+            this.tickData = {name: null,  deadline: null,  groups: null};
+
             if (this.newTick) {
                 this.tickData.name = this.$.inputDisplayName.inputValue.trim();
             }
@@ -506,8 +518,10 @@
             var sendData = [];
 
             if (this.useDefaults) {
+                console.log("using default send data");
                 sendData = this.defaults;
             } else {
+                console.log("using custom send data");
                 for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
                     if (!(this.$.staticList.staticOptions[i].closed)) {
                         sendData[sendData.length] = {
