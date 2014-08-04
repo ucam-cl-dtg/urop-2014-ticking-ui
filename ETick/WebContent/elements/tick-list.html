@@ -1,0 +1,60 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="search-box.html">
+
+<polymer-element name="tick-list" attributes="gid">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			h1 {
+				font-size: 1.8rem;
+				font-weight: 100;
+				padding: 0 0 0 10px;
+			}
+	</style>
+		<core-ajax
+			auto
+			id="tickListAPI"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/list/' + gid}}"
+			handleAs="json"
+			on-core-response="{{tickListResponse}}">
+		</core-ajax>
+
+
+		<!-- Tick list card header. -->
+		<div id="headerBar" layout horizontal center>
+			<h1 flex>Ticks ({{ticks.length}})</h1>
+			<search-box id="searchBox" placeholder="Search..."></search-box>
+		</div>
+
+		<!-- Tick list. -->
+		<div id="personListContainer">
+			<template repeat="{{tick in ticks | tickListFilter($.searchBox.query)}}">
+				<div>{{tick.name + ', ' + tick.author + ', ' + tick.deadline}}</div>
+			</template>
+		</div>
+
+	</template>
+	<script>
+		Polymer('tick-list', {
+			tickListResponse: function () {
+				this.ticks = this.$.tickListAPI.response;
+			},
+
+			tickListFilter: function(items, q) {
+				if (items && q) {
+					return items.filter(this.tickFilter.bind(this));
+				}
+				return items;
+			},
+
+			tickFilter: function(item) {
+				var q = this.$.searchBox.query.toLowerCase();
+				return (item.name.toLowerCase().indexOf(q) > -1 ||
+						item.author.toLowerCase().indexOf(q) > -1);
+			}
+		});
+	</script>
+</polymer-element>
