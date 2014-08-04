@@ -107,6 +107,8 @@
 
 			groupItemsChanged: function (oldValue, newValue) {
 				this.items = newValue;
+
+				// No idea why this works, but it's here for browser compatability with Firefox.
 				setTimeout(function () {
 					this.$.groupsMenu.selected = this.toSelect
 				}.bind(this), 0);
