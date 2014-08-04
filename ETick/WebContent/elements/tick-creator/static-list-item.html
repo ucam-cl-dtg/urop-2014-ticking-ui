@@ -9,7 +9,7 @@
 <polymer-element name="static-list-item" attributes="text checkedIndex closed">
     <template>
         <link rel="stylesheet" href="static-list-item.css" shim-shadowdom>
-        <link rel="stylesheet" href="../../codemirror.css"> <!-- Custom-styled CodeMirror -->
+        <!--<link rel="stylesheet" href="../../codemirror.css"> <!-- Custom-styled CodeMirror -->
 
         <span layout horizontal hidden?="{{closed}}">
              <core-icon-button
@@ -22,9 +22,9 @@
                     icon="unfold-more"
                     on-tap="{{toggle}}"></core-icon-button>
             <paper-radio-group>
-                <paper-radio-button id="none"    name="none"    checked?="{{checkedIndex == 0}}"></paper-radio-button>
-                <paper-radio-button id="warning" name="warning" checked?="{{checkedIndex == 1}}"></paper-radio-button>
-                <paper-radio-button id="error"   name="error"   checked?="{{checkedIndex == 2}}"></paper-radio-button>
+                <paper-radio-button id="none"    name="none"    on-tap="{{tapNone}}" checked?="{{checkedIndex == 0}}"></paper-radio-button>
+                <paper-radio-button id="warning" name="warning" on-tap="{{tapWarning}}" checked?="{{checkedIndex == 1}}"></paper-radio-button>
+                <paper-radio-button id="error"   name="error"   on-tap="{{tapError}}"checked?="{{checkedIndex == 2}}"></paper-radio-button>
             </paper-radio-group>
         </span>
 
@@ -40,13 +40,13 @@
         </core-collapse>
         </div>
     </template>
-    <script src="../../codemirror-4.4/lib/codemirror.js"></script> <!-- CodeMirror -->
-    <script src="../../codemirror-4.4/mode/xml/xml.js"></script> <!-- CodeMirror -->
+    <!--<script src="../../codemirror-4.4/lib/codemirror.js"></script> <!-- CodeMirror -->
+    <!--<script src="../../codemirror-4.4/mode/xml/xml.js"></script> <!-- CodeMirror -->
     <script>
         Polymer('static-list-item', {
             ready: function() {
                 //Initialise code mirror (provides xml syntax highlighting of a textarea)
-                this.cmInstance = CodeMirror.fromTextArea(this.$.edit);
+                //this.cmInstance = CodeMirror.fromTextArea(this.$.edit);
             },
             /**
              * Work around for a paper-radio-button bug. Without this, the initially selected button would
@@ -66,6 +66,15 @@
                         break;
                 }
                 //this.$.edit.tap();
+            },
+            tapNone: function() {
+                this.checkedIndex = 0;
+            },
+            tapWarning: function() {
+                this.checkedIndex = 1;
+            },
+            tapError: function() {
+                this.checkedIndex = 2;
             },
             toggle: function() {
                 this.$.collapse.toggle();

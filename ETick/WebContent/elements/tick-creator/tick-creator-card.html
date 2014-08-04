@@ -79,22 +79,6 @@
         }
     </style>
 
-    <!-- GET all possible groups a tick can be in -->
-    <!--<core-ajax
-            id="ajaxLoadGroups"
-            url="http://localhost:8000/testGroups.json"
-            handleAs="json"
-            on-core-response="{{groupsDataLoaded}}">
-    </core-ajax>-->
-    <!-- get all other existing tick data -->
-    <!--<core-ajax
-            id="ajaxLoadTickData"
-            auto
-            url="http://localhost:8000/testTickData.json"
-            handleAs="json"
-            on-core-response="{{tickDataLoaded}}">
-    </core-ajax>-->
-
     <!-- Get groups for this author -->
     <core-ajax
         id="ajaxLoadGroups"
@@ -128,8 +112,6 @@
             on-core-response="{{defaultsLoaded}}">
     </core-ajax>
 
-    <!--url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles" -->
-
     <core-ajax
             id="ajaxLoadStatic"
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
@@ -141,7 +123,8 @@
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
             handleAs="json"
             contentType="application/json"
-            method="PUT">
+            method="POST"
+            on-core-response="{{saveTickData}}">
     </core-ajax>
 
 
@@ -232,7 +215,7 @@
         <!-- SAVE button -->
         <span layout horizontal>
             <span flex></span>
-            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveTick}}"></paper-button>
+            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveStaticOpts}}"></paper-button>
             <span flex></span>
         </span>
     </div>
@@ -277,21 +260,9 @@
         defaultsLoaded: function() {
             this.$.staticList.staticOptions = this.$.ajaxLoadDefaults.response.slice(0);
 
-            /*for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
+            for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
                 this.$.staticList.staticOptions[i].closed = false;
             }
-
-            console.log(this.$.staticList.staticOptions[0]);*/
-
-            console.log(JSON.stringify(this.$.staticList.staticOptions));
-            //this.$.ajaxSendStatic.body = JSON.stringify(this.$.staticList.staticOptions);
-
-            var toReturn = {text: "Test Text", checkedIndex: 1};
-            //this.$.ajaxSendStatic.body = JSON.stringify(toReturn);
-            console.log(this.$.ajaxSendStatic.body);
-
-            this.$.ajaxSendStatic.body = this.$.staticList.staticOptions;
-            this.$.ajaxSendStatic.go();
         },
         /**
          * Load group data and figure out which groups have been selected
@@ -400,7 +371,7 @@
          * Update the originally sent tick object with the data the user has entered on this card, then send it to the
          * front end's back end
          */
-        saveTick: function () {
+        saveTickData: function () {
             //Set name if a new tick
             if (this.newTick) {
                 this.tickData.name = this.$.inputDisplayName;
@@ -438,6 +409,27 @@
 
             this.$.ajaxPutTickData.body = JSON.stringify(this.tickData);
             this.$.ajaxPutTickData.go();
+        },
+        saveStaticOpts: function() {
+            var sendData = [];
+            for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
+                if (!(this.$.staticList.staticOptions[i].closed)) {
+                    sendData[sendData.length] = {
+                        text: this.$.staticList.staticOptions[i].text,
+                        checkedIndex: this.$.staticList.staticOptions[i].checkedIndex,
+                        code: this.$.staticList.staticOptions[i].code};
+                }
+            }
+
+            console.log(this.$.staticList.staticOptions[0]);
+            console.log(sendData);
+
+            this.$.ajaxSendStatic.body = JSON.stringify(sendData);
+            console.log("EXPECTED");
+            console.log(this.$.ajaxSendStatic.body);
+
+            // this.$.ajaxSendStatic.body = this.$.staticList.staticOptions;
+            this.$.ajaxSendStatic.go();
         },
         cmdRestoreDefaults: function() {
             this.$.alertRestoreDefaults.toggle();
