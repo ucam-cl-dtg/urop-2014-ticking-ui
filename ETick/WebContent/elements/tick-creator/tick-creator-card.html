@@ -6,8 +6,11 @@
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog-transition.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../date-entry.html">
 
-<polymer-element name="tick-creator-card">
+<polymer-element name="tick-creator-card" attributes="tickName">
 <template>
     <style>
         .checkboxContainer {
@@ -51,12 +54,7 @@
             margin: 0;
             font-size: 15px;
         }
-        #day, #month {
-            width: 50px;
-        }
-        #year {
-            width: 100px;
-        }
+
         /* Styles for add member dialog. */
         paper-dialog .subtitle {
             font-weight: 200;
@@ -84,23 +82,26 @@
         id="ajaxLoadGroups"
         url="{{pathLoadGroups}}"
         handleAs="json"
-        on-core-response="{{groupsDataLoaded}}">
+        on-core-response="{{groupsDataLoaded}}"
+        on-core-error="{{showErrorToast}}">
     </core-ajax>
 
     <!-- get and update all other existing tick data -->
     <core-ajax
             id="ajaxLoadTickData"
-            auto
-            url="{{pathLoadTickData}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickName + '/'}}"
             handleAs="json"
-            on-core-response="{{tickDataLoaded}}">
+            on-core-response="{{tickDataLoaded}}"
+            on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
     <core-ajax
             id="ajaxPutTickData"
             url="{{pathPutTickData}}"
             handleAs="json"
             contentType="application/json"
-            method="PUT">
+            method="PUT"
+            on-core-error="{{showSaveErrorToast}}"
+            on-core-response="{{tickDataSaved}}">
     </core-ajax>
 
     <!-- get and update stylistic data -->
@@ -108,23 +109,26 @@
             id="ajaxLoadDefaults"
             url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles"
             handleAs="json"
-            auto
-            on-core-response="{{defaultsLoaded}}">
+            on-core-response="{{defaultsLoaded}}"
+            on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
 
     <core-ajax
             id="ajaxLoadStatic"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickName + '/create'}}"
             handleAs="json"
-            on-core-response="{{staticDataLoaded}}">
+            on-core-response="{{staticDataLoaded}}"
+            on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
+    <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"-->
     <core-ajax
             id="ajaxSendStatic"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickName + '/create'}}"
             handleAs="json"
             contentType="application/json"
             method="POST"
-            on-core-response="{{saveTickData}}">
+            on-core-response="{{saveTickData}}"
+            on-core-error="{{showSaveErrorToast}}">
     </core-ajax>
 
 
@@ -137,30 +141,27 @@
                 <div>{{tickName}}</div>
                 <br>
             </div>
-            <paper-input id="inputDisplayName" flex label="e.g. Programming in Java Tick 1" inputValue="{{tickName}}"></paper-input>
+            <paper-input hidden id="inputDisplayName" flex label="e.g. Programming in Java Tick 1"
+                         inputValue="{{tickName}}" required error="Required" validate="\S"
+                         on-keyup="{{validateDisplayName}}">
+            </paper-input>
         </div>
 
         <core-collapse id="collapseCodeTemplate" opened="false">
             <h4>TEMPLATE REPOSITORY</h4>
             <br>
             <div layout horizontal>
-                <!--<div style="color: #808080">Repository Address:&nbsp;</div>-->
                 <div id="codeTemplateAddress" flex>http://stuff</div>
             </div>
             <br>
         </core-collapse>
 
-        <div style="font-size: 19px;" layout horizontal>
+        <div layout horizontal>
             <h4>MASTER DEADLINE</h4>
             <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
         </div>
-        <core-collapse id="collapseDeadline">
-            <br>
-                <span layout horizontal>
-                    <paper-input id="day" label="DD" floatinglabel="true"></paper-input>
-                    <paper-input id="month" label="MM" floatinglabel="true"></paper-input>
-                    <paper-input id="year" label="YYYY" floatinglabel="true"></paper-input>
-                </span>
+        <core-collapse id="collapseDeadline" opened="{{dateShown}}">
+            <date-entry valid="{{dateValid}}"></date-entry>
         </core-collapse>
 
         <br>
@@ -178,6 +179,8 @@
                     </span>
             </template>
             </div>
+
+            <div hidden?="{{groups.length > 0}}">You don't have any groups!</div>
         </core-collapse>
 
         <br>
@@ -186,7 +189,6 @@
             <h4>CORRECTNESS CHECKS REPOSITORY</h4>
             <br>
             <div layout horizontal>
-                <!--<div style="color: #808080">Repository Address:&nbsp;</div>-->
                 <div id="correctnessAddress" flex>TODO</div>
             </div>
             <br>
@@ -215,40 +217,47 @@
         <!-- SAVE button -->
         <span layout horizontal>
             <span flex></span>
-            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveStaticOpts}}"></paper-button>
+            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveStaticOpts}}"
+                          disabled?="{{(dateShown && !dateValid) || !displayValid}}">
+            </paper-button>
             <span flex></span>
         </span>
     </div>
 
-    <paper-dialog id="alertRestoreDefaults" heading="Restore Defaults?" backdrop="true">
+    <paper-dialog id="alertRestoreDefaults" heading="Restore Defaults?" backdrop="true" transition="paper-transition-bottom">
         <p>This will clear your existing settings!</p>
-        <paper-button id="dialogCancel" label="Cancel" dismissive autofocus></paper-button>
-        <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}"></paper-button>
+        <paper-button id="dialogCancel" label="Cancel" dismissive autofocus duration="8000"></paper-button>
+        <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}" duration="8000"></paper-button>
     </paper-dialog>
+
+    <paper-toast id="toastLoadError" text="Error loading the tick."></paper-toast>
+    <paper-toast id="toastSaveError" text="Error saving the tick."></paper-toast>
 </template>
 <script>
     Polymer('tick-creator-card', {
         ready: function() {
-            //TODO: change
-            this.tickId = "tester";
-
             this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/";
-            this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
+           // this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
             this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
 
+            //for local testing, TODO: remove
             /*this.pathLoadGroups = "http://localhost:8000/testGroups.json";
             this.pathLoadTickData = "http://localhost:8000/testTickData.json";
             this.pathPutTickData = "http://localhost:8000/UROP_UI/api/tick";*/
 
-
-            this.useDefaults = true;
-            this.tickName = "";
+            this.useDefaults = true; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
             this.groups = [];
             this.newTick = null;
             this.tickData = null;
 
-            //for (var i = 1; i < 8; i++)
-            //this.groups[this.groups.length] = {selected: false, text: "Java Tick " + i};
+            if (this.tickId == null || this.tickId == "") {
+                this.newTick = true;
+                this.tickData = {};
+                this.$.ajaxLoadDefaults.go();
+                this.tickDataLoaded();
+            } else {
+                this.$.ajaxLoadStatic.go();
+            }
         },
         staticDataLoaded: function() {
             this.$.staticList.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
@@ -283,18 +292,19 @@
                 }
             }
         },
+        tickDataLoaded: function() {
+            this.tickData = this.$.ajaxLoadTickData.response;
+            this.processLoadedTickData();
+        },
+        tickDataSaved: function() {
+            this.newTick = false;
+            this.tickData = this.$.ajaxPutTickData.response;
+            this.processLoadedTickData();
+        },
         /**
          * Once the ajax get request is complete, bind the fields on this card to the received data
          */
-        tickDataLoaded: function() {
-            console.log(this.$.ajaxLoadTickData.response);
-
-            var tickData = this.$.ajaxLoadTickData.response;
-            this.tickData = tickData;
-
-            //if the name is blank, then assume the user is creating a new tick
-            this.newTick = tickData.name.valueOf() === "";
-
+        processLoadedTickData: function() {
             //Set up display name
             if (this.newTick) {
                 //if the tick name is blank, then a new tick is being created, so show the tick naming input
@@ -314,11 +324,11 @@
 
             //if the tick is not being created and it currently has a deadline, show it
             if (!this.newTick) {
-                if (tickData.deadline != null) {
+                if (this.tickData.deadline != null) {
                     //By checking the deadline switch, the deadline entry fields will be shown
                     this.$.deadlineSwitch.checked = true;
 
-                    var deadline  = new Date(tickData.deadline);
+                    var deadline  = new Date(this.tickData.deadline);
 
                     var day = deadline.getUTCDate().toString();
                     var month = (deadline.getUTCMonth() + 1).toString();
@@ -335,9 +345,8 @@
             }
 
             //Init groups
-            console.log(tickData.groups.length);
             if (!this.newTick) {
-                if (tickData.groups.length > 0) {
+                if (this.tickData.groups.length > 0) {
                     this.$.groupsSwitch.checked = true;
                 }
             }
@@ -345,12 +354,8 @@
            //correctness tests
             if (!this.newTick) {
                 this.$.collapseCorrectness.opened = true;
-                this.$.correctnessAddress.innerHTML = tickData.correctnessRepo;
+                this.$.correctnessAddress.innerHTML = this.tickData.correctnessRepo;
             }
-
-            //TODO: stylistic checks
-
-
 
             //load groups which user is an author for
             this.$.ajaxLoadGroups.go();
@@ -367,6 +372,14 @@
         toggleGroups: function() {
             this.$.collapseGroups.opened = this.$.groupsSwitch.checked;
         },
+        validateDisplayName: function() {
+            console.log("call!");
+            if (this.$.inputDisplayName.inputValue.trim() == "") {
+                this.displayValid = false;
+            } else {
+                this.displayValid = true;
+            }
+        },
         /**
          * Update the originally sent tick object with the data the user has entered on this card, then send it to the
          * front end's back end
@@ -374,7 +387,7 @@
         saveTickData: function () {
             //Set name if a new tick
             if (this.newTick) {
-                this.tickData.name = this.$.inputDisplayName;
+                this.tickData.name = this.$.inputDisplayName.trim();
             }
 
             //Don't set template repository (this is generated by back end)
@@ -403,10 +416,6 @@
                 }
             }
 
-            //TODO: update stylistic options (probably by making two ajax calls)
-
-            console.log(this.tickData);
-
             this.$.ajaxPutTickData.body = JSON.stringify(this.tickData);
             this.$.ajaxPutTickData.go();
         },
@@ -421,12 +430,7 @@
                 }
             }
 
-            console.log(this.$.staticList.staticOptions[0]);
-            console.log(sendData);
-
             this.$.ajaxSendStatic.body = JSON.stringify(sendData);
-            console.log("EXPECTED");
-            console.log(this.$.ajaxSendStatic.body);
 
             // this.$.ajaxSendStatic.body = this.$.staticList.staticOptions;
             this.$.ajaxSendStatic.go();
@@ -435,7 +439,24 @@
             this.$.alertRestoreDefaults.toggle();
         },
         restoreDefaults: function() {
-            this.$.ajaxLoadStatic.go();
+            this.$.ajaxLoadDefaults.go();
+        },
+        showLoadErrorToast: function(e, detail) {
+            if (detail.xhr.responseText != null) {
+                this.$.toastLoadError.text = detail.xhr.responseText;
+            } else {
+                this.$.toastLoadError.text = "Error loading tick."
+            }
+            this.$.toastLoadError.show();
+        },
+        showSaveErrorToast: function(e, detail) {
+            console.log("Save error!");
+            if (detail.xhr.responseText != null) {
+                this.$.toastSaveError.text = detail.xhr.responseText;
+            } else {
+                this.$.toastSaveError.text = "Error saving tick."
+            }
+            this.$.toastSaveError.show();
         }
     });
 </script>
