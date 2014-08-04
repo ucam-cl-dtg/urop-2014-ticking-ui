@@ -118,6 +118,7 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 		
 		Tick tick = new Tick(tickBean);
+		tick.setAuthor(crsid);
 		tick.initTickId();
 		
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
@@ -175,7 +176,6 @@ public class TickApiFacade implements ITickApiFacade {
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
-		tick.setAuthor(crsid);
 		tick.setStubRepo(repo);
 		tick.setCorrectnessRepo(correctnessRepo);
 
