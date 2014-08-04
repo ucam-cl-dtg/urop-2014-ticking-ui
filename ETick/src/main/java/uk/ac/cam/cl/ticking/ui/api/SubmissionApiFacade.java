@@ -11,9 +11,9 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.joda.time.DateTime;
 
-import publicinterfaces.AbstractReport;
 import publicinterfaces.ITestService;
 import publicinterfaces.NoSuchTestException;
+import publicinterfaces.Report;
 import publicinterfaces.Status;
 import publicinterfaces.TestIDNotFoundException;
 import publicinterfaces.TestStillRunningException;
@@ -124,7 +124,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		
-		AbstractReport status;
+		Report status;
 		try {
 			status = testProxy.getLastReport(crsid,repoName);
 		} catch (UserNotInDBException | TickNotInDBException e) {
@@ -149,7 +149,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		
-		List<AbstractReport> status;
+		List<Report> status;
 		try {
 			status = testProxy.getAllReports(crsid,repoName);
 		} catch (UserNotInDBException | TickNotInDBException e) {

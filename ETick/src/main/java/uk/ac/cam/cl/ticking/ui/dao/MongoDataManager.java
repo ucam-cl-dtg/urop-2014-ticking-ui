@@ -326,6 +326,12 @@ public class MongoDataManager implements IDataManager {
 	
 	@Override
 	public void removeTick(String tickId) {
+		Tick tick = getTick(tickId);
+		for (String groupId : tick.getGroups()) {
+			Group group = getGroup(groupId);
+			group.removeTick(tickId);
+			saveGroup(group);
+		}
 		tickColl.remove(new BasicDBObject().append("_id", tickId));
 	}
 
