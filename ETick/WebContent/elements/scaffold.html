@@ -29,7 +29,7 @@
 
 				<menu-button id="groupsMenu" label="Groups" valueattr="label">
 					<template repeat="{{item in items}}">
-						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}" info="{{item.info}}"></core-item>
+						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}" info="{{item.info}}" creator="{{item.creator}}"></core-item>
 					</template>
 					<template if="{{!$.loginAPIs.ldap.isStudent}}">
 						<core-item id="createGroupItem" icon="add" label="Create..."></core-item>
@@ -57,7 +57,7 @@
 		</template>
 
 		<template id="groupTemp" if="{{gid}}">
-			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}"></x-group>
+			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}"></x-group>
 		</template>
 
 	</core-header-panel>
@@ -98,7 +98,8 @@
 					this.$.groupTemp.model = { 
 						gid: newValue.getAttribute('gid'),
 						name: newValue.label,
-						info: newValue.getAttribute('info')
+						info: newValue.getAttribute('info'),
+						creator: newValue.getAttribute('creator')
 					};
 				}
 			},
