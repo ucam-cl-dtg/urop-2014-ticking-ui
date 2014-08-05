@@ -341,6 +341,12 @@ public class MongoDataManager implements IDataManager {
 		tick = tickColl.findOne(new BasicDBObject("_id", tickId));
 		return tick;
 	}
+	
+	@Override
+	public List<Tick> getAuthorTicks(String crsid) {
+		DBCursor<Tick> cursor = tickColl.find().is("author",crsid);
+		return getTicks(cursor);
+	}
 
 	@Override
 	public List<Tick> getGroupTicks(String groupId) {

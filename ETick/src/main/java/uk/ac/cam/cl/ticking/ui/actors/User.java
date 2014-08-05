@@ -25,7 +25,7 @@ public class User implements Comparable<User> {
 	private String college;
 
 	private boolean ldap;
-	
+
 	private boolean hasLogged;
 
 	private boolean isStudent;
@@ -224,22 +224,38 @@ public class User implements Comparable<User> {
 		this.hasLogged = hasLogged;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(User o) {
 		String compareMe = (surname == null) ? crsid : surname;
 		String compareThem = (o.surname == null) ? o.crsid : o.surname;
 		return compareMe.compareToIgnoreCase(compareThem);
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
+		if (this == o)
+			return true;
 		if (!(o instanceof User)) {
 			return false;
 		}
-		return this.crsid == ((User)o).crsid;
+		return this.crsid == ((User) o).crsid;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return crsid.hashCode();

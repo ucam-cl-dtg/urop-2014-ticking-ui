@@ -4,10 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
@@ -17,6 +13,7 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 import com.google.inject.Inject;
 
@@ -55,10 +52,17 @@ public class UserApiFacade implements IUserApiFacade {
 		return Response.ok(user).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#deleteUser
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String, boolean)
+	 */
 	@Override
 	public Response deleteUser(HttpServletRequest request, String crsid,
 			boolean purge) {
-		//TODO admin check
+		// TODO admin check
 		db.removeUser(crsid, purge);
 		return Response.ok().build();
 	}
@@ -94,6 +98,13 @@ public class UserApiFacade implements IUserApiFacade {
 		return Response.ok(roles).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#getRoleGroups
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
+	 */
 	@Override
 	public Response getRoleGroups(HttpServletRequest request, String stringRole) {
 		String crsid = (String) request.getSession().getAttribute(
@@ -102,5 +113,20 @@ public class UserApiFacade implements IUserApiFacade {
 		List<Group> groups = db.getGroups(crsid, role);
 		Collections.sort(groups);
 		return Response.ok(groups).build();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#getMyTicks
+	 * (javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	public Response getMyTicks(HttpServletRequest request) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		List<Tick> ticks = db.getAuthorTicks(crsid);
+		return Response.ok(ticks).build();
 	}
 }

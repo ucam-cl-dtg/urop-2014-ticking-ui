@@ -45,12 +45,20 @@ public interface IGroupingApiFacade {
 	public abstract Response addGrouping(@Context HttpServletRequest request,
 			@QueryParam("crsid") String crsid, @QueryParam("gid") String gid,
 			List<Role> roles);
-	
+
+	/**
+	 * Deletes a grouping, effectively revoking a user's particular role in a
+	 * group
+	 * 
+	 * @param request
+	 * @param grouping
+	 * @return the success of the request
+	 */
 	@DELETE
 	@Path("/")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public abstract Response deleteGrouping(@Context HttpServletRequest request,
-			Grouping grouping);
+	public abstract Response deleteGrouping(
+			@Context HttpServletRequest request, Grouping grouping);
 
 }

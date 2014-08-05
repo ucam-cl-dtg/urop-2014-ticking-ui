@@ -12,6 +12,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.joda.time.DateTime;
 
 import publicinterfaces.ITestService;
+import publicinterfaces.NoCommitsToRepoException;
 import publicinterfaces.NoSuchTestException;
 import publicinterfaces.Report;
 import publicinterfaces.Status;
@@ -30,7 +31,7 @@ import uk.ac.cam.cl.ticking.ui.util.Strings;
 import com.google.inject.Inject;
 
 public class SubmissionApiFacade implements ISubmissionApiFacade {
-	
+
 	private IDataManager db;
 	private ConfigurationLoader<Configuration> config;
 
@@ -39,36 +40,43 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * @param config
 	 */
 	@Inject
-	public SubmissionApiFacade(IDataManager db, ConfigurationLoader<Configuration> config) {
+	public SubmissionApiFacade(IDataManager db,
+			ConfigurationLoader<Configuration> config) {
 		this.db = db;
 		this.config = config;
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#submit(javax.servlet.http.HttpServletRequest, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#submit
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response submit(HttpServletRequest request, String tickId) throws RepositoryNotFoundException {
+	public Response submit(HttpServletRequest request, String tickId)
+			throws RepositoryNotFoundException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		
+
 		Tick tick = db.getTick(tickId);
-		
+
 		DateTime extension = tick.getExtensions().get(crsid);
-		if (extension !=null) {
+		if (extension != null) {
 			tick.setDeadline(extension);
 		}
-		
-		if (tick.getDeadline()!=null && tick.getDeadline().isBeforeNow()) {
+
+		if (tick.getDeadline() != null && tick.getDeadline().isBeforeNow()) {
 			return Response.status(400).entity(Strings.DEADLINE).build();
 		}
-		
+
 		String repoName = Tick.replaceDelimeter(tickId);
-		
-		String forkRepoName = crsid+"/"+repoName;
-		
+
+		String forkRepoName = crsid + "/" + repoName;
+
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getConfig().getTestApiLocation());
+		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
+				.getTestApiLocation());
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
 		try {
@@ -79,83 +87,94 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			return Response.status(503).entity(e).build();
 		} catch (TestIDNotFoundException e) {
 			return Response.status(404).entity(e).build();
+		} catch (NoCommitsToRepoException e) {
+			return Response.status(400).entity(e).build();
 		}
-		
+
 		return Response.status(201).build();
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#getStatus(javax.servlet.http.HttpServletRequest, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#getStatus
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
 	public Response getStatus(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		
-		String repoName = Tick.replaceDelimeter(tickId);
-		
+
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getConfig().getTestApiLocation());
+		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
+				.getTestApiLocation());
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
-		
+
 		Status status;
 		try {
-			status = testProxy.pollStatus(crsid,repoName);
+			status = testProxy.pollStatus(crsid, tickId);
 		} catch (NoSuchTestException e) {
 			return Response.status(404).entity(e).build();
 		}
-		
+
 		return Response.ok(status).build();
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#getLast(javax.servlet.http.HttpServletRequest, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#getLast
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
 	public Response getLast(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		
-		String repoName = Tick.replaceDelimeter(tickId);
-		
+
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getConfig().getTestApiLocation());
+		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
+				.getTestApiLocation());
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
-		
+
 		Report status;
 		try {
-			status = testProxy.getLastReport(crsid,repoName);
+			status = testProxy.getLastReport(crsid, tickId);
 		} catch (UserNotInDBException | TickNotInDBException e) {
 			return Response.status(404).entity(e).build();
 		}
-		
+
 		return Response.ok(status).build();
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#getAll(javax.servlet.http.HttpServletRequest, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade#getAll
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
 	public Response getAll(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		
-		String repoName = Tick.replaceDelimeter(tickId);
-		
+
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getConfig().getTestApiLocation());
+		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
+				.getTestApiLocation());
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
-		
+
 		List<Report> status;
 		try {
-			status = testProxy.getAllReports(crsid,repoName);
+			status = testProxy.getAllReports(crsid, tickId);
 		} catch (UserNotInDBException | TickNotInDBException e) {
 			return Response.status(404).entity(e).build();
 		}
-		
+
 		return Response.ok(status).build();
 	}
 

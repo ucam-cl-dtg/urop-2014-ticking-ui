@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * This just a simple class to load the file {@value fileName} in the current
  * directory and convert it into a
- * {@link uk.ac.cam.cl.git.configuration.ConfigurationFile} class.
+ * {@link uk.ac.cam.cl.git.configuration.ConfigurationFile} implementing class.
  *
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @author tl364 - changed to allow multiple loaders, managed by register - java retrieved 21/7/2014
