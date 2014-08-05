@@ -27,6 +27,15 @@
 			<div flex layout horizontal end-justified>
 			<core-selector id="navMenu" valueattr="id" selected="dashButton" selectedAttribute="">
 
+                <menu-button id="ticksMenu" label="Ticks" valueattr="label">
+                    <template repeat="{{item in items}}">
+                        <core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}"></core-item>
+                    </template>
+                    <template if="{{!$.loginAPIs.ldap.isStudent}}">
+                        <core-item id="createTickItem" icon="add" label="Create..."></core-item>
+                    </template>
+                </menu-button>
+
 				<menu-button id="groupsMenu" label="Groups" valueattr="label">
 					<template repeat="{{item in items}}">
 						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}"></core-item>
@@ -69,6 +78,7 @@
 
 			observe: {
 				'$.groupsMenu.selection': 'groupSelectionChanged',
+                '$.ticksMenu.selection': 'tickSelectionChanged',
 				'$.navMenu.selection': 'navSelectionChanged',
 				'$.loginAPIs.groupItems' : 'groupItemsChanged'
 			},
@@ -97,6 +107,20 @@
 					this.$.groupTemp.model = {gid: newValue.getAttribute('gid')};
 				}
 			},
+
+            tickSelectionChanged: function (oldValue, newValue) {
+                if (!newValue || (oldValue && oldValue.id === "createTickItem")) return;
+
+                this.showDash = false;
+                if (newValue.id === "createTickItem") {
+                    //this.$.createGroup.toggleDialog();
+                    //this.$.groupsMenu.selected = oldValue ? oldValue.label : "-1";
+                }
+                else {
+                    this.$.groupTemp.model = {gid: null};
+                    this.$.groupTemp.model = {gid: newValue.getAttribute('gid')};
+                }
+            },
 
 			groupCreatedHandler: function (e, detail) {
 				this.$.loginAPIs.$.sidebarAjax.go();
