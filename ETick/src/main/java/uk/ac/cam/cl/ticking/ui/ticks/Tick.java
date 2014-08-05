@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
-import uk.ac.cam.cl.ticking.ui.api.public_interfaces.TickBean;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -16,8 +16,8 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
-import uk.ac.cam.cl.ticking.ui.api.public_interfaces.GroupBean;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -139,6 +139,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.saveGroup(prevGroup);
 			return Response.status(Status.CREATED).entity(prevGroup).build();
 		} else {
+			//TODO should this behave like so?
 			return addGroup(request, new ArrayList<String>(), groupBean);
 		}
 

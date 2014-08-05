@@ -1,4 +1,4 @@
-package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
+package uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class GroupBean {
 	 * used when a user is creating a new group.
 	 * 
 	 * @param name
-	 *            - desired name for the group
+	 * @param info
 	 */
 	@JsonCreator
 	public GroupBean(@JsonProperty("name") String name, @JsonProperty("info") String info) {
