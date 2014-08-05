@@ -99,9 +99,9 @@ public class TickSignups {
                 return Response.status(Status.NOT_FOUND)
                         .entity("There are no free slots at the given time").build();
             }
-            if (service.getPermissions(groupID, crsid).containsKey(tickID)) {
+            if (service.getPermissions(groupID, crsid).containsKey(tickID)) { // have passed this tick
                 String ticker = service.getPermissions(groupID, crsid).get(tickID);
-                if (ticker == null) { // any column permitted
+                if (ticker == null) { // any ticker permitted
                     ticker = service.listColumnsWithFreeSlotsAt(sheetID, startTime).get(0);
                 }
                 service.book(sheetID, ticker, startTime, new SlotBookingBean(null, crsid, tickID));
@@ -136,7 +136,7 @@ public class TickSignups {
     }
     
     /**
-     * Deletes the specified booking (not slot).
+     * Unbooks the given user from the given slot.
      */
     public Response unbookSlot(String crsid, String groupID,
             String sheetID, String tickID, Date startTime) {
