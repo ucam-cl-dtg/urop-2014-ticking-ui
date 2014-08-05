@@ -42,19 +42,6 @@ public class TickSignups {
         service = target.proxy(WebInterface.class);
     }
     
-    public static void main(String[] args) {
-        TickSignups ts = new TickSignups();
-        try {
-            System.out.println(ts.service.listColumns("dont_find_me"));
-        } catch (InternalServerErrorException e) {
-            RemoteFailureHandler h = new RemoteFailureHandler();
-            Object o = h.readException(e);
-            System.out.println(o);
-        } catch (ItemNotFoundException e) {
-            throw new Error("I don't believe you",e);
-        }
-    }
-    
     /* Below are the methods for the student workflow */
     
     /**
@@ -67,10 +54,9 @@ public class TickSignups {
      */
     public Response listAvailableTimes(String sheetID) {
         try {
-            List<Date> result = service.listAllFreeStartTimes(sheetID);
-            return Response.ok(result).build();
+            return Response.ok(service.listAllFreeStartTimes(sheetID)).build();
         } catch (ItemNotFoundException e) {
-            return Response.status(404).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity(e).build();
         }
     }
     
@@ -100,9 +86,9 @@ public class TickSignups {
                 return Response.status(Status.NOT_FOUND)
                         .entity("There are no free slots at the given time").build();
             }
-            if (service.getPermissions(groupID, crsid).containsKey(tickID)) {
+            if (service.getPermissions(groupID, crsid).containsKey(tickID)) { // have passed this tick
                 String ticker = service.getPermissions(groupID, crsid).get(tickID);
-                if (ticker == null) { // any column permitted
+                if (ticker == null) { // any ticker permitted
                     ticker = service.listColumnsWithFreeSlotsAt(sheetID, startTime).get(0);
                 }
                 service.book(sheetID, ticker, startTime, new SlotBookingBean(null, crsid, tickID));
@@ -137,7 +123,7 @@ public class TickSignups {
     }
     
     /**
-     * Deletes the specified booking (not slot).
+     * Unbooks the given user from the given slot.
      */
     public Response unbookSlot(String crsid, String groupID,
             String sheetID, String tickID, Date startTime) {
