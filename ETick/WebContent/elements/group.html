@@ -27,10 +27,12 @@
 			<h1 class="groupName">{{name}}</h1>
 			<p class="creator">Created by: {{creator}}</p>
 			<div id="infoContainer">
+				<template if="{{!(info === '')}}">
 				<div style="padding: 15px">
 					<h2>DESCRIPTION:</h2>
 					<p>{{info}}</p>
 				</div>
+			</template>
 			</div>
 		</div>
 		</main-card>
