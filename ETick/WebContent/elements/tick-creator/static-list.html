@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="static-list-item.html">
 
-<polymer-element name="static-list" attributes="staticOptions tickId">
+<polymer-element name="static-list" attributes="staticOptions">
     <template>
         <style>
             :host {
@@ -16,7 +16,8 @@
                 <static-list-item
                         text="{{staticOption.text}}"
                         checkedIndex="{{staticOption.checkedIndex}}"
-                        closed="{{staticOption.closed}}">
+                        closed="{{staticOption.closed}}"
+                        code="{{staticOption.code}}">
                 </static-list-item>
             </template>
             <core-icon-button

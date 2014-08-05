@@ -1,5 +1,6 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +58,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 			db.saveGrouping(new Grouping(groupId, crsid, r));
 		}
 		List<User> users = db.getUsers(groupId);
+		Collections.sort(users);
 		return Response.status(Status.CREATED).entity(users).build();
 	}
 	

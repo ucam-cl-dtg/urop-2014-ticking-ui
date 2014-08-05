@@ -5,55 +5,47 @@
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
 
-
-<polymer-element name="static-list-item" attributes="text checkedIndex closed">
+<polymer-element name="static-list-item" attributes="text checkedIndex closed code">
     <template>
         <link rel="stylesheet" href="static-list-item.css" shim-shadowdom>
-        <!--<link rel="stylesheet" href="../../codemirror.css"> <!-- Custom-styled CodeMirror -->
 
         <span layout horizontal hidden?="{{closed}}">
-             <core-icon-button
-                     id="cmdDelete"
-                     icon="close"
-                     on-tap="{{close}}"></core-icon-button>
-            <paper-input id="text" flex inputValue="{{text}}" label="Test Category Name..."></paper-input>
-            <core-icon-button
-                    id="cmdToggleCode"
-                    icon="unfold-more"
-                    on-tap="{{toggle}}"></core-icon-button>
-            <paper-radio-group>
-                <paper-radio-button id="none"    name="none"    on-tap="{{tapNone}}" checked?="{{checkedIndex == 0}}"></paper-radio-button>
-                <paper-radio-button id="warning" name="warning" on-tap="{{tapWarning}}" checked?="{{checkedIndex == 1}}"></paper-radio-button>
-                <paper-radio-button id="error"   name="error"   on-tap="{{tapError}}"checked?="{{checkedIndex == 2}}"></paper-radio-button>
-            </paper-radio-group>
+        <core-icon-button
+                id="cmdDelete"
+                icon="close"
+                on-tap="{{close}}"></core-icon-button>
+        <paper-input id="text" flex inputValue="{{text}}" label="Test Category Name..."></paper-input>
+        <core-icon-button
+                id="cmdToggleCode"
+                icon="unfold-more"
+                on-tap="{{toggle}}"></core-icon-button>
+        <paper-radio-group>
+            <paper-radio-button id="none"    name="none"    on-tap="{{tapNone}}" checked?="{{checkedIndex == 0}}"></paper-radio-button>
+            <paper-radio-button id="warning" name="warning" on-tap="{{tapWarning}}" checked?="{{checkedIndex == 1}}"></paper-radio-button>
+            <paper-radio-button id="error"   name="error"   on-tap="{{tapError}}"checked?="{{checkedIndex == 2}}"></paper-radio-button>
+        </paper-radio-group>
         </span>
 
         <div layout horizontal>
-        <core-collapse id="collapse" flex>
-            <textarea id="edit">
-<module name="Checker">
-    <module name="TreeWalker">
-
-    </module>
-</module>
-            </textarea>
-        </core-collapse>
+            <core-collapse id="collapse" flex collapsed>
+                <div layout horizontal>
+                    <textarea id="editor" flex rows="9" on-keyup="{{setCode}}"></textarea>
+                </div>
+            </core-collapse>
         </div>
     </template>
     <!--<script src="../../codemirror-4.4/lib/codemirror.js"></script> <!-- CodeMirror -->
     <!--<script src="../../codemirror-4.4/mode/xml/xml.js"></script> <!-- CodeMirror -->
     <script>
         Polymer('static-list-item', {
-            ready: function() {
-                //Initialise code mirror (provides xml syntax highlighting of a textarea)
-                //this.cmInstance = CodeMirror.fromTextArea(this.$.edit);
-            },
             /**
              * Work around for a paper-radio-button bug. Without this, the initially selected button would
              * remain selected until it has been clicked at least once, no matter how many times the other
              * buttons in the group have been clicked
              */
             domReady: function() {
+                this.$.editor.innerHTML = this.code;
+
                 switch (this.checkedIndex) {
                     case 0:
                         this.$.none.tap();
@@ -82,8 +74,10 @@
             close: function() {
                 this.closed = true;
                 this.$.collapse.hidden = true;
-                //console.log(this.$.edit.value);
-                //console.log(this.cmInstance.myCodeMirror.getValue());
+            },
+            //needed because Polymer's two-way data-binding doesn't seem to be able to cope with innerHTML
+            setCode: function() {
+                this.code = this.$.editor.value;
             }
         });
     </script>

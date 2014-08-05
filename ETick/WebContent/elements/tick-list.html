@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="search-box.html">
+<link rel="import" href="tick-box.html">
 
 <polymer-element name="tick-list" attributes="gid">
 	<template>
@@ -13,7 +14,16 @@
 				font-weight: 100;
 				padding: 0 0 0 10px;
 			}
-		</style>
+			tick-box {
+				width: calc(100% / 3);
+			}
+			tick-box:nth-child(odd) {
+				background: #f6f6f6;
+			}
+			tick-box:nth-child(even) {
+				background: #e9e9e9;
+			}
+	</style>
 		<core-ajax
 			auto
 			id="tickListAPI"
@@ -25,12 +35,15 @@
 
 		<!-- Tick list card header. -->
 		<div id="headerBar" layout horizontal center>
-			<h1 flex>Ticks ({{number}})</h1>
+			<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
 		<!-- Tick list. -->
-		<div id="personListContainer">
+		<div layout horizontal center wrap>
+			<template repeat="{{tick in ticks | tickListFilter($.searchBox.query)}}">
+				<tick-box tick="{{tick}}"></tick-box>
+			</template>
 		</div>
 
 	</template>
@@ -38,6 +51,19 @@
 		Polymer('tick-list', {
 			tickListResponse: function () {
 				this.ticks = this.$.tickListAPI.response;
+			},
+
+			tickListFilter: function(items, q) {
+				if (items && q) {
+					return items.filter(this.tickFilter.bind(this));
+				}
+				return items;
+			},
+
+			tickFilter: function(item) {
+				var q = this.$.searchBox.query.toLowerCase();
+				return (item.name.toLowerCase().indexOf(q) > -1 ||
+						item.author.toLowerCase().indexOf(q) > -1);
 			}
 		});
 	</script>

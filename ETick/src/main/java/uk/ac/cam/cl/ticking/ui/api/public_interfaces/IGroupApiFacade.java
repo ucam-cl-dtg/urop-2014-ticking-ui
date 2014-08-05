@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean;
 
 /**
  * A RESTful interface for requests regarding groups.
@@ -45,13 +46,14 @@ public interface IGroupApiFacade {
 	@Produces("application/json")
 	public abstract Response deleteGroup(@Context HttpServletRequest request,
 			@PathParam("groupId") String groupId);
-	
+
 	@DELETE
 	@Path("/{groupId}/{crsid}")
 	@Produces("application/json")
 	public abstract Response deleteUser(@Context HttpServletRequest request,
-			@PathParam("groupId") String groupId, @PathParam("crsid") String crsid);
-	
+			@PathParam("groupId") String groupId,
+			@PathParam("crsid") String crsid);
+
 	/**
 	 * 
 	 * @param groupId
@@ -83,7 +85,7 @@ public interface IGroupApiFacade {
 	@Consumes("application/json")
 	public abstract Response addGroup(@Context HttpServletRequest request,
 			@DefaultValue("AUTHOR") @QueryParam("roles") List<String> roles,
-			Group group);
+			GroupBean groupBean);
 
 	/**
 	 * Commits the given group object to the database
@@ -92,10 +94,10 @@ public interface IGroupApiFacade {
 	 * @return the group object that has been committed to the database
 	 */
 	@PUT
-	@Path("/")
+	@Path("/{groupId}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response updateGroup(@Context HttpServletRequest request,
-			Group group);
+			@PathParam("groupId") String groupId, GroupBean groupBean);
 
 }

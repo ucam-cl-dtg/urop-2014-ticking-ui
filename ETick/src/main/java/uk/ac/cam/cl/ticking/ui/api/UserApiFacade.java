@@ -100,6 +100,7 @@ public class UserApiFacade implements IUserApiFacade {
 				"RavenRemoteUser");
 		Role role = Role.valueOf(stringRole);
 		List<Group> groups = db.getGroups(crsid, role);
+		Collections.sort(groups);
 		return Response.ok(groups).build();
 	}
 }

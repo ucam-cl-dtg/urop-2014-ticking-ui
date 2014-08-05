@@ -35,12 +35,14 @@
 		Polymer('search-box', {
 			domReady: function () {
 				this.showSearchButton = true;
-				this.$.queryField.$.input.autofocus = true;
 			},
 
 			showBox: function () {
 				this.$.collapse.toggle();
 				this.showSearchButton = false;
+
+				// Input focus hack. Ref: http://stackoverflow.com/questions/2074347/focus-not-working-in-safari-or-chrome
+				setTimeout(function() {this.$.queryField.$.input.focus();}.bind(this), 0);
 			},
 
 			hideBox: function() {

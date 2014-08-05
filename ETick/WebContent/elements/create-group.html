@@ -128,7 +128,7 @@
 				toast.text = 'Created new group "' + response.name + '".';
 				toast.show();
 
-				this.fire('group-created', {gid: response._id});
+				this.fire('group-created', response);
 			},
 
 			createError: function(e, detail) {

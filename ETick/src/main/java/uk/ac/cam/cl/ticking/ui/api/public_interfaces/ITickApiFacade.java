@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import org.joda.time.DateTime;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 /**
@@ -76,14 +77,15 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response newTick(@Context HttpServletRequest request,
-			Tick tick) throws IOException, DuplicateRepoNameException;
+			TickBean tickBean) throws IOException, DuplicateRepoNameException;
 
 	@PUT
-	@Path("/")
+	@Path("/{tickId}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response updateTick(@Context HttpServletRequest request,
-			Tick tick) throws IOException, DuplicateRepoNameException;
+			@PathParam("tickId") String tickId, TickBean tickBean)
+			throws IOException, DuplicateRepoNameException;
 
 	/**
 	 * Adds a Tick to a Group given a tickId and groupId

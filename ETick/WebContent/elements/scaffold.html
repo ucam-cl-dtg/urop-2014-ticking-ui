@@ -27,8 +27,8 @@
 			<div flex layout horizontal end-justified>
 			<core-selector id="navMenu" valueattr="id" selected="dashButton" selectedAttribute="">
 
-				<menu-button id="groupsMenu" label="Groups" selected="-1">
-					<template repeat="{{item in $.loginAPIs.groupItems}}">
+				<menu-button id="groupsMenu" label="Groups" valueattr="label">
+					<template repeat="{{item in items}}">
 						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}"></core-item>
 					</template>
 					<template if="{{!$.loginAPIs.ldap.isStudent}}">
@@ -64,9 +64,13 @@
 	</template>
 	<script>
 		Polymer('page-scaffold', {
+
+			toSelect: "-1",
+
 			observe: {
 				'$.groupsMenu.selection': 'groupSelectionChanged',
-				'$.navMenu.selection': 'navSelectionChanged'
+				'$.navMenu.selection': 'navSelectionChanged',
+				'$.loginAPIs.groupItems' : 'groupItemsChanged'
 			},
 
 			navSelectionChanged: function(oldValue, newValue) {
@@ -82,9 +86,10 @@
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
+				if (!newValue || (oldValue && oldValue.id === "createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
-					this.$.groupsMenu.selected = "-1";
+					this.$.groupsMenu.selected = oldValue ? oldValue.label : "-1";
 				}
 				else {
 					this.showDash = false;
@@ -95,8 +100,18 @@
 
 			groupCreatedHandler: function (e, detail) {
 				this.$.loginAPIs.$.sidebarAjax.go();
+				this.toSelect = detail.name;
+
 				this.showDash = false;
-				this.$.groupTemp.model = detail;
+			},
+
+			groupItemsChanged: function (oldValue, newValue) {
+				this.items = newValue;
+
+				// No idea why this works, but it's here for browser compatability with Firefox.
+				setTimeout(function () {
+					this.$.groupsMenu.selected = this.toSelect
+				}.bind(this), 0);
 			}
 
 		});
