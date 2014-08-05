@@ -35,6 +35,7 @@
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>Members ({{number}})</h1>
 			<template if="{{allowAdd}}">
+				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
 				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>
 			</template>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
@@ -42,13 +43,12 @@
 
 		<!-- Member list. -->
 		<div id="personListContainer">
-			<person-list id="members" listURL="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"
-				query="{{searchQuery}}"></person-list>
+			<person-list id="members" query="{{searchQuery}}"></person-list>
 		</div>
 
 		<!-- Add Member dialog. -->
 		<paper-dialog id="addDialog" heading="Add new member:" backdrop	
-				transition="core-transition-top">
+			transition="core-transition-top">
 			<paper-input id="addInput" class="dialogInput"
 				floatingLabel
 				label="CRSid..."
