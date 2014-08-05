@@ -3,7 +3,7 @@ pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.next
 release.properties
-**/WEB-INF/classes/
+**/classes/
 *.class
 **/doc/
 **/logs/
