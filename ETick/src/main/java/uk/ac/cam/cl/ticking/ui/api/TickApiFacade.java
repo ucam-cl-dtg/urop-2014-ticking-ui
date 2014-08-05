@@ -14,6 +14,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.joda.time.DateTime;
 
+import publicinterfaces.ITestService;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.RepoUserRequestBean;
@@ -22,7 +23,7 @@ import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
-import uk.ac.cam.cl.ticking.ui.api.public_interfaces.TickBean;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -62,11 +63,19 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.ok().entity(tick).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#deleteTick
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
+	 */
 	@Override
 	public Response deleteTick(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		//TODO remove repo?
+		// TODO remove repo?
+		// TODO remove checkstyles?
 		Tick tick = db.getTick(tickId);
 		if (!crsid.equals(tick.getAuthor())) {
 			return Response.status(Status.UNAUTHORIZED)
@@ -116,6 +125,18 @@ public class TickApiFacade implements ITickApiFacade {
 					.entity(Strings.INVALIDROLE).build();
 		}
 
+		Tick tick = new Tick(tickBean);
+		tick.setAuthor(crsid);
+		tick.initTickId();
+
+		ResteasyClient testClient = new ResteasyClientBuilder().build();
+		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
+				.getTestApiLocation());
+
+		ITestService testProxy = testTarget.proxy(ITestService.class);
+
+		testProxy.createNewTest(tick.getTickId(), tickBean.getCheckstyleOpts());
+
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget target = client.target(config.getConfig()
 				.getGitApiLocation());
@@ -163,11 +184,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
-		Tick tick = new Tick(tickBean);
-		tick.setAuthor(crsid);
 		tick.setStubRepo(repo);
 		tick.setCorrectnessRepo(correctnessRepo);
-		tick.initTickId();
 
 		for (String groupId : tick.getGroups()) {
 			Group g = db.getGroup(groupId);
@@ -184,9 +202,17 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.status(Status.CREATED).entity(tick).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#updateTick
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean)
+	 */
 	@Override
-	public Response updateTick(HttpServletRequest request, String tickId, TickBean tickBean)
-			throws IOException, DuplicateRepoNameException {
+	public Response updateTick(HttpServletRequest request, String tickId,
+			TickBean tickBean) throws IOException, DuplicateRepoNameException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
@@ -204,6 +230,14 @@ public class TickApiFacade implements ITickApiFacade {
 						.entity(Strings.INVALIDROLE).build();
 			}
 
+			ResteasyClient testClient = new ResteasyClientBuilder().build();
+			ResteasyWebTarget testTarget = testClient.target(config.getConfig()
+					.getTestApiLocation());
+
+			ITestService testProxy = testTarget.proxy(ITestService.class);
+
+			testProxy.createNewTest(tickId, tickBean.getCheckstyleOpts());
+
 			prevTick.setEdited(DateTime.now());
 			for (String groupId : prevTick.getGroups()) {
 				Group g = db.getGroup(groupId);
@@ -220,10 +254,18 @@ public class TickApiFacade implements ITickApiFacade {
 			db.saveTick(prevTick);
 			return Response.status(Status.CREATED).entity(prevTick).build();
 		} else {
+			// TODO should this behave like so?
 			return newTick(request, tickBean);
 		}
 	}
 
+	/**
+	 * 
+	 * @param groupIds
+	 * @param crsid
+	 * @return whether the user has author permissions for all of the supplied
+	 *         groups
+	 */
 	private boolean validatePermissions(List<String> groupIds, String crsid) {
 		for (String groupId : groupIds) {
 			List<Role> roles = db.getRoles(groupId, crsid);
@@ -292,6 +334,14 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.status(Status.CREATED).entity(output).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#setDeadline
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
+	 * org.joda.time.DateTime)
+	 */
 	@Override
 	public Response setDeadline(HttpServletRequest request, String tickId,
 			DateTime date) {

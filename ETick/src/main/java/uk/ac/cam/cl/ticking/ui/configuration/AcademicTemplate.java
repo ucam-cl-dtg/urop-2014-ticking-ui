@@ -6,8 +6,16 @@ import org.apache.log4j.Logger;
 
 import uk.ac.cam.cl.dtg.ldap.LDAPUser;
 
+/**
+ * This class is a template for an academic. If any of field in the user match
+ * any of the array elements for the respective fields as defined by a json
+ * object, that user becomes an academic
+ * 
+ * @author tl364
+ *
+ */
 public class AcademicTemplate implements ConfigurationFile {
-	
+
 	private String[] crsid = {};
 	private String[] surname = {};
 	private String[] regName = {};
@@ -131,8 +139,7 @@ public class AcademicTemplate implements ConfigurationFile {
 				|| Arrays.asList(regName).contains(user.getRegName())
 				|| Arrays.asList(displayName).contains(user.getDisplayName())
 				|| Arrays.asList(email).contains(user.getEmail())
-				|| containsInstitutions
-				|| Arrays.asList(college).contains(user.getCollegeName()));
+				|| containsInstitutions || Arrays.asList(college).contains(
+				user.getCollegeName()));
 	}
 }
-

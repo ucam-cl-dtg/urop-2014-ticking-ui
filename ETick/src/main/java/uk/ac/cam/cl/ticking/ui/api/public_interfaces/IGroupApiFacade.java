@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.ticking.ui.actors.Group;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean;
 
 /**
  * A RESTful interface for requests regarding groups.
@@ -40,12 +41,28 @@ public interface IGroupApiFacade {
 	public abstract Response getGroup(@PathParam("groupId") String groupId,
 			@QueryParam("byName") boolean byName);
 
+	/**
+	 * Deletes the specified group, clearing up any dangling associations with
+	 * groupings and ticks
+	 * 
+	 * @param request
+	 * @param groupId
+	 * @return the success of the request
+	 */
 	@DELETE
 	@Path("/{groupId}")
 	@Produces("application/json")
 	public abstract Response deleteGroup(@Context HttpServletRequest request,
 			@PathParam("groupId") String groupId);
 
+	/**
+	 * Removes a user from a group completely
+	 * 
+	 * @param request
+	 * @param groupId
+	 * @param crsid
+	 * @return the success of the request
+	 */
 	@DELETE
 	@Path("/{groupId}/{crsid}")
 	@Produces("application/json")
@@ -73,10 +90,12 @@ public interface IGroupApiFacade {
 	public abstract Response getGroups();
 
 	/**
-	 * Commits the given group object to the database
+	 * Creates a new group object from the bean and commits it to the database.
 	 * 
-	 * @param g
-	 * @return the group object that has been committed to the database
+	 * @param request
+	 * @param roles
+	 * @param groupBean
+	 * @return the group object committed
 	 */
 	@POST
 	@Path("/")
@@ -87,10 +106,14 @@ public interface IGroupApiFacade {
 			GroupBean groupBean);
 
 	/**
-	 * Commits the given group object to the database
+	 * Updates the group object with the given groupId with the data in the
+	 * bean. If there is no group object with the groupId, the bean is passed to
+	 * the create method.
 	 * 
-	 * @param g
-	 * @return the group object that has been committed to the database
+	 * @param request
+	 * @param groupId
+	 * @param groupBean
+	 * @return the group object updated
 	 */
 	@PUT
 	@Path("/{groupId}")

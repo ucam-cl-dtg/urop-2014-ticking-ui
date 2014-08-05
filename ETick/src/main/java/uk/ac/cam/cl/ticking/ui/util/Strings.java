@@ -15,13 +15,13 @@ public class Strings {
 	public static final String INVALIDROLE = "You do not have the required role for that action";
 
 	public static final String ATLEASTONEROLE = "You must choose at least one role to assign";
-	
+
 	public static final String DEADLINE = "You have missed the deadline";
 
 	public static final String FORKED = "You have already forked this repository, state has not been lost";
-	
+
 	public static final String EXISTS = "You have already created a tick with this name";
-	
+
 	public static final String GROUPNAMECLASH = "A group with that name already exists";
 
 	/**
