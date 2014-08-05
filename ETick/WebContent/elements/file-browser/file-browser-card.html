@@ -8,26 +8,44 @@
 <polymer-element name="file-browser-card">
   <template>
     <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="file-browser-style.css"/>
     <files-service id="service"
-                   files="{{files}}">
+                   files="{{files}}"
+                   testResult="{{testResult}}"
+                   tickerResult="{{tickerResult}}"
+                   reportResult="{{reportResult}}"
+                   comments="{{comments}}"
+                   errors="{{errors}}"
+                   commitID="{{commitID}}"
+                   date="{{date}}"
+                   testCount="{{testCount}}">
     </files-service>
     <div class="container" horizontal layout>
       <div class="sidebar">
-        <!-- TODO: The following three elements -->
-        <files-list files="{{files}}"></files-list>
+        <p class="result">
+          You have {{testResult=="FAIL" ? "failed." : "passed!"}}
+        </p>
+        <files-list files="{{files}}">
+        </files-list>
         <hr/>
+        <!-- TODO: The following element -->
         <errors-list></errors-list>
-        <warnings-list></warnings-list>
-        <!-- TODO: The preceeding three elements -->
       </div>
       <core-splitter direction="left"></core-splitter>
       <div flex>
+        <!-- Ticker comments -->
+        <template if="{{comments != null}}">
+          <p>{{comments}}</p>
+        </template>
+
+        <!-- File contents -->
         <template repeat="{{file in files}}">
           <file-card content="{{file.content}}"
-                     comments="{{file.comments}}">
-            <h2>{{file.name}}</h2>
+                     name="{{file.name}}"
+                     comments="{{errors}}">
           </file-card>
         </template>
+
       </div>
     </div>
 

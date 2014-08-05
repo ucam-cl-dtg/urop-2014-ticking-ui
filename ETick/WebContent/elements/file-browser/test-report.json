@@ -6,6 +6,24 @@
   "creationDate" : 1407145680370,
   "noOfTests" : 2,
   "commitId" : "c142b56bc6c292540d509a8f1e1dec329078b43e",
+  "files" : [
+    {
+      "name" : "src/main/java/badFiles/StringConstants.java",
+      "content" : "package badFiles;\n\nimport java.lang.String;\n\npublic abstract class StringConstants extends String {\n    private static final String cst0 = \"Hello World!\";\n    private static final String cst1 = \"Test Constant 1\";\n    private static final String cst2 = \"Test Constant 2\";\n    \n    public getCst(int index) throws Throwable {\n       switch (index) {\n            default:\n                throw new Throwable();\n            case 0:\n                return cst0;\n            case 1:\n                return cst1;\n            case 2:\n                return cst2;\n       }\n    }\n}"
+    },
+    {
+      "name" : "src/main/java/badFiles/StringConstantsUser.java",
+      "content" : "package badFiles;\n\nimport java.util.logging.Logger;\nimport badFiles.StringConstants;\nimport java.util.logging.Logger;\n\npublic class StringConstantsUser\n{\n    public static void main(String[] args)\n    {         \n        if (args[0]==\"\")\n        {\n            //do nothing\n            Logger . getLogger(\"StringConstantsUserLogger\") . log(\"Arg was empty\");\n        }\n        else\n        {\n            try\n            {\n                System .out.println(new StringConstants().getCst(args[0]));\n            }\n            catch (Throwable e) \n            {\n                \n            }\n        }\n    }\n}"
+    },
+    {
+      "name" : "src/main/java/badFiles/doubleIncDec.java",
+      "content" : "package badFiles;\n\nimport java.util.LinkedHashMap;\n\npublic class doubleIncDec {\n    private double x;\n     public doubleIncDec(double x) {\n        if(x==0) {\n            x = 1l;\n        }else{\n        this. x =x;\n        }\n    }\n    \n    public void INC_X() {\n        x ++;\n    }\n    \n    public void dec_X() {\n        //TODO\n    }\n    \n    public void divBy(double k) throws Exception {\n        if (! (k==0)) {\n            x/=k ;\n        }\n        else {\n            throw new Exception(\"Div by zero!\");\n        }\n    }\n }"
+    },
+    {
+      "name" : "src/main/java/badFiles/malformed.java",
+      "content" : "package badFiles;\n\npublic class malformed {\n    private int ExampleVar;\n    public void test() {\n        \n    //Note the missing '}' here.\n    /* Once dynamic tests are working, we may not need to worry about this kind of case,\n     * as the dynamic tests  would fail first, but it's included for now just in case\n     */\n}"
+    }
+  ],
   "items" : [
     {
       "problemDescription" : "Empty blocks",

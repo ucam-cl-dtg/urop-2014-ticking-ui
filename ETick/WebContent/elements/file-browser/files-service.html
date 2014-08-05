@@ -15,6 +15,7 @@
 <!--
   An array of file objects, with the following format:
 
+TODO:
   <table border="0">
     <tr>
       <td><code>name</code></td>
@@ -68,7 +69,8 @@
   @type Array
   @default []
 -->
-<polymer-element name="files-service" attributes="files">
+<polymer-element name="files-service"
+    attributes="files testResult tickerResult reportResult comments errors commitID date testCount">
   <template>
     <style>
     :host {
@@ -77,7 +79,7 @@
     </style>
     <core-ajax id="ajax"
       auto
-      url="test-files.json"
+      url="test-report.json"
       on-core-response="{{filesLoaded}}"
       handleAs="json">
     </core-ajax>
@@ -94,7 +96,15 @@
           "use strict";
 
           /* Make a copy of the loaded data */
-          this.files = this.$.ajax.response;
+          this.files        = this.$.ajax.response.files;
+          this.testResult   = this.$.ajax.response.testResult;
+          this.tickerResult = this.$.ajax.response.tickerResult;
+          this.reportResult = this.$.ajax.response.reportResult;
+          this.comments     = this.$.ajax.response.tickerComments;
+          this.errors       = this.$.ajax.response.items;
+          this.commitID     = this.$.ajax.response.commitId;
+          this.date         = this.$.ajax.response.creationDate;
+          this.testCount    = this.$.ajax.response.noOfTests;
           this.fire('files-loaded');
         }
       });

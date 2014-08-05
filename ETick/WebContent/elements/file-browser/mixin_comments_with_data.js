@@ -54,9 +54,7 @@ function mixin_comments_with_data(data, comments)
   }
 
   var activeComments   = new Array();
-  var rtn = "<span>"; /* So that we can always have a closing tag */
-
-  /* Sanity check, start < end */
+  var rtn = "<ol><li><span>"; /* So that we can always have a closing tag */
 
   /* Stage 1 – Sort */
   comments.sort(function (a, b)
@@ -106,7 +104,6 @@ function mixin_comments_with_data(data, comments)
 
       rtn += "</span>";
 
-      /* TODO: conditional class */
       if (activeComments.length > 0)
       {
         rtn += "<span class=\"";
@@ -136,11 +133,29 @@ function mixin_comments_with_data(data, comments)
         rtn += "&amp;";
         break;
 
+      case '\n':
+        rtn += "</span>";
+        rtn += "</li><li>";
+        if (activeComments.length > 0)
+        {
+          rtn += "<span class=\"";
+          /* Assuming class does not contain " */
+          rtn += activeComments
+                  .map(function (x) { return x.class; })
+                  .join(" ");
+          rtn += "\">";
+        }
+        else
+        {
+          rtn += "<span>";
+        }
+        break;
+
       default:
         rtn += data[i];
     }
   }
-  rtn += "</span>";
+  rtn += "</span></li></ol>";
 
   return rtn;
 }
@@ -186,7 +201,13 @@ function lines_to_chars(data, comments)
   return comments.map(function (x)
                       {
                         /* Assumes x.line is valid for data */
-                        if (typeof x.line != "undefined")
+                        if (typeof x.linNumber != "undefined"
+                          &&typeof x.line == "undefined")
+                        {
+                          x.start = lineStart[x.lineNumber-1];
+                          x.end   = lineStart[x.lineNumber]-1;
+                        }
+                        else if (typeof x.line != "undefined")
                         {
                           x.start = lineStart[x.line-1];
                           x.end   = lineStart[x.line]-1;

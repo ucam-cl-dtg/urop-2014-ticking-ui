@@ -1,5 +1,5 @@
 [ {   "name"     : "README.md"
-    , "content"  : "Hello world.\n\nThis is a test file!"
+    , "content"  : "Hello world.\n============\n\n* This is a test file!\n* This is a very long line to check how we handle long lines. The plan is to use line-continuation characters in the future. This could be achieved by magic or by setting a background picture and wrapping text with CSS.\nAre links highlighted properly? Ask [google](http://www.google.com)!"
     , "comments" : [ {   "line"    : 1
                        , "message" : "Is this really neccessary?"
                        , "class"   : "comment1 comment"

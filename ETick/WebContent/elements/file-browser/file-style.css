@@ -1,0 +1,61 @@
+/* vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 spell spelllang=en_gb : */
+.code-container
+{
+  margin: 0;
+  padding: 0;
+}
+
+pre
+{
+  font-family: monospace;
+  white-space: pre-wrap;       /* CSS 3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  word-break: break-all;       /* Words not only broken at spaces */
+}
+
+code ol
+{
+  margin: 0 4rem;
+  padding: 0 0.5rem;
+  border-left: thin solid;
+  list-style: decimal-leading-zero outside;
+}
+
+code ol li
+{
+  padding-left: 0.5rem;
+
+  /* Line continuation */
+  background-image: url('../../images/line-continuation-right.svg');
+  background-attachment: local;
+  line-height: 14px;
+  background-position: 100% 14px;
+  background-repeat: no-repeat;
+  padding-right: 14px;
+}
+
+code ol li code
+
+.filename
+{
+  margin: 0.5rem 1.5rem;
+  font-size: 14pt;
+}
+
+.COMMENT
+{
+  background-color: #ccc;
+}
+
+.WARNING
+{
+  background-color: #bbf;
+}
+
+.ERROR
+{
+  background-color: #aff;
+}

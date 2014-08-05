@@ -1,42 +1,29 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/highlightjs-element/highlightjs-element.html"/>
+<link rel="import" href="../../elements/main-card.html"/>
 
 <link rel="stylesheet" href="style.css"/>
 
-<polymer-element name="file-card" attributes="content comments">
+<polymer-element name="file-card" attributes="content comments name">
   <template>
     <!-- HighlightJS colourscheme -->
     <link rel="stylesheet" href="../../bower_components/highlightjs/styles/default.css"/>
     <!-- TODO: Dynamically load stylesheet; perhaps consider http://highlightjs.org/static/test.html -->
     <link rel="stylesheet" href="../../bower_components/highlightjs/styles/solarized_light.css"/>
 
-    <style>
-      .comment
-      {
-        background-color: gray;
-      }
+    <link rel="stylesheet" href="file-style.css"/>
 
-      .warning
-      {
-        background-color: yellow;
-      }
-
-      .error
-      {
-        background-color: red;
-      }
-    </style>
     <div class="container" vertical layout>
-      <span class="file-name">
-        <content select="h2"></content>
-      </span>
-      <pre>
-        <code>
-<!-- Deliberately unindented (because of pre tag) -->
-<content id="codeContent" select="code"></content>
-        </code>
-      <pre>
+      <span class="file-name"> {{name}} </span>
+      <main-card unresolved>
+        <pre class="hljs code-container">
+          <code>
+  <!-- Deliberately unindented (because of pre tag) -->
+  <content id="codeContent" select="code"></content>
+          </code>
+        </pre>
+      </main-card>
     </div>
   </template>
   <script src="mixin_comments_with_data.js"></script>
@@ -56,7 +43,49 @@
           , contentChanged:
             function ()
             {
-              var comments = lines_to_chars(this.content, this.comments)
+              console.log("beginning", this.comments);
+              if (typeof this.comments == "undefined")
+              {
+                var comments = [];
+              }
+              else
+              {
+                var comments =
+                  this.comments.reduce(/* Same as foldl */
+                    function(previousValue, currentValue)
+                    {
+                      /* Re-format errors */
+                      var errorInstances =
+                        currentValue.fileDetails
+                          .filter(function (error)
+                                  { /* Filter for this file */
+                                    return error.file == this.name;
+                                  }.bind(this))
+                          .map(function (error)
+                               {
+                                 var rtn = new Object();
+                                 rtn.line = error.lineNumber;
+                                 rtn.message = error.detail;
+
+                                 /* Generate CSS classes for error */
+                                 rtn.class = [ currentValue.outcome
+                                             , currentValue
+                                                .problemDescription
+                                                .replace(/ /g, "_")
+                                             ].join(" ");
+
+                                 return rtn;
+                               });
+                      return previousValue.concat(errorInstances);
+                    }.bind(this)
+                    , /* initial value of */ new Array());
+
+                console.log("middle", comments)
+
+                comments = lines_to_chars(this.content, comments);
+              }
+              console.log("end", comments);
+
               var syntax   = spans_to_comments(hljs
                                .highlightAuto(this.content || '').value)
 
@@ -65,7 +94,7 @@
                     , comments.concat(syntax));
             }
           , commentsChanged:
-            function ()
+            function (oldValue, newValue)
             {
               this.contentChanged();
             }
