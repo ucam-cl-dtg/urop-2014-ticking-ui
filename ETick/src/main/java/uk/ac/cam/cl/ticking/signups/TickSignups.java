@@ -67,10 +67,9 @@ public class TickSignups {
      */
     public Response listAvailableTimes(String sheetID) {
         try {
-            List<Date> result = service.listAllFreeStartTimes(sheetID);
-            return Response.ok(result).build();
+            return Response.ok(service.listAllFreeStartTimes(sheetID)).build();
         } catch (ItemNotFoundException e) {
-            return Response.status(404).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity(e).build();
         }
     }
     
