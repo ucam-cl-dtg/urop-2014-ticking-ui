@@ -42,19 +42,6 @@ public class TickSignups {
         service = target.proxy(WebInterface.class);
     }
     
-    public static void main(String[] args) {
-        TickSignups ts = new TickSignups();
-        try {
-            System.out.println(ts.service.listColumns("dont_find_me"));
-        } catch (InternalServerErrorException e) {
-            RemoteFailureHandler h = new RemoteFailureHandler();
-            Object o = h.readException(e);
-            System.out.println(o);
-        } catch (ItemNotFoundException e) {
-            throw new Error("I don't believe you",e);
-        }
-    }
-    
     /* Below are the methods for the student workflow */
     
     /**
