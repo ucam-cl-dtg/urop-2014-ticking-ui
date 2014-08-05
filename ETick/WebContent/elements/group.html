@@ -6,12 +6,13 @@
 <link rel="import" href="author-pane.html">
 <link rel="import" href="main-card.html">
 <link rel="import" href="group-members.html">
+<link rel="import" href="group-info.html">
 <link rel="import" href="tick-list.html">
 
 
 <link rel="import" href="person-list.html">
 
-<polymer-element name="x-group" attributes="gid">
+<polymer-element name="x-group" attributes="gid name info">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
 
@@ -20,14 +21,19 @@
 			handleAs="json" on-core-response="{{roleResponse}}">
 		</core-ajax>
 
+		<!-- Group info card. -->
+		<main-card animated>
+			<group-info name="{{name}}" info="{{info}}"></group-info>
+		</main-card>
+
 		<!-- Group members card. -->
-		<main-card animated swipeable
+		<main-card animated
 			on-main-card-swipe-away="{{cardSwiped}}">
 			<group-members gid="{{gid}}" allowAdd="{{allowAddMembers}}" rows="4"></group-members>
 		</main-card>
 
 		<!-- Tick list card. -->
-		<main-card animated swipeable>
+		<main-card animated>
 			<tick-list gid="{{gid}}"></tick-list>
 		</main-card>
 
@@ -53,6 +59,7 @@
 
 			domReady: function () {
 				this.$.roleAjax.go();
+				console.log(this.name);
 			},
 
 			roleResponse: function() {

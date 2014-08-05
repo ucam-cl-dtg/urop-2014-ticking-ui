@@ -29,7 +29,7 @@
 
 				<menu-button id="groupsMenu" label="Groups" valueattr="label">
 					<template repeat="{{item in items}}">
-						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}"></core-item>
+						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}" info="{{item.info}}"></core-item>
 					</template>
 					<template if="{{!$.loginAPIs.ldap.isStudent}}">
 						<core-item id="createGroupItem" icon="add" label="Create..."></core-item>
@@ -57,7 +57,7 @@
 		</template>
 
 		<template id="groupTemp" if="{{gid}}">
-			<x-group gid="{{gid}}"></x-group>
+			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}"></x-group>
 		</template>
 
 	</core-header-panel>
@@ -77,6 +77,7 @@
 				if (newValue.id === "dashButton") {
 					this.showDash = true;
 					this.$.groupTemp.model = {gid: null};
+					this.$.groupsMenu.selected = "-1";
 				}
 			},
 
@@ -94,7 +95,11 @@
 				else {
 					this.showDash = false;
 					this.$.groupTemp.model = {gid: null};
-					this.$.groupTemp.model = {gid: newValue.getAttribute('gid')};
+					this.$.groupTemp.model = { 
+						gid: newValue.getAttribute('gid'),
+						name: newValue.label,
+						info: newValue.getAttribute('info')
+					};
 				}
 			},
 
