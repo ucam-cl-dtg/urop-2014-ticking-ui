@@ -1,22 +1,23 @@
 package uk.ac.cam.cl.ticking.signups;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+
+import com.google.inject.Guice;
 import com.google.inject.Inject;
 
+import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.signups.api.*;
-import uk.ac.cam.cl.signups.api.beans.ColumnBean;
 import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
 import uk.ac.cam.cl.signups.api.beans.PermissionsBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
@@ -24,10 +25,35 @@ import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
 import uk.ac.cam.cl.signups.api.exceptions.ItemNotFoundException;
 import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
 import uk.ac.cam.cl.signups.interfaces.*;
+import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
+import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 
 public class TickSignups {
     
-    @Inject private WebInterface service;
+    private WebInterface service;
+    @Inject private ConfigurationLoader<Configuration> config;
+    
+    public TickSignups() {
+        Guice.createInjector(new GuiceConfigurationModule()).injectMembers(this);
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(config.getConfig()
+                .getSignupsApiLocation());
+        service = target.proxy(WebInterface.class);
+    }
+    
+    public static void main(String[] args) {
+        TickSignups ts = new TickSignups();
+        try {
+            System.out.println(ts.service.listColumns("dont_find_me"));
+        } catch (InternalServerErrorException e) {
+            RemoteFailureHandler h = new RemoteFailureHandler();
+            Object o = h.readException(e);
+            System.out.println(o);
+        } catch (ItemNotFoundException e) {
+            throw new Error("I don't believe you",e);
+        }
+    }
     
     /* Below are the methods for the student workflow */
     
@@ -41,7 +67,8 @@ public class TickSignups {
      */
     public Response listAvailableTimes(String sheetID) {
         try {
-            return Response.ok(service.listAllFreeStartTimes(sheetID)).build();
+            List<Date> result = service.listAllFreeStartTimes(sheetID);
+            return Response.ok(result).build();
         } catch (ItemNotFoundException e) {
             return Response.status(404).entity(e).build();
         }
@@ -68,17 +95,27 @@ public class TickSignups {
                         .entity("Student already has a booking for this tick").build();
             }
         }
-        if (service.listColumnsWithFreeSlotsAt(sheetID, startTime).size() == 0) {
-            return Response.status(Status.NOT_FOUND)
-                    .entity("There are no free slots at the given time").build();
-        }
-        if (service.getPermissions(groupID, crsid).containsKey(tickID)) {
-            String ticker = service.getPermissions(groupID, crsid).get(tickID);
-            if (ticker == null) { // any column permitted
-                ticker = service.listColumnsWithFreeSlotsAt(sheetID, startTime).get(0);
+        try {
+            if (service.listColumnsWithFreeSlotsAt(sheetID, startTime).size() == 0) {
+                return Response.status(Status.NOT_FOUND)
+                        .entity("There are no free slots at the given time").build();
             }
-            service.book(sheetID, ticker, startTime, new SlotBookingBean(null, crsid, tickID));
-            return Response.ok().entity(ticker).build();
+            if (service.getPermissions(groupID, crsid).containsKey(tickID)) {
+                String ticker = service.getPermissions(groupID, crsid).get(tickID);
+                if (ticker == null) { // any column permitted
+                    ticker = service.listColumnsWithFreeSlotsAt(sheetID, startTime).get(0);
+                }
+                service.book(sheetID, ticker, startTime, new SlotBookingBean(null, crsid, tickID));
+                return Response.ok().entity(ticker).build();
+            }
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.NOT_FOUND)
+                    .entity(e).build();
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.FORBIDDEN)
+                    .entity(e).build();
         }
         return Response.status(Status.FORBIDDEN)
                 .entity("Student does not have permission to book this slot").build();
@@ -104,7 +141,7 @@ public class TickSignups {
      */
     public Response unbookSlot(String crsid, String groupID,
             String sheetID, String tickID, Date startTime) {
-        String ticker;
+        String ticker = null;
         for (Slot slot : service.listUserSlots(crsid)) {
             if (slot.getStartTime().equals(startTime) &&
                     slot.getComment().equals(tickID) &&
@@ -115,7 +152,17 @@ public class TickSignups {
         if (ticker == null) {
             return Response.status(Status.NOT_FOUND).entity("The slot was not found").build();
         }
-        service.book(sheetID, ticker, startTime, new SlotBookingBean(crsid, null, null));
+        try {
+            service.book(sheetID, ticker, startTime, new SlotBookingBean(crsid, null, null));
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.NOT_FOUND)
+                    .entity(e).build();
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.FORBIDDEN)
+                    .entity(e).build();
+        }
         return Response.ok().build();
     }
     
@@ -192,10 +239,22 @@ public class TickSignups {
      * Ensures that the given student is assigned the given ticker
      * (if possible) in the future for the specified tick.
      */
-    public Response assignTickerForTickForUser(String crsid, String groupID, String tickID, String ticker) {
+    public Response assignTickerForTickForUser(String crsid, String groupID,
+            String tickID, String ticker, String groupAuthCode) {
         Map<String, String> map = new HashMap<String, String>();
-        service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
-        return null;
+        map.put(tickID, ticker);
+        try {
+            service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            return Response.ok().build();
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.FORBIDDEN)
+                    .entity(e).build();
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.NOT_FOUND)
+                    .entity(e).build();
+        }
     }
     
     /* Below are the methods for the author workflow */
@@ -222,9 +281,22 @@ public class TickSignups {
             return Response.serverError().entity("This sheet already seems to exist").build();
         }
         for (String ticker : tickerNames) {
-            service.createColumn(id, new CreateColumnBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
+            try {
+                service.createColumn(id, new CreateColumnBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
+            } catch (ItemNotFoundException e) {
+                e.printStackTrace();
+                throw new RuntimeException("This should only happen if the sheet or column is not found "
+                        + "but we are creating them");
+            } catch (NotAllowedException e) {
+                e.printStackTrace();
+                throw new RuntimeException("We should have permission to access the sheet we have just created");
+            } catch (DuplicateNameException e) {
+                e.printStackTrace();
+                return Response.status(Status.BAD_REQUEST).entity("You must have specified two "
+                        + "identical columns (or slots)").build();
+            }
         }
-        // TODO: implement
+        return Response.ok().entity(/*TODO*/"TODO").build();
     }
     
     /**
@@ -237,29 +309,68 @@ public class TickSignups {
      * @param numberOfSlots
      * @param slotLength In minutes
      */
-    public void addColumn(String sheetID, String authCode, 
-            String name, Date startTime, int numberOfSlots,
+    public Response addColumn(String sheetID, String authCode, 
+            String name, Date startTime, Date endTime,
             int slotLength /* in minutes */) {
-        List<Slot> slots = new ArrayList<Slot>();
-        for (int i = 0; i < numberOfSlots; i++) {
-            slots.add(new Slot(
-                    new Date(startTime.getTime()+i*slotLength*60000),
-                    slotLength*60000));
+        try {
+            service.createColumn(sheetID, new CreateColumnBean(name, authCode, startTime, endTime, slotLength));
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.NOT_FOUND).entity(e).build();
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.FORBIDDEN).entity(e).build();
+        } catch (DuplicateNameException e) {
+            e.printStackTrace();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
-        Column toAdd = new Column(name, slots);
-        service.addColumn(sheetID, new ColumnBean(toAdd, authCode));
+        return Response.ok().build();
     }
     
     /**
      * Deletes the specified column from the sheet. This also deletes
      * all the bookings made for that column.
      */
-    public void deleteColumn(/* some args */);
+    public Response deleteColumn(String sheetID, String columnName, String authCode) {
+        try {
+            service.deleteColumn(sheetID, columnName, authCode);
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.FORBIDDEN).entity(e).build();
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.NOT_FOUND).entity(e).build();
+        }
+        return Response.ok().build();
+    }
     
     
     /**
      * Modifies bookings no matter what.
      */
-    public void forceModifyBooking(/* some args */);
+    public Response forceModifyBooking(String sheetID, String authCode, String tickID,
+            Date startTime, String currentlyBookedUser, String userToBook) {
+        String ticker = null;
+        for (Slot slot : service.listUserSlots(currentlyBookedUser)) {
+            if (slot.getStartTime().equals(startTime) &&
+                    slot.getComment().equals(tickID) &&
+                    slot.getSheetID().equals(sheetID)) {
+                ticker = slot.getColumnName();
+            }
+        }
+        if (ticker == null) {
+            return Response.status(Status.NOT_FOUND).entity("The slot was not found").build();
+        }
+        try {
+            service.book(sheetID, ticker, startTime, new SlotBookingBean(currentlyBookedUser, userToBook, tickID, authCode));
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.NOT_FOUND).entity(e).build();
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.FORBIDDEN).entity(e).build();
+        }
+        return Response.ok().build();
+    }
     
 }
