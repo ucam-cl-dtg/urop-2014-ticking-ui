@@ -32,6 +32,9 @@ public class MongoDataManager implements IDataManager {
 	private final JacksonDBCollection<Grouping, String> groupingColl;
 	private final JacksonDBCollection<Submission, String> subColl;
 
+	/**
+	 * @param database
+	 */
 	@Inject
 	public MongoDataManager(DB database) {
 		ObjectMapper objectMapper = new ObjectMapper().registerModule(
@@ -56,21 +59,49 @@ public class MongoDataManager implements IDataManager {
 				Grouping.class, String.class, objectMapper);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveUser(uk.ac.cam.cl.ticking
+	 * .ui.actors.User)
+	 */
 	@Override
 	public void saveUser(User u) {
 		userColl.save(u);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveTick(uk.ac.cam.cl.ticking
+	 * .ui.ticks.Tick)
+	 */
 	@Override
 	public void saveTick(Tick t) {
 		tickColl.save(t);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveSubmission(uk.ac.cam.cl.
+	 * ticking.ui.ticks.Submission)
+	 */
 	@Override
 	public void saveSubmission(Submission s) {
 		subColl.save(s);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveGroup(uk.ac.cam.cl.ticking
+	 * .ui.actors.Group)
+	 */
 	@Override
 	public void saveGroup(Group g) {
 		// each group name must be unique
@@ -78,11 +109,25 @@ public class MongoDataManager implements IDataManager {
 		groupColl.save(g);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveGrouping(uk.ac.cam.cl.ticking
+	 * .ui.actors.Grouping)
+	 */
 	@Override
 	public void saveGrouping(Grouping g) {
 		groupingColl.save(g);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertUser(uk.ac.cam.cl.ticking
+	 * .ui.actors.User)
+	 */
 	@Override
 	public void insertUser(User u) throws DuplicateDataEntryException {
 		try {
@@ -92,6 +137,13 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertTick(uk.ac.cam.cl.ticking
+	 * .ui.ticks.Tick)
+	 */
 	@Override
 	public void insertTick(Tick t) throws DuplicateDataEntryException {
 		try {
@@ -101,6 +153,13 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertSubmission(uk.ac.cam.cl
+	 * .ticking.ui.ticks.Submission)
+	 */
 	@Override
 	public void insertSubmission(Submission s)
 			throws DuplicateDataEntryException {
@@ -111,6 +170,13 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertGroup(uk.ac.cam.cl.ticking
+	 * .ui.actors.Group)
+	 */
 	@Override
 	public void insertGroup(Group g) throws DuplicateDataEntryException {
 		try {
@@ -122,6 +188,13 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertGrouping(uk.ac.cam.cl.
+	 * ticking.ui.actors.Grouping)
+	 */
 	@Override
 	public void insertGrouping(Grouping g) throws DuplicateDataEntryException {
 		try {
@@ -132,7 +205,14 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	// People
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#removeUser(java.lang.String,
+	 * boolean)
+	 */
 	@Override
 	public void removeUser(String crsid, boolean purge) {
 		userColl.remove(new BasicDBObject().append("_id", crsid));
@@ -143,6 +223,11 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getUser(java.lang.String)
+	 */
 	@Override
 	public User getUser(String crsid) {
 		User u = null;
@@ -150,18 +235,32 @@ public class MongoDataManager implements IDataManager {
 		return u;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getUsers()
+	 */
 	@Override
 	public List<User> getUsers() {
 		DBCursor<User> cursor = userColl.find();
 		return getUsers(cursor);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getStudents()
+	 */
 	@Override
 	public List<User> getStudents() {
 		DBCursor<User> cursor = userColl.find().is("isStudent", true);
 		return getUsers(cursor);
 	}
 
+	/**
+	 * @param cursor
+	 * @return
+	 */
 	private List<User> getUsers(DBCursor<User> cursor) {
 		List<User> users = new ArrayList<User>();
 		while (cursor.hasNext()) {
@@ -172,6 +271,11 @@ public class MongoDataManager implements IDataManager {
 		return users;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getUsers(java.lang.String)
+	 */
 	@Override
 	public List<User> getUsers(String groupId) {
 		List<User> users = new ArrayList<User>();
@@ -187,6 +291,12 @@ public class MongoDataManager implements IDataManager {
 		return users;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getUsers(java.lang.String,
+	 * uk.ac.cam.cl.ticking.ui.actors.Role)
+	 */
 	@Override
 	public List<User> getUsers(String groupId, Role role) {
 		List<User> users = new ArrayList<User>();
@@ -200,7 +310,13 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	// Group
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#removeGroup(java.lang.String)
+	 */
 	@Override
 	public void removeGroup(String groupId) {
 		Group group = getGroup(groupId);
@@ -213,12 +329,25 @@ public class MongoDataManager implements IDataManager {
 		groupColl.remove(new BasicDBObject().append("_id", groupId));
 		groupingColl.remove(new BasicDBObject().append("group", groupId));
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#removeUserGroup(java.lang.String
+	 * , java.lang.String)
+	 */
 	@Override
 	public void removeUserGroup(String crsid, String groupId) {
-		groupingColl.remove(new BasicDBObject().append("group", groupId).append("user", crsid));
+		groupingColl.remove(new BasicDBObject().append("group", groupId)
+				.append("user", crsid));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroup(java.lang.String)
+	 */
 	@Override
 	public Group getGroup(String groupId) {
 		Group group = null;
@@ -226,6 +355,12 @@ public class MongoDataManager implements IDataManager {
 		return group;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroupByName(java.lang.String)
+	 */
 	@Override
 	public Group getGroupByName(String name) {
 		Group group = null;
@@ -233,12 +368,21 @@ public class MongoDataManager implements IDataManager {
 		return group;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroups()
+	 */
 	@Override
 	public List<Group> getGroups() {
 		DBCursor<Group> cursor = groupColl.find();
 		return getGroups(cursor);
 	}
 
+	/**
+	 * @param cursor
+	 * @return
+	 */
 	private List<Group> getGroups(DBCursor<Group> cursor) {
 		List<Group> groups = new ArrayList<Group>();
 		while (cursor.hasNext()) {
@@ -249,6 +393,11 @@ public class MongoDataManager implements IDataManager {
 		return groups;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroups(java.lang.String)
+	 */
 	@Override
 	public List<Group> getGroups(String crsid) {
 		List<Group> groups = new ArrayList<Group>();
@@ -265,6 +414,12 @@ public class MongoDataManager implements IDataManager {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroups(java.lang.String,
+	 * uk.ac.cam.cl.ticking.ui.actors.Role)
+	 */
 	@Override
 	public List<Group> getGroups(String crsid, Role role) {
 		List<Group> groups = new ArrayList<Group>();
@@ -278,13 +433,26 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	// Roles
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#removeUserGroupRole(java.lang
+	 * .String, java.lang.String, uk.ac.cam.cl.ticking.ui.actors.Role)
+	 */
 	@Override
 	public void removeUserGroupRole(String crsid, String groupId, Role role) {
 		groupingColl.remove(new BasicDBObject().append("user", crsid)
 				.append("group", groupId).append("role", role));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getRoles(java.lang.String,
+	 * java.lang.String)
+	 */
 	@Override
 	public List<Role> getRoles(String groupId, String crsid) {
 		List<Role> roles = new ArrayList<Role>();
@@ -299,6 +467,13 @@ public class MongoDataManager implements IDataManager {
 
 	// Grouping getters
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroupings(java.lang.String,
+	 * boolean)
+	 */
 	@Override
 	public List<Grouping> getGroupings(String param, boolean field) {
 		String sField = field ? "user" : "group";
@@ -306,12 +481,23 @@ public class MongoDataManager implements IDataManager {
 		return getGroupings(cursor);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroupings(uk.ac.cam.cl.ticking
+	 * .ui.actors.Role)
+	 */
 	@Override
 	public List<Grouping> getGroupings(Role role) {
 		DBCursor<Grouping> cursor = groupingColl.find().is("role", role);
 		return getGroupings(cursor);
 	}
 
+	/**
+	 * @param cursor
+	 * @return
+	 */
 	private List<Grouping> getGroupings(DBCursor<Grouping> cursor) {
 		List<Grouping> groupings = new ArrayList<Grouping>();
 		while (cursor.hasNext()) {
@@ -323,7 +509,13 @@ public class MongoDataManager implements IDataManager {
 	}
 
 	// Tick
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#removeTick(java.lang.String)
+	 */
 	@Override
 	public void removeTick(String tickId) {
 		Tick tick = getTick(tickId);
@@ -335,19 +527,36 @@ public class MongoDataManager implements IDataManager {
 		tickColl.remove(new BasicDBObject().append("_id", tickId));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getTick(java.lang.String)
+	 */
 	@Override
 	public Tick getTick(String tickId) {
 		Tick tick = null;
 		tick = tickColl.findOne(new BasicDBObject("_id", tickId));
 		return tick;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getAuthorTicks(java.lang.String)
+	 */
 	@Override
 	public List<Tick> getAuthorTicks(String crsid) {
-		DBCursor<Tick> cursor = tickColl.find().is("author",crsid);
+		DBCursor<Tick> cursor = tickColl.find().is("author", crsid);
 		return getTicks(cursor);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroupTicks(java.lang.String)
+	 */
 	@Override
 	public List<Tick> getGroupTicks(String groupId) {
 		Group group = getGroup(groupId);
@@ -358,12 +567,21 @@ public class MongoDataManager implements IDataManager {
 		return ticks;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getTicks()
+	 */
 	@Override
 	public List<Tick> getTicks() {
 		DBCursor<Tick> cursor = tickColl.find();
 		return getTicks(cursor);
 	}
 
+	/**
+	 * @param cursor
+	 * @return
+	 */
 	private List<Tick> getTicks(DBCursor<Tick> cursor) {
 		List<Tick> ticks = new ArrayList<Tick>();
 		while (cursor.hasNext()) {
@@ -376,6 +594,13 @@ public class MongoDataManager implements IDataManager {
 
 	// Submission getters
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroupSubmissions(java.lang
+	 * .String)
+	 */
 	@Override
 	public List<Submission> getGroupSubmissions(String groupId) {
 		List<Submission> submissions = new ArrayList<Submission>();
@@ -388,6 +613,12 @@ public class MongoDataManager implements IDataManager {
 		return submissions;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getSubmissions(java.lang.String)
+	 */
 	@Override
 	public List<Submission> getSubmissions(String author) {
 		List<Submission> submissions = new ArrayList<Submission>();
