@@ -1,0 +1,30 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<polymer-element name="sheet-selector" attributes="sheets">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<paper-dialog id="dialog" backdrop>
+			<select>
+				<template repeat="{{sheet in sheets}}">
+					{{sheet.title}}
+				</template>
+			</select>
+		</paper-dialog>
+	</template>
+	<script>
+		Polymer('sheet-selector', {
+			domReady: function () {
+				this.sheets = [
+					{title: "Hi", sid="Foo"},
+					{title: "Hi2", sid="Foo"},
+				]
+			}
+		});
+	</script>
+</polymer-element>
