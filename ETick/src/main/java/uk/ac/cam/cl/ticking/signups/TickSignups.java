@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.signups.api.*;
 import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
+import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
 import uk.ac.cam.cl.signups.api.beans.PermissionsBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
@@ -28,7 +29,9 @@ import uk.ac.cam.cl.signups.interfaces.*;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
+import uk.ac.cam.cl.ticking.ui.util.Strings;
 
+@Path("/signups")
 public class TickSignups {
     
     private WebInterface service;
@@ -52,9 +55,14 @@ public class TickSignups {
      * @throws ItemNotFoundException 
      * TODO: we don't want all free slots, we want all slots a student can use to sign up for a specific tick with
      */
-    public Response listAvailableTimes(String sheetID) {
+    @GET
+    @Path("/sheets/{sheetID}/times")
+    public Response listAvailableTimes(String crsid, String tickID, String sheetID) {
         try {
-            return Response.ok(service.listAllFreeStartTimes(sheetID)).build();
+            List<String> groupIDs = service.getGroupIDs(sheetID);
+            // TODO: should be precisely one ID in this list
+            String groupID = groupIDs.get(0);
+            return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
         } catch (ItemNotFoundException e) {
             return Response.status(Status.NOT_FOUND).entity(e).build();
         }
@@ -69,22 +77,24 @@ public class TickSignups {
      * @return The ticker that the student has been signed up to
      * see at the given time.
      */
+    @POST
+    @Path("/sheets/{sheetID}/bookings")
     public Response makeBooking(String crsid, String groupID,
             String sheetID, String tickID, Date startTime) {
         for (Slot slot : service.listUserSlots(crsid)) {
             if (slot.getStartTime().equals(startTime)) {
                 return Response.status(Status.FORBIDDEN)
-                        .entity("Student already has a booking at this time").build();
+                        .entity(Strings.EXISTINGTIMEBOOKING).build();
             }
             if (slot.getComment().equals(tickID)) {
                 return Response.status(Status.FORBIDDEN)
-                        .entity("Student already has a booking for this tick").build();
+                        .entity(Strings.EXISTINGTICKBOOKING).build();
             }
         }
         try {
             if (service.listColumnsWithFreeSlotsAt(sheetID, startTime).size() == 0) {
                 return Response.status(Status.NOT_FOUND)
-                        .entity("There are no free slots at the given time").build();
+                        .entity(Strings.NOFREESLOTS).build();
             }
             if (service.getPermissions(groupID, crsid).containsKey(tickID)) { // have passed this tick
                 String ticker = service.getPermissions(groupID, crsid).get(tickID);
@@ -155,6 +165,9 @@ public class TickSignups {
     /**
      * Returns a list of the bookings made by one user.
      */
+    @GET
+    @Path("/students/{crsid}/bookings")
+    @Produces
     public Response listStudentBookings(String crsid) {
         return Response.ok(service.listUserSlots(crsid)).build();
     }
@@ -164,9 +177,12 @@ public class TickSignups {
     /**
      * @return The list of the sheets in the given group.
      */
-    public Response listSheets(String groupName) {
+    @GET
+    @Path("/groups/{groupID}")
+    @Produces("application/json")
+    public Response listSheets(@PathParam("groupID") String groupID) {
         try {
-            return Response.ok(service.listSheetIDs(groupName)).build();
+            return Response.ok(service.listSheets(groupID)).build();
         } catch (ItemNotFoundException e) {
             return Response.status(404).entity(e).build();
         }
@@ -175,7 +191,10 @@ public class TickSignups {
     /**
      * @return A list of the ticker names for the given sheet.
      */
-    public Response listTickers(String sheetID) {
+    @GET
+    @Path("/sheets/{sheetID}")
+    @Produces("application/json")
+    public Response listTickers(@PathParam("sheetID") String sheetID) {
         try {
             return Response.ok(service.listColumns(sheetID)).build();
         } catch (ItemNotFoundException e) {
@@ -186,23 +205,31 @@ public class TickSignups {
     /**
      * Returns a list of the slots for the specified ticker.
      */
-    public Response listSlots(String sheetID, String tickerName) {
+    @GET
+    @Path("/sheets/{sheetID}/{ticker}")
+    @Produces("application/json")
+    public Response listSlots(@PathParam("sheetID") String sheetID, @PathParam("ticker") String tickerName) {
         try {
             return Response.ok(service.listColumnSlots(sheetID, tickerName)).build();
         } catch (ItemNotFoundException e) {
-            return Response.status(404).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity(e).build();
         }
     }
     
     /**
-     * @return Who has booked the slot (null if no one) and the tick
+     * @return Response whose body is has booked the slot (null if no one) and the tick
      * they have booked to do.
      */
-    public Response getBooking(String sheetID, String tickerName, Date startTime) {
+    @GET
+    @Path("/sheets/{sheetID}/tickers/{ticker}/{startTime}")
+    @Produces("application/json")
+    public Response getBooking(@PathParam("sheetID") String sheetID,
+            @PathParam("ticker") String tickerName,
+            @PathParam("startTime") Date startTime) {
         try {
             return Response.ok(service.showBooking(sheetID, tickerName, startTime)).build();
         } catch (ItemNotFoundException e) {
-            return Response.status(404).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity(e).build();
         }
     }
     
@@ -210,6 +237,8 @@ public class TickSignups {
      * Removes all bookings that haven't yet started for the given
      * user in the given sheet.
      */
+    @DELETE
+    @Path("/sheets/{sheetID}/bookings/{crsid}")
     public Response removeAllStudentBookings(String sheetID, String crsid, String authCode) {
         try {
             service.removeAllUserBookings(sheetID, crsid, authCode);
@@ -225,6 +254,8 @@ public class TickSignups {
      * Ensures that the given student is assigned the given ticker
      * (if possible) in the future for the specified tick.
      */
+    @POST
+    @Path("/students/{crsid}/permissions")
     public Response assignTickerForTickForUser(String crsid, String groupID,
             String tickID, String ticker, String groupAuthCode) {
         Map<String, String> map = new HashMap<String, String>();
@@ -248,8 +279,12 @@ public class TickSignups {
     /**
      * Creates a new sheet for the given group.
      */
+    @POST
+    @Path("/sheets")
+    @Produces("Application/json")
     public Response createSheet(String title, String description, String location,
-            Date startTime, int slotLengthInMinutes, Date endTime, List<String> tickerNames) {
+            Date startTime, int slotLengthInMinutes, Date endTime, List<String> tickerNames,
+            String groupID, String groupAuthCode) {
         long sheetLengthInMinutes = (endTime.getTime() - startTime.getTime())/60000;
         if (sheetLengthInMinutes % slotLengthInMinutes != 0) {
             return Response.status(Status.BAD_REQUEST).entity("The difference in minutes "
@@ -280,7 +315,19 @@ public class TickSignups {
                 e.printStackTrace();
                 return Response.status(Status.BAD_REQUEST).entity("You must have specified two "
                         + "identical columns (or slots)").build();
+                // TODO: delete sheet?
             }
+        }
+        try {
+            service.addSheetToGroup(groupID, new GroupSheetBean(id, groupAuthCode, auth));
+        } catch (ItemNotFoundException e) {
+            // TODO Create group?
+            e.printStackTrace();
+            return Response.status(Status.NOT_IMPLEMENTED).build();
+        } catch (NotAllowedException e) {
+            // Store auth codes in database and check user permissions before providing them?
+            e.printStackTrace();
+            return Response.status(Status.NOT_IMPLEMENTED).build();
         }
         return Response.ok().entity(/*TODO*/"TODO").build();
     }
@@ -295,6 +342,9 @@ public class TickSignups {
      * @param numberOfSlots
      * @param slotLength In minutes
      */
+    @POST
+    @Path("/sheets/{sheetID}/tickers")
+    @Produces("application/json")
     public Response addColumn(String sheetID, String authCode, 
             String name, Date startTime, Date endTime,
             int slotLength /* in minutes */) {
@@ -317,9 +367,12 @@ public class TickSignups {
      * Deletes the specified column from the sheet. This also deletes
      * all the bookings made for that column.
      */
-    public Response deleteColumn(String sheetID, String columnName, String authCode) {
+    @DELETE
+    @Path("/sheets/{sheetID}/tickers/{ticker}")
+    @Produces("application/json")
+    public Response deleteColumn(String sheetID, String ticker, String authCode) {
         try {
-            service.deleteColumn(sheetID, columnName, authCode);
+            service.deleteColumn(sheetID, ticker, authCode);
         } catch (NotAllowedException e) {
             e.printStackTrace();
             return Response.status(Status.FORBIDDEN).entity(e).build();
@@ -334,6 +387,9 @@ public class TickSignups {
     /**
      * Modifies bookings no matter what.
      */
+    @POST
+    @Path("/sheets/{sheetID}/bookings/{startTime}")
+    // TODO: unify with normal modify booking and even perhaps make booking
     public Response forceModifyBooking(String sheetID, String authCode, String tickID,
             Date startTime, String currentlyBookedUser, String userToBook) {
         String ticker = null;
