@@ -12,15 +12,16 @@
 				display: block;
 			}
 			select {
-			   background: transparent;
+			   background: #f0f0f0;
 			   width: 100%;
 			   padding: 5px;
 			   font-size: 1rem;
 			}
 		</style>
-		<paper-button label="FOO" on-click="{{clicked}}"></paper-button>
-		<paper-dialog id="dialog" backdrop heading="Select Ticking Session:">
-			<select id="selector" onchange="{{sheetSelectionChanged}}">
+<!-- 		<paper-button label="FOO" on-click="{{clicked}}"></paper-button>
+ -->		<paper-dialog id="dialog" backdrop heading="Select Ticking Session:" transition="core-transition-top">
+			<select id="selector" on-change="{{sheetSelectionChanged}}">
+				<option disabled selected>Select Ticking Session...</option>
 				<template repeat="{{sheet in sheets}}">
 					<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
 				</template>
@@ -32,21 +33,23 @@
 	</template>
 	<script>
 		Polymer('sheet-selector', {
-			domReady: function () {
-			},
+			// clicked: function () {
+			// 	this.toggle();
+			// },
 
 			toggle: function () {
 				this.$.dialog.toggle();
 			},
 
-			clicked: function () {
-				this.toggle();
-			},
-
 			sheetSelectionChanged: function () {
 				var sel = this.$.selector;
-				 
+				this.selection = sel.options[sel.selectedIndex].getAttribute('sheetid');
+			},
+
+			sheetSelected: function () {
+				console.log(this.selection + ': selected');
 			}
+
 		});
 	</script>
 </polymer-element>
