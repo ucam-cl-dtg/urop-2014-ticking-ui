@@ -40,7 +40,7 @@
             },
 
             /**
-             * Submit a tick for testing
+             * Submits the user's tick for testing
              */
             submit: function() {
                 console.log("submit request received");
@@ -48,8 +48,22 @@
                 this.$.ajaxSubmit.go();
             },
 
+
             startPolling: function() {
                 console.log("Successfully started submission");
+                this.pollNext();
+            },
+
+            /**
+             * Sets the published status attribute to the response of a pollStatus request, and starts another poll
+             * if the test is incomplete
+             */
+            pollNext: function() {
+                this.status = this.$.ajaxPoll.response();
+
+                if (!(this.status.progress === this.maxProgress)) {
+                    this.$.ajaxPoll.go();
+                }
             }
         });
     </script>
