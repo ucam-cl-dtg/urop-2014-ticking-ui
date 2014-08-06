@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="submit-component.html">
+<link rel="import" href="report-component.html">
 <link rel="import" href="blank-component.html">
 
 <polymer-element name="tick-card" attributes="tickId">
@@ -15,19 +16,19 @@
         </style>
 
         <!-- load the fork data for this tick -->
-        <!-- TODO <core-ajax
+        <core-ajax
                 auto
                 url=""
                 handleAs="json"
                 on-core-response="{{}}">
-        </core-ajax> -->
+        </core-ajax>
 
         <div id="mainContainer">
             <h1>Tick Card</h1>
 
             <div layout horizontal>
                 <submit-component tickId="as2388,tester-tick" flex></submit-component> <div class="spacer"></div>
-                <blank-component flex></blank-component> <div class="spacer"></div>
+                <report-component flex></report-component> <div class="spacer"></div>
                 <blank-component flex></blank-component>
             </div>
         </div>
