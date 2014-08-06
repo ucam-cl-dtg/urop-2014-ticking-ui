@@ -2,39 +2,10 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <polymer-element name="create-group" attributes="">
 	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
 		<style>
 			:host {
 				display: block;
-			}
-			paper-dialog .subtitle {
-				font-weight: 200;
-				font-size: 1.2rem;
-			}
-
-			paper-dialog::shadow h1 {
-				font-weight: 100;
-				margin-bottom: 10px;
-			}
-
-			/*Fix for paper-checkbox issue #6*/
-			paper-checkbox::shadow #ink {
-			    top: -16px;
-			    left: -16px;
-			    width: 50px;
-			    height: 50px;
-			}
-
-			paper-checkbox {
-				padding: 5px;
-			}
-
-			.dialogSubmit {
-				background: #4285f4;
-				color: #fff;
-			}
-
-			.disabledLabel {
-				color: #eaeaea;
 			}
 		</style>
 

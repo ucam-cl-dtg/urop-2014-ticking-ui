@@ -30,7 +30,7 @@
 			}
 		</style>
 		<core-selector layout horizontal center wrap 
-			id="memberSelector" valueattr="crsid" on-core-select="{{coreSelected}}">
+			id="memberSelector" valueattr="crsid">
 			<template repeat="{{person in people | filter(query) }}">
 					<person-box
 						name="{{person.displayName}}"
@@ -43,10 +43,6 @@
 	</template>
 	<script>
 		Polymer('person-list', {
-
-			coreSelected: function () {
-				console.log(this.$.memberSelector.selected);
-			},
 
 			listFilter: function(item) {
 				var q = this.query.toLowerCase();
