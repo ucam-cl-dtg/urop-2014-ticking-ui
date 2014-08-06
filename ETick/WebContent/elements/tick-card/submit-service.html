@@ -14,6 +14,7 @@
                 id="ajaxSubmit"
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/'}}"
                 handleAs="json"
+                contentType="json"
                 method="POST"
                 on-core-response="{{startPolling}}">
         </core-ajax>
@@ -58,7 +59,7 @@
              * if the test is incomplete
              */
             pollNext: function() {
-                this.status = this.$.ajaxPoll.response();
+                this.status = this.$.ajaxPoll.response;
 
                 if (!(this.status.progress === this.maxProgress)) {
                     this.$.ajaxPoll.go();
