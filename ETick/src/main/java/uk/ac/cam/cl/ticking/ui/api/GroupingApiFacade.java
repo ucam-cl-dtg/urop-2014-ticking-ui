@@ -39,6 +39,9 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		this.raven = raven;
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade#addGrouping(javax.servlet.http.HttpServletRequest, java.lang.String, java.lang.String, java.util.List)
+	 */
 	@Override
 	public Response addGrouping(HttpServletRequest request, String crsid,
 			String groupId, List<Role> roles) {
@@ -68,6 +71,9 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		return Response.status(Status.CREATED).entity(users).build();
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade#deleteGrouping(javax.servlet.http.HttpServletRequest, uk.ac.cam.cl.ticking.ui.actors.Grouping)
+	 */
 	@Override
 	public Response deleteGrouping(HttpServletRequest request, Grouping grouping) {
 		String myCrsid = (String) request.getSession().getAttribute(

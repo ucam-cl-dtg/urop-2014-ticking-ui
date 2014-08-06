@@ -28,6 +28,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -311,27 +312,42 @@ public class TickApiFacade implements ITickApiFacade {
 	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response forkTick(HttpServletRequest request, String tickId)
-			throws IOException {
+	public Response forkTick(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
+		Fork fork = db.getFork(crsid + "," + tickId);
+		if (fork != null) {
+			return Response.ok(fork).build();
+		}
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget target = client.target(config.getConfig()
 				.getGitApiLocation());
 		WebInterface proxy = target.proxy(WebInterface.class);
-		String output;
+		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
 		try {
-			output = proxy.forkRepository(new ForkRequestBean(null, crsid,
+			repo = proxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));
 		} catch (DuplicateRepoNameException e) {
-			output = e.getMessage() + Strings.FORKED;
+			repo = e.getMessage();
+		} catch (IOException e) {
+			// The repo that was being forked was empty, however, it has still
+			// been forked thus continue
+
+		}
+
+		try {
+			fork = new Fork(crsid, tickId, repo);
+			db.insertFork(fork);
+		} catch (DuplicateDataEntryException e) {
+			throw new RuntimeException("Schrodinger's repository");
+			// The fork simultaneously does and doesn't exist
 		}
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
-		return Response.status(Status.CREATED).entity(output).build();
+		return Response.status(Status.CREATED).entity(fork).build();
 	}
 
 	/*

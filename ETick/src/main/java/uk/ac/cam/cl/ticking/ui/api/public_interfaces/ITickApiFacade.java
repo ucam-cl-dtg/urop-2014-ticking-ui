@@ -134,7 +134,7 @@ public interface ITickApiFacade {
 	@Path("/{tickId}")
 	@Produces("application/json")
 	public abstract Response forkTick(@Context HttpServletRequest request,
-			@PathParam("tickId") String tickId) throws IOException;
+			@PathParam("tickId") String tickId);
 
 	/**
 	 * Updates the deadline of a tick in the database

@@ -111,6 +111,9 @@ public class Grouping {
 		this.role = role;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -121,6 +124,9 @@ public class Grouping {
 		return this._id == ((Grouping) o)._id;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return _id.hashCode();
