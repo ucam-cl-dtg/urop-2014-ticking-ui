@@ -29,7 +29,7 @@ public class ForkBean {
 	/**
 	 * @return unitPass
 	 */
-	public boolean getUnitPass() {
+	public Boolean getUnitPass() {
 		return unitPass;
 	}
 
@@ -43,7 +43,7 @@ public class ForkBean {
 	/**
 	 * @return humanPass
 	 */
-	public boolean getHumanPass() {
+	public Boolean getHumanPass() {
 		return humanPass;
 	}
 
@@ -58,7 +58,7 @@ public class ForkBean {
 	 * 
 	 * @return signedUp
 	 */
-	public boolean isSignedUp() {
+	public Boolean isSignedUp() {
 		return signedUp;
 	}
 
@@ -74,7 +74,7 @@ public class ForkBean {
 	 * 
 	 * @return testing
 	 */
-	public boolean isTesting() {
+	public Boolean isTesting() {
 		return testing;
 	}
 

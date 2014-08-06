@@ -109,23 +109,29 @@ public class ForkApiFacade implements IForkApiFacade {
 				"RavenRemoteUser");
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork != null) {
-			fork.setHumanPass(forkBean.getHumanPass());
-			if (forkBean.getHumanPass()) {
-				ResteasyClient testClient = new ResteasyClientBuilder().build();
-				ResteasyWebTarget testTarget = testClient.target(config
-						.getConfig().getTestApiLocation());
-
-				ITestService testProxy = testTarget.proxy(ITestService.class);
-				try {
-					testProxy.setTickerResult(crsid, tickId, ReportResult.PASS,
-							forkBean.getTickerComments(), forkBean.getCommitId());
-				} catch (UserNotInDBException | TickNotInDBException
-						| ReportNotFoundException e) {
-					return Response.status(Status.NOT_FOUND).entity(e).build();
+			if (forkBean.getHumanPass()!=null) {
+				fork.setHumanPass(forkBean.getHumanPass());
+				if (forkBean.getHumanPass()) {
+					ResteasyClient testClient = new ResteasyClientBuilder().build();
+					ResteasyWebTarget testTarget = testClient.target(config
+							.getConfig().getTestApiLocation());
+	
+					ITestService testProxy = testTarget.proxy(ITestService.class);
+					try {
+						testProxy.setTickerResult(crsid, tickId, ReportResult.PASS,
+								forkBean.getTickerComments(), forkBean.getCommitId());
+					} catch (UserNotInDBException | TickNotInDBException
+							| ReportNotFoundException e) {
+						return Response.status(Status.NOT_FOUND).entity(e).build();
+					}
 				}
 			}
-			fork.setUnitPass(forkBean.getUnitPass());
-			fork.setSignedUp(forkBean.isSignedUp());
+			if (forkBean.getUnitPass()!=null) {
+				fork.setUnitPass(forkBean.getUnitPass());
+			}
+			if (forkBean.isSignedUp()!=null) {
+				fork.setSignedUp(forkBean.isSignedUp());
+			}
 			db.saveFork(fork);
 			return Response.status(Status.CREATED).entity(fork).build();
 		}
