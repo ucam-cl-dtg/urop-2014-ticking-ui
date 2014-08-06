@@ -25,9 +25,7 @@ public class GroupBean {
 	 * @param name
 	 * @param info
 	 */
-	@JsonCreator
-	public GroupBean(@JsonProperty("name") String name,
-			@JsonProperty("info") String info) {
+	public GroupBean(String name, String info) {
 		this.setName(name);
 		this.setInfo(info);
 	}
