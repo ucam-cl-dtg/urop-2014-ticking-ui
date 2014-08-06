@@ -106,4 +106,23 @@ public interface IGroupApiFacade {
 	public abstract Response updateGroup(@Context HttpServletRequest request,
 			@PathParam("groupId") String groupId, GroupBean groupBean);
 
+	/**
+	 * 
+	 * @param request
+	 * @param groupId
+	 * @param members
+	 * @param ticks
+	 * @param groupBean
+	 * @return the cloned group object
+	 */
+	@POST
+	@Path("/{groupId}")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public abstract Response cloneGroup(@Context HttpServletRequest request,
+			@PathParam("groupId") String groupId,
+			@DefaultValue("true") @QueryParam("members") boolean members,
+			@DefaultValue("true") @QueryParam("ticks") boolean ticks,
+			GroupBean groupBean);
+
 }

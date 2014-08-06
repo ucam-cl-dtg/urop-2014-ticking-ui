@@ -2,6 +2,7 @@ package uk.ac.cam.cl.ticking.ui.api;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +23,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
+import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -129,9 +131,11 @@ public class GroupApiFacade implements IGroupApiFacade {
 					.entity("Nothing happens...").build();
 		}
 		try {
-			group.setInfo(URLDecoder.decode(groupBean.getInfo(), "UTF-8"));
+			group.setInfo(URLDecoder.decode(groupBean.getInfo(),
+					StandardCharsets.UTF_8.name()));
 		} catch (UnsupportedEncodingException e) {
-			// Hardcoded: known to be supported
+			// Hardcoded: known to be supported @see
+			// http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#iana
 		}
 		try {
 			db.insertGroup(group);
@@ -177,6 +181,45 @@ public class GroupApiFacade implements IGroupApiFacade {
 			return addGroup(request, new ArrayList<String>(), groupBean);
 		}
 
+	}
+
+	public Response cloneGroup(HttpServletRequest request, String groupId,
+			boolean members, boolean ticks, GroupBean groupBean) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		Group prevGroup = db.getGroup(groupId);
+		if (!crsid.equals(prevGroup.getCreator())) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		Group group = new Group(groupBean.getName(), crsid);
+		try {
+			group.setInfo(URLDecoder.decode(groupBean.getInfo(),
+					StandardCharsets.UTF_8.name()));
+		} catch (UnsupportedEncodingException e) {
+			// Hardcoded: known to be supported @see
+			// http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#iana
+		}
+		if (members) {
+			for (Grouping grouping : db.getGroupings(groupId, false)) {
+				db.saveGrouping(new Grouping(group.getGroupId(), grouping
+						.getUser(), grouping.getRole()));
+			}
+		}
+		if (ticks) {
+			for (String tickId : prevGroup.getTicks()) {
+				Tick tick = db.getTick(tickId);
+				tick.addGroup(groupId);
+				db.saveTick(tick);
+			}
+			group.setTicks(prevGroup.getTicks());
+		}
+		try {
+			db.insertGroup(group);
+		} catch (DuplicateDataEntryException de) {
+			return Response.status(Status.CONFLICT).build();
+		}
+		return Response.status(Status.CREATED).entity(group).build();
 	}
 
 }

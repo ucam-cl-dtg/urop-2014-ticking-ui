@@ -1,5 +1,6 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,12 +41,17 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		this.raven = raven;
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade#addGrouping(javax.servlet.http.HttpServletRequest, java.lang.String, java.lang.String, java.util.List)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade#addGrouping
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
+	 * java.lang.String, java.util.List)
 	 */
 	@Override
-	public Response addGroupings(HttpServletRequest request,
-			String groupId, GroupingBean groupingBean) {
+	public Response addGroupings(HttpServletRequest request, String groupId,
+			GroupingBean groupingBean) {
 		if (groupingBean.getRoles().isEmpty()) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(Strings.ATLEASTONEROLE).build();
@@ -62,7 +68,8 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 				db.insertUser(raven.ldapProduceUser(crsid));
 			} catch (DuplicateDataEntryException e) {
 				// Do nothing
-				// The user is already in the database and so we don't need to add
+				// The user is already in the database and so we don't need to
+				// add
 				// them.
 			}
 			for (Role r : groupingBean.getRoles()) {
@@ -73,7 +80,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		Collections.sort(users);
 		return Response.status(Status.CREATED).entity(users).build();
 	}
-	
+
 	@Override
 	public Response deleteGroupings(HttpServletRequest request, String groupId,
 			GroupingBean groupingBean) {
@@ -84,16 +91,20 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
+
 		String output = "Users deleted";
-		
+
 		Group group = db.getGroup(groupId);
 		for (String crsid : groupingBean.getCrsids()) {
 			if (crsid.equals(group.getCreator())) {
 				output = Strings.REMOVECREATOR;
 			} else {
-				for (Role role : groupingBean.getRoles()) {
-					db.removeUserGroupRole(crsid, groupId,role);
+				List<Role> roles = groupingBean.getRoles();
+				if (roles.isEmpty()) {
+					roles = Arrays.asList(Role.values());
+				}
+				for (Role role : roles) {
+					db.removeUserGroupRole(crsid, groupId, role);
 				}
 			}
 		}
