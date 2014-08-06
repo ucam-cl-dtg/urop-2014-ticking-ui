@@ -79,8 +79,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 			String crsid) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		Group group = db.getGroup(groupId);
-		if (!myCrsid.equals(group.getCreator())) {
+		List<Role> myRoles = db.getRoles(groupId, myCrsid);
+		if (!myRoles.contains(Role.AUTHOR)) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}

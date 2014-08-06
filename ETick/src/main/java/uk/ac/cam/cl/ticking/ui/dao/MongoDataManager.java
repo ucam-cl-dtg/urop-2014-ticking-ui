@@ -12,7 +12,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
-import uk.ac.cam.cl.ticking.ui.ticks.Submission;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -30,7 +30,7 @@ public class MongoDataManager implements IDataManager {
 	private final JacksonDBCollection<User, String> userColl;
 	private final JacksonDBCollection<Group, String> groupColl;
 	private final JacksonDBCollection<Grouping, String> groupingColl;
-	private final JacksonDBCollection<Submission, String> subColl;
+	private final JacksonDBCollection<Fork, String> forkColl;
 
 	/**
 	 * @param database
@@ -45,9 +45,9 @@ public class MongoDataManager implements IDataManager {
 		tickColl = JacksonDBCollection.wrap(
 				database.getCollection(Strings.TICKSCOLLECTION), Tick.class,
 				String.class, objectMapper);
-		subColl = JacksonDBCollection.wrap(
-				database.getCollection(Strings.SUBMISSIONSCOLLECTION),
-				Submission.class, String.class, objectMapper);
+		forkColl = JacksonDBCollection.wrap(
+				database.getCollection(Strings.FORKSCOLLECTION),
+				Fork.class, String.class, objectMapper);
 		userColl = JacksonDBCollection.wrap(
 				database.getCollection(Strings.USERSCOLLECTION), User.class,
 				String.class, objectMapper);
@@ -87,12 +87,12 @@ public class MongoDataManager implements IDataManager {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveSubmission(uk.ac.cam.cl.
-	 * ticking.ui.ticks.Submission)
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveFork(uk.ac.cam.cl.
+	 * ticking.ui.ticks.Fork)
 	 */
 	@Override
-	public void saveSubmission(Submission s) {
-		subColl.save(s);
+	public void saveFork(Fork s) {
+		forkColl.save(s);
 	}
 
 	/*
@@ -157,16 +157,16 @@ public class MongoDataManager implements IDataManager {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertSubmission(uk.ac.cam.cl
-	 * .ticking.ui.ticks.Submission)
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertFork(uk.ac.cam.cl
+	 * .ticking.ui.ticks.Fork)
 	 */
 	@Override
-	public void insertSubmission(Submission s)
+	public void insertFork(Fork s)
 			throws DuplicateDataEntryException {
 		try {
-			subColl.insert(s);
+			forkColl.insert(s);
 		} catch (MongoException duplicate) {
-			throw new DuplicateDataEntryException("Submission");
+			throw new DuplicateDataEntryException("Fork");
 		}
 	}
 
@@ -592,43 +592,38 @@ public class MongoDataManager implements IDataManager {
 		return ticks;
 	}
 
-	// Submission getters
+	// Fork getters
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroupSubmissions(java.lang
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getFork(java.lang
 	 * .String)
 	 */
 	@Override
-	public List<Submission> getGroupSubmissions(String groupId) {
-		List<Submission> submissions = new ArrayList<Submission>();
-		DBCursor<Submission> cursor = subColl.find().is("group", groupId);
-		while (cursor.hasNext()) {
-			Submission submission = cursor.next();
-			submissions.add(submission);
-		}
-		cursor.close();
-		return submissions;
+	public Fork getFork(String forkId) {
+		Fork fork = null;
+		fork = forkColl.findOne(new BasicDBObject("_id", forkId));
+		return fork;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getSubmissions(java.lang.String)
+	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getForks(java.lang.String)
 	 */
 	@Override
-	public List<Submission> getSubmissions(String author) {
-		List<Submission> submissions = new ArrayList<Submission>();
-		DBCursor<Submission> cursor = subColl.find().is("author", author);
+	public List<Fork> getForks(String author) {
+		List<Fork> forks = new ArrayList<Fork>();
+		DBCursor<Fork> cursor = forkColl.find().is("author", author);
 		while (cursor.hasNext()) {
-			Submission submission = cursor.next();
-			submissions.add(submission);
+			Fork fork = cursor.next();
+			forks.add(fork);
 		}
 		cursor.close();
-		return submissions;
+		return forks;
 	}
 
 }

@@ -15,6 +15,7 @@ import publicinterfaces.ITestService;
 import publicinterfaces.NoCommitsToRepoException;
 import publicinterfaces.NoSuchTestException;
 import publicinterfaces.Report;
+import publicinterfaces.ReportResult;
 import publicinterfaces.Status;
 import publicinterfaces.TestIDNotFoundException;
 import publicinterfaces.TestStillRunningException;
@@ -25,6 +26,7 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -60,6 +62,10 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 				"RavenRemoteUser");
 
 		Tick tick = db.getTick(tickId);
+		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+		if (fork == null) {
+			return Response.status(404).build();
+		}
 
 		DateTime extension = tick.getExtensions().get(crsid);
 		if (extension != null) {
@@ -91,6 +97,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			return Response.status(400).entity(e).build();
 		}
 
+		fork.setTesting(true);
+		db.saveFork(fork);
 		return Response.status(201).build();
 	}
 
@@ -117,6 +125,12 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			status = testProxy.pollStatus(crsid, tickId);
 		} catch (NoSuchTestException e) {
 			return Response.status(404).entity(e).build();
+		}
+		
+		if (status.getProgress()==status.getMaxProgress()) {
+			Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+			fork.setTesting(false);
+			db.saveFork(fork);
 		}
 
 		return Response.ok(status).build();
@@ -146,6 +160,10 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		} catch (UserNotInDBException | TickNotInDBException e) {
 			return Response.status(404).entity(e).build();
 		}
+		
+		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+		fork.setUnitPass(status.getTestResult().equals(ReportResult.PASS));
+		db.saveFork(fork);
 
 		return Response.ok(status).build();
 	}
