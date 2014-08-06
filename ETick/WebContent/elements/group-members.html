@@ -105,6 +105,22 @@
 				'$.searchBox.query' : 'searchBoxChanged'
 			},
 
+			searchBoxChanged: function (oldValue, newValue) {
+				this.searchQuery = newValue;
+			},
+
+			personSelectionChanged: function () {
+				this.selectedPeople = this.$.members.$.memberSelector.selected;
+			},
+
+			listResponse: function() {
+				var list = this.$.listAjax.response;
+				this.number = list.length;
+				this.$.members.people = list;
+			},
+
+			// Add member(s) functionality:
+
 			addMember: function() {
 				var newCRSIDs = this.$.addInput.value.split(/[^\w\d]+/);
 				var roles = [];
@@ -131,12 +147,6 @@
 				this.$.addDialog.toggle();
 			},
 
-			listResponse: function() {
-				var list = this.$.listAjax.response;
-				this.number = list.length;
-				this.$.members.people = list;
-			},
-
 			addMemberResponse: function() {
 				var list = this.$.addMemberAjax.response;
 				this.number = list.length;
@@ -150,9 +160,8 @@
 				this.$.addErrorToast.show();
 			},
 
-			searchBoxChanged: function (oldValue, newValue) {
-				this.searchQuery = newValue;
-			},
+
+			// Delete member(s) funcitonality:
 
 			deleteMemberClicked: function () {
 				var jsonSelectedPeople = JSON.stringify(this.selectedPeople);
@@ -172,10 +181,6 @@
 				this.$.deleteErrorToast.text = detail.xhr.responseText;
 				this.$.deleteErrorToast.show();
 			},
-
-			personSelectionChanged: function () {
-				this.selectedPeople = this.$.members.$.memberSelector.selected;
-			}
 
 		});
 	</script>
