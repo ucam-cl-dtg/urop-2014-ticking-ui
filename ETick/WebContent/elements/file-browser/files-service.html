@@ -1,7 +1,7 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
-<!-- 
+<!--
   TODO:
   `<files-service>` provides retrieval of files using AJAX.
 
@@ -62,51 +62,79 @@ TODO:
           </tr>
         </table>
       </td>
-    </tr>  
+    </tr>
   </table>
-  
-  @attribute files 
+
+  @attribute files
   @type Array
   @default []
 -->
 <polymer-element name="files-service"
-    attributes="files testResult tickerResult reportResult comments errors commitID date testCount">
+    attributes="files testResult
+                tickerResult reportResult
+                comments errors
+                commitID date
+                testCount repoName">
   <template>
     <style>
     :host {
       display: none;
     }
     </style>
-    <core-ajax id="ajax"
-      auto
-      url="test-report.json"
-      on-core-response="{{filesLoaded}}"
-      handleAs="json">
+    <core-ajax id="report"
+               auto
+               on-core-response="{{reportLoaded}}"
+               handleAs="json">
+    </core-ajax>
+    <core-ajax id="fileContent"
+               auto
+               on-core-response="{{filesLoaded}}"
+               handleAs="json">
     </core-ajax>
   </template>
+  <script src="../../hardcoded.js"></script>
   <script>
   Polymer('files-service'
-    , { created: function()
-        {
-          "use strict";
-          this.files = [];
-        }
-      , filesLoaded: function()
-        {
-          "use strict";
+    , {   repoNameChanged:
+          function ()
+          {
+            "use strict";
+            /* TODO: get report as an attribute */
+            this.$.report.url =
+              tester_service + "/" + "tl364/tester" + "/last";
 
-          /* Make a copy of the loaded data */
-          this.files        = this.$.ajax.response.files;
-          this.testResult   = this.$.ajax.response.testResult;
-          this.tickerResult = this.$.ajax.response.tickerResult;
-          this.reportResult = this.$.ajax.response.reportResult;
-          this.comments     = this.$.ajax.response.tickerComments;
-          this.errors       = this.$.ajax.response.items;
-          this.commitID     = this.$.ajax.response.commitId;
-          this.date         = this.$.ajax.response.creationDate;
-          this.testCount    = this.$.ajax.response.noOfTests;
-          this.fire('files-loaded');
-        }
+          }
+
+        , reportLoaded:
+          function()
+          {
+            "use strict";
+
+            /* Load files, fires due to auto attribute */
+            this.$.fileContent.url =
+              git_service + "/bundle/"
+              + this.$.report.response.repoName + ".git/"
+              + this.$.report.response.commitId;
+
+            /* Make a copy of the loaded data */
+            this.testResult   = this.$.report.response.testResult;
+            this.tickerResult = this.$.report.response.tickerResult;
+            this.reportResult = this.$.report.response.reportResult;
+            this.comments     = this.$.report.response.tickerComments;
+            this.errors       = this.$.report.response.items;
+            this.commitID     = this.$.report.response.commitId;
+            this.date         = this.$.report.response.creationDate;
+            this.testCount    = this.$.report.response.noOfTests;
+          }
+
+        , filesLoaded:
+          function ()
+          {
+            "use strict";
+
+            this.files = this.$.fileContent.response;
+            this.fire('files-loaded');
+          }
       });
   </script>
 </polymer-element>

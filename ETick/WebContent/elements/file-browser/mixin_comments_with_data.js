@@ -23,7 +23,7 @@
  *     , "class"   : "helloWorld"
  * } ]
  * [/DATA]
- * 
+ *
  * Result:
  * [HTML]
  * <span>&lt;p&gt;</span><span class="message1 helloWorld">Hello, world\
@@ -183,7 +183,7 @@ function lines_to_chars(data, comments)
   {
     return [];
   }
-  
+
   var lineStart = [0];
   var i;
   var len = data.length;

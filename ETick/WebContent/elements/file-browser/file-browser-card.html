@@ -5,11 +5,13 @@
 <link rel="import" href="file-card.html"/>
 <link rel="import" href="files-list.html"/>
 
-<polymer-element name="file-browser-card">
+<polymer-element name="file-browser-card" attributes="repoName">
+  <!-- TODO: get ALL reports -->
   <template>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="file-browser-style.css"/>
     <files-service id="service"
+                   repoName="{{repoName}}"
                    files="{{files}}"
                    testResult="{{testResult}}"
                    tickerResult="{{tickerResult}}"

@@ -43,53 +43,96 @@
           , contentChanged:
             function ()
             {
-              console.log("beginning", this.comments);
               if (typeof this.comments == "undefined")
               {
                 var comments = [];
               }
               else
               {
+                /* A note about the general layout of comment
+                 *
+                 * Current:
+                 * [ {   fileDetails:
+                 *       [ {   detail: (Description)
+                 *           , file:   (File name)
+                 *           , lineNumber: (Starting from 1)
+                 *       } ]
+                 *     , outcome: (ERROR/WARNING/PASS)
+                 *     , problemDescription: (Short, human readable.)
+                 * } ]
+                 *
+                 * However, it is a lot easier for us to use the
+                 * following format:
+                 * [ {   message: (Description)
+                 *     , line:    (Starting from 1)
+                 *     , class:   (For enclosing span tags)
+                 *      (^ Generated using problemDescription)
+                 * } ]
+                 *
+                 * The reason I am not changing mixin_comments_with_data
+                 * is because this way is easier and allows other code
+                 * using the latter format to be used.
+                 */
+
+                /* To take advantage of closures, as this is always
+                 * local */
+                var filename = this.name
+
+                /* Apologies about this, unfortunately the prototyping
+                 * nature of JavaScript can mean difficulties with
+                 * looping over arrays, so I use native array functions
+                 */
                 var comments =
                   this.comments.reduce(/* Same as foldl */
                     function(previousValue, currentValue)
                     {
-                      /* Re-format errors */
-                      var errorInstances =
+                      /* Re-format errors; isCurrentFile and
+                       * refactorData declared after the return */
+                      var errors =
                         currentValue.fileDetails
-                          .filter(function (error)
-                                  { /* Filter for this file */
-                                    return error.file == this.name;
-                                  }.bind(this))
-                          .map(function (error)
-                               {
-                                 var rtn = new Object();
-                                 rtn.line = error.lineNumber;
-                                 rtn.message = error.detail;
+                          .filter(isCurrentFile)
+                          .map(refactorData);
 
-                                 /* Generate CSS classes for error */
-                                 rtn.class = [ currentValue.outcome
-                                             , currentValue
-                                                .problemDescription
-                                                .replace(/ /g, "_")
-                                             ].join(" ");
+                      return previousValue.concat(errors);
 
-                                 return rtn;
-                               });
-                      return previousValue.concat(errorInstances);
-                    }.bind(this)
+                      /* Does the refactoring of data, as outlined in
+                       * the above comment.
+                       */
+                      function refactorData (error)
+                      {
+                        var rtn = new Object();
+                        rtn.line = error.lineNumber;
+                        rtn.message = error.detail;
+
+                        /* Generate CSS classes for error */
+                        rtn.class = [ currentValue.outcome
+                                      , currentValue
+                                         .problemDescription
+                                         .replace(/ /g, "_")
+                                    ].join(" ");
+
+                        return rtn;
+                      }
+
+                      /* Filter for this file */
+                      function isCurrentFile (error)
+                      {
+                        return error.file == filename;
+                      }
+                    }
                     , /* initial value of */ new Array());
 
-                console.log("middle", comments)
-
+                /* mixin_comments_with_data works with start and end
+                 * characters, so we use this to convert line numbers */
                 comments = lines_to_chars(this.content, comments);
               }
-              console.log("end", comments);
 
+              /* We convert the HighlighJS spans to comments, so that we
+               * can use it with our highlighting function. */
               var syntax   = spans_to_comments(hljs
                                .highlightAuto(this.content || '').value)
 
-              this.$.codeContent.innerHTML = 
+              this.$.codeContent.innerHTML =
                   mixin_comments_with_data(this.content
                     , comments.concat(syntax));
             }
