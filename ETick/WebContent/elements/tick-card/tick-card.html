@@ -1,0 +1,38 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="submit-component.html">
+<link rel="import" href="blank-component.html">
+
+<polymer-element name="tick-card" attributes="tickId">
+    <template>
+        <style>
+            #mainContainer {
+                padding: 0 20px;
+            }
+            .spacer {
+                width: 20px;
+            }
+        </style>
+
+        <!-- load the fork data for this tick -->
+        <!-- TODO <core-ajax
+                auto
+                url=""
+                handleAs="json"
+                on-core-response="{{}}">
+        </core-ajax> -->
+
+        <div id="mainContainer">
+            <h1>Tick Card</h1>
+
+            <div layout horizontal>
+                <submit-component tickId="tester" flex></submit-component> <div class="spacer"></div>
+                <blank-component flex></blank-component> <div class="spacer"></div>
+                <blank-component flex></blank-component>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({});
+    </script>
+</polymer-element>
