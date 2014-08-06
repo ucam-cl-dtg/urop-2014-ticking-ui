@@ -71,32 +71,10 @@ public class GroupApiFacade implements IGroupApiFacade {
 				"RavenRemoteUser");
 		Group group = db.getGroup(groupId);
 		if (!crsid.equals(group.getCreator())) {
-			// return Response.status(Status.UNAUTHORIZED)
-			// .entity(Strings.INVALIDROLE).build();
-		}
-		db.removeGroup(groupId);
-		return Response.ok().build();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#deleteUser
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
-	 * java.lang.String)
-	 */
-	@Override
-	public Response deleteUser(HttpServletRequest request, String groupId,
-			String crsid) {
-		String myCrsid = (String) request.getSession().getAttribute(
-				"RavenRemoteUser");
-		List<Role> myRoles = db.getRoles(groupId, myCrsid);
-		if (!myRoles.contains(Role.AUTHOR)) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		db.removeUserGroup(crsid, groupId);
+		db.removeGroup(groupId);
 		return Response.ok().build();
 	}
 
@@ -158,8 +136,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException de) {
-			return Response.status(Status.CONFLICT)
-					.entity(Strings.GROUPNAMECLASH).build();
+			return Response.status(Status.CONFLICT).build();
 		}
 		for (String role : roles) {
 			Grouping grouping = new Grouping(group.getGroupId(), crsid,

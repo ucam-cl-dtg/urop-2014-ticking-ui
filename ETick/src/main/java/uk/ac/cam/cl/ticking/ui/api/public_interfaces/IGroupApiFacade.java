@@ -55,21 +55,6 @@ public interface IGroupApiFacade {
 			@PathParam("groupId") String groupId);
 
 	/**
-	 * Removes a user from a group completely
-	 * 
-	 * @param request
-	 * @param groupId
-	 * @param crsid
-	 * @return the success of the request
-	 */
-	@DELETE
-	@Path("/{groupId}/{crsid}")
-	@Produces("application/json")
-	public abstract Response deleteUser(@Context HttpServletRequest request,
-			@PathParam("groupId") String groupId,
-			@PathParam("crsid") String crsid);
-
-	/**
 	 * 
 	 * @param groupId
 	 * @return all users in the group, given by groupId
