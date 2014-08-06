@@ -1,0 +1,56 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="submit-service" attributes="tickId status">
+    <template>
+        <style>
+            :host {
+                display: none;
+            }
+        </style>
+
+        <!-- submit this tick for testing -->
+        <core-ajax
+                id="ajaxSubmit"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/'}}"
+                handleAs="json"
+                method="POST"
+                on-core-response="{{startPolling}}">
+        </core-ajax>
+
+        <!-- poll the tick's status -->
+        <core-ajax
+                id="ajaxPoll"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/'}}"
+                handleAs="json"
+                method="POST"
+                on-core-response="{{startPolling}}">
+        </core-ajax>
+
+        <core-ajax
+                id="ajaxTest"
+                url="http://localhost:8000/testTickData.json"
+                handleAs="json"
+                on-core-response="{{startPolling}}"></core-ajax>
+    </template>
+    <script>
+        Polymer('submit-service', {
+            created: function() {
+                this.status = {};
+            },
+
+            /**
+             * Submit a tick for testing
+             */
+            submit: function() {
+                console.log("submit request received");
+                console.log(this.tickId);
+                this.$.ajaxSubmit.go();
+            },
+
+            startPolling: function() {
+                console.log("Successfully started submission");
+            }
+        });
+    </script>
+</polymer-element>
