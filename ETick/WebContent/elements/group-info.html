@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <polymer-element name="group-info" attributes="name info creator">
 	<template>
 		<style>
@@ -29,8 +30,16 @@
 			}
 		</style>
 		<div layout vertical start>
-			<h1>{{name}}</h1>
-			<p class="creator">Created by: {{creator}}</p>
+			<div layout horizontal start>
+				<div layout vertical start>
+					<h1>{{name}}</h1>
+					<p class="creator">Created by: {{creator}}</p>
+				</div>
+				<div layout horizontal end flex>
+					<paper-button label="CLONE">
+					</paper-button>
+				</div>
+			</div>
 			<div id="infoContainer">
 				<h2>DESCRIPTION:</h2>
 				<p>{{info}}</p>
