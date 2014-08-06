@@ -20,13 +20,13 @@
 
         <!-- COMPONENT CONTENT -->
         <paper-button label="SUBMIT" class="greenButton" on-tap="{{submit}}"></paper-button>
-        <paper-progress value="10"></paper-progress>
-        <div>Detail</div>
+        <paper-progress value="{{status.progress / status.maxProgress * 100}}"></paper-progress>
+        <div>{{status.info}}</div>
     </template>
     <script>
         Polymer('submit-component', {
             created: function() {
-                this.status = {};
+                this.status = {progress: 1, maxProgress: 4, info: "Running"};
             },
 
             submit: function() {
