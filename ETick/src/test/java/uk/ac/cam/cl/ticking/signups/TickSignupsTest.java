@@ -65,7 +65,7 @@ public class TickSignupsTest {
     private String sauth;
     private String gauth;
     
-    @Before
+    //@Before
     public void setUp() throws DuplicateNameException, ItemNotFoundException, NotAllowedException, Exception {
         try {
             SheetInfo info = service.addSheet(new Sheet("Java 1A Week 5", "First year software practical session", "Intel lab"));
@@ -103,7 +103,7 @@ public class TickSignupsTest {
         service.deleteGroup("1A Java", gauth);
     }
 
-    @Test
+    //@Test
     public void makeBookings_success() {
         signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 4", null, gauth);
         signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 5", null, gauth);
@@ -120,7 +120,7 @@ public class TickSignupsTest {
         }
     }
     
-    @Test
+    //@Test
     public void makeBookings_forbidden_alreadyHasBookingForTick() {
         signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 4", null, gauth);
         Response r1 = signups.makeBooking("ird28", "1A Java", id, "Tick 4", new Date(1420120800000L));
@@ -138,7 +138,7 @@ public class TickSignupsTest {
         assertEquals("Booking should be to first time", new Date(1420120800000L), bookings.get(0).getStartTime());
     }
     
-    @Test
+    //@Test
     public void makeBookings_forbidden_alreadyHasBookingForTime() {
         signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 4", null, gauth);
         signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 5", null, gauth);

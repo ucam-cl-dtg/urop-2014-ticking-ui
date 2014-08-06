@@ -92,6 +92,13 @@ public class Group implements Comparable<Group> {
 	public List<String> getTicks() {
 		return ticks;
 	}
+	
+	/**
+	 * @return ticks
+	 */
+	public void setTicks(List<String> ticks) {
+		this.ticks = ticks;
+	}
 
 	/**
 	 * @param tickId

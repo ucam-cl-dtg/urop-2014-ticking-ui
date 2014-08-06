@@ -1,0 +1,38 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="submit-service.html">
+
+<polymer-element name="submit-component" attributes="tickId">
+    <template>
+        <!-- STYLES -->
+        <link rel="stylesheet" href="../../css/shared-styles.css">
+        <style>
+            paper-button {
+                width: 100%;
+            }
+            paper-progress {
+                width: 100%;
+            }
+        </style>
+
+        <submit-service id="service" tickId="{{tickId}}" status="{{status}}"></submit-service>
+
+        <!-- COMPONENT CONTENT -->
+        <paper-button label="SUBMIT" class="greenButton" on-tap="{{submit}}"></paper-button>
+        <paper-progress value="10"></paper-progress>
+        <div>Detail</div>
+    </template>
+    <script>
+        Polymer('submit-component', {
+            created: function() {
+                this.status = {};
+            },
+
+            submit: function() {
+                this.$.service.submit();
+            }
+
+        });
+    </script>
+</polymer-element>

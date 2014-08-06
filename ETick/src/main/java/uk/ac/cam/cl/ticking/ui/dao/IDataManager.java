@@ -167,15 +167,6 @@ public interface IDataManager {
 	public Group getGroup(String groupId);
 
 	/**
-	 * Goes to the configured storage and attempts to find a group with the
-	 * specified name
-	 * 
-	 * @param name
-	 * @return Group with given name
-	 */
-	public Group getGroupByName(String name);
-
-	/**
 	 * Goes to the configured storage and attempts to find the groups that the
 	 * user with the specified crsid is in
 	 * 
