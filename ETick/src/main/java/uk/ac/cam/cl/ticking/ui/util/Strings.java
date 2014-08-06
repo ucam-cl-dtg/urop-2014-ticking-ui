@@ -23,6 +23,12 @@ public class Strings {
 	public static final String EXISTS = "You have already created a tick with this name";
 
 	public static final String GROUPNAMECLASH = "A group with that name already exists";
+	
+	public static final String EXISTINGTIMEBOOKING = "Error: You already have a booking at this time.";
+	
+	public static final String EXISTINGTICKBOOKING = "Error: you already have a booking for this tick.";
+	
+	public static final String NOFREESLOTS = "Error: there are no free slots at the given time.";
 
 	/**
 	 * Private constructor to prevent this class being created

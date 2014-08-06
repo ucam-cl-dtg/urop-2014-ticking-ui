@@ -88,7 +88,7 @@ public class StudentWorkflowDemo {
             }
             
             gauth = service.addGroup(new Group("1A Java"));
-            service.addSheet("1A Java", new GroupSheetBean(id, gauth, sauth));
+            service.addSheetToGroup("1A Java", new GroupSheetBean(id, gauth, sauth));
         } catch (javax.ws.rs.InternalServerErrorException e) {
             RemoteFailureHandler h = new RemoteFailureHandler();
             Object o = h.readException(e);
@@ -119,7 +119,7 @@ public class StudentWorkflowDemo {
             /* The student is displayed with a list of available times */
             System.out.println("The student is displayed with a list of times to choose from");
             System.out.println("Free times:");
-            System.out.println(signups.listAvailableTimes(id).getEntity());
+            System.out.println(signups.listAvailableTimes("ird28", "Tick 4", id).getEntity());
             System.out.println();
 
             /* The student selects a free slot and signs up to it */

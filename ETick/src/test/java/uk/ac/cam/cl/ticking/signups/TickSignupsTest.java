@@ -67,7 +67,6 @@ public class TickSignupsTest {
     
     @Before
     public void setUp() throws DuplicateNameException, ItemNotFoundException, NotAllowedException, Exception {
-        // Need to dump database before test is run
         try {
             SheetInfo info = service.addSheet(new Sheet("Java 1A Week 5", "First year software practical session", "Intel lab"));
             id = info.getSheetID();
@@ -85,7 +84,7 @@ public class TickSignupsTest {
             service.addSlot(id, "Ticker B", new SlotBean(new Slot(id, "Ticker B", new Date(1420131600000L), 300000), sauth));
             
             gauth = service.addGroup(new Group("1A Java"));
-            service.addSheet("1A Java", new GroupSheetBean(id, gauth, sauth));
+            service.addSheetToGroup("1A Java", new GroupSheetBean(id, gauth, sauth));
         } catch (javax.ws.rs.InternalServerErrorException e) {
             RemoteFailureHandler h = new RemoteFailureHandler();
             Object o = h.readException(e);
@@ -111,9 +110,9 @@ public class TickSignupsTest {
         String ticker1 = (String) signups.makeBooking("ird28", "1A Java", id, "Tick 4", new Date(1420120800000L)).getEntity();
         String ticker2 = (String) signups.makeBooking("ird28", "1A Java", id, "Tick 5", new Date(1420131600000L)).getEntity();
         assertEquals("Second should be booked to ticker B", "Ticker B", ticker2);
-        List<Date> freeTimes = (List<Date>) signups.listAvailableTimes(id).getEntity();
+        List<Date> freeTimes = (List<Date>) signups.listAvailableTimes("ird28", "Tick 4", id).getEntity();
         assertTrue("Should be another free slot", freeTimes.contains(new Date(1420120800000L)));
-        assertFalse("Only slot should now be booked", freeTimes.contains(new Date(1420131600000L)));
+        assertFalse("Only 1 slot should now be booked", freeTimes.contains(new Date(1420131600000L)));
         List<Slot> bookings = (List<Slot>) signups.listStudentBookings("ird28").getEntity();
         for (Slot slot : bookings) {
             assertTrue((slot.getStartTime().equals(new Date(1420120800000L)) && slot.getComment().equals("Tick 4"))
