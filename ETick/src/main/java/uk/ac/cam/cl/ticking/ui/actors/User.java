@@ -23,6 +23,8 @@ public class User implements Comparable<User> {
 	private String email;
 	private List<String> institutions;
 	private String college;
+	
+	private String ssh;
 
 	private boolean ldap;
 
@@ -178,6 +180,22 @@ public class User implements Comparable<User> {
 	@JsonProperty("college")
 	public void setCollege(String college) {
 		this.college = college;
+	}
+
+	/**
+	 * 
+	 * @return ssh
+	 */
+	public String getSsh() {
+		return ssh;
+	}
+
+	/**
+	 * 
+	 * @param ssh
+	 */
+	public void setSsh(String ssh) {
+		this.ssh = ssh;
 	}
 
 	/**
