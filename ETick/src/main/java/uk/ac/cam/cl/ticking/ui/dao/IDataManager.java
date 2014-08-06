@@ -7,7 +7,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
-import uk.ac.cam.cl.ticking.ui.ticks.Submission;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 /**
@@ -34,10 +34,10 @@ public interface IDataManager {
 
 	/**
 	 * @param m
-	 *            - Submission object to be saved into storage. If the
-	 *            submission exists it will be updated, else it will be created
+	 *            - Fork object to be saved into storage. If the
+	 *            fork exists it will be updated, else it will be created
 	 */
-	public void saveSubmission(Submission s);
+	public void saveFork(Fork s);
 
 	/**
 	 * @param g
@@ -69,10 +69,10 @@ public interface IDataManager {
 
 	/**
 	 * @param m
-	 *            - Submission object to be saved into storage.
+	 *            - Fork object to be saved into storage.
 	 * @throws DuplicateDataEntryException
 	 */
-	public void insertSubmission(Submission s)
+	public void insertFork(Fork s)
 			throws DuplicateDataEntryException;
 
 	/**
@@ -89,8 +89,15 @@ public interface IDataManager {
 	 */
 	public void insertGrouping(Grouping gr) throws DuplicateDataEntryException;
 
+	/**
+	 * Removes the user from the database, if purge is set, also removes all
+	 * content created by that user.
+	 * 
+	 * @param crsid
+	 * @param purge
+	 */
 	public void removeUser(String crsid, boolean purge);
-	
+
 	/**
 	 * Goes to the configured storage and attempts to find a user with the
 	 * specified id
@@ -134,10 +141,22 @@ public interface IDataManager {
 	 */
 	public List<User> getUsers(String groupId, Role role);
 
+	/**
+	 * Removes the group from the database, also clearing up associated
+	 * groupings and links to ticks.
+	 * 
+	 * @param groupId
+	 */
 	public void removeGroup(String groupId);
-	
+
+	/**
+	 * Removes the user from that group
+	 * 
+	 * @param crsid
+	 * @param groupId
+	 */
 	public void removeUserGroup(String crsid, String groupId);
-	
+
 	/**
 	 * Goes to the configured storage and attempts to find a group with the
 	 * specified id
@@ -183,8 +202,16 @@ public interface IDataManager {
 	 */
 	public List<Group> getGroups(String crsid, Role role);
 
+	/**
+	 * Removes the grouping formed from the given parameters, effectively
+	 * revoking that role for that user in that group
+	 * 
+	 * @param crsid
+	 * @param groupId
+	 * @param role
+	 */
 	public void removeUserGroupRole(String crsid, String groupId, Role role);
-	
+
 	/**
 	 * Goes to the configured storage and attempts to find the roles for the
 	 * user with the specified crsid in the group with the specified groupId
@@ -215,8 +242,14 @@ public interface IDataManager {
 	 */
 	public List<Grouping> getGroupings(Role role);
 
+	/**
+	 * Removes the tick from the database also clearing up any assocaitions with
+	 * groups.
+	 * 
+	 * @param tickId
+	 */
 	public void removeTick(String tickId);
-	
+
 	/**
 	 * Goes to the configured storage and attempts to find a tick with the
 	 * specified tickId
@@ -236,6 +269,13 @@ public interface IDataManager {
 	public List<Tick> getGroupTicks(String group);
 
 	/**
+	 * 
+	 * @param crsid
+	 * @return all ticks authored by the user with the given crsid
+	 */
+	public List<Tick> getAuthorTicks(String crsid);
+
+	/**
 	 * Goes to the configured storage and finds all of the stored ticks
 	 * 
 	 * @param group
@@ -244,21 +284,20 @@ public interface IDataManager {
 	public List<Tick> getTicks();
 
 	/**
-	 * Goes to the configured storage and attempts to find the submissions
-	 * belonging to the specified group
+	 * Goes to the configured storage and attempts to find the fork with the specified id
 	 * 
-	 * @param group
-	 * @return List of submissions in the given group
+	 * @param forkId
+	 * @return fork with the gievn Id
 	 */
-	public List<Submission> getGroupSubmissions(String group);
+	public Fork getFork(String forkId);
 
 	/**
-	 * Goes to the configured storage and attempts to find the submissions
+	 * Goes to the configured storage and attempts to find the forks
 	 * belonging to the specified user
 	 * 
 	 * @param author
-	 * @return List of submissions from the given author
+	 * @return List of forks from the given author
 	 */
-	public List<Submission> getSubmissions(String author);
+	public List<Fork> getForks(String author);
 
 }

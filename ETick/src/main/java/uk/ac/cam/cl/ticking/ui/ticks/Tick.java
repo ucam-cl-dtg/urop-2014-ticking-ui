@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author tl364
  *
  */
-public class Tick implements Comparable<Tick>{
+public class Tick implements Comparable<Tick> {
 
 	// FORMAT: 'author','name'
 	@JsonProperty("_id")
@@ -30,9 +30,9 @@ public class Tick implements Comparable<Tick>{
 	private String stubRepo, correctnessRepo;
 	private DateTime deadline;
 	private List<String> groups = new ArrayList<>();
-	
+
 	private Map<String, DateTime> extensions = new HashMap<>();
-	
+
 	private DateTime edited;
 
 	/**
@@ -66,7 +66,7 @@ public class Tick implements Comparable<Tick>{
 	public Tick() {
 
 	}
-	
+
 	public Tick(TickBean bean) {
 		this.setName(bean.getName());
 		this.setDeadline(bean.getDeadline());
@@ -89,7 +89,7 @@ public class Tick implements Comparable<Tick>{
 	public void setStubRepo(String stubRepo) {
 		this.stubRepo = stubRepo;
 	}
-	
+
 	/**
 	 * @return correctnessRepo
 	 */
@@ -153,9 +153,10 @@ public class Tick implements Comparable<Tick>{
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-	 /**
-	  * @return edited
-	  */
+
+	/**
+	 * @return edited
+	 */
 	public DateTime getEdited() {
 		return edited;
 	}
@@ -173,7 +174,7 @@ public class Tick implements Comparable<Tick>{
 	public List<String> getGroups() {
 		return groups;
 	}
-	
+
 	/**
 	 * @param groups
 	 */
@@ -187,7 +188,7 @@ public class Tick implements Comparable<Tick>{
 	public void addGroup(String groupId) {
 		groups.add(groupId);
 	}
-	
+
 	/**
 	 * @param groupId
 	 */
@@ -195,14 +196,27 @@ public class Tick implements Comparable<Tick>{
 		groups.remove(groupId);
 	}
 
+	/**
+	 * 
+	 * @return extensions
+	 */
 	public Map<String, DateTime> getExtensions() {
 		return extensions;
 	}
 
+	/**
+	 * 
+	 * @param extensions
+	 */
 	public void setExtensions(Map<String, DateTime> extensions) {
 		this.extensions = extensions;
 	}
-	
+
+	/**
+	 * 
+	 * @param crsid
+	 * @param extension
+	 */
 	public void addExtension(String crsid, DateTime extension) {
 		this.extensions.put(crsid, extension);
 	}
@@ -231,7 +245,12 @@ public class Tick implements Comparable<Tick>{
 	public static String replaceDelimeter(String tickId) {
 		return tickId.replace(',', '/');
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(Tick o) {
 		return this.name.compareToIgnoreCase(o.name);

@@ -62,7 +62,6 @@
         }
         polyfill-next-selector {shadow: "paper-dialog h1"}
         paper-dialog::shadow h1 {
-            font-weight: 100;
             margin-bottom: 10px;
         }
         #dialogCancel {
@@ -484,8 +483,8 @@
             if (!this.newTick) {
                 console.log("not a new tick");
                 this.$.ajaxPutTickData.body = JSON.stringify(masterObject);
-                this.$.ajaxPutTickData.go();
                 this.$.ajaxPutTickData.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + this.tickId;
+                this.$.ajaxPutTickData.go();
             } else {
                 console.log("new tick");
                 this.$.ajaxPostTickData.body = JSON.stringify(masterObject);

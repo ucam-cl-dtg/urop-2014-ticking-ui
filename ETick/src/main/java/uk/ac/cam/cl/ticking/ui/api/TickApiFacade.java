@@ -28,6 +28,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -63,11 +64,19 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.ok().entity(tick).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#deleteTick
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
+	 */
 	@Override
 	public Response deleteTick(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		// TODO remove repo?
+		// TODO remove checkstyles?
 		Tick tick = db.getTick(tickId);
 		if (!crsid.equals(tick.getAuthor())) {
 			return Response.status(Status.UNAUTHORIZED)
@@ -116,17 +125,17 @@ public class TickApiFacade implements ITickApiFacade {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
+
 		Tick tick = new Tick(tickBean);
 		tick.setAuthor(crsid);
 		tick.initTickId();
-		
+
 		ResteasyClient testClient = new ResteasyClientBuilder().build();
 		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
 				.getTestApiLocation());
 
 		ITestService testProxy = testTarget.proxy(ITestService.class);
-		
+
 		testProxy.createNewTest(tick.getTickId(), tickBean.getCheckstyleOpts());
 
 		ResteasyClient client = new ResteasyClientBuilder().build();
@@ -194,6 +203,14 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.status(Status.CREATED).entity(tick).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#updateTick
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean)
+	 */
 	@Override
 	public Response updateTick(HttpServletRequest request, String tickId,
 			TickBean tickBean) throws IOException, DuplicateRepoNameException {
@@ -213,14 +230,14 @@ public class TickApiFacade implements ITickApiFacade {
 				return Response.status(Status.UNAUTHORIZED)
 						.entity(Strings.INVALIDROLE).build();
 			}
-			
+
 			ResteasyClient testClient = new ResteasyClientBuilder().build();
 			ResteasyWebTarget testTarget = testClient.target(config.getConfig()
 					.getTestApiLocation());
 
 			ITestService testProxy = testTarget.proxy(ITestService.class);
-			
-			testProxy.createNewTest(crsid, tickBean.getCheckstyleOpts());
+
+			testProxy.createNewTest(tickId, tickBean.getCheckstyleOpts());
 
 			prevTick.setEdited(DateTime.now());
 			for (String groupId : prevTick.getGroups()) {
@@ -238,11 +255,18 @@ public class TickApiFacade implements ITickApiFacade {
 			db.saveTick(prevTick);
 			return Response.status(Status.CREATED).entity(prevTick).build();
 		} else {
-			//TODO should this behave like so?
+			// TODO should this behave like so?
 			return newTick(request, tickBean);
 		}
 	}
 
+	/**
+	 * 
+	 * @param groupIds
+	 * @param crsid
+	 * @return whether the user has author permissions for all of the supplied
+	 *         groups
+	 */
 	private boolean validatePermissions(List<String> groupIds, String crsid) {
 		for (String groupId : groupIds) {
 			List<Role> roles = db.getRoles(groupId, crsid);
@@ -288,29 +312,52 @@ public class TickApiFacade implements ITickApiFacade {
 	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response forkTick(HttpServletRequest request, String tickId)
-			throws IOException {
+	public Response forkTick(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
+		Fork fork = db.getFork(crsid + "," + tickId);
+		if (fork != null) {
+			return Response.ok(fork).build();
+		}
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget target = client.target(config.getConfig()
 				.getGitApiLocation());
 		WebInterface proxy = target.proxy(WebInterface.class);
-		String output;
+		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
 		try {
-			output = proxy.forkRepository(new ForkRequestBean(null, crsid,
+			repo = proxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));
 		} catch (DuplicateRepoNameException e) {
-			output = e.getMessage() + Strings.FORKED;
+			repo = e.getMessage();
+		} catch (IOException e) {
+			// The repo that was being forked was empty, however, it has still
+			// been forked thus continue
+
+		}
+
+		try {
+			fork = new Fork(crsid, tickId, repo);
+			db.insertFork(fork);
+		} catch (DuplicateDataEntryException e) {
+			throw new RuntimeException("Schrodinger's repository");
+			// The fork simultaneously does and doesn't exist
 		}
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
-		return Response.status(Status.CREATED).entity(output).build();
+		return Response.status(Status.CREATED).entity(fork).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#setDeadline
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
+	 * org.joda.time.DateTime)
+	 */
 	@Override
 	public Response setDeadline(HttpServletRequest request, String tickId,
 			DateTime date) {

@@ -110,16 +110,23 @@ public class Grouping {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
+		if (this == o)
+			return true;
 		if (!(o instanceof Grouping)) {
 			return false;
 		}
-		return this._id == ((Grouping)o)._id;
+		return this._id == ((Grouping) o)._id;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return _id.hashCode();
