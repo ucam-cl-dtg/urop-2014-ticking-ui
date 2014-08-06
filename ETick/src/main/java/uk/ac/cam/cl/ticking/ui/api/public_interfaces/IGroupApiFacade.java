@@ -38,8 +38,7 @@ public interface IGroupApiFacade {
 	@GET
 	@Path("/{groupId}")
 	@Produces("application/json")
-	public abstract Response getGroup(@PathParam("groupId") String groupId,
-			@QueryParam("byName") boolean byName);
+	public abstract Response getGroup(@PathParam("groupId") String groupId);
 
 	/**
 	 * Deletes the specified group, clearing up any dangling associations with

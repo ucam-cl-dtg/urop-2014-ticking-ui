@@ -45,18 +45,25 @@ public class GroupApiFacade implements IGroupApiFacade {
 		this.config = config;
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#getGroup(java.lang.String, boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#getGroup
+	 * (java.lang.String, boolean)
 	 */
 	@Override
-	public Response getGroup(String groupId, boolean byName) {
-		Group group = byName ? db.getGroupByName(groupId) : db
-				.getGroup(groupId);
+	public Response getGroup(String groupId) {
+		Group group = db.getGroup(groupId);
 		return Response.ok(group).build();
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#deleteGroup(javax.servlet.http.HttpServletRequest, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#deleteGroup
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
 	public Response deleteGroup(HttpServletRequest request, String groupId) {
@@ -71,8 +78,13 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.ok().build();
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#deleteUser(javax.servlet.http.HttpServletRequest, java.lang.String, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#deleteUser
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
+	 * java.lang.String)
 	 */
 	@Override
 	public Response deleteUser(HttpServletRequest request, String groupId,
@@ -88,8 +100,12 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.ok().build();
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#getUsers(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#getUsers
+	 * (java.lang.String)
 	 */
 	@Override
 	public Response getUsers(String groupId) {
@@ -98,8 +114,11 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.ok(users).build();
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#getGroups()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#getGroups()
 	 */
 	@Override
 	public Response getGroups() {
@@ -108,8 +127,13 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.ok(groups).build();
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#addGroup(javax.servlet.http.HttpServletRequest, java.util.List, uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#addGroup
+	 * (javax.servlet.http.HttpServletRequest, java.util.List,
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean)
 	 */
 	@Override
 	public Response addGroup(HttpServletRequest request, List<String> roles,
@@ -145,11 +169,17 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.status(Status.CREATED).entity(group).build();
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#updateGroup(javax.servlet.http.HttpServletRequest, java.lang.String, uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#updateGroup
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean)
 	 */
 	@Override
-	public Response updateGroup(HttpServletRequest request, String groupId, GroupBean groupBean) {
+	public Response updateGroup(HttpServletRequest request, String groupId,
+			GroupBean groupBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		List<Role> myRoles = db.getRoles(groupId, crsid);
@@ -166,7 +196,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.saveGroup(prevGroup);
 			return Response.status(Status.CREATED).entity(prevGroup).build();
 		} else {
-			//TODO should this behave like so?
+			// TODO should this behave like so?
 			return addGroup(request, new ArrayList<String>(), groupBean);
 		}
 

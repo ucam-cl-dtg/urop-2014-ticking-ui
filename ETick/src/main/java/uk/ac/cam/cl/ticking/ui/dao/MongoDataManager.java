@@ -105,7 +105,6 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public void saveGroup(Group g) {
 		// each group name must be unique
-		groupColl.ensureIndex(new BasicDBObject("name", 1), null, true);
 		groupColl.save(g);
 	}
 
@@ -180,8 +179,6 @@ public class MongoDataManager implements IDataManager {
 	@Override
 	public void insertGroup(Group g) throws DuplicateDataEntryException {
 		try {
-			// each group name must be unique
-			groupColl.ensureIndex(new BasicDBObject("name", 1), null, true);
 			groupColl.insert(g);
 		} catch (MongoException duplicate) {
 			throw new DuplicateDataEntryException("Group");
@@ -352,19 +349,6 @@ public class MongoDataManager implements IDataManager {
 	public Group getGroup(String groupId) {
 		Group group = null;
 		group = groupColl.findOne(new BasicDBObject("_id", groupId));
-		return group;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroupByName(java.lang.String)
-	 */
-	@Override
-	public Group getGroupByName(String name) {
-		Group group = null;
-		group = groupColl.findOne(new BasicDBObject("name", name));
 		return group;
 	}
 
