@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-icons/iconsets/social-icons.html">
 <link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../bower_components/paper-shadow/paper-shadow.html">
 
 <polymer-element name="person-box" attributes="name crsid college isStudent">
 	<template>
@@ -45,6 +46,7 @@
 					<h2>{{crsid}}</h2>
 				</div>
 				<paper-ripple class="recenteringTouch" fit></paper-ripple>
+				<paper-shadow id="shadow" aniamted z="0"></paper-shadow>
 			</div>
 		</div>
 	</template>
