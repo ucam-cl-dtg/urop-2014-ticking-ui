@@ -65,7 +65,7 @@ public class TickSignupsTest {
     private String sauth;
     private String gauth;
     
-    //@Before
+    @Before
     public void setUp() throws DuplicateNameException, ItemNotFoundException, NotAllowedException, Exception {
         try {
             SheetInfo info = service.addSheet(new Sheet("Java 1A Week 5", "First year software practical session", "Intel lab"));
@@ -103,24 +103,31 @@ public class TickSignupsTest {
         service.deleteGroup("1A Java", gauth);
     }
 
-    //@Test
+    @Test
     public void makeBookings_success() {
-        signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 4", null, gauth);
-        signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 5", null, gauth);
-        String ticker1 = (String) signups.makeBooking("ird28", "1A Java", id, "Tick 4", new Date(1420120800000L)).getEntity();
-        String ticker2 = (String) signups.makeBooking("ird28", "1A Java", id, "Tick 5", new Date(1420131600000L)).getEntity();
-        assertEquals("Second should be booked to ticker B", "Ticker B", ticker2);
-        List<Date> freeTimes = (List<Date>) signups.listAvailableTimes("ird28", "Tick 4", id).getEntity();
-        assertTrue("Should be another free slot", freeTimes.contains(new Date(1420120800000L)));
-        assertFalse("Only 1 slot should now be booked", freeTimes.contains(new Date(1420131600000L)));
-        List<Slot> bookings = (List<Slot>) signups.listStudentBookings("ird28").getEntity();
-        for (Slot slot : bookings) {
-            assertTrue((slot.getStartTime().equals(new Date(1420120800000L)) && slot.getComment().equals("Tick 4"))
-                    || (slot.getStartTime().equals(new Date(1420131600000L)) && slot.getComment().equals("Tick 5")));
+        try {
+            signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 4", null, gauth);
+            signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 5", null, gauth);
+            String ticker1 = (String) signups.makeBooking("ird28", "1A Java", id, "Tick 4", new Date(1420120800000L)).getEntity();
+            String ticker2 = (String) signups.makeBooking("ird28", "1A Java", id, "Tick 5", new Date(1420131600000L)).getEntity();
+            assertEquals("Second should be booked to ticker B", "Ticker B", ticker2);
+            List<Date> freeTimes = (List<Date>) signups.listAvailableTimes("ird28", "Tick 4", id).getEntity();
+            assertTrue("Should be another free slot", freeTimes.contains(new Date(1420120800000L)));
+            assertFalse("Only 1 slot should now be booked", freeTimes.contains(new Date(1420131600000L)));
+            List<Slot> bookings = (List<Slot>) signups.listStudentBookings("ird28").getEntity();
+            for (Slot slot : bookings) {
+                assertTrue((slot.getStartTime().equals(new Date(1420120800000L)) && slot.getComment().equals("Tick 4"))
+                        || (slot.getStartTime().equals(new Date(1420131600000L)) && slot.getComment().equals("Tick 5")));
+            }
+        } catch (javax.ws.rs.InternalServerErrorException e) {
+            RemoteFailureHandler h = new RemoteFailureHandler();
+            Object o = h.readException(e);
+            System.out.println(o);
+            throw e;
         }
     }
     
-    //@Test
+    @Test
     public void makeBookings_forbidden_alreadyHasBookingForTick() {
         signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 4", null, gauth);
         Response r1 = signups.makeBooking("ird28", "1A Java", id, "Tick 4", new Date(1420120800000L));
@@ -138,7 +145,7 @@ public class TickSignupsTest {
         assertEquals("Booking should be to first time", new Date(1420120800000L), bookings.get(0).getStartTime());
     }
     
-    //@Test
+    @Test
     public void makeBookings_forbidden_alreadyHasBookingForTime() {
         signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 4", null, gauth);
         signups.assignTickerForTickForUser("ird28", "1A Java", "Tick 5", null, gauth);

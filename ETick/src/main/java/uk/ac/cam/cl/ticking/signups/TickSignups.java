@@ -38,6 +38,7 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 
 @Path("/signups")
+@Consumes("application/json")
 public class TickSignups {
     
     private WebInterface service;
