@@ -6,6 +6,7 @@
 <link rel="import" href="group-members.html">
 <link rel="import" href="tick-list.html">
 
+<link rel="import" href="sheet-selector.html">
 
 <link rel="import" href="person-list.html">
 
@@ -50,6 +51,19 @@
 				</div>
 			</div>
 		</main-card>
+		
+		<main-card animated>
+			<sheet-selector sheets="{{sheets}}"></sheet-selector>
+		</main-card>
+		
+		<!-- <div id="headerBar" layout horizontal center>
+			<h1 flex>Members ({{number}})</h1>
+			<template if="{{allowAdd}}">
+				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
+				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>
+			</template>
+			<search-box id="searchBox" placeholder="Search..."></search-box>
+		</div>-->
 
 		<!-- Group members card. -->
 		<main-card animated
@@ -84,7 +98,7 @@
 
 			domReady: function () {
 				this.$.roleAjax.go();
-				// this.$.sheetListAPI.go();
+				this.$.sheetListAPI.go();
 			},
 
 			roleResponse: function() {

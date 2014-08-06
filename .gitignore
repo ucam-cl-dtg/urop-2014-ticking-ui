@@ -5,6 +5,7 @@ pom.xml.next
 release.properties
 **/classes/
 *.class
+*.jar
 **/doc/
 **/logs/
 **/node_modules/
