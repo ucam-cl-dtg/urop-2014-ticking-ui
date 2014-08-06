@@ -11,6 +11,11 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import publicinterfaces.ITestService;
+import publicinterfaces.ReportNotFoundException;
+import publicinterfaces.ReportResult;
+import publicinterfaces.TickNotInDBException;
+import publicinterfaces.UserNotInDBException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
@@ -41,7 +46,7 @@ public class ForkApiFacade implements IForkApiFacade {
 		this.db = db;
 		this.config = config;
 	}
-	
+
 	@Override
 	public Response getFork(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
@@ -96,21 +101,36 @@ public class ForkApiFacade implements IForkApiFacade {
 		// IOException is thrown
 		return Response.status(Status.CREATED).entity(fork).build();
 	}
-	
+
 	@Override
-	public Response updateFork(HttpServletRequest request, String tickId, ForkBean forkBean) {
+	public Response updateFork(HttpServletRequest request, String tickId,
+			ForkBean forkBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork != null) {
 			fork.setHumanPass(forkBean.getHumanPass());
+			if (forkBean.getHumanPass()) {
+				ResteasyClient testClient = new ResteasyClientBuilder().build();
+				ResteasyWebTarget testTarget = testClient.target(config
+						.getConfig().getTestApiLocation());
+
+				ITestService testProxy = testTarget.proxy(ITestService.class);
+				try {
+					testProxy.setTickerResult(crsid, tickId, ReportResult.PASS,
+							forkBean.getTickerComments(), forkBean.getCommitId());
+				} catch (UserNotInDBException | TickNotInDBException
+						| ReportNotFoundException e) {
+					return Response.status(Status.NOT_FOUND).entity(e).build();
+				}
+			}
 			fork.setUnitPass(forkBean.getUnitPass());
 			fork.setSignedUp(forkBean.isSignedUp());
 			db.saveFork(fork);
 			return Response.status(Status.CREATED).entity(fork).build();
 		}
 		return Response.status(Status.NOT_FOUND).build();
-		
+
 	}
-	
+
 }

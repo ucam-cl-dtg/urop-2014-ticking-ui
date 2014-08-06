@@ -24,18 +24,32 @@
 		<!-- Group info card. -->
 		<main-card animated>
 			<div layout vertical start>
-			<h1 class="groupName">{{name}}</h1>
-			<p class="creator">Created by: {{creator}}</p>
-			<div id="infoContainer">
-				<template if="{{!(info === '')}}">
-				<div style="padding: 15px">
-					<h2>DESCRIPTION:</h2>
-					<p>{{info}}</p>
+				<div layout horizontal center>
+					<div flex layout vertical start>
+						<h1 class="groupName">{{name}}</h1>
+						<p class="creator">Created by: {{creator}}</p>
+					</div>
+					<paper-button label="FOO"></paper-button>
 				</div>
-			</template>
+				<div id="infoContainer">
+					<template if="{{!(info === '')}}">
+						<div style="padding: 15px">
+							<h2>DESCRIPTION:</h2>
+							<p>{{info}}</p>
+						</div>
+					</template>
+				</div>
 			</div>
-		</div>
 		</main-card>
+		
+		<!-- <div id="headerBar" layout horizontal center>
+			<h1 flex>Members ({{number}})</h1>
+			<template if="{{allowAdd}}">
+				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
+				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>
+			</template>
+			<search-box id="searchBox" placeholder="Search..."></search-box>
+		</div>-->
 
 		<!-- Group members card. -->
 		<main-card animated

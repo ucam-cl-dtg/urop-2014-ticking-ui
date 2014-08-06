@@ -11,10 +11,13 @@ package uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans;
  */
 public class ForkBean {
 
-	private boolean unitPass = false;
-	private boolean humanPass = false;
-	private boolean signedUp = false;
-	private boolean testing = false;
+	private Boolean unitPass = false;
+	private Boolean humanPass = false;
+	private Boolean signedUp = false;
+	private Boolean testing = false;
+	
+	private String tickerComments;
+	private String commitId;
 
 	/**
 	 * Default constructor for Jackson JSON to POJO because java
@@ -81,5 +84,37 @@ public class ForkBean {
 	 */
 	public void setTesting(boolean testing) {
 		this.testing = testing;
+	}
+
+	/**
+	 * 
+	 * @return tickerComments
+	 */
+	public String getTickerComments() {
+		return tickerComments;
+	}
+
+	/**
+	 * 
+	 * @param tickerComments
+	 */
+	public void setTickerComments(String tickerComments) {
+		this.tickerComments = tickerComments;
+	}
+
+	/**
+	 * 
+	 * @return commitId
+	 */
+	public String getCommitId() {
+		return commitId;
+	}
+
+	/**
+	 * 
+	 * @param commitId
+	 */
+	public void setCommitId(String commitId) {
+		this.commitId = commitId;
 	}
 }
