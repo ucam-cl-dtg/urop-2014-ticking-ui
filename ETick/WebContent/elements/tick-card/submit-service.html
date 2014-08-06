@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="submit-service" attributes="tickId status">
+<polymer-element name="submit-service" attributes="tickId status testRunning">
     <template>
         <style>
             :host {
@@ -16,7 +16,8 @@
                 handleAs="json"
                 contentType="json"
                 method="POST"
-                on-core-response="{{startPolling}}">
+                on-core-response="{{startPolling}}"
+                on-core-error="{{submitError}}">
         </core-ajax>
 
         <!-- poll the tick's status -->
@@ -46,7 +47,14 @@
             submit: function() {
                 console.log("submit request received");
                 console.log(this.tickId);
-                this.$.ajaxSubmit.go();
+                if (!(this.testRunning)) {
+                    this.testRunning = true;
+                    this.$.ajaxSubmit.go();
+                }
+            },
+
+            submitError: function() {
+                this.testRunning = false;
             },
 
             startPolling: function() {
@@ -63,6 +71,8 @@
 
                 if (!(this.status.progress === this.maxProgress)) {
                     this.$.ajaxPoll.go();
+                } else {
+                    this.testRunning = false;
                 }
             }
         });
