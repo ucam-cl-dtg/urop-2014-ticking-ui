@@ -59,7 +59,7 @@
              * if the test is incomplete
              */
             pollNext: function() {
-                this.status = this.$.ajaxPoll.response();
+                this.status = this.$.ajaxPoll.response;
 
                 if (!(this.status.progress === this.maxProgress)) {
                     this.$.ajaxPoll.go();
