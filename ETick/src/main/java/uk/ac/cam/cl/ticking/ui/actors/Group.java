@@ -38,9 +38,7 @@ public class Group implements Comparable<Group> {
 	 * @param name
 	 * @param creator
 	 */
-	@JsonCreator
-	public Group(@JsonProperty("name") String name,
-			@JsonProperty("creator") String creator) {
+	public Group(String name, String creator) {
 		this.setName(name);
 		this.setCreator(creator);
 		this.groupId = ObjectId.get().toString();
@@ -92,7 +90,7 @@ public class Group implements Comparable<Group> {
 	public List<String> getTicks() {
 		return ticks;
 	}
-	
+
 	/**
 	 * @return ticks
 	 */
