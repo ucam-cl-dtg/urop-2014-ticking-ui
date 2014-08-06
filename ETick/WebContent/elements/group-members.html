@@ -17,6 +17,7 @@
 		<!-- Add Member Ajax call. -->
 		<core-ajax id="addMemberAjax"
 			method="POST"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping/' + gid}}"
 			contentType="application/json"
 			handleAs="json"
 			on-core-response="{{addMemberResponse}}"
@@ -34,7 +35,8 @@
 		<!-- Delete member Ajax call. -->
 		<core-ajax id="deleteAjax"
 			method="DELETE"
-			url=""
+			contentType="application/json"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping/' + gid}}"
 			on-core-response="{{deleteResponse}}"
 			on-core-error="{{deleteError}}">
 		</core-ajax>
@@ -60,9 +62,9 @@
 			transition="core-transition-top">
 			<paper-input id="addInput" class="dialogInput"
 				floatingLabel
-				label="CRSid..."
-				error="Invalid CRSid."
-				validate="^[a-zA-Z]+\d+$"
+				label="CRSid(s)..."
+				error="Invalid CRSid(s)."
+				validate="^([a-zA-Z]+\d+[^\w\d]*)+$"
 				on-input="{{handleAddInput}}">
 			</paper-input>
 			<h2 class="subtitle">Roles:</h2>
@@ -91,7 +93,7 @@
 
 		<!-- Delete member success/error toasts. -->
 		<paper-toast id="deleteErrorToast" text="Error removing member." duration="3000"></paper-toast>
-		<paper-toast id="deleteSuccessToast" text="Successfully removed member." duration="3000"></paper-toast>
+		<paper-toast id="deleteSuccessToast" text="Successfully removed member(s)." duration="3000"></paper-toast>
 
 	</template>
 	<script>
@@ -103,22 +105,16 @@
 				'$.searchBox.query' : 'searchBoxChanged'
 			},
 
-			resetAddMemberAjax: function () {
-				this.$.addMemberAjax.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping?gid=" + this.gid; 
-				this.$.addMemberAjax.body = "";
-			},
-
 			addMember: function() {
-				this.resetAddMemberAjax();
-
-				var newCRSID = this.$.addInput.value;
+				var newCRSIDs = this.$.addInput.value.split(/[^\w\d]+/);
 				var roles = [];
 				if (this.$.authBox.checked) roles.push('AUTHOR');
 				if (this.$.markBox.checked) roles.push('MARKER');
 				if (this.$.overBox.checked) roles.push('OVERVIEW');
 				if (this.$.subBox.checked) roles.push('SUBMITTER');
-				this.$.addMemberAjax.body = JSON.stringify(roles);
-				this.$.addMemberAjax.url += '&crsid=' + newCRSID;
+				var jsonRoles = JSON.stringify(roles);
+				var jsonCRSids = JSON.stringify(newCRSIDs);
+				this.$.addMemberAjax.body = '{ "crsids": ' + jsonCRSids + ', "roles" : ' + jsonRoles + '}';
 				this.$.addMemberAjax.go();
 			},
 
@@ -159,16 +155,14 @@
 			},
 
 			deleteMemberClicked: function () {
-				console.log('On click' + this.selectedPerson);
-				if (this.selectedPerson) {
-					this.$.deleteAjax.url = 'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + 
-						this.gid + '/' + this.selectedPerson;
-					this.$.deleteAjax.go();
-				}
+				var jsonSelectedPeople = JSON.stringify(this.selectedPeople);
+				console.log(jsonSelectedPeople);
+				this.$.deleteAjax.body = '{ "crsids" : ' + jsonSelectedPeople + ', "roles" : [] }';
+				this.$.deleteAjax.go();
 			},
 
-			deleteResponse: function () {
-				this.$.deleteSuccessToast.text = "Successfully removed member '" + this.selectedPerson + "'.";
+			deleteResponse: function (e, detail) {
+				this.$.deleteSuccessToast.text = detail.xhr.responseText;
 				this.$.deleteSuccessToast.show();
 				this.$.members.$.memberSelector.selected = undefined;
 				this.$.listAjax.go();
@@ -180,7 +174,7 @@
 			},
 
 			personSelectionChanged: function () {
-				this.selectedPerson = this.$.members.$.memberSelector.selected;
+				this.selectedPeople = this.$.members.$.memberSelector.selected;
 			}
 
 		});
