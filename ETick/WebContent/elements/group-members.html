@@ -159,6 +159,7 @@
 			},
 
 			deleteMemberClicked: function () {
+				console.log('On click' + this.selectedPerson);
 				if (this.selectedPerson) {
 					this.$.deleteAjax.url = 'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + 
 						this.gid + '/' + this.selectedPerson;
@@ -169,6 +170,7 @@
 			deleteResponse: function () {
 				this.$.deleteSuccessToast.text = "Successfully removed member '" + this.selectedPerson + "'.";
 				this.$.deleteSuccessToast.show();
+				this.$.members.$.memberSelector.selected = undefined;
 				this.$.listAjax.go();
 			},
 
