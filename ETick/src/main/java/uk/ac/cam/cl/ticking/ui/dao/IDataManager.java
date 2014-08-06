@@ -7,7 +7,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
-import uk.ac.cam.cl.ticking.ui.ticks.Submission;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 /**
@@ -34,10 +34,10 @@ public interface IDataManager {
 
 	/**
 	 * @param m
-	 *            - Submission object to be saved into storage. If the
-	 *            submission exists it will be updated, else it will be created
+	 *            - Fork object to be saved into storage. If the
+	 *            fork exists it will be updated, else it will be created
 	 */
-	public void saveSubmission(Submission s);
+	public void saveFork(Fork s);
 
 	/**
 	 * @param g
@@ -69,10 +69,10 @@ public interface IDataManager {
 
 	/**
 	 * @param m
-	 *            - Submission object to be saved into storage.
+	 *            - Fork object to be saved into storage.
 	 * @throws DuplicateDataEntryException
 	 */
-	public void insertSubmission(Submission s)
+	public void insertFork(Fork s)
 			throws DuplicateDataEntryException;
 
 	/**
@@ -284,21 +284,20 @@ public interface IDataManager {
 	public List<Tick> getTicks();
 
 	/**
-	 * Goes to the configured storage and attempts to find the submissions
-	 * belonging to the specified group
+	 * Goes to the configured storage and attempts to find the fork with the specified id
 	 * 
-	 * @param group
-	 * @return List of submissions in the given group
+	 * @param forkId
+	 * @return fork with the gievn Id
 	 */
-	public List<Submission> getGroupSubmissions(String group);
+	public Fork getFork(String forkId);
 
 	/**
-	 * Goes to the configured storage and attempts to find the submissions
+	 * Goes to the configured storage and attempts to find the forks
 	 * belonging to the specified user
 	 * 
 	 * @param author
-	 * @return List of submissions from the given author
+	 * @return List of forks from the given author
 	 */
-	public List<Submission> getSubmissions(String author);
+	public List<Fork> getForks(String author);
 
 }

@@ -12,6 +12,7 @@
 <polymer-element name="group-members" attributes="gid allowAdd rows">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group-members.css">
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
 
 		<!-- Add Member Ajax call. -->
 		<core-ajax id="addMemberAjax"
@@ -30,6 +31,14 @@
 			on-core-response="{{listResponse}}">
 		</core-ajax>
 
+		<!-- Delete member Ajax call. -->
+		<core-ajax id="deleteAjax"
+			method="DELETE"
+			url=""
+			on-core-response="{{deleteResponse}}"
+			on-core-error="{{deleteError}}">
+		</core-ajax>
+
 
 		<!-- Card heading. -->
 		<div id="headerBar" layout horizontal center>
@@ -43,7 +52,7 @@
 
 		<!-- Member list. -->
 		<div id="personListContainer">
-			<person-list id="members" query="{{searchQuery}}"></person-list>
+			<person-list id="members" query="{{searchQuery}}" on-core-select="{{personSelectionChanged}}"></person-list>
 		</div>
 
 		<!-- Add Member dialog. -->
@@ -79,6 +88,10 @@
 		<!-- Add member success/error toasts. -->
 		<paper-toast id="addErrorToast" text="Error adding new member." duration="3000"></paper-toast>
 		<paper-toast id="addSuccessToast" text="Successfully added new member." dutration="3000"></paper-toast>
+
+		<!-- Delete member success/error toasts. -->
+		<paper-toast id="deleteErrorToast" text="Error removing member." duration="3000"></paper-toast>
+		<paper-toast id="deleteSuccessToast" text="Successfully removed member." duration="3000"></paper-toast>
 
 	</template>
 	<script>
@@ -143,7 +156,32 @@
 
 			searchBoxChanged: function (oldValue, newValue) {
 				this.searchQuery = newValue;
-			} 
+			},
+
+			deleteMemberClicked: function () {
+				console.log('On click' + this.selectedPerson);
+				if (this.selectedPerson) {
+					this.$.deleteAjax.url = 'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + 
+						this.gid + '/' + this.selectedPerson;
+					this.$.deleteAjax.go();
+				}
+			},
+
+			deleteResponse: function () {
+				this.$.deleteSuccessToast.text = "Successfully removed member '" + this.selectedPerson + "'.";
+				this.$.deleteSuccessToast.show();
+				this.$.members.$.memberSelector.selected = undefined;
+				this.$.listAjax.go();
+			},
+
+			deleteError: function (e, detail) {
+				this.$.deleteErrorToast.text = detail.xhr.responseText;
+				this.$.deleteErrorToast.show();
+			},
+
+			personSelectionChanged: function () {
+				this.selectedPerson = this.$.members.$.memberSelector.selected;
+			}
 
 		});
 	</script>

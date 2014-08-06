@@ -5,7 +5,7 @@ public class Strings {
 	public static final String DBNAME = "UROP_UI";
 
 	public static final String TICKSCOLLECTION = "Ticks";
-	public static final String SUBMISSIONSCOLLECTION = "Submissions";
+	public static final String FORKSCOLLECTION = "Forks";
 	public static final String GROUPSCOLLECTION = "Groups";
 	public static final String USERSCOLLECTION = "Users";
 	public static final String GROUPINGSCOLLECTION = "Groupings";
