@@ -6,6 +6,7 @@
 <link rel="import" href="group-members.html">
 <link rel="import" href="tick-list.html">
 
+<link rel="import" href="sheet-selector.html">
 
 <link rel="import" href="person-list.html">
 
@@ -47,6 +48,10 @@
 					</template>
 				</div>
 			</div>
+		</main-card>
+
+		<main-card animated>
+			<sheet-selector sheets="{{sheets}}"></sheet-selector>
 		</main-card>
 		
 		<!-- <div id="headerBar" layout horizontal center>
@@ -91,7 +96,7 @@
 
 			domReady: function () {
 				this.$.roleAjax.go();
-				// this.$.sheetListAPI.go();
+				this.$.sheetListAPI.go();
 			},
 
 			roleResponse: function() {
