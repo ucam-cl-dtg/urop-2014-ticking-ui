@@ -1,10 +1,13 @@
 package uk.ac.cam.cl.ticking.ui.injection;
 
+import uk.ac.cam.cl.ticking.signups.TickSignups;
+import uk.ac.cam.cl.ticking.ui.api.ForkApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.GroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.GroupingApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.SubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.TickApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.UserApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IForkApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
@@ -39,6 +42,8 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static GroupingApiFacade groupingApiFacade = null;
 	private static GroupApiFacade groupApiFacade = null;
 	private static SubmissionApiFacade submissionApiFacade = null;
+	private static ForkApiFacade forkApiFacade = null;
+	private static TickSignups tickSignups = null;
 	private static RavenManager ravenManager = null;
 
 	/*
@@ -77,6 +82,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 		bind(IGroupingApiFacade.class).to(GroupingApiFacade.class);
 		bind(IGroupApiFacade.class).to(GroupApiFacade.class);
 		bind(ISubmissionApiFacade.class).to(SubmissionApiFacade.class);
+		bind(IForkApiFacade.class).to(ForkApiFacade.class);
 	}
 
 	/**
@@ -142,6 +148,26 @@ public class GuiceConfigurationModule extends AbstractModule {
 			submissionApiFacade = new SubmissionApiFacade(db, config);
 		}
 		return submissionApiFacade;
+	}
+	
+	@Inject
+	@Provides
+	private static ForkApiFacade getForkApiSingleton(
+			IDataManager db, ConfigurationLoader<Configuration> config) {
+		if (forkApiFacade == null) {
+			forkApiFacade = new ForkApiFacade(db, config);
+		}
+		return forkApiFacade;
+	}
+	
+	@Inject
+	@Provides
+	private static TickSignups getTickSignupsSingleton(
+			IDataManager db, ConfigurationLoader<Configuration> config) {
+		if (tickSignups == null) {
+			tickSignups = new TickSignups();
+		}
+		return tickSignups;
 	}
 
 	@Inject

@@ -7,32 +7,24 @@
     <template>
         <!-- STYLES -->
         <link rel="stylesheet" href="../../css/shared-styles.css">
-        <style>
-            paper-button {
-                width: 100%;
-            }
-            paper-progress {
-                width: 100%;
-            }
-        </style>
+        <link rel="stylesheet" href="tick-components.css">
 
         <submit-service id="service" tickId="{{tickId}}" status="{{status}}"></submit-service>
 
         <!-- COMPONENT CONTENT -->
         <paper-button label="SUBMIT" class="greenButton" on-tap="{{submit}}"></paper-button>
-        <paper-progress value="10"></paper-progress>
-        <div>Detail</div>
+        <paper-progress value="{{status.progress / status.maxProgress * 100}}"></paper-progress>
+        <div>{{status.info}}</div>
     </template>
     <script>
         Polymer('submit-component', {
             created: function() {
-                this.status = {};
+                this.status = {progress: 0, maxProgress: 1, info: null};
             },
 
             submit: function() {
                 this.$.service.submit();
             }
-
         });
     </script>
 </polymer-element>

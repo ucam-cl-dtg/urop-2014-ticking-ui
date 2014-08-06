@@ -5,7 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -13,11 +18,9 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-
-import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
-import uk.ac.cam.cl.signups.api.*;
+import uk.ac.cam.cl.signups.api.Sheet;
+import uk.ac.cam.cl.signups.api.SheetInfo;
+import uk.ac.cam.cl.signups.api.Slot;
 import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
 import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
 import uk.ac.cam.cl.signups.api.beans.PermissionsBean;
@@ -25,11 +28,14 @@ import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
 import uk.ac.cam.cl.signups.api.exceptions.ItemNotFoundException;
 import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
-import uk.ac.cam.cl.signups.interfaces.*;
+import uk.ac.cam.cl.signups.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
+
+import com.google.inject.Guice;
+import com.google.inject.Inject;
 
 @Path("/signups")
 @Consumes("application/json")

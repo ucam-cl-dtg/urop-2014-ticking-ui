@@ -24,10 +24,8 @@ public class Grouping {
 	private Role role;
 
 	/**
-	 * Empty default constructor exposed as a JsonCreator as MongoJack cannot
-	 * use Grouping(Group, User, Role).
+	 * Empty default constructor for Jackson
 	 */
-	@JsonCreator
 	public Grouping() {
 
 	}
@@ -66,7 +64,6 @@ public class Grouping {
 	/**
 	 * @return group
 	 */
-	@JsonProperty("group")
 	public String getGroup() {
 		return group;
 	}
@@ -74,7 +71,6 @@ public class Grouping {
 	/**
 	 * @param group
 	 */
-	@JsonProperty("group")
 	public void setGroup(String group) {
 		this.group = group;
 	}
@@ -82,7 +78,6 @@ public class Grouping {
 	/**
 	 * @return user
 	 */
-	@JsonProperty("user")
 	public String getUser() {
 		return user;
 	}
@@ -90,7 +85,6 @@ public class Grouping {
 	/**
 	 * @param user
 	 */
-	@JsonProperty("user")
 	public void setUser(String user) {
 		this.user = user;
 	}
@@ -98,7 +92,6 @@ public class Grouping {
 	/**
 	 * @return role
 	 */
-	@JsonProperty("role")
 	public Role getRole() {
 		return role;
 	}
@@ -106,7 +99,6 @@ public class Grouping {
 	/**
 	 * @param role
 	 */
-	@JsonProperty("role")
 	public void setRole(Role role) {
 		this.role = role;
 	}

@@ -48,10 +48,7 @@ public class Tick implements Comparable<Tick> {
 	 * @param deadline
 	 * @param files
 	 */
-	@JsonCreator
-	public Tick(@JsonProperty("name") String name,
-			@JsonProperty("author") String author,
-			@JsonProperty("deadline") DateTime deadline) {
+	public Tick(String name, String author, DateTime deadline) {
 
 		this.setName(name);
 		this.setAuthor(author);
@@ -77,7 +74,6 @@ public class Tick implements Comparable<Tick> {
 	/**
 	 * @return stubRepo
 	 */
-	@JsonProperty("stubRepo")
 	public String getStubRepo() {
 		return stubRepo;
 	}
@@ -85,7 +81,6 @@ public class Tick implements Comparable<Tick> {
 	/**
 	 * @param stubRepo
 	 */
-	@JsonProperty("stubRepo")
 	public void setStubRepo(String stubRepo) {
 		this.stubRepo = stubRepo;
 	}
@@ -93,7 +88,6 @@ public class Tick implements Comparable<Tick> {
 	/**
 	 * @return correctnessRepo
 	 */
-	@JsonProperty("correctnessRepo")
 	public String getCorrectnessRepo() {
 		return correctnessRepo;
 	}
@@ -101,7 +95,6 @@ public class Tick implements Comparable<Tick> {
 	/**
 	 * @param correctnessRepo
 	 */
-	@JsonProperty("correctnessRepo")
 	public void setCorrectnessRepo(String correctnessRepo) {
 		this.correctnessRepo = correctnessRepo;
 	}
@@ -109,7 +102,6 @@ public class Tick implements Comparable<Tick> {
 	/**
 	 * @return deadline
 	 */
-	@JsonProperty("deadline")
 	public DateTime getDeadline() {
 		return deadline;
 	}
@@ -117,7 +109,6 @@ public class Tick implements Comparable<Tick> {
 	/**
 	 * @param deadline
 	 */
-	@JsonProperty("deadline")
 	public void setDeadline(DateTime deadline) {
 		this.deadline = deadline;
 	}
@@ -125,7 +116,6 @@ public class Tick implements Comparable<Tick> {
 	/**
 	 * @return name
 	 */
-	@JsonProperty("name")
 	public String getName() {
 		return name;
 	}
@@ -133,7 +123,6 @@ public class Tick implements Comparable<Tick> {
 	/**
 	 * @param name
 	 */
-	@JsonProperty("name")
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -141,7 +130,6 @@ public class Tick implements Comparable<Tick> {
 	/**
 	 * @return author
 	 */
-	@JsonProperty("author")
 	public String getAuthor() {
 		return author;
 	}
@@ -149,7 +137,6 @@ public class Tick implements Comparable<Tick> {
 	/**
 	 * @param author
 	 */
-	@JsonProperty("author")
 	public void setAuthor(String author) {
 		this.author = author;
 	}

@@ -1,0 +1,52 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<polymer-element name="sheet-selector" attributes="sheets">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+		<style>
+			:host {
+				display: block;
+			}
+			select {
+			   background: transparent;
+			   width: 100%;
+			   padding: 5px;
+			   font-size: 1rem;
+			}
+		</style>
+		<paper-button label="FOO" on-click="{{clicked}}"></paper-button>
+		<paper-dialog id="dialog" backdrop heading="Select Ticking Session:">
+			<select id="selector" onchange="{{sheetSelectionChanged}}">
+				<template repeat="{{sheet in sheets}}">
+					<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
+				</template>
+			</select>
+			<template if="{{selection}}">
+				<paper-button id="sheetSubmit" class="dialogSubmit" label="DONE" on-click="{{sheetSelected}}" affirmative></paper-button>
+			</template>
+		</paper-dialog>
+	</template>
+	<script>
+		Polymer('sheet-selector', {
+			domReady: function () {
+			},
+
+			toggle: function () {
+				this.$.dialog.toggle();
+			},
+
+			clicked: function () {
+				this.toggle();
+			},
+
+			sheetSelectionChanged: function () {
+				var sel = this.$.selector;
+				 
+			}
+		});
+	</script>
+</polymer-element>

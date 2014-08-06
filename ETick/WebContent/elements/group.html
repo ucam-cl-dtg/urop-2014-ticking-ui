@@ -1,13 +1,12 @@
 <!-- Element representing a 'Group' page. -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
-<link rel="import" href="author-pane.html">
 <link rel="import" href="main-card.html">
 <link rel="import" href="group-members.html">
 <link rel="import" href="tick-list.html">
 
+<link rel="import" href="sheet-selector.html">
 
 <link rel="import" href="person-list.html">
 
@@ -15,26 +14,56 @@
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
 
+		<!-- User roles API call. -->
 		<core-ajax id="roleAjax"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/' + gid + '/roles'}}"
 			handleAs="json" on-core-response="{{roleResponse}}">
 		</core-ajax>
 
+		<!-- Available signup sheets API call. -->
+		<core-ajax id="sheetListAPI"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/' + gid }}"
+			handleAs="json"
+			on-core-response="{{sheetListResponse}}">
+		</core-ajax>
+
 		<!-- Group info card. -->
 		<main-card animated>
 			<div layout vertical start>
-			<h1 class="groupName">{{name}}</h1>
-			<p class="creator">Created by: {{creator}}</p>
-			<div id="infoContainer">
-				<template if="{{!(info === '')}}">
-				<div style="padding: 15px">
-					<h2>DESCRIPTION:</h2>
-					<p>{{info}}</p>
+				<div layout horizontal end style="width: 100%;">
+					<h1 class="groupName">{{name}}</h1>
+					<span layout horizontal end end-justified flex>
+						<template if="{{allowAddMembers}}">
+							<paper-icon-button id="groupDeleteButton" icon="delete"></paper-icon-button>
+							<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
+							<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
+						</template>
+					</span>
 				</div>
-			</template>
+				<p class="creator">Created by: {{creator}}</p>
+				<div id="infoContainer">
+					<template if="{{!(info === '')}}">
+					<div style="padding: 15px">
+						<h2>DESCRIPTION:</h2>
+						<p>{{info}}</p>
+					</div>
+					</template>
+				</div>
 			</div>
-		</div>
 		</main-card>
+		
+		<main-card animated>
+			<sheet-selector sheets="{{sheets}}"></sheet-selector>
+		</main-card>
+		
+		<!-- <div id="headerBar" layout horizontal center>
+			<h1 flex>Members ({{number}})</h1>
+			<template if="{{allowAdd}}">
+				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
+				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>
+			</template>
+			<search-box id="searchBox" placeholder="Search..."></search-box>
+		</div>-->
 
 		<!-- Group members card. -->
 		<main-card animated
@@ -69,6 +98,7 @@
 
 			domReady: function () {
 				this.$.roleAjax.go();
+				this.$.sheetListAPI.go();
 			},
 
 			roleResponse: function() {
@@ -94,6 +124,11 @@
 			cardSwiped: function (e, detail) {
 				// Code to get rid of the card. Consider other options.
 				detail.card.style.display = "none";
+			},
+
+			sheetListResponse: function () {
+				this.sheets = this.$.sheetListAPI.response;
+				console.log(this.sheets);
 			}
 		});
 	</script>
