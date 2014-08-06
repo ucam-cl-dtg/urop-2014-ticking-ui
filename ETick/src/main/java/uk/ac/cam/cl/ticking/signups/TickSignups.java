@@ -162,7 +162,7 @@ public class TickSignups {
     /* Below are the methods for the ticker workflow */
     
     /**
-     * @return A list of the sheetIDs for the given group.
+     * @return The list of the sheets in the given group.
      */
     public Response listSheets(String groupName) {
         try {
