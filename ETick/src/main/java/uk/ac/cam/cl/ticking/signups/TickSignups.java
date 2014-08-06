@@ -32,6 +32,7 @@ import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 @Path("/signups")
+@Consumes("application/json")
 public class TickSignups {
     
     private WebInterface service;
