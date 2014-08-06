@@ -38,8 +38,7 @@ public interface IGroupApiFacade {
 	@GET
 	@Path("/{groupId}")
 	@Produces("application/json")
-	public abstract Response getGroup(@PathParam("groupId") String groupId,
-			@QueryParam("byName") boolean byName);
+	public abstract Response getGroup(@PathParam("groupId") String groupId);
 
 	/**
 	 * Deletes the specified group, clearing up any dangling associations with
@@ -54,21 +53,6 @@ public interface IGroupApiFacade {
 	@Produces("application/json")
 	public abstract Response deleteGroup(@Context HttpServletRequest request,
 			@PathParam("groupId") String groupId);
-
-	/**
-	 * Removes a user from a group completely
-	 * 
-	 * @param request
-	 * @param groupId
-	 * @param crsid
-	 * @return the success of the request
-	 */
-	@DELETE
-	@Path("/{groupId}/{crsid}")
-	@Produces("application/json")
-	public abstract Response deleteUser(@Context HttpServletRequest request,
-			@PathParam("groupId") String groupId,
-			@PathParam("crsid") String crsid);
 
 	/**
 	 * 
@@ -121,5 +105,24 @@ public interface IGroupApiFacade {
 	@Consumes("application/json")
 	public abstract Response updateGroup(@Context HttpServletRequest request,
 			@PathParam("groupId") String groupId, GroupBean groupBean);
+
+	/**
+	 * 
+	 * @param request
+	 * @param groupId
+	 * @param members
+	 * @param ticks
+	 * @param groupBean
+	 * @return the cloned group object
+	 */
+	@POST
+	@Path("/{groupId}")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public abstract Response cloneGroup(@Context HttpServletRequest request,
+			@PathParam("groupId") String groupId,
+			@DefaultValue("true") @QueryParam("members") boolean members,
+			@DefaultValue("true") @QueryParam("ticks") boolean ticks,
+			GroupBean groupBean);
 
 }

@@ -75,14 +75,30 @@ public class TickApiFacade implements ITickApiFacade {
 	public Response deleteTick(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		// TODO remove repo?
 		// TODO remove checkstyles?
 		Tick tick = db.getTick(tickId);
 		if (!crsid.equals(tick.getAuthor())) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		db.removeTick(tickId);
+		
+		ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyWebTarget target = client.target(config.getConfig()
+				.getGitApiLocation());
+
+		WebInterface proxy = target.proxy(WebInterface.class);
+		
+		try {
+			proxy.deleteRepository(Tick.replaceDelimeter(tickId)); //throws the exceptions
+			db.removeTick(tickId);
+		} catch (IOException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+		} catch (RepositoryNotFoundException e) {
+			db.removeTick(tickId);
+			//Not finding the repo still indicates we want to delete the tick
+			return Response.status(Status.NOT_FOUND).entity(e).build();
+		}
+		
 		return Response.ok().build();
 	}
 

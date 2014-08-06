@@ -15,6 +15,7 @@ import com.google.inject.Injector;
  * @author tl364
  *
  */
+@Deprecated
 public class DatabasePopulator {
 
 	private static IDataManager db = null;
@@ -48,7 +49,9 @@ public class DatabasePopulator {
 	}
 
 	public static void addEntry(User u, String g, Role r) {
-		Group group = db.getGroupByName(g);
+		Group group = null;
+		//group = db.getGroupByName(g);
+		//Method getGroupByName no longer exists
 		if (group == null) {
 			group = new Group(g, "tl364");
 			db.saveGroup(group);
