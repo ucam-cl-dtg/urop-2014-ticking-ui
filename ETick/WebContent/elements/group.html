@@ -67,7 +67,7 @@
 
 		<!-- Tick list card. -->
 		<main-card animated>
-			<tick-list id="ticks" gid="{{gid}}"></tick-list>
+			<tick-list id="ticks" gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"></tick-list>
 		</main-card>
 
 		<template if="{{selectedSheetID}}">
@@ -101,10 +101,6 @@
 				this.$.sheetListAPI.go();
 			},
 
-			observe: {
-				'$.ticks.selectedTick' : 'selectedTickChanged'
-			},
-
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
 				// Check for Author (add member) permissions.
@@ -135,8 +131,8 @@
 				this.sheets = this.$.sheetListAPI.response;
 			},
 
-			selectedTickChanged: function(oldValue, newValue) {
-				this.selectedSheetID = newValue;
+			forkClickedHandler: function (e, detail) {
+				this.selectedSheetID = detail.sheetid;
 			}
 		});
 	</script>
