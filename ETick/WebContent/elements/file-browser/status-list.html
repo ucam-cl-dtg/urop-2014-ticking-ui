@@ -9,8 +9,7 @@
 
     <core-selector multi
                    id="selector"
-                   valueattr="label"
-                   on-core-select="{{errorSelect}}">
+                   valueattr="label">
       <template repeat="{{item in errors}}">
         <core-item icon='{{item.outcome}}'
                    label="{{item.problemDescription}}">
@@ -49,11 +48,5 @@
 
               this.$.selector.selected = this.highlight;
             }
-
-          , errorSelect:
-            function ()
-            {
-            }
-        });
   </script>
 </polymer-element>
