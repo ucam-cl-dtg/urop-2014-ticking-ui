@@ -1,6 +1,16 @@
 paper-button {
     width: 100%;
 }
+
 paper-progress {
     width: 100%;
+}
+
+.error {
+    text-align: center;
+    color: #757575;
+}
+
+#progressCaption {
+    color: #757575;
 }

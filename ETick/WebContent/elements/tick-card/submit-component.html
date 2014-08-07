@@ -13,7 +13,7 @@
         <submit-service id="service" tickId="{{tickId}}" status="{{status}}" testRunning="{{testRunning}}"></submit-service>
 
         <!-- COMPONENT CONTENT -->
-        <core-collapse opened?="{{!testRunning}}">
+        <core-collapse opened?="{{!testRunning && !signedUp}}">
             <paper-button label="SUBMIT" class="greenButton" on-tap="{{submit}}"
                 disabled?="{{signedUp || testRunning || humanPass}}">
             </paper-button>
@@ -21,12 +21,12 @@
 
         <core-collapse opened?="{{testRunning}}">
             <paper-progress value="{{status.progress / status.maxProgress * 100}}"></paper-progress>
-            <div>{{status.info}}</div>
+            <div id="progressCaption">{{status.info}}</div>
         </core-collapse>
 
         <!-- TODO: maybe replace a completely unhelpful disabled button with a more helpful error message -->
         <core-collapse opened?="{{!testRunning && signedUp}}">
-            <div>To resubmit, cancel your ticking session</div>
+            <div class="error">To resubmit, cancel your ticking session</div>
         </core-collapse>
     </template>
     <script>
