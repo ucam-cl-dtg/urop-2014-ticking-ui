@@ -20,14 +20,14 @@ public class GitApi {
 		Configuration config = (Configuration) ConfigurationRegister.getLoader(
 				Configuration.class).getConfig();
 
-		/*PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
+		PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
 		cm.setDefaultMaxPerRoute(200);
 		cm.setMaxTotal(200);
 		HttpClient httpClient = new DefaultHttpClient(cm);
-		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);*/
+		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
 
 		ResteasyClient client = new ResteasyClientBuilder()
-				.maxPooledPerRoute(200).build();
+				.maxPooledPerRoute(200).httpEngine(engine).build();
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 
 		webInterface = target.proxy(WebInterface.class);
