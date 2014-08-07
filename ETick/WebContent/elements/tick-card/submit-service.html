@@ -29,6 +29,7 @@
                 on-core-response="{{startPolling}}">
         </core-ajax>
 
+        <!-- Used for local testing; TODO: remove -->
         <core-ajax
                 id="ajaxTest"
                 url="http://localhost:8000/testTickData.json"
@@ -53,8 +54,13 @@
                 }
             },
 
+            /**
+             * Fired when submitting the tick failed.
+             */
             submitError: function() {
                 this.testRunning = false;
+                //TODO: somehow show an error toast
+                //TODO: one idea: publish an error attribute and have tick-card (the parent) observe it
             },
 
             startPolling: function() {

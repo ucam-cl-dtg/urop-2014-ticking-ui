@@ -163,5 +163,5 @@ public class TickSignupsTest {
         assertEquals("Only one slot should be booked", 1, bookings.size());
         assertEquals("Booking should be to first time", new Date(1420120800000L), bookings.get(0).getStartTime());
     }
-
+    
 }
