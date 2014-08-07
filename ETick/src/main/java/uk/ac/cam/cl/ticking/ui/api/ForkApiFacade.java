@@ -90,9 +90,12 @@ public class ForkApiFacade implements IForkApiFacade {
 		try {
 			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));
+			log.info(repo);
 		} catch (DuplicateRepoNameException e) {
 			repo = e.getMessage();
+			log.info(repo);
 		} catch (IOException e) {
+			log.warn(e);
 			// The repo that was being forked was empty, however, it has still
 			// been forked thus continue
 
