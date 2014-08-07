@@ -81,10 +81,6 @@ public class TickSignups {
                                 + "with this sheet, but there seems to be " + groupIDs.size()).build();
             }
             String groupID = groupIDs.get(0);
-            log.info("CRSID: " +  crsid);
-            log.info("tickID: " + tickID);
-            log.info("groupID: " + groupID);
-            log.info("sheetID: " + sheetID);
             return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
         } catch (ItemNotFoundException e) {
             return Response.status(Status.NOT_FOUND).entity(e).build();
