@@ -1,0 +1,27 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../sheet-selector.html">
+<link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
+
+<polymer-element name="signup-component" attributes="sheets signedUp unitPass">
+    <template>
+        <link rel="stylesheet" href="../../css/shared-styles.css">
+        <link rel="stylesheet" href="tick-components.css">
+
+        <core-collpse hidden?="{{signedUp}}">
+            <paper-button class="greenButton" label="SIGN UP" on-tap="{{openSignupDialog}}"></paper-button>
+        </core-collpse>
+
+        <core-collpse hidden?="{{!signedUp}}">
+            <paper-button class="greenButton" label="CANCEL SIGN UP" on-tap="{{showCancelDialog}}"></paper-button>
+        </core-collpse>
+
+        <sheet-selector id="signupDialog"></sheet-selector>
+    </template>
+    <script>
+        Polymer('signup-component',{
+            openSignupDialog: function() {
+                this.$.signupDialog.toggle();
+            }
+        });
+    </script>
+</polymer-element>

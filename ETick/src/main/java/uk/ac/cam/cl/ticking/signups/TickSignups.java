@@ -5,12 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -21,7 +16,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import uk.ac.cam.cl.signups.api.Sheet;
 import uk.ac.cam.cl.signups.api.SheetInfo;
 import uk.ac.cam.cl.signups.api.Slot;
-import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
+import uk.ac.cam.cl.signups.api.beans.ColumnCreatorBean;
 import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
 import uk.ac.cam.cl.signups.api.beans.PermissionsBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
@@ -38,7 +33,6 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 
 @Path("/signups")
-@Consumes("application/json")
 public class TickSignups {
     
     private WebInterface service;
@@ -63,8 +57,11 @@ public class TickSignups {
      * TODO: we don't want all free slots, we want all slots a student can use to sign up for a specific tick with
      */
     @GET
-    @Path("/sheets/{sheetID}/times")
-    public Response listAvailableTimes(String crsid, String tickID, String sheetID) {
+    @Path("/sheets/{sheetID}/times/{crsid}/{tickID}")
+    @Produces("application/json")
+    public Response listAvailableTimes(@PathParam("crsid") String crsid,
+            @PathParam("tickID") String tickID,
+            @PathParam("sheetID") String sheetID) {
         try {
             List<String> groupIDs = service.getGroupIDs(sheetID);
             // TODO: should be precisely one ID in this list
@@ -86,6 +83,7 @@ public class TickSignups {
      */
     @POST
     @Path("/sheets/{sheetID}/bookings")
+    @Consumes("application/json")    
     public Response makeBooking(String crsid, String groupID,
             String sheetID, String tickID, Date startTime) {
         for (Slot slot : service.listUserSlots(crsid)) {
@@ -123,27 +121,15 @@ public class TickSignups {
         return Response.status(Status.FORBIDDEN)
                 .entity("Student does not have permission to book this slot").build();
     }
-    
-    /**
-     * Equivalent to deleting the existing booking and making a
-     * new booking at the given time.
-     * @return The ticker that the student has been signed up to
-     * see at the given time, or null if the booking was unsuccessful.
-     */
-    public Response modifyBooking(String crsid, String groupID,
-            String sheetID, String tickID, Date oldStartTime, Date newStartTime) {
-        Response unbookResponse = unbookSlot(crsid, groupID, sheetID, tickID, oldStartTime);
-        if (unbookResponse.getStatus() != Status.OK.getStatusCode()) {
-            return unbookResponse;
-        }
-        return makeBooking(crsid, groupID, sheetID, tickID, newStartTime);
-    }
-    
+       
     /**
      * Unbooks the given user from the given slot.
      */
+    @DELETE
+    @Path("/sheets/{sheetID}/bookings")
+    @Consumes("application/json")
     public Response unbookSlot(String crsid, String groupID,
-            String sheetID, String tickID, Date startTime) {
+            @PathParam("sheetID") String sheetID, String tickID, Date startTime) {
         String ticker = null;
         for (Slot slot : service.listUserSlots(crsid)) {
             if (slot.getStartTime().equals(startTime) &&
@@ -174,8 +160,8 @@ public class TickSignups {
      */
     @GET
     @Path("/students/{crsid}/bookings")
-    @Produces
-    public Response listStudentBookings(String crsid) {
+    @Produces("application/json")
+    public Response listStudentBookings(@PathParam("crsid") String crsid) {
         return Response.ok(service.listUserSlots(crsid)).build();
     }
     
@@ -213,7 +199,7 @@ public class TickSignups {
      * Returns a list of the slots for the specified ticker.
      */
     @GET
-    @Path("/sheets/{sheetID}/{ticker}")
+    @Path("/sheets/{sheetID}/tickers/{ticker}")
     @Produces("application/json")
     public Response listSlots(@PathParam("sheetID") String sheetID, @PathParam("ticker") String tickerName) {
         try {
@@ -245,7 +231,8 @@ public class TickSignups {
      * user in the given sheet.
      */
     @DELETE
-    @Path("/sheets/{sheetID}/bookings/{crsid}")
+    @Path("/students/{crsid}/bookings/{sheetID}")
+    @Consumes("application/json")
     public Response removeAllStudentBookings(String sheetID, String crsid, String authCode) {
         try {
             service.removeAllUserBookings(sheetID, crsid, authCode);
@@ -263,6 +250,7 @@ public class TickSignups {
      */
     @POST
     @Path("/students/{crsid}/permissions")
+    @Consumes("application/json")
     public Response assignTickerForTickForUser(String crsid, String groupID,
             String tickID, String ticker, String groupAuthCode) {
         Map<String, String> map = new HashMap<String, String>();
@@ -288,7 +276,8 @@ public class TickSignups {
      */
     @POST
     @Path("/sheets")
-    @Produces("Application/json")
+    @Consumes("application/json")
+    @Produces("application/json")
     public Response createSheet(String title, String description, String location,
             Date startTime, int slotLengthInMinutes, Date endTime, List<String> tickerNames,
             String groupID, String groupAuthCode) {
@@ -310,7 +299,7 @@ public class TickSignups {
         }
         for (String ticker : tickerNames) {
             try {
-                service.createColumn(id, new CreateColumnBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
+                service.createColumn(id, new ColumnCreatorBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
             } catch (ItemNotFoundException e) {
                 e.printStackTrace();
                 throw new RuntimeException("This should only happen if the sheet or column is not found "
@@ -351,12 +340,13 @@ public class TickSignups {
      */
     @POST
     @Path("/sheets/{sheetID}/tickers")
+    @Consumes("application/json")
     @Produces("application/json")
     public Response addColumn(String sheetID, String authCode, 
             String name, Date startTime, Date endTime,
             int slotLength /* in minutes */) {
         try {
-            service.createColumn(sheetID, new CreateColumnBean(name, authCode, startTime, endTime, slotLength));
+            service.createColumn(sheetID, new ColumnCreatorBean(name, authCode, startTime, endTime, slotLength));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND).entity(e).build();
@@ -376,6 +366,7 @@ public class TickSignups {
      */
     @DELETE
     @Path("/sheets/{sheetID}/tickers/{ticker}")
+    @Consumes("application/json")
     @Produces("application/json")
     public Response deleteColumn(String sheetID, String ticker, String authCode) {
         try {
@@ -396,6 +387,7 @@ public class TickSignups {
      */
     @POST
     @Path("/sheets/{sheetID}/bookings/{startTime}")
+    @Consumes("application/json")
     // TODO: unify with normal modify booking and even perhaps make booking
     public Response forceModifyBooking(String sheetID, String authCode, String tickID,
             Date startTime, String currentlyBookedUser, String userToBook) {

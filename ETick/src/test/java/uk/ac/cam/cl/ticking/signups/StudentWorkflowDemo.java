@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.signups.api.*;
 import uk.ac.cam.cl.signups.api.beans.ColumnBean;
-import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
+import uk.ac.cam.cl.signups.api.beans.ColumnCreatorBean;
 import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBean;
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
@@ -61,7 +61,7 @@ public class StudentWorkflowDemo {
     private String sauth;
     private String gauth;
     
-    //@Before
+    @Before
     public void setUp() throws DuplicateNameException, ItemNotFoundException, NotAllowedException, Exception {
         // Need to dump database before test is run
         try {
@@ -101,7 +101,7 @@ public class StudentWorkflowDemo {
         }
     }    
 
-    //@Test
+    @Test
     public void signingUp_success() {
         System.out.println("\nTest now starting");
         try {
