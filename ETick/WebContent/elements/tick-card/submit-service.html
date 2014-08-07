@@ -22,7 +22,7 @@
         <!-- poll the tick's status -->
         <core-ajax
                 id="ajaxPoll"
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/'}}"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/running'}}"
                 handleAs="json"
                 method="POST"
                 on-core-response="{{pollNext}}">
