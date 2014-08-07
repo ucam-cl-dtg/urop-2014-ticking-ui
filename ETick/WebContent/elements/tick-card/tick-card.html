@@ -68,7 +68,7 @@
             },
 
             testRunningChanged: function() {
-                console.log("fired");
+                console.log(this.testRunning);
 
                 if (this.testRunning == true) {
                     this.$.submitComponent.continuePolling();
