@@ -2,29 +2,54 @@
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
 <polymer-element name="sheet-selector" attributes="sheets">
 	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
 		<style>
 			:host {
 				display: block;
 			}
+			select {
+			   background: #f0f0f0;
+			   width: 100%;
+			   padding: 5px;
+			   font-size: 1rem;
+			}
 		</style>
-		<paper-dialog id="dialog" backdrop>
-			<select>
+<!-- 		<paper-button label="FOO" on-click="{{clicked}}"></paper-button>
+ -->		<paper-dialog id="dialog" backdrop heading="Select Ticking Session:" transition="core-transition-top">
+			<select id="selector" on-change="{{sheetSelectionChanged}}">
+				<option disabled selected>Select Ticking Session...</option>
 				<template repeat="{{sheet in sheets}}">
-					{{sheet.title}}
+					<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
 				</template>
 			</select>
+			<template if="{{selection}}">
+				<paper-button id="sheetSubmit" class="dialogSubmit" label="DONE" on-click="{{sheetSelected}}" affirmative></paper-button>
+			</template>
 		</paper-dialog>
 	</template>
 	<script>
 		Polymer('sheet-selector', {
-			domReady: function () {
-				this.sheets = [
-					{title: "Hi", sid="Foo"},
-					{title: "Hi2", sid="Foo"},
-				]
+			// clicked: function () {
+			// 	this.toggle();
+			// },
+
+			toggle: function () {
+				this.$.dialog.toggle();
+			},
+
+			sheetSelectionChanged: function () {
+				var sel = this.$.selector;
+				this.selection = sel.options[sel.selectedIndex].getAttribute('sheetid');
+			},
+
+			sheetSelected: function () {
+				console.log(this.selection + ': selected');
 			}
+
 		});
 	</script>
 </polymer-element>

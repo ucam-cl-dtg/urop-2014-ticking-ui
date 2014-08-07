@@ -3,16 +3,18 @@
 <link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="submit-service.html">
 
-<polymer-element name="submit-component" attributes="tickId">
+<polymer-element name="submit-component" attributes="tickId signedUp testRunning humanPass">
     <template>
         <!-- STYLES -->
         <link rel="stylesheet" href="../../css/shared-styles.css">
         <link rel="stylesheet" href="tick-components.css">
 
-        <submit-service id="service" tickId="{{tickId}}" status="{{status}}"></submit-service>
+        <submit-service id="service" tickId="{{tickId}}" status="{{status}}" testRunning="{{testRunning}}"></submit-service>
 
         <!-- COMPONENT CONTENT -->
-        <paper-button label="SUBMIT" class="greenButton" on-tap="{{submit}}"></paper-button>
+        <paper-button label="SUBMIT" class="greenButton" on-tap="{{submit}}"
+                disabled?="{{signedUp || testRunning || humanPass}}">
+        </paper-button>
         <paper-progress value="{{status.progress / status.maxProgress * 100}}"></paper-progress>
         <div>{{status.info}}</div>
     </template>
