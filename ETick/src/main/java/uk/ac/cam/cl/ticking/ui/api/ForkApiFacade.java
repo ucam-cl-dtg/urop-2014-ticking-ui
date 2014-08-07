@@ -81,6 +81,12 @@ public class ForkApiFacade implements IForkApiFacade {
 		
 		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
+		
+		/*ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyWebTarget target = client.target(config.
+				getConfig().getGitApiLocation());
+
+		gitServiceProxy = target.proxy(WebInterface.class);*/
 		try {
 			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));

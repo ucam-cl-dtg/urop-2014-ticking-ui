@@ -1,11 +1,14 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
+import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
@@ -25,6 +28,8 @@ public class UserApiFacade implements IUserApiFacade {
 	// Currently not needed but these classes are still not final and it is
 	// quite likely to be required in future
 	private ConfigurationLoader<Configuration> config;
+	
+	private WebInterface gitServiceProxy;
 
 	/**
 	 * @param db
@@ -32,9 +37,10 @@ public class UserApiFacade implements IUserApiFacade {
 	 */
 	@Inject
 	public UserApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config) {
+			ConfigurationLoader<Configuration> config, WebInterface gitServiceProxy) {
 		this.db = db;
 		this.config = config;
+		this.gitServiceProxy = gitServiceProxy;
 	}
 
 	/*
@@ -128,5 +134,20 @@ public class UserApiFacade implements IUserApiFacade {
 				"RavenRemoteUser");
 		List<Tick> ticks = db.getAuthorTicks(crsid);
 		return Response.ok(ticks).build();
+	}
+	
+	@Override
+	public Response addSSHKey(HttpServletRequest request, String key) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		try {
+			gitServiceProxy.addSSHKey(key, crsid);
+		} catch (IOException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+		}
+		User user = db.getUser(crsid);
+		user.setSsh(key);
+		db.saveUser(user);
+		return Response.status(Status.CREATED).entity(user).build();
 	}
 }

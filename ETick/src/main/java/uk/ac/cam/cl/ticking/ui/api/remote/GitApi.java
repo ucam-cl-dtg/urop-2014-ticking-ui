@@ -1,9 +1,6 @@
 package uk.ac.cam.cl.ticking.ui.api.remote;
 
-import java.net.UnknownHostException;
-
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -14,10 +11,6 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
-import uk.ac.cam.cl.ticking.ui.util.Strings;
-
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
 
 public class GitApi {
 
@@ -27,7 +20,9 @@ public class GitApi {
 		Configuration config = (Configuration) ConfigurationRegister.getLoader(
 				Configuration.class).getConfig();
 		
-		ClientConnectionManager cm = new PoolingClientConnectionManager();
+		PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
+		cm.setDefaultMaxPerRoute(200);
+		cm.setMaxTotal(200);
 		HttpClient httpClient = new DefaultHttpClient(cm);
 		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
 		
