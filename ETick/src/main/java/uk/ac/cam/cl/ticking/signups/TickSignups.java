@@ -81,10 +81,6 @@ public class TickSignups {
                                 + "with this sheet, but there seems to be " + groupIDs.size()).build();
             }
             String groupID = groupIDs.get(0);
-            log.info("CRSID: ",  crsid);
-            log.info("tickID: ", tickID);
-            log.info("groupID: ", groupID);
-            log.info("sheetID: ", sheetID);
             return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
         } catch (ItemNotFoundException e) {
             return Response.status(Status.NOT_FOUND).entity(e).build();
@@ -103,8 +99,10 @@ public class TickSignups {
     @POST
     @Path("/sheets/{sheetID}/bookings")
     @Consumes("application/json")    
-    public Response makeBooking(String crsid, String groupID,
-            String sheetID, String tickID, Date startTime) {
+    public Response makeBooking(// TODO: make these arguments unnecessary: String crsid, String groupID,
+            @PathParam("sheetID") String sheetID, String tickID, Long startTime) {
+        String crsid = "rds46";
+        String groupID = null;
         for (Slot slot : service.listUserSlots(crsid)) {
             if (slot.getStartTime().equals(startTime)) {
                 return Response.status(Status.FORBIDDEN)
@@ -116,16 +114,16 @@ public class TickSignups {
             }
         }
         try {
-            if (service.listColumnsWithFreeSlotsAt(sheetID, startTime.getTime()).size() == 0) {
+            if (service.listColumnsWithFreeSlotsAt(sheetID, startTime).size() == 0) {
                 return Response.status(Status.NOT_FOUND)
                         .entity(Strings.NOFREESLOTS).build();
             }
             if (service.getPermissions(groupID, crsid).containsKey(tickID)) { // have passed this tick
                 String ticker = service.getPermissions(groupID, crsid).get(tickID);
                 if (ticker == null) { // any ticker permitted
-                    ticker = service.listColumnsWithFreeSlotsAt(sheetID, startTime.getTime()).get(0);
+                    ticker = service.listColumnsWithFreeSlotsAt(sheetID, startTime).get(0);
                 }
-                service.book(sheetID, ticker, startTime.getTime(), new SlotBookingBean(null, crsid, tickID));
+                service.book(sheetID, ticker, startTime, new SlotBookingBean(null, crsid, tickID));
                 return Response.ok().entity(ticker).build();
             }
         } catch (ItemNotFoundException e) {
