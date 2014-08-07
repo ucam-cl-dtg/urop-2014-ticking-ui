@@ -31,7 +31,7 @@
 				<div layout horizontal end style="width: 100%;">
 					<h1 class="groupName">{{name}}</h1>
 					<span layout horizontal end end-justified flex>
-						<template if="{{allowAddMembers}}">
+						<template if="{{isAuthor}}">
 							<paper-icon-button id="groupDeleteButton" icon="delete"></paper-icon-button>
 							<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
 							<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
@@ -62,12 +62,13 @@
 		<!-- Group members card. -->
 		<main-card animated
 			on-main-card-swipe-away="{{cardSwiped}}">
-			<group-members gid="{{gid}}" allowAdd="{{allowAddMembers}}" rows="4"></group-members>
+			<group-members gid="{{gid}}" allowAdd="{{isAuthor}}" rows="4"></group-members>
 		</main-card>
 
 		<!-- Tick list card. -->
 		<main-card animated>
-			<tick-list id="ticks" gid="{{gid}}"></tick-list>
+			<tick-list id="ticks" gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"
+				canFork="{{isSubmitter}}"></tick-list>
 		</main-card>
 
 		<template if="{{selectedSheetID}}">
@@ -101,14 +102,12 @@
 				this.$.sheetListAPI.go();
 			},
 
-			observe: {
-				'$.ticks.selectedTick' : 'selectedTickChanged'
-			},
-
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
-				// Check for Author (add member) permissions.
-				this.allowAddMembers = (this.roles.indexOf('AUTHOR') > -1);
+				// Check for permissions.
+				this.isAuthor = (this.roles.indexOf('AUTHOR') > -1);
+				this.isSubmitter = (this.roles.indexOf('SUBMITTER') > -1);
+
 			},
 
 			// tabSelectedAction: function(e, detail) {
@@ -135,8 +134,8 @@
 				this.sheets = this.$.sheetListAPI.response;
 			},
 
-			selectedTickChanged: function(oldValue, newValue) {
-				this.selectedSheetID = newValue;
+			forkClickedHandler: function (e, detail) {
+				this.selectedSheetID = detail.sheetid;
 			}
 		});
 	</script>

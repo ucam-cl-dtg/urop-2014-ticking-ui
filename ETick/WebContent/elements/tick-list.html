@@ -1,10 +1,12 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/core-icons/iconsets/communication-icons.html">
 <link rel="import" href="search-box.html">
 <link rel="import" href="tick-box.html">
 
-<polymer-element name="tick-list" attributes="gid">
+<polymer-element name="tick-list" attributes="gid canFork">
 	<template>
 		<style>
 			:host {
@@ -44,6 +46,9 @@
 		<!-- Tick list card header. -->
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>
+			<template if="{{canFork}}">
+				<paper-icon-button icon="communication:call-split" on-click="{{forkClicked}}"></paper-icon-button>
+			</template>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
@@ -77,6 +82,13 @@
 
 			selected: function() {
 				this.selectedTick = this.$.selector.selected;
+			},
+
+			forkClicked: function () {
+				if (this.selectedTick)
+					this.fire('fork-clicked', {
+						sheetid: this.selectedTick
+					});
 			}
 		});
 	</script>
