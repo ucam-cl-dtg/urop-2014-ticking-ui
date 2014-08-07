@@ -52,10 +52,6 @@
 			</div>
 		</main-card>
 		
-		<main-card animated>
-			<sheet-selector sheets="{{sheets}}"></sheet-selector>
-		</main-card>
-		
 		<!-- <div id="headerBar" layout horizontal center>
 			<h1 flex>Members ({{number}})</h1>
 			<template if="{{allowAdd}}">
@@ -128,7 +124,6 @@
 
 			sheetListResponse: function () {
 				this.sheets = this.$.sheetListAPI.response;
-				console.log(this.sheets);
 			}
 		});
 	</script>

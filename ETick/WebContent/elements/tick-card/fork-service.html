@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="fork-service" attributes="unitPass humanPass signedUp testing repo tickId">
+<polymer-element name="fork-service" attributes="unitPass humanPass signedUp testRunning repo tickId">
     <template>
         <style>
             :host {
@@ -29,7 +29,7 @@
                 this.unitPass = forkObj.unitPass;
                 this.humanPass = forkObj.humanPass;
                 this.signedUp = forkObj.signedUp;
-                this.testing = forkObj.testing;
+                this.testRunning = forkObj.testing;
                 this.repo = forkObj.repo;
             }
         });

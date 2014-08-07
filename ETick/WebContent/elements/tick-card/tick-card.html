@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="submit-component.html">
 <link rel="import" href="report-component.html">
-<link rel="import" href="blank-component.html">
+<link rel="import" href="signup-component.html">
 <link rel="import" href="fork-service.html">
 
 <polymer-element name="tick-card" attributes="tickId">
@@ -22,7 +22,7 @@
                 unitPass="{{unitPass}}"
                 humanPass="{{humanPass}}"
                 signedUp="{{signedUp}}"
-                testing="{{testing}}"
+                testRunning="{{testRunning}}"
                 repo="{{repo}}">
         </fork-service>
 
@@ -31,11 +31,19 @@
             <div>{{repo}}</div>
 
             <div layout horizontal>
-                <submit-component tickId="{{tickId}}" flex></submit-component> <div class="spacer"></div>
-                <report-component flex></report-component> <div class="spacer"></div>
-                <blank-component flex></blank-component>
+                <submit-component flex
+                        tickId="{{tickId}}"
+                        signedUp="{{signedUp}}"
+                        testRunning="{{testRunning}}"
+                        humanPass="{{humanPass}}">
+                </submit-component>
+                <div class="spacer"></div>
+                <report-component flex></report-component>
+                <div class="spacer"></div>
+                <signup-component flex></blank-component>
             </div>
         </div>
+        <br><br>
     </template>
     <script>
         Polymer('tick-card',{
@@ -43,7 +51,7 @@
                 this.unitPass = null;
                 this.humanPass = null;
                 this.signedUp = null;
-                this.testing = null;
+                this.testRunning = null;
                 this.repo = null;
             }
         });

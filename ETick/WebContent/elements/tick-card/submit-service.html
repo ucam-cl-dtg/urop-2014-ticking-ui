@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="submit-service" attributes="tickId status">
+<polymer-element name="submit-service" attributes="tickId status testRunning">
     <template>
         <style>
             :host {
@@ -16,7 +16,8 @@
                 handleAs="json"
                 contentType="json"
                 method="POST"
-                on-core-response="{{startPolling}}">
+                on-core-response="{{startPolling}}"
+                on-core-error="{{submitError}}">
         </core-ajax>
 
         <!-- poll the tick's status -->
@@ -28,6 +29,7 @@
                 on-core-response="{{startPolling}}">
         </core-ajax>
 
+        <!-- Used for local testing; TODO: remove -->
         <core-ajax
                 id="ajaxTest"
                 url="http://localhost:8000/testTickData.json"
@@ -46,7 +48,19 @@
             submit: function() {
                 console.log("submit request received");
                 console.log(this.tickId);
-                this.$.ajaxSubmit.go();
+                if (!(this.testRunning)) {
+                    this.testRunning = true;
+                    this.$.ajaxSubmit.go();
+                }
+            },
+
+            /**
+             * Fired when submitting the tick failed.
+             */
+            submitError: function() {
+                this.testRunning = false;
+                //TODO: somehow show an error toast
+                //TODO: one idea: publish an error attribute and have tick-card (the parent) observe it
             },
 
             startPolling: function() {
@@ -63,6 +77,8 @@
 
                 if (!(this.status.progress === this.maxProgress)) {
                     this.$.ajaxPoll.go();
+                } else {
+                    this.testRunning = false;
                 }
             }
         });
