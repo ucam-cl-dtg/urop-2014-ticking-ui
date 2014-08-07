@@ -1,0 +1,20 @@
+div
+{
+    padding: 0 1em;
+}
+
+div.top
+{
+  margin-top: 1rem;
+}
+
+div.bottom
+{
+  margin-bottom: 1rem;
+}
+
+.input
+{
+  width: 100%;
+  border: thin dotted;
+}

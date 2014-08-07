@@ -21,14 +21,14 @@ public class TestApi {
 		Configuration config = (Configuration) ConfigurationRegister.getLoader(
 				Configuration.class).getConfig();
 		
-		PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
+		/*PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
 		cm.setDefaultMaxPerRoute(200);
 		cm.setMaxTotal(200);
 		
 		HttpClient httpClient = new DefaultHttpClient(cm);
-		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
+		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);*/
 		
-		ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).maxPooledPerRoute(200).build();
+		ResteasyClient client = new ResteasyClientBuilder().maxPooledPerRoute(200).build();
 		ResteasyWebTarget target = client.target(config.
 				getTestApiLocation());
 
