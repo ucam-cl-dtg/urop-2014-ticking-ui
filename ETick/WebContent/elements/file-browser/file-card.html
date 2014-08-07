@@ -1,0 +1,211 @@
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../bower_components/highlightjs-element/highlightjs-element.html"/>
+<link rel="import" href="../../elements/main-card.html"/>
+
+<link rel="stylesheet" href="style.css"/>
+
+<polymer-element name="file-card"
+    attributes="content comments
+                name id highlight
+                syntaxStyleSheet">
+  <template>
+    <!-- HighlightJS colourscheme -->
+    <!--
+    <link rel="stylesheet" href="../../bower_components/highlightjs/styles/default.css"/>
+      -->
+    <!-- TODO: Dynamically load stylesheet; perhaps consider http://highlightjs.org/static/test.html -->
+    <core-ajax id="syntaxAjax"
+               auto
+               method="GET"
+               on-core-response="{{assignStylesheet}}"
+               handleAs="text"></core-ajax>
+    <style id="syntaxStyle"></style>
+
+    <link rel="stylesheet" href="file-style.css"/>
+
+    <div class="container" vertical layout>
+      <span class="file-name"> {{name}} </span>
+      <main-card unresolved>
+        <pre class="hljs code-container">
+          <code>
+  <!-- Deliberately unindented (because of pre tag) -->
+  <content id="codeContent" select="code"></content>
+          </code>
+        </pre>
+      </main-card>
+    </div>
+  </template>
+  <script src="mixin_comments_with_data.js"></script>
+  <script>
+    Polymer('file-card'
+      , {   domReady:
+            function ()
+            {
+              /* If we get don't have the content attribute */
+              if (!this.content)
+              {
+                this.content = this.$.codeContent.innerHTML;
+              }
+
+              this.styleSheetElement.id = "syntaxStyle";
+              if (typeof this.shadowRoot != typeof undefined)
+              {
+                this.shadowRoot.appendChild(this.styleSheetElement);
+              }
+              else
+              {
+                document.head.appendChild(this.styleSheetElement);
+              }
+            }
+          , styleSheetElement: document.createElement('style')
+
+            /* http://www.polymer-project.org/docs/polymer/polymer.html#change-watchers */
+          , contentChanged:
+            function ()
+            {
+              if (typeof this.comments == typeof undefined)
+              {
+                var comments = [];
+              }
+              else
+              {
+                /* A note about the general layout of comment
+                 *
+                 * Current:
+                 * [ {   fileDetails:
+                 *       [ {   detail: (Description)
+                 *           , file:   (File name)
+                 *           , lineNumber: (Starting from 1)
+                 *       } ]
+                 *     , outcome: (ERROR/WARNING/PASS)
+                 *     , problemDescription: (Short, human readable.)
+                 * } ]
+                 *
+                 * However, it is a lot easier for us to use the
+                 * following format:
+                 * [ {   message: (Description)
+                 *     , line:    (Starting from 1)
+                 *     , class:   (For enclosing span tags)
+                 *      (^ Generated using error.id)
+                 * } ]
+                 *
+                 * The reason I am not changing mixin_comments_with_data
+                 * is because this way is easier and allows other code
+                 * using the latter format to be used.
+                 */
+
+                /* To take advantage of closures, as this is always
+                 * local */
+                var filename = this.name
+
+                /* Apologies about this, unfortunately the prototyping
+                 * nature of JavaScript can mean difficulties with
+                 * looping over arrays, so I use native array functions
+                 */
+                var comments =
+                  this.comments.reduce(/* Same as foldl */
+                    function(previousValue, currentValue)
+                    {
+                      /* Re-format errors; isCurrentFile and
+                       * refactorData declared after the return */
+                      var errors =
+                        currentValue.fileDetails
+                          .filter(isCurrentFile)
+                          .map(refactorData);
+
+                      return previousValue.concat(errors);
+
+                      /* Does the refactoring of data, as outlined in
+                       * the above comment.
+                       */
+                      function refactorData (error)
+                      {
+                        var rtn = new Object();
+                        rtn.line = error.lineNumber;
+                        rtn.message = error.detail;
+
+                        /* Generate CSS classes for error */
+                        rtn.class = [ currentValue.outcome
+                                      , "highlight"
+                                        + currentValue.id
+                                      , "highlight"
+                                    ].join(" ");
+
+                        return rtn;
+                      }
+
+                      /* Filter for this file */
+                      function isCurrentFile (error)
+                      {
+                        return error.file == filename;
+                      }
+                    }
+                    , /* initial value of */ new Array());
+
+                /* mixin_comments_with_data works with start and end
+                 * characters, so we use this to convert line numbers */
+                comments = lines_to_chars(this.content, comments);
+              }
+
+              /* We convert the HighlighJS spans to comments, so that we
+               * can use it with our highlighting function. */
+              var syntax   = spans_to_comments(hljs
+                               .highlightAuto(this.content || '').value)
+
+              this.$.codeContent.innerHTML =
+                  mixin_comments_with_data(this.content
+                    , comments.concat(syntax));
+            }
+          , commentsChanged:
+            function (oldValue, newValue)
+            {
+              this.contentChanged();
+            }
+
+          , highlightChanged:
+            function ()
+            {
+              /* To use closures */
+              var highlightSpans =
+                this.$.codeContent.getElementsByClassName("highlight");
+              var toHighlight = this.highlight;
+            }
+
+          , syntaxStyleSheetChanged:
+            function ()
+            {
+              this.$.syntaxAjax.url =
+                "../../bower_components/highlightjs/styles/"
+                + this.syntaxStyleSheet + ".css";
+            }
+
+          , assignStylesheet:
+            function ()
+            {
+              if (typeof this.$ != typeof undefined
+                &&typeof this.$.syntaxStyle != typeof undefined)
+              {
+                this.$.syntaxStyle.textContent =
+                  this.$.syntaxAjax.response;
+              }
+              else if (typeof this.shadowRoot != typeof undefined
+                &&this.shadowRoot.getElementById("syntaxStyle") != null)
+              {
+                this.shadowRoot.getElementById("syntaxStyle").textContent =
+                  this.$.syntaxAjax.response;
+              }
+              else if (document.getElementById("syntaxStyle") != null)
+              {
+                document.getElementById("syntaxStyle").textContent =
+                  this.$.syntaxAjax.response;
+              }
+              else
+              {
+                this.styleSheetElement.textContent =
+                  this.$.syntaxAjax.response;
+              }
+            }
+        });
+  </script>
+</polymer-element>
