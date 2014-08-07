@@ -128,9 +128,9 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static UserApiFacade getUserApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config) {
+			ConfigurationLoader<Configuration> config, WebInterface gitServiceProxy) {
 		if (userApiFacade == null) {
-			userApiFacade = new UserApiFacade(db, config);
+			userApiFacade = new UserApiFacade(db, config, gitServiceProxy);
 		}
 		return userApiFacade;
 	}

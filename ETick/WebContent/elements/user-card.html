@@ -1,6 +1,10 @@
 <!-- Element representing user information card. -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/core-transition/core-transition.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
 <polymer-element name="user-card" attributes="ldap">
 	<template>
@@ -38,6 +42,16 @@
 		    }
 
 		</style>
+		<!-- Add Member Ajax call. -->
+		<core-ajax id="addSSHAjax"
+			method="PUT"
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ssh"
+			contentType="text/plain"
+			handleAs="json"
+			on-core-response="{{addSSHResponse}}"
+			on-core-error="{{addSSHError}}">
+		</core-ajax>
+		
 		<div class="card-header" layout horizontal center end-justified>
 				<div flex><h3>Welcome</h3></div>
 				<template if="{{ldap.isStudent}}">
@@ -48,6 +62,19 @@
 				</template>
 				<h2>{{ldap.displayName}}</h2>
 		</div>
+		<div layout horizontal center>
+			<paper-input id="sshInput"
+						floatingLabel
+						label="Public key..."
+						validate="/^\s*(ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|ssh-ed25519|ssh-dss|ssh-rsa)\s+[0-9A-Za-z+/].+=*\s+.*$/"
+						error="Invalid Key."
+						on-input="{{handleAddInput}}"
+						required>
+			</paper-input>
+			<template if="{{showSubmit}}">
+				<paper-icon-button icon="check-circle" on-click="{{addSSH}}"></paper-icon-button>		
+			</template>
+		</div>
 		<table width="50%">
 			<tr><td><b>CRSID:</b></td><td>{{ldap._id}}</td></tr>
 			<tr><td><b>Email:</b></td><td>{{ldap.email}}</td></tr>
@@ -57,21 +84,35 @@
 					{{inst}}<br>
 				</template>
 			</td></tr>
-			<tr><paper-input id="ssh"
-					floatingLabel
-					label="Public key..."
-					error="Invalid Key."
-					validate="^([a-zA-Z]+\d+[^\w\d]*)+$"
-					on-input="{{handleAddInput}}">
-				</paper-input>
-			</tr>
 		</table>
+		<paper-toast id="addErrorToast" text="Error updating public key." duration="3000"></paper-toast>
+		<paper-toast id="addSuccessToast" text="Successfully updated the public key." dutration="3000"></paper-toast>
 	</template>
 	<script>
 		Polymer('user-card', {
 			ready: function() {
 
-			}	
+			},
+			handleAddInput: function () {
+				if (this.$.sshInput.invalid || this.$.sshInput.inputValue === "") {
+					this.showSubmit = false;
+				}
+				else {
+					this.showSubmit = true;
+				}
+			},
+			addSSH: function() {
+				this.$.addSSHAjax.body = this.$.sshInput.value;
+				this.$.addSSHAjax.go();
+			},
+			addSSHResponse: function() {
+				this.$.addSuccessToast.show();
+			},
+
+			addSSHError: function(e, detail) {
+				this.$.addErrorToast.text = detail.xhr.responseText;
+				this.$.addErrorToast.show();
+			}
 		});
 	</script>
 </polymer-element>
