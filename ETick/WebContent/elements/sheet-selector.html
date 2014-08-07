@@ -15,11 +15,22 @@
 		<core-ajax id="slotsAPI"
 			url=""
 			handleAs="json"
-			on-core-response="{{slotsResponse}}">
+			on-core-response="{{slotsResponse}}"
+			on-core-error="{{slotsResponse}}">
+		</core-ajax>
+
+		<!-- Signup make bookings API. -->
+		<core-ajax id="bookingsAPI"
+			url=""
+			contentType="application/json"
+			handleAs="json"
+			method="POST"
+			on-core-response="{{bookingsResponse}}">
 		</core-ajax>
 
 		<paper-dialog id="dialog" backdrop heading="Book a Ticking Slot:" transition="core-transition-top">
-			<span class="custom-dropdown">
+		<div layout vertical center>
+			<div class="custom-dropdown">
 				<select id="selector" on-change="{{sheetSelectionChanged}}"
 					class="custom-dropdown__select">
 				<option disabled selected>Select Ticking Session...</option>
@@ -27,10 +38,20 @@
 					<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
 				</template>
 			</select>
-			</span>
-			<template if="{{selection}}">
+			</div>
+			<div class="custom-dropdown">
+				<select id="slotSelector" on-change="{{slotSelectionChanged}}"
+					class="custom-dropdown__select">
+				<option disabled selected>Select Ticking Slot...</option>
+				<template repeat="{{date in dates}}">
+					<option value="{{date}}">{{date}}</option>
+				</template>
+				</select>
+			</div>
+		</div>
 
-				<paper-button id="sheetSubmit" class="dialogSubmit" label="DONE" on-click="{{sheetSelected}}" affirmative></paper-button>
+			<template if="{{slotSelection}}">
+				<paper-button id="sheetSubmit" class="dialogSubmit" label="SIGN UP" on-click="{{signUpClicked}}" affirmative></paper-button>
 			</template>
 		</paper-dialog>
 	</template>
@@ -42,18 +63,34 @@
 
 			sheetSelectionChanged: function () {
 				var sel = this.$.selector;
-				this.selection = sel.options[sel.selectedIndex].getAttribute('sheetid');
+				this.sheetSelection = sel.options[sel.selectedIndex].getAttribute('sheetid');
+				this.$.slotsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
+					 this.sheetSelection + "/times/" + this.tickId;
+				this.$.slotsAPI.go();
 			},
 
-			sheetSelected: function () {
-				this.$.slotsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
-					 this.selection + "/times/" + this.tickId;
-				this.$.slotsAPI.go();
-				console.log(this.selection + ': selected');
+			signUpClicked: function () {
+				console.log('Book:\nSheet: ' + this.sheetSelection + 'Slot: ' + this.slotSelection);
+				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
+					this.sheetSelection + "/bookings";
+				var parseDate = (new Date(this.slotSelection)).parse();
+				this.$.bookingsAPI.body = '{ "tickID" : "' + this.tickId + '", "startTime" : "' + parseDate + '" }';
+				console.log(this.$.bookingsAPI.body);
+				// this.$.bookingsAPI.go();
 			},
 
 			slotsResponse: function () {
-				console.log(this.$.slotsAPI.response);
+				var r = this.$.slotsAPI.response;
+				r = ["2012-07-14T01:00:00+01:00", "2012-07-14T01:00:00+01:00"];
+				var ds = r.map(function (obj) {
+					return new Date(obj);
+				});
+			},
+
+			slotSelectionChanged: function () {
+				var sel = this.$.slotSelector;
+				this.slotSelection = sel.options[sel.selectedIndex].value;
+				console.log(this.slotSelection);
 			}
 
 		});
