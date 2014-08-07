@@ -24,24 +24,12 @@
                 id="ajaxPoll"
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/running'}}"
                 handleAs="json"
-                method="POST"
-                on-core-response="{{pollNext}}">
+                on-core-response="{{pollNext}}"
+                on-core-error="{{pollError}}">
         </core-ajax>
 
-        <!-- Used for local testing; TODO: remove -->
-        <core-ajax
-                id="ajaxSubmitLocal"
-                url="http://localhost:8000/testTickData.json"
-                handleAs="json"
-                on-core-response="{{startPolling}}"></core-ajax>
-        <core-ajax
-                id="ajaxPollLocal"
-                url="http://localhost:8000/testStatus.json"
-                handleAs="json"
-                on-core-response="{{pollNext}}">
-        </core-ajax>
-
-        <paper-toast id="submitError" text="Something went wrong"></paper-toast>
+        <paper-toast id="toastSubmitError" text="Something went wrong"></paper-toast>
+        <paper-toast id="toastPollError" text="Error obtaining submission status. Retrying..."></paper-toast>
     </template>
     <script>
         Polymer('submit-service', {
@@ -67,8 +55,8 @@
              */
             submitError: function() {
                 this.testRunning = false;
+                this.$.toastSubmitError.show();
 
-                //this.$.submitError.show();
                 //TODO: somehow show an error toast
                 //TODO: one idea: publish an error attribute and have tick-card (the parent) observe it
             },
@@ -76,6 +64,11 @@
             startPolling: function() {
                 console.log("Successfully started submission");
                 this.$.ajaxPoll.go();
+            },
+
+            pollError: function() {
+                this.$.toastPollError.show();
+                this.startPolling();
             },
 
             /**
