@@ -157,7 +157,7 @@
                 <br>
             </div>
             <paper-input hidden?="{{inputDisplayNameHidden}}" id="inputDisplayName" flex label="e.g. Programming in Java Tick 1"
-                         inputValue="{{tickName}}" required error="Required" validate="\S"
+                         inputValue="{{tickName}}" required error="Required" validate="^[0-9a-zA-Z][0-9a-zA-Z_-]*$"
                          on-keyup="{{validateDisplayName}}">
             </paper-input>
         </div>
