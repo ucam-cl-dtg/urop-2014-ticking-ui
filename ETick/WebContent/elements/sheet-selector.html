@@ -11,21 +11,79 @@
 			:host {
 				display: block;
 			}
-			select {
-			   background: #f0f0f0;
-			   width: 100%;
-			   padding: 5px;
-			   font-size: 1rem;
+			.custom-dropdown {
+				width: 100%;
+			}
+
+			.custom-dropdown__select{
+				width: 100%;
+			    font-size: 1.1rem; 
+			    padding: .5em; /* add some space*/
+			    margin: 0; /* remove default margins */
+			    background: #f0f0f0;
+			}
+
+			@supports (pointer-events: none) and
+			      ((-webkit-appearance: none) or
+			      (-moz-appearance: none) or
+			      (appearance: none)) {
+
+			    .custom-dropdown {
+			        position: relative;
+			        display: inline-block;
+			        vertical-align: middle;
+			    }
+
+			    .custom-dropdown__select {
+			        padding-right: 2.5em; /* accommodate with the pseudo elements for the dropdown arrow */
+			        border: 0;
+			        border-radius: 3px;
+			        -webkit-appearance: none;
+			        -moz-appearance: none;
+			        appearance: none;    
+			    }
+
+			    .custom-dropdown::before,
+			    .custom-dropdown::after {
+			        content: "";
+			        position: absolute;
+			        pointer-events: none;
+			    }
+
+			    .custom-dropdown::after { /*  Custom dropdown arrow */
+			        content: "\25BC";
+			        height: 1em;
+			        font-size: .625em;
+			        line-height: 1;
+			        right: 1.2em;
+			        top: 50%; margin-top: -.5em;
+			    }
+
+			    .custom-dropdown::before { /*  Custom dropdown arrow cover */
+			        width: 2em;
+			        right: 0; top: 0; bottom: 0;
+			        border-radius: 0 3px 3px 0;
+			    }
+
+			    /* FF only temp fix */
+			    @-moz-document url-prefix() {
+			        .custom-dropdown__select             { padding-right: .9em }
+			        .custom-dropdown--large .custom-dropdown__select { padding-right: 1.3em }
+			        .custom-dropdown--small .custom-dropdown__select { padding-right: .5em }
+			    }
 			}
 		</style>
-<!-- 		<paper-button label="FOO" on-click="{{clicked}}"></paper-button>
- -->		<paper-dialog id="dialog" backdrop heading="Select Ticking Session:" transition="core-transition-top">
-			<select id="selector" on-change="{{sheetSelectionChanged}}">
+		<paper-button label="FOO" on-click="{{clicked}}"></paper-button>
+		<paper-dialog id="dialog" backdrop heading="Select Ticking Session:" transition="core-transition-top">
+			<span class="custom-dropdown">
+				<select id="selector" on-change="{{sheetSelectionChanged}}"
+					class="custom-dropdown__select">
 				<option disabled selected>Select Ticking Session...</option>
 				<template repeat="{{sheet in sheets}}">
 					<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
 				</template>
 			</select>
+			</span>
 			<template if="{{selection}}">
 				<paper-button id="sheetSubmit" class="dialogSubmit" label="DONE" on-click="{{sheetSelected}}" affirmative></paper-button>
 			</template>
@@ -33,9 +91,9 @@
 	</template>
 	<script>
 		Polymer('sheet-selector', {
-			// clicked: function () {
-			// 	this.toggle();
-			// },
+			clicked: function () {
+				this.toggle();
+			},
 
 			toggle: function () {
 				this.$.dialog.toggle();
