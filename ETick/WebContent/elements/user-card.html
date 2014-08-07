@@ -66,7 +66,7 @@
 			<paper-input id="sshInput"
 						floatingLabel
 						label="Public key..."
-						validate="/^\s*(ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|ssh-ed25519|ssh-dss|ssh-rsa)\s+[0-9A-Za-z+/].+=*\s+.*$/"
+						validate="()^\s*(ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|ssh-ed25519|ssh-dss|ssh-rsa)\s+[0-9A-Za-z+/]+=*(\s+.*)?$)?"
 						error="Invalid Key."
 						on-input="{{handleAddInput}}"
 						required>
