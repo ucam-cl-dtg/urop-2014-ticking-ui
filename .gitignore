@@ -24,3 +24,5 @@ ETick/WebContent/ETick WebContent/
 
 # Bower components
 ETick/WebContent/bower_components/
+
+.DS_Store
