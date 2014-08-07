@@ -81,6 +81,10 @@ public class TickSignups {
                                 + "with this sheet, but there seems to be " + groupIDs.size()).build();
             }
             String groupID = groupIDs.get(0);
+            log.info("crsid: " + crsid);
+            log.info("tickID: " + tickID);
+            log.info("groupID: " + groupID);
+            log.info("sheetID: " + sheetID);
             return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
         } catch (ItemNotFoundException e) {
             return Response.status(Status.NOT_FOUND).entity(e).build();
@@ -99,7 +103,7 @@ public class TickSignups {
     @POST
     @Path("/sheets/{sheetID}/bookings")
     @Consumes("application/json")    
-    public Response makeBooking(// TODO: make these arguments unnecessary: String crsid, String groupID,
+    public Response makeBooking( // TODO: get crsid from raven; work out groupID from sheet.
             @PathParam("sheetID") String sheetID, String tickID, Long startTime) {
         String crsid = "rds46";
         String groupID = null;
@@ -145,7 +149,7 @@ public class TickSignups {
     @DELETE
     @Path("/sheets/{sheetID}/bookings")
     @Consumes("application/json")
-    public Response unbookSlot(String crsid, String groupID,
+    public Response unbookSlot(String crsid, String groupID, // TODO: ideally only need crsid and tickID, because this should uniquely identify a booking
             @PathParam("sheetID") String sheetID, String tickID, Date startTime) {
         String ticker = null;
         for (Slot slot : service.listUserSlots(crsid)) {
