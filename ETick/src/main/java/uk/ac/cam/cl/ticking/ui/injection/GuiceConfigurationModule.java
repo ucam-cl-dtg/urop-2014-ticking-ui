@@ -116,9 +116,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static TickApiFacade getTickApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config) {
+			ConfigurationLoader<Configuration> config,
+			ITestService testServiceProxy, WebInterface gitServiceProxy) {
 		if (tickApiFacade == null) {
-			tickApiFacade = new TickApiFacade(db, config);
+			tickApiFacade = new TickApiFacade(db, config, testServiceProxy,
+					gitServiceProxy);
 		}
 		return tickApiFacade;
 	}
@@ -156,9 +158,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static SubmissionApiFacade getSubmissionApiSingleton(
-			IDataManager db, ConfigurationLoader<Configuration> config) {
+			IDataManager db, ConfigurationLoader<Configuration> config,
+			ITestService testServiceProxy) {
 		if (submissionApiFacade == null) {
-			submissionApiFacade = new SubmissionApiFacade(db, config);
+			submissionApiFacade = new SubmissionApiFacade(db, config,
+					testServiceProxy);
 		}
 		return submissionApiFacade;
 	}
