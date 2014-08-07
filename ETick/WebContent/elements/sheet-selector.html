@@ -2,6 +2,8 @@
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog-transition.html">
+
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 
 <polymer-element name="sheet-selector" attributes="sheets">
@@ -18,8 +20,8 @@
 			   font-size: 1rem;
 			}
 		</style>
-		<paper-button label="FOO" on-click="{{clicked}}"></paper-button>
-		<paper-dialog id="dialog" backdrop heading="Select Ticking Session:">
+		<!--<paper-button label="FOO" on-click="{{clicked}}"></paper-button>-->
+		<paper-dialog id="dialog" backdrop heading="Select Ticking Session:" transition="paper-transition-bottom">
 			<select id="selector" onchange="{{sheetSelectionChanged}}">
 				<template repeat="{{sheet in sheets}}">
 					<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
