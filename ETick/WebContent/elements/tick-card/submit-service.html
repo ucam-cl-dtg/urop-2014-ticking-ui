@@ -5,7 +5,7 @@
     <template>
         <style>
             :host {
-                display: none;
+                /*display: none;*/
             }
         </style>
 
@@ -14,7 +14,6 @@
                 id="ajaxSubmit"
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/'}}"
                 handleAs="json"
-                contentType="json"
                 method="POST"
                 on-core-response="{{startPolling}}"
                 on-core-error="{{submitError}}">
@@ -26,15 +25,23 @@
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/'}}"
                 handleAs="json"
                 method="POST"
-                on-core-response="{{startPolling}}">
+                on-core-response="{{pollNext}}">
         </core-ajax>
 
         <!-- Used for local testing; TODO: remove -->
         <core-ajax
-                id="ajaxTest"
+                id="ajaxSubmitLocal"
                 url="http://localhost:8000/testTickData.json"
                 handleAs="json"
                 on-core-response="{{startPolling}}"></core-ajax>
+        <core-ajax
+                id="ajaxPollLocal"
+                url="http://localhost:8000/testStatus.json"
+                handleAs="json"
+                on-core-response="{{pollNext}}">
+        </core-ajax>
+
+        <paper-toast id="submitError" text="Something went wrong"></paper-toast>
     </template>
     <script>
         Polymer('submit-service', {
@@ -50,7 +57,7 @@
                 console.log(this.tickId);
                 if (!(this.testRunning)) {
                     this.testRunning = true;
-                    this.$.ajaxSubmit.go();
+                    this.$.ajaxSubmitLocal.go();
                 }
             },
 
@@ -59,13 +66,16 @@
              */
             submitError: function() {
                 this.testRunning = false;
+
+                this.$.submitError.show();
                 //TODO: somehow show an error toast
                 //TODO: one idea: publish an error attribute and have tick-card (the parent) observe it
             },
 
             startPolling: function() {
                 console.log("Successfully started submission");
-                this.pollNext();
+                this.status = null;
+                this.$.ajaxPollLocal.go();
             },
 
             /**
@@ -73,12 +83,13 @@
              * if the test is incomplete
              */
             pollNext: function() {
-                this.status = this.$.ajaxPoll.response;
+                this.status = this.$.ajaxPollLocal.response;
+                console.log(this.status);
 
-                if (!(this.status.progress === this.maxProgress)) {
-                    this.$.ajaxPoll.go();
-                } else {
+                if (this.status.progress == this.status.maxProgress) {
                     this.testRunning = false;
+                } else {
+                    this.$.ajaxPollLocal.go();
                 }
             }
         });

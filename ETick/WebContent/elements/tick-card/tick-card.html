@@ -5,7 +5,7 @@
 <link rel="import" href="signup-component.html">
 <link rel="import" href="fork-service.html">
 
-<polymer-element name="tick-card" attributes="tickId">
+<polymer-element name="tick-card" attributes="tickId sheets">
     <template>
         <style>
             #mainContainer {
@@ -18,7 +18,7 @@
 
         <!-- for managing fork object data -->
         <fork-service
-                tickId="tickId"
+                tickId="{{tickId}}"
                 unitPass="{{unitPass}}"
                 humanPass="{{humanPass}}"
                 signedUp="{{signedUp}}"
@@ -30,6 +30,8 @@
             <h1>Tick Card</h1>
             <div>{{repo}}</div>
 
+            <br>
+
             <div layout horizontal>
                 <submit-component flex
                         tickId="{{tickId}}"
@@ -40,13 +42,17 @@
                 <div class="spacer"></div>
                 <report-component flex></report-component>
                 <div class="spacer"></div>
-                <signup-component flex></blank-component>
+                <signup-component flex
+                        sheets="{{sheets}}"
+                        signedUp="{{signedUp}}"
+                        unitPass="{{unitPass}}">
+                </signup-component>
             </div>
         </div>
         <br><br>
     </template>
     <script>
-        Polymer('tick-card',{
+        Polymer('tick-card', {
             created: function() {
                 this.unitPass = null;
                 this.humanPass = null;

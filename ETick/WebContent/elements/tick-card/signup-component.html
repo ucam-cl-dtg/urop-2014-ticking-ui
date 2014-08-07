@@ -2,25 +2,36 @@
 <link rel="import" href="../sheet-selector.html">
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 
-<polymer-element name="signup-component" attributes="sheets signedUp unitPass">
+<polymer-element name="signup-component" attributes="sheets signedUp unitPass testRunning">
     <template>
         <link rel="stylesheet" href="../../css/shared-styles.css">
         <link rel="stylesheet" href="tick-components.css">
 
-        <core-collpse hidden?="{{signedUp}}">
+        <core-collapse opened?="{{!signedUp && !testRunning}}">
             <paper-button class="greenButton" label="SIGN UP" on-tap="{{openSignupDialog}}"></paper-button>
-        </core-collpse>
+        </core-collapse>
 
-        <core-collpse hidden?="{{!signedUp}}">
+        <core-collapse opened?="{{signedUp}}">
             <paper-button class="greenButton" label="CANCEL SIGN UP" on-tap="{{showCancelDialog}}"></paper-button>
-        </core-collpse>
+        </core-collapse>
 
-        <sheet-selector id="signupDialog"></sheet-selector>
+        <core-collapse hidden?="{{testRunning || !unitPass}}>
+            <div class="error">To sign up, your latest submission must have passed the unit tester</div>
+        </core-collapse>
+
+        <core-collapse opened?="{{testRunning}}">
+            <div class="error">Sign up unavailable while a test is running</div>
+        </core-collapse>
+        <sheet-selector id="signupDialog" sheets="{{sheets}}"></sheet-selector>
     </template>
     <script>
-        Polymer('signup-component',{
+        Polymer('signup-component', {
             openSignupDialog: function() {
                 this.$.signupDialog.toggle();
+            },
+
+            showCancelDialog: function() {
+                //TODO
             }
         });
     </script>
