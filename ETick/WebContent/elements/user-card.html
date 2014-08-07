@@ -41,6 +41,10 @@
 		    	padding-bottom: 5px;
 		    }
 
+		    #sshSubmit {
+		    	color: #259b24;
+		    }
+
 		</style>
 		<!-- Add Member Ajax call. -->
 		<core-ajax id="addSSHAjax"
@@ -72,7 +76,7 @@
 						required>
 			</paper-input>
 			<template if="{{showSubmit}}">
-				<paper-icon-button icon="check-circle" on-click="{{addSSH}}"></paper-icon-button>		
+				<paper-icon-button id="sshSubmit" icon="check-circle" on-click="{{addSSH}}"></paper-icon-button>		
 			</template>
 		</div>
 		<table width="50%">
