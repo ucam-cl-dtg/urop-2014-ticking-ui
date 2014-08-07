@@ -6,7 +6,7 @@
 <link rel="import" href="search-box.html">
 <link rel="import" href="tick-box.html">
 
-<polymer-element name="tick-list" attributes="gid">
+<polymer-element name="tick-list" attributes="gid canFork">
 	<template>
 		<style>
 			:host {
@@ -46,7 +46,9 @@
 		<!-- Tick list card header. -->
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>
-			<paper-icon-button icon="communication:call-split" on-click="{{forkClicked}}"></paper-icon-button>
+			<template if="{{canFork}}">
+				<paper-icon-button icon="communication:call-split" on-click="{{forkClicked}}"></paper-icon-button>
+			</template>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 

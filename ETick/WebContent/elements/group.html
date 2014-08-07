@@ -67,7 +67,8 @@
 
 		<!-- Tick list card. -->
 		<main-card animated>
-			<tick-list id="ticks" gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"></tick-list>
+			<tick-list id="ticks" gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"
+				canFork="{{allowFork}}"></tick-list>
 		</main-card>
 
 		<template if="{{selectedSheetID}}">
@@ -103,8 +104,10 @@
 
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
-				// Check for Author (add member) permissions.
+				// Check for permissions.
 				this.allowAddMembers = (this.roles.indexOf('AUTHOR') > -1);
+				this.allowFork = (this.roles.indexOf('SUBMITTER') > -1);
+
 			},
 
 			// tabSelectedAction: function(e, detail) {
