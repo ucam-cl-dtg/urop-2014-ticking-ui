@@ -92,7 +92,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 					.entity(Strings.INVALIDROLE).build();
 		}
 
-		String output = "Users deleted";
+		String output = "Successfully removed users.";
 
 		Group group = db.getGroup(groupId);
 		for (String crsid : groupingBean.getCrsids()) {

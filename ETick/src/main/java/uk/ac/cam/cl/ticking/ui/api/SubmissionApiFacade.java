@@ -36,6 +36,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 	private IDataManager db;
 	private ConfigurationLoader<Configuration> config;
+	
+	private ITestService testServiceProxy;
 
 	/**
 	 * @param db
@@ -43,9 +45,11 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 */
 	@Inject
 	public SubmissionApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config) {
+			ConfigurationLoader<Configuration> config,
+			ITestService testServiceProxy) {
 		this.db = db;
 		this.config = config;
+		this.testServiceProxy = testServiceProxy;
 	}
 
 	/*
@@ -80,13 +84,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 		String forkRepoName = crsid + "/" + repoName;
 
-		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
-				.getTestApiLocation());
-
-		ITestService testProxy = testTarget.proxy(ITestService.class);
 		try {
-			testProxy.runNewTest(crsid, tickId, forkRepoName);
+			testServiceProxy.runNewTest(crsid, tickId, forkRepoName);
 		} catch (IOException e) {
 			return Response.status(500).entity(e).build();
 		} catch (TestStillRunningException e) {
@@ -114,20 +113,14 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
-		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
-				.getTestApiLocation());
-
-		ITestService testProxy = testTarget.proxy(ITestService.class);
-
 		Status status;
 		try {
-			status = testProxy.pollStatus(crsid, tickId);
+			status = testServiceProxy.pollStatus(crsid, tickId);
 		} catch (NoSuchTestException e) {
 			return Response.status(404).entity(e).build();
 		}
-		
-		if (status.getProgress()==status.getMaxProgress()) {
+
+		if (status.getProgress() == status.getMaxProgress()) {
 			Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 			fork.setTesting(false);
 			db.saveFork(fork);
@@ -148,19 +141,13 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
-		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
-				.getTestApiLocation());
-
-		ITestService testProxy = testTarget.proxy(ITestService.class);
-
 		Report status;
 		try {
-			status = testProxy.getLastReport(crsid, tickId);
+			status = testServiceProxy.getLastReport(crsid, tickId);
 		} catch (UserNotInDBException | TickNotInDBException e) {
 			return Response.status(404).entity(e).build();
 		}
-		
+
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		fork.setUnitPass(status.getTestResult().equals(ReportResult.PASS));
 		db.saveFork(fork);
@@ -180,15 +167,9 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
-		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
-				.getTestApiLocation());
-
-		ITestService testProxy = testTarget.proxy(ITestService.class);
-
 		List<Report> status;
 		try {
-			status = testProxy.getAllReports(crsid, tickId);
+			status = testServiceProxy.getAllReports(crsid, tickId);
 		} catch (UserNotInDBException | TickNotInDBException e) {
 			return Response.status(404).entity(e).build();
 		}

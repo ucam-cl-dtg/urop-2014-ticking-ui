@@ -35,6 +35,9 @@ public class ForkApiFacade implements IForkApiFacade {
 	Logger log = Logger.getLogger(ConfigurationLoader.class.getName());
 	private IDataManager db;
 	private ConfigurationLoader<Configuration> config;
+	
+	private WebInterface gitServiceProxy;
+	private ITestService testServiceProxy;
 
 	/**
 	 * @param db
@@ -42,9 +45,12 @@ public class ForkApiFacade implements IForkApiFacade {
 	 */
 	@Inject
 	public ForkApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config) {
+			ConfigurationLoader<Configuration> config,
+			ITestService testServiceProxy, WebInterface gitServiceProxy) {
 		this.db = db;
 		this.config = config;
+		this.testServiceProxy = testServiceProxy;
+		this.gitServiceProxy = gitServiceProxy;
 	}
 
 	@Override
@@ -72,14 +78,11 @@ public class ForkApiFacade implements IForkApiFacade {
 		if (fork != null) {
 			return Response.ok(fork).build();
 		}
-		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getConfig()
-				.getGitApiLocation());
-		WebInterface proxy = target.proxy(WebInterface.class);
+		
 		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
 		try {
-			repo = proxy.forkRepository(new ForkRequestBean(null, crsid,
+			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));
 		} catch (DuplicateRepoNameException e) {
 			repo = e.getMessage();
@@ -109,27 +112,26 @@ public class ForkApiFacade implements IForkApiFacade {
 				"RavenRemoteUser");
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork != null) {
-			if (forkBean.getHumanPass()!=null) {
+			if (forkBean.getHumanPass() != null) {
 				fork.setHumanPass(forkBean.getHumanPass());
 				if (forkBean.getHumanPass()) {
-					ResteasyClient testClient = new ResteasyClientBuilder().build();
-					ResteasyWebTarget testTarget = testClient.target(config
-							.getConfig().getTestApiLocation());
-	
-					ITestService testProxy = testTarget.proxy(ITestService.class);
+					
 					try {
-						testProxy.setTickerResult(crsid, tickId, ReportResult.PASS,
-								forkBean.getTickerComments(), forkBean.getCommitId());
+						testServiceProxy.setTickerResult(crsid, tickId,
+								ReportResult.PASS,
+								forkBean.getTickerComments(),
+								forkBean.getCommitId());
 					} catch (UserNotInDBException | TickNotInDBException
 							| ReportNotFoundException e) {
-						return Response.status(Status.NOT_FOUND).entity(e).build();
+						return Response.status(Status.NOT_FOUND).entity(e)
+								.build();
 					}
 				}
 			}
-			if (forkBean.getUnitPass()!=null) {
+			if (forkBean.getUnitPass() != null) {
 				fork.setUnitPass(forkBean.getUnitPass());
 			}
-			if (forkBean.isSignedUp()!=null) {
+			if (forkBean.isSignedUp() != null) {
 				fork.setSignedUp(forkBean.isSignedUp());
 			}
 			db.saveFork(fork);
