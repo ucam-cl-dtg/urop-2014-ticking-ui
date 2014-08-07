@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="fork-service" attributes="unitPass humanPass signedUp testRunning repo tickId">
+<polymer-element name="fork-service" attributes="unitPass humanPass signedUp testRunning reportAvailable repo tickId">
     <template>
         <style>
             :host {
@@ -18,6 +18,13 @@
                 method="POST"
                 on-core-response="{{forkObjectLoaded}}">
         </core-ajax>
+
+        <!--<core-ajax
+                auto
+                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/as2388,test3"
+                method="POST"
+                handleAs="json"
+                ></core-ajax>-->
     </template>
     <script>
         Polymer('fork-service', {
@@ -35,8 +42,9 @@
 
                 /*this.unitPass = false;
                 this.humanPass = false;
-                this.signedUp = true;
+                this.signedUp = false;
                 this.testRunning = false;
+                this.reportAvailable = false;
                 this.repo = "http://stuff";*/
             }
         });

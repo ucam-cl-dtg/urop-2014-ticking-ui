@@ -22,7 +22,7 @@
         <!-- poll the tick's status -->
         <core-ajax
                 id="ajaxPoll"
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/'}}"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/running'}}"
                 handleAs="json"
                 method="POST"
                 on-core-response="{{pollNext}}">
@@ -58,7 +58,7 @@
                 if (!(this.testRunning)) {
                     this.status = {progress: 0, maxProgress: 1, info: "Starting..."}
                     this.testRunning = true;
-                    this.$.ajaxSubmitLocal.go();
+                    this.$.ajaxSubmit.go();
                 }
             },
 
@@ -68,14 +68,14 @@
             submitError: function() {
                 this.testRunning = false;
 
-                this.$.submitError.show();
+                //this.$.submitError.show();
                 //TODO: somehow show an error toast
                 //TODO: one idea: publish an error attribute and have tick-card (the parent) observe it
             },
 
             startPolling: function() {
                 console.log("Successfully started submission");
-                this.$.ajaxPollLocal.go();
+                this.$.ajaxPoll.go();
             },
 
             /**
@@ -83,13 +83,13 @@
              * if the test is incomplete
              */
             pollNext: function() {
-                this.status = this.$.ajaxPollLocal.response;
+                this.status = this.$.ajaxPoll.response;
                 console.log(this.status);
 
                 if (this.status.progress == this.status.maxProgress) {
                     this.testRunning = false;
                 } else {
-                    this.$.ajaxPollLocal.go();
+                    this.$.ajaxPoll.go();
                 }
             }
         });

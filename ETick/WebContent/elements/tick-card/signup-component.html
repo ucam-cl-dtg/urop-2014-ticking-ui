@@ -2,7 +2,7 @@
 <link rel="import" href="../sheet-selector.html">
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 
-<polymer-element name="signup-component" attributes="sheets signedUp unitPass testRunning">
+<polymer-element name="signup-component" attributes="tickId sheets signedUp unitPass testRunning">
     <template>
         <link rel="stylesheet" href="../../css/shared-styles.css">
         <link rel="stylesheet" href="tick-components.css">
@@ -22,7 +22,7 @@
         <core-collapse opened?="{{testRunning}}">
             <div class="error">Sign up unavailable while a test is running</div>
         </core-collapse>
-        <sheet-selector id="signupDialog" sheets="{{sheets}}"></sheet-selector>
+        <sheet-selector id="signupDialog" sheets="{{sheets}}" tickId="{{tickId}}"></sheet-selector>
     </template>
     <script>
         Polymer('signup-component', {
