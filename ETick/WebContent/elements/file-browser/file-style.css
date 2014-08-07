@@ -31,31 +31,29 @@ code ol li
   /* Line continuation */
   background-image: url('../../images/line-continuation-right.svg');
   background-attachment: local;
-  line-height: 14px;
   background-position: 100% 14px;
   background-repeat: no-repeat;
   padding-right: 14px;
 }
 
-code ol li code
-
-.filename
+.file-name
 {
   margin: 0.5rem 1.5rem;
   font-size: 14pt;
+  font-weight: 500;
 }
 
-.COMMENT
+.comment
 {
   background-color: #ccc;
 }
 
-.WARNING
+.warning
 {
-  background-color: #bbf;
+  background-color: #ffb;
 }
 
-.ERROR
+.error
 {
-  background-color: #aff;
+  background-color: #faa;
 }

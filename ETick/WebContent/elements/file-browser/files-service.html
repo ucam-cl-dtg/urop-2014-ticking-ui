@@ -73,7 +73,7 @@ TODO:
     attributes="files testResult
                 tickerResult reportResult
                 comments errors
-                commitID date
+                commitId date
                 testCount repoName">
   <template>
     <style>
@@ -99,9 +99,10 @@ TODO:
           function ()
           {
             "use strict";
-            /* TODO: get report as an attribute */
+
             this.$.report.url =
-              tester_service + "/" + "tl364/tester" + "/last";
+              /* TODO: Use ticker service */
+              tester_service + "/" + this.repoName + "/last";
 
           }
 
@@ -110,8 +111,24 @@ TODO:
           {
             "use strict";
 
+            if (typeof this.$.report.response != typeof Object())
+            {
+              this.testResult = "FAIL";
+              this.tickerResult = "FAIL";
+              this.reportResult = "FAIL";
+              this.testResult = "FAIL";
+              this.errors = [];
+              this.files =
+                [{   "name": "Error"
+                   , "content": "Failed to load report!"
+                }]
+                this.fire('files-loaded');
+
+                return;
+            }
             /* Load files, fires due to auto attribute */
             this.$.fileContent.url =
+              /* TODO: Use ticker service */
               git_service + "/bundle/"
               + this.$.report.response.repoName + ".git/"
               + this.$.report.response.commitId;
@@ -122,9 +139,15 @@ TODO:
             this.reportResult = this.$.report.response.reportResult;
             this.comments     = this.$.report.response.tickerComments;
             this.errors       = this.$.report.response.items;
-            this.commitID     = this.$.report.response.commitId;
+            this.commitId     = this.$.report.response.commitId;
             this.date         = this.$.report.response.creationDate;
             this.testCount    = this.$.report.response.noOfTests;
+
+            var i;
+            for (i = 0; i < this.errors.length; i++)
+            {
+              this.errors[i].id = i;
+            }
           }
 
         , filesLoaded:
@@ -133,6 +156,13 @@ TODO:
             "use strict";
 
             this.files = this.$.fileContent.response;
+
+            var i;
+            for (i = 0; i < this.files.length; i++)
+            {
+              this.files[i].id = i;
+            }
+
             this.fire('files-loaded');
           }
       });

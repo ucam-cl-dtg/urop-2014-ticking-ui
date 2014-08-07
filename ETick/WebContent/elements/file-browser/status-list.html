@@ -1,0 +1,59 @@
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../bower_components/core-item/core-item.html"/>
+<link rel="import" href="../../bower_components/core-selector/core-selector.html"/>
+
+<polymer-element name="status-list" attributes="errors highlight">
+  <template>
+    <link rel="stylesheet" href="style.css"/>
+
+    <core-selector multi
+                   id="selector"
+                   valueattr="label"
+                   on-core-select="{{errorSelect}}">
+      <template repeat="{{item in errors}}">
+        <core-item icon='{{item.outcome}}'
+                   label="{{item.problemDescription}}">
+        </core-item>
+      </template> 
+    </core-selector>
+    <p>
+      {{tickerComments==null?"":tickerComments}}
+    </p>
+  </template>
+  <script>
+    Polymer('status-list'
+      , {   errorsChanged:
+            function ()
+            {
+              this.highlight = [];
+              var i;
+              for (i = 0; i < this.errors.length; i++)
+              {
+                switch (this.errors[i].outcome)
+                {
+                  case "PASS":
+                    this.errors[i].outcome = "check";
+                    break;
+
+                  case "WARNING":
+                    this.errors[i].outcome = "warning";
+                    this.highlight.push(i);
+                    break;
+
+                  default:
+                    this.errors[i].outcome = "error";
+                    this.highlight.push(i);
+                }
+              }
+
+              this.$.selector.selected = this.highlight;
+            }
+
+          , errorSelect:
+            function ()
+            {
+            }
+        });
+  </script>
+</polymer-element>

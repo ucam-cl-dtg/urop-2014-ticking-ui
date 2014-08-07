@@ -5,12 +5,23 @@
 
 <link rel="stylesheet" href="style.css"/>
 
-<polymer-element name="file-card" attributes="content comments name">
+<polymer-element name="file-card"
+    attributes="content comments
+                name id highlight
+                syntaxStyleSheet
+                selectedFileId">
   <template>
     <!-- HighlightJS colourscheme -->
+    <!--
     <link rel="stylesheet" href="../../bower_components/highlightjs/styles/default.css"/>
+      -->
     <!-- TODO: Dynamically load stylesheet; perhaps consider http://highlightjs.org/static/test.html -->
-    <link rel="stylesheet" href="../../bower_components/highlightjs/styles/solarized_light.css"/>
+    <core-ajax id="syntaxAjax"
+               auto
+               method="GET"
+               on-core-response="{{assignStylesheet}}"
+               handleAs="text"></core-ajax>
+    <style id="syntaxStyle"></style>
 
     <link rel="stylesheet" href="file-style.css"/>
 
@@ -37,13 +48,24 @@
               {
                 this.content = this.$.codeContent.innerHTML;
               }
+
+              this.styleSheetElement.id = "syntaxStyle";
+              if (typeof this.shadowRoot != typeof undefined)
+              {
+                this.shadowRoot.appendChild(this.styleSheetElement);
+              }
+              else
+              {
+                document.head.appendChild(this.styleSheetElement);
+              }
             }
+          , styleSheetElement: document.createElement('style')
 
             /* http://www.polymer-project.org/docs/polymer/polymer.html#change-watchers */
           , contentChanged:
             function ()
             {
-              if (typeof this.comments == "undefined")
+              if (typeof this.comments == typeof undefined)
               {
                 var comments = [];
               }
@@ -66,7 +88,7 @@
                  * [ {   message: (Description)
                  *     , line:    (Starting from 1)
                  *     , class:   (For enclosing span tags)
-                 *      (^ Generated using problemDescription)
+                 *      (^ Generated using error.id)
                  * } ]
                  *
                  * The reason I am not changing mixin_comments_with_data
@@ -106,9 +128,9 @@
 
                         /* Generate CSS classes for error */
                         rtn.class = [ currentValue.outcome
-                                      , currentValue
-                                         .problemDescription
-                                         .replace(/ /g, "_")
+                                      , "highlight"
+                                        + currentValue.id
+                                      , "highlight"
                                     ].join(" ");
 
                         return rtn;
@@ -140,6 +162,56 @@
             function (oldValue, newValue)
             {
               this.contentChanged();
+            }
+
+          , highlightChanged:
+            function ()
+            {
+              /* To use closures */
+              var highlightSpans =
+                this.$.codeContent.getElementsByClassName("highlight");
+              var toHighlight = this.highlight;
+            }
+
+          , syntaxStyleSheetChanged:
+            function ()
+            {
+              this.$.syntaxAjax.url =
+                "../../bower_components/highlightjs/styles/"
+                + this.syntaxStyleSheet + ".css";
+            }
+
+          , assignStylesheet:
+            function ()
+            {
+              if (typeof this.$ != typeof undefined
+                &&typeof this.$.syntaxStyle != typeof undefined)
+              {
+                this.$.syntaxStyle.textContent =
+                  this.$.syntaxAjax.response;
+              }
+              else if (typeof this.shadowRoot != typeof undefined
+                &&this.shadowRoot.getElementById("syntaxStyle") != null)
+              {
+                this.shadowRoot.getElementById("syntaxStyle").textContent =
+                  this.$.syntaxAjax.response;
+              }
+              else if (document.getElementById("syntaxStyle") != null)
+              {
+                document.getElementById("syntaxStyle").textContent =
+                  this.$.syntaxAjax.response;
+              }
+              else
+              {
+                this.styleSheetElement.textContent =
+                  this.$.syntaxAjax.response;
+              }
+            }
+
+          , selectedFileIdChanged:
+            function ()
+            {
+              console.log(this.shadowRoot.getElementById(this.selectedFileId));
             }
         });
   </script>

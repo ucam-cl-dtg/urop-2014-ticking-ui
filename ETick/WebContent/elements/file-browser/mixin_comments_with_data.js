@@ -44,11 +44,11 @@ function mixin_comments_with_data(data, comments)
   /* Strict mode function */
   "use strict";
 
-  if (typeof data == "undefined")
+  if (typeof data == typeof undefined)
   {
     return undefined;
   }
-  else if (typeof comments == "undefined")
+  else if (typeof comments == typeof undefined)
   {
     comments = new Array();
   }
@@ -178,8 +178,8 @@ function mixin_comments_with_data(data, comments)
 function lines_to_chars(data, comments)
 {
   "use strict";
-  if (typeof data     == "undefined"
-    ||typeof comments == "undefined")
+  if (typeof data     == typeof undefined
+    ||typeof comments == typeof undefined)
   {
     return [];
   }
@@ -201,13 +201,13 @@ function lines_to_chars(data, comments)
   return comments.map(function (x)
                       {
                         /* Assumes x.line is valid for data */
-                        if (typeof x.linNumber != "undefined"
-                          &&typeof x.line == "undefined")
+                        if (typeof x.linNumber != typeof undefined
+                          &&typeof x.line == typeof undefined)
                         {
                           x.start = lineStart[x.lineNumber-1];
                           x.end   = lineStart[x.lineNumber]-1;
                         }
-                        else if (typeof x.line != "undefined")
+                        else if (typeof x.line != typeof undefined)
                         {
                           x.start = lineStart[x.line-1];
                           x.end   = lineStart[x.line]-1;
