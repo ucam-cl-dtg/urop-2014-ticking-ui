@@ -3,7 +3,10 @@ pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.next
 release.properties
-**/classes/
+
+**/WEB-INF/classes/
+**/WEB-INF/lib/
+
 *.class
 *.jar
 **/doc/
@@ -12,5 +15,12 @@ release.properties
 ETick/WebContent/.idea
 ETick/WebContent/codemirror-4.4/
 ETick/WebContent/ETick WebContent/
-ETick/.classpath
-ETick/.settings/org.eclipse.wst.common.component
+.classpath
+.settings
+
+# Backup and working/swap files created by some editors (e.g. vim)
+*~
+.*.swp
+
+# Bower components
+ETick/WebContent/bower_components/
