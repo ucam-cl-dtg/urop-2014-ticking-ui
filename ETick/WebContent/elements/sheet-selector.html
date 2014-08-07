@@ -15,7 +15,8 @@
 		<core-ajax id="slotsAPI"
 			url=""
 			handleAs="json"
-			on-core-response="{{slotsResponse}}">
+			on-core-response="{{slotsResponse}}"
+			on-core-error="{{slotsResponse}}">
 		</core-ajax>
 
 		<!-- Signup make bookings API. -->
@@ -73,13 +74,14 @@
 				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
 					this.sheetSelection + "/bookings";
 				var parseDate = (new Date(this.slotSelection)).parse();
-				this.$.bookingsAPI.body = '{ "tickID" : "' + this.tickId + '", "startTime" : "' + this.slotSelection + '" }';
+				this.$.bookingsAPI.body = '{ "tickID" : "' + this.tickId + '", "startTime" : "' + parseDate + '" }';
 				console.log(this.$.bookingsAPI.body);
 				// this.$.bookingsAPI.go();
 			},
 
 			slotsResponse: function () {
 				var r = this.$.slotsAPI.response;
+				r = ["2012-07-14T01:00:00+01:00", "2012-07-14T01:00:00+01:00"];
 				var ds = r.map(function (obj) {
 					return new Date(obj);
 				});
