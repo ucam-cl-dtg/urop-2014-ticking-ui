@@ -1,5 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.injection;
 
+import publicinterfaces.ITestService;
+import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.api.ForkApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.GroupApiFacade;
@@ -13,6 +15,8 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.remote.GitApi;
+import uk.ac.cam.cl.ticking.ui.api.remote.TestApi;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 import uk.ac.cam.cl.ticking.ui.configuration.AcademicTemplate;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
@@ -57,6 +61,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 		this.configureApplicationManagers();
 		this.configureFacades();
 		this.configureConfiguration();
+		this.configureRemoteApis();
 	}
 
 	/**
@@ -98,6 +103,14 @@ public class GuiceConfigurationModule extends AbstractModule {
 		}).toInstance(
 				(ConfigurationLoader<AcademicTemplate>) ConfigurationRegister
 						.getLoader(AcademicTemplate.class));
+	}
+
+	/**
+	 * Deals with remote APIs
+	 */
+	private void configureRemoteApis() {
+		bind(WebInterface.class).toInstance(GitApi.getWebInterface());
+		bind(ITestService.class).toInstance(TestApi.getITestService());
 	}
 
 	@Inject
@@ -149,21 +162,23 @@ public class GuiceConfigurationModule extends AbstractModule {
 		}
 		return submissionApiFacade;
 	}
-	
+
 	@Inject
 	@Provides
-	private static ForkApiFacade getForkApiSingleton(
-			IDataManager db, ConfigurationLoader<Configuration> config) {
+	private static ForkApiFacade getForkApiSingleton(IDataManager db,
+			ConfigurationLoader<Configuration> config,
+			ITestService testService, WebInterface gitService) {
 		if (forkApiFacade == null) {
-			forkApiFacade = new ForkApiFacade(db, config);
+			forkApiFacade = new ForkApiFacade(db, config, testService,
+					gitService);
 		}
 		return forkApiFacade;
 	}
-	
+
 	@Inject
 	@Provides
-	private static TickSignups getTickSignupsSingleton(
-			IDataManager db, ConfigurationLoader<Configuration> config) {
+	private static TickSignups getTickSignupsSingleton(IDataManager db,
+			ConfigurationLoader<Configuration> config) {
 		if (tickSignups == null) {
 			tickSignups = new TickSignups();
 		}

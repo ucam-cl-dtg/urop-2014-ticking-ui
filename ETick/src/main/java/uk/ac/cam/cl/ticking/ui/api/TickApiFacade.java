@@ -8,10 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.joda.time.DateTime;
 
 import publicinterfaces.ITestService;
@@ -81,8 +86,10 @@ public class TickApiFacade implements ITickApiFacade {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
-		ResteasyClient client = new ResteasyClientBuilder().build();
+		ClientConnectionManager cm = new PoolingClientConnectionManager();
+		HttpClient httpClient = new DefaultHttpClient(cm);
+		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
+		ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
 		ResteasyWebTarget target = client.target(config.getConfig()
 				.getGitApiLocation());
 

@@ -61,7 +61,7 @@ public class StudentWorkflowDemo {
     private String sauth;
     private String gauth;
     
-    //@Before
+    @Before
     public void setUp() throws DuplicateNameException, ItemNotFoundException, NotAllowedException, Exception {
         // Need to dump database before test is run
         try {
@@ -101,7 +101,7 @@ public class StudentWorkflowDemo {
         }
     }    
 
-    //@Test
+    @Test
     public void signingUp_success() {
         System.out.println("\nTest now starting");
         try {
