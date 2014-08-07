@@ -8,10 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.joda.time.DateTime;
 
 import publicinterfaces.ITestService;
@@ -40,15 +45,21 @@ public class TickApiFacade implements ITickApiFacade {
 	private IDataManager db;
 	private ConfigurationLoader<Configuration> config;
 
+	private ITestService testServiceProxy;
+	private WebInterface gitServiceProxy;
+
 	/**
 	 * @param db
 	 * @param config
 	 */
 	@Inject
 	public TickApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config) {
+			ConfigurationLoader<Configuration> config,
+			ITestService testServiceProxy, WebInterface gitServiceProxy) {
 		this.db = db;
 		this.config = config;
+		this.testServiceProxy = testServiceProxy;
+		this.gitServiceProxy = gitServiceProxy;
 	}
 
 	/*
@@ -81,24 +92,20 @@ public class TickApiFacade implements ITickApiFacade {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
-		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getConfig()
-				.getGitApiLocation());
 
-		WebInterface proxy = target.proxy(WebInterface.class);
-		
 		try {
-			proxy.deleteRepository(Tick.replaceDelimeter(tickId)); //throws the exceptions
+			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId)); // throws the
+																	// exceptions
 			db.removeTick(tickId);
 		} catch (IOException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		} catch (RepositoryNotFoundException e) {
 			db.removeTick(tickId);
-			//Not finding the repo still indicates we want to delete the tick
+			// Not finding the repo still indicates we want to delete the tick
 			return Response.status(Status.NOT_FOUND).entity(e).build();
 		}
-		
+
 		return Response.ok().build();
 	}
 
@@ -146,19 +153,8 @@ public class TickApiFacade implements ITickApiFacade {
 		tick.setAuthor(crsid);
 		tick.initTickId();
 
-		ResteasyClient testClient = new ResteasyClientBuilder().build();
-		ResteasyWebTarget testTarget = testClient.target(config.getConfig()
-				.getTestApiLocation());
+		testServiceProxy.createNewTest(tick.getTickId(), tickBean.getCheckstyleOpts());
 
-		ITestService testProxy = testTarget.proxy(ITestService.class);
-
-		testProxy.createNewTest(tick.getTickId(), tickBean.getCheckstyleOpts());
-
-		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getConfig()
-				.getGitApiLocation());
-
-		WebInterface proxy = target.proxy(WebInterface.class);
 		String repo;
 		/*
 		 * Here we try to create two repositories. If the first create fails, we
@@ -169,14 +165,14 @@ public class TickApiFacade implements ITickApiFacade {
 		 * name exception thrown
 		 */
 		try {
-			repo = proxy.addRepository(new RepoUserRequestBean(crsid + "/"
+			repo = gitServiceProxy.addRepository(new RepoUserRequestBean(crsid + "/"
 					+ tickBean.getName(), crsid));
 		} catch (IOException e) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		} catch (DuplicateRepoNameException e) {
 			try {
-				repo = proxy.getRepoURI(crsid + "/" + tickBean.getName());
+				repo = gitServiceProxy.getRepoURI(crsid + "/" + tickBean.getName());
 			} catch (RepositoryNotFoundException e1) {
 				throw new RuntimeException("Schrodinger's repository");
 				// The repo simultaneously does and doesn't exist
@@ -187,7 +183,7 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 		String correctnessRepo;
 		try {
-			correctnessRepo = proxy.addRepository(new RepoUserRequestBean(crsid
+			correctnessRepo = gitServiceProxy.addRepository(new RepoUserRequestBean(crsid
 					+ "/" + tickBean.getName() + "/correctness", crsid));
 		} catch (IOException | DuplicateRepoNameException e) {
 			/*
@@ -247,13 +243,7 @@ public class TickApiFacade implements ITickApiFacade {
 						.entity(Strings.INVALIDROLE).build();
 			}
 
-			ResteasyClient testClient = new ResteasyClientBuilder().build();
-			ResteasyWebTarget testTarget = testClient.target(config.getConfig()
-					.getTestApiLocation());
-
-			ITestService testProxy = testTarget.proxy(ITestService.class);
-
-			testProxy.createNewTest(tickId, tickBean.getCheckstyleOpts());
+			testServiceProxy.createNewTest(tickId, tickBean.getCheckstyleOpts());
 
 			prevTick.setEdited(DateTime.now());
 			for (String groupId : prevTick.getGroups()) {
@@ -336,14 +326,11 @@ public class TickApiFacade implements ITickApiFacade {
 		if (fork != null) {
 			return Response.ok(fork).build();
 		}
-		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getConfig()
-				.getGitApiLocation());
-		WebInterface proxy = target.proxy(WebInterface.class);
+
 		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
 		try {
-			repo = proxy.forkRepository(new ForkRequestBean(null, crsid,
+			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));
 		} catch (DuplicateRepoNameException e) {
 			repo = e.getMessage();
