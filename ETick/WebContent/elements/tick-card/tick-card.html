@@ -23,6 +23,7 @@
                 humanPass="{{humanPass}}"
                 signedUp="{{signedUp}}"
                 testRunning="{{testRunning}}"
+                reportAvailable="{{reportAvailable}}"
                 repo="{{repo}}">
         </fork-service>
 
@@ -40,12 +41,14 @@
                         humanPass="{{humanPass}}">
                 </submit-component>
                 <div class="spacer"></div>
-                <report-component flex></report-component>
+                <report-component flex
+                        reportAvailable="{{reportAvailable}}"></report-component>
                 <div class="spacer"></div>
                 <signup-component flex
                         sheets="{{sheets}}"
                         signedUp="{{signedUp}}"
-                        unitPass="{{unitPass}}">
+                        unitPass="{{unitPass}}"
+                        testRunning="{{testRunning}}">
                 </signup-component>
             </div>
         </div>
@@ -58,6 +61,7 @@
                 this.humanPass = null;
                 this.signedUp = null;
                 this.testRunning = null;
+                this.reportAvailable  = true;
                 this.repo = null;
             }
         });

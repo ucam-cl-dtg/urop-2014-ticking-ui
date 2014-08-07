@@ -56,6 +56,7 @@
                 console.log("submit request received");
                 console.log(this.tickId);
                 if (!(this.testRunning)) {
+                    this.status = {progress: 0, maxProgress: 1, info: "Starting..."}
                     this.testRunning = true;
                     this.$.ajaxSubmitLocal.go();
                 }
@@ -74,7 +75,6 @@
 
             startPolling: function() {
                 console.log("Successfully started submission");
-                this.status = null;
                 this.$.ajaxPollLocal.go();
             },
 
