@@ -19,6 +19,8 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cl.signups.api.Sheet;
 import uk.ac.cam.cl.signups.api.SheetInfo;
@@ -41,6 +43,8 @@ import com.google.inject.Inject;
 
 @Path("/signups")
 public class TickSignups {
+    /* For logging */
+    Logger log = LoggerFactory.getLogger(TickSignups.class);
     
     private WebInterface service;
     @Inject private ConfigurationLoader<Configuration> config;
@@ -77,6 +81,10 @@ public class TickSignups {
                                 + "with this sheet, but there seems to be " + groupIDs.size()).build();
             }
             String groupID = groupIDs.get(0);
+            log.info("CRSID: ",  crsid);
+            log.info("tickID: ", tickID);
+            log.info("groupID: ", groupID);
+            log.info("sheetID: ", sheetID);
             return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
         } catch (ItemNotFoundException e) {
             return Response.status(Status.NOT_FOUND).entity(e).build();
