@@ -23,7 +23,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import uk.ac.cam.cl.signups.api.Sheet;
 import uk.ac.cam.cl.signups.api.SheetInfo;
 import uk.ac.cam.cl.signups.api.Slot;
-import uk.ac.cam.cl.signups.api.beans.ColumnCreatorBean;
+import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
 import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
 import uk.ac.cam.cl.signups.api.beans.PermissionsBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
@@ -310,7 +310,7 @@ public class TickSignups {
         }
         for (String ticker : tickerNames) {
             try {
-                service.createColumn(id, new ColumnCreatorBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
+                service.createColumn(id, new CreateColumnBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
             } catch (ItemNotFoundException e) {
                 e.printStackTrace();
                 throw new RuntimeException("This should only happen if the sheet or column is not found "
@@ -357,7 +357,7 @@ public class TickSignups {
             String name, Date startTime, Date endTime,
             int slotLength /* in minutes */) {
         try {
-            service.createColumn(sheetID, new ColumnCreatorBean(name, authCode, startTime, endTime, slotLength));
+            service.createColumn(sheetID, new CreateColumnBean(name, authCode, startTime, endTime, slotLength));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND).entity(e).build();
