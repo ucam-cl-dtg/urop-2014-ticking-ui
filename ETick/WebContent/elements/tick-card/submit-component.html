@@ -37,6 +37,13 @@
 
             submit: function() {
                 this.$.service.submit();
+            },
+
+            /**
+             * Expected to be called when a tick card is loaded and the test is still running
+             */
+            continuePolling: function() {
+                this.$.service.startPolling();
             }
         });
     </script>
