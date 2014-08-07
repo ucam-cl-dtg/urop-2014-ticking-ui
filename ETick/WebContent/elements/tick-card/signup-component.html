@@ -16,11 +16,11 @@
         </core-collapse>
 
         <core-collapse hidden?="{{testRunning || !unitPass}}>
-            <div class="error">To sign up, your latest submission must have passed the unit tester</div>
+            <div class="error">Sign up unavailable (unit tests not passed)</div>
         </core-collapse>
 
         <core-collapse opened?="{{testRunning}}">
-            <div class="error">Sign up unavailable while a test is running</div>
+            <div class="error">Sign up unavailable (test running)</div>
         </core-collapse>
         <sheet-selector id="signupDialog" sheets="{{sheets}}" tickId="{{tickId}}"></sheet-selector>
     </template>

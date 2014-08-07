@@ -1,0 +1,170 @@
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<!--
+  TODO:
+  `<files-service>` provides retrieval of files using AJAX.
+
+  Just uses the filesLoaded handler to load the files into the
+  `files` attribute.
+
+  @element files-service
+  @homepage http://www.github.com/ucam-cl-dtg/urop-2014-ticking-ui
+-->
+
+<!--
+  An array of file objects, with the following format:
+
+TODO:
+  <table border="0">
+    <tr>
+      <td><code>name</code></td>
+      <td>String</td>
+      <td>File name with full path.</td>
+    </tr>
+     <tr>
+      <td><code>content</code></td>
+      <td>String</td>
+        <td>Content of the file, using <LF> for new lines.</td>
+    </tr>
+    <tr>
+      <td><code>comments</code></td>
+      <td>Object</td>
+      <td>
+        Comments using the following format;
+        <table border="0">
+          <tr>
+            <td><code>begin</code></td>
+            <td>Number</td>
+            <td>Start character, from the beginning of the file
+              (counting new lines as a single character).</td>
+          </tr>
+          <tr>
+            <td><code>end</code></td>
+            <td>Number</td>
+            <td>End character, from the beginning of the file
+              (counting new lines as a single character).</td>
+          </tr>
+          <tr>
+            <td><code>line</code></td>
+            <td>Number</td>
+            <td>File number, instead of `begin` and `end`.</td>
+          </tr>
+          <tr>
+            <td><code>message</code></td>
+            <td>String</td>
+            <td>Message of the comment.</td>
+          </tr>
+          <tr>
+            <td><code>class</code></td>
+            <td>String</td>
+            <td>Class to encapsulate comment block in (for styling).</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  @attribute files
+  @type Array
+  @default []
+-->
+<polymer-element name="files-service"
+    attributes="files testResult
+                tickerResult reportResult
+                comments errors
+                commitId date
+                testCount repoName">
+  <template>
+    <style>
+    :host {
+      display: none;
+    }
+    </style>
+    <core-ajax id="report"
+               auto
+               on-core-response="{{reportLoaded}}"
+               handleAs="json">
+    </core-ajax>
+    <core-ajax id="fileContent"
+               auto
+               on-core-response="{{filesLoaded}}"
+               handleAs="json">
+    </core-ajax>
+  </template>
+  <script src="../../hardcoded.js"></script>
+  <script>
+  Polymer('files-service'
+    , {   repoNameChanged:
+          function ()
+          {
+            "use strict";
+
+            this.$.report.url =
+              /* TODO: Use ticker service */
+              tester_service + "/" + this.repoName + "/last";
+
+          }
+
+        , reportLoaded:
+          function()
+          {
+            "use strict";
+
+            if (typeof this.$.report.response != typeof Object())
+            {
+              this.testResult = "FAIL";
+              this.tickerResult = "FAIL";
+              this.reportResult = "FAIL";
+              this.testResult = "FAIL";
+              this.errors = [];
+              this.files =
+                [{   "name": "Error"
+                   , "content": "Failed to load report!"
+                }]
+                this.fire('files-loaded');
+
+                return;
+            }
+            /* Load files, fires due to auto attribute */
+            this.$.fileContent.url =
+              /* TODO: Use ticker service */
+              git_service + "/bundle/"
+              + this.$.report.response.repoName + ".git/"
+              + this.$.report.response.commitId;
+
+            /* Make a copy of the loaded data */
+            this.testResult   = this.$.report.response.testResult;
+            this.tickerResult = this.$.report.response.tickerResult;
+            this.reportResult = this.$.report.response.reportResult;
+            this.comments     = this.$.report.response.tickerComments;
+            this.errors       = this.$.report.response.items;
+            this.commitId     = this.$.report.response.commitId;
+            this.date         = this.$.report.response.creationDate;
+            this.testCount    = this.$.report.response.noOfTests;
+
+            var i;
+            for (i = 0; i < this.errors.length; i++)
+            {
+              this.errors[i].id = i;
+            }
+          }
+
+        , filesLoaded:
+          function ()
+          {
+            "use strict";
+
+            this.files = this.$.fileContent.response;
+
+            var i;
+            for (i = 0; i < this.files.length; i++)
+            {
+              this.files[i].id = i;
+            }
+
+            this.fire('files-loaded');
+          }
+      });
+  </script>
+</polymer-element>

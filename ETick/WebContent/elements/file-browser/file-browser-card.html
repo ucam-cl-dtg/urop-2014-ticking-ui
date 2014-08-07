@@ -1,0 +1,131 @@
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../bower_components/core-splitter/core-splitter.html"/>
+<link rel="import" href="files-service.html"/>
+<link rel="import" href="file-card.html"/>
+<link rel="import" href="files-list.html"/>
+<link rel="import" href="status-list.html"/>
+<link rel="import" href="ticker-set-result.html"/>
+
+<polymer-element name="file-browser-card" attributes="repoName highlight">
+  <!-- TODO: get ALL reports -->
+  <template>
+    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="file-browser-style.css"/>
+    <files-service id="service"
+                   repoName="{{repoName}}"
+                   files="{{files}}"
+                   testResult="{{testResult}}"
+                   tickerResult="{{tickerResult}}"
+                   reportResult="{{reportResult}}"
+                   comments="{{comments}}"
+                   errors="{{errors}}"
+                   commitId="{{commitId}}"
+                   date="{{date}}"
+                   testCount="{{testCount}}">
+    </files-service>
+    <div class="container" horizontal layout>
+      <div class="sidebar">
+        <p class="result">
+          You have {{testResult=="FAIL" ? "failed." : "passed!"}}
+        </p>
+        <files-list files="{{files}}"
+                    selectedFileId="{{selectedFileId}}">
+        </files-list>
+        <hr/>
+        <!-- TODO: The following element -->
+        <status-list errors="{{errors}}" highlight="{{highlight}}">
+        </errors-list>
+      </div>
+      <core-splitter direction="left"></core-splitter>
+      <div class="main">
+        <!-- Ticker comments -->
+        <template if="{{comments != null}}">
+          <p>{{comments}}</p>
+        </template>
+
+        <select name="syntaxSelect" value="{{syntaxStyleSheet}}">
+          <option value="arta">Arta</option>
+          <option value="ascetic">Ascetic</option>
+          <option value="atelier-dune.dark">Atelier dune (dark)</option>
+          <option value="atelier-dune.light">Atelier dune (light)</option>
+          <option value="atelier-forest.dark">Atelier forest (dark)</option>
+          <option value="atelier-forest.light">Atelier forest (light)</option>
+          <option value="atelier-heath.dark">Atelier heath (dark)</option>
+          <option value="atelier-heath.light">Atelier heath (light)</option>
+          <option value="atelier-lakeside.dark">Atelier lakeside (dark)</option>
+          <option value="atelier-lakeside.light">Atelier lakeside (light)</option>
+          <option value="atelier-seaside.dark">Atelier seaside (dark)</option>
+          <option value="atelier-seaside.light">Atelier seaside (light)</option>
+          <option value="brown_paper">Brown paper</option>
+          <option value="dark">Dark</option>
+          <option value="default" selected="true">Default</option>
+          <option value="docco">Docco</option>
+          <option value="far">Far</option>
+          <option value="foundation">Foundation</option>
+          <option value="github">GitHub</option>
+          <option value="googlecode">Google code</option>
+          <option value="idea">Idea</option>
+          <option value="ir_black">IR black</option>
+          <option value="magula">Magula</option>
+          <option value="mono-blue">Mono blue</option>
+          <option value="monokai">Monokai</option>
+          <option value="monokai_sublime">Monokai (Sublime editor)</option>
+          <option value="obsidian">Obsidian</option>
+          <option value="paraiso.dark">Paraiso (dark)</option>
+          <option value="paraiso.light">Paraiso (light)</option>
+          <option value="pojoaque">Pojoaque</option>
+          <option value="railscasts">Railscasts</option>
+          <option value="rainbow">Rainbow</option>
+          <option value="school_book">School book</option>
+          <option value="solarized_dark">Solarized (dark)</option>
+          <option value="solarized_light">Solarized (light)</option>
+          <option value="sunburst">Sunburst</option>
+          <option value="tomorrow">Tomorrow</option>
+          <option value="tomorrow-night-blue">Tomorrow night blue</option>
+          <option value="tomorrow-night-bright">Tomorrow night bright</option>
+          <option value="tomorrow-night">Tomorrow night</option>
+          <option value="tomorrow-night-eighties">Tomorrow night eighties</option>
+          <option value="vs">VS</option>
+          <option value="xcode">XCode</option>
+          <option value="zenburn">Zenburn</option>
+        </select>
+
+        <!-- File contents -->
+        <template repeat="{{file in files}}">
+          <section id="file{{file.id}}" name="file{{file.id}}">
+          <file-card content="{{file.content}}"
+                     name="{{file.name}}"
+                     id="{{file.id}}"
+                     comments="{{errors}}"
+                     highlight="{{highlight}}"
+                     syntaxStyleSheet="{{syntaxStyleSheet}}"
+                     on-scroll="console.log(this)">
+          </file-card>
+          </section>
+        </template>
+
+        <!-- Pass/fail button -->
+        <ticker-set-result commitId="{{commitId}}"
+                           crsid="{{crsid}}"
+                           tickId="{{tickId}}">
+        </ticker-set-result>
+
+      </div>
+    </div>
+
+  </template>
+  <script>
+    Polymer('file-browser-card'
+      , {   syntaxStyleSheet: "solarized_light"
+          , selectedFileIdChanged:
+            function ()
+            {
+              var element = 
+                this.shadowRoot
+                  .getElementById(this.selectedFileId);
+              window.scroll(element.offsetLeft, element.offsetTop);
+            }
+        });
+  </script>
+</polymer-element>

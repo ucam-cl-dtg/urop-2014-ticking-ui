@@ -35,6 +35,7 @@
 
             <div layout horizontal>
                 <submit-component flex
+                        id="submitComponent"
                         tickId="{{tickId}}"
                         signedUp="{{signedUp}}"
                         testRunning="{{testRunning}}"
@@ -64,6 +65,14 @@
                 this.testRunning = null;
                 this.reportAvailable  = null;
                 this.repo = null;
+            },
+
+            testRunningChanged: function() {
+                console.log("fired");
+
+                if (this.testRunning == true) {
+                    this.$.submitComponent.continuePolling();
+                }
             }
         });
     </script>

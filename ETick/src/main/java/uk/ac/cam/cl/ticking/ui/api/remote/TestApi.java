@@ -28,7 +28,7 @@ public class TestApi {
 		HttpClient httpClient = new DefaultHttpClient(cm);
 		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
 		
-		ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).maxPooledPerRoute(200).build();
+		ResteasyClient client = new ResteasyClientBuilder().maxPooledPerRoute(200).httpEngine(engine).build();
 		ResteasyWebTarget target = client.target(config.
 				getTestApiLocation());
 

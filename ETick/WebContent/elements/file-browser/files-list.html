@@ -1,0 +1,42 @@
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../bower_components/core-item/core-item.html"/>
+<link rel="import" href="../../bower_components/core-selector/core-selector.html"/>
+
+<polymer-element name="files-list" attributes="files selectedFileId">
+  <template>
+    <link rel="stylesheet" href="style.css"/>
+    <core-selector id="selector"
+                   selected="{{selectedFileId}}"
+                   valueattr="id">
+      <template repeat="{{file in files}}">
+        <core-item icon="drive-file"
+                   id="file{{file.id}}"
+                   label="{{file.name}}">
+      </template>
+    </core-selector>
+  </template>
+  <script>
+    Polymer('files-list'
+      , {   filesChanged:
+            function ()
+            {
+              "use strict";
+              /* Collapse common substrings
+               * Changes
+               * ["a/b/c", "a/b/d", "a/e/", "f"]
+               *
+               * to
+               * [["a", "b", "c"], ["a", "b", "d"], ["a", "e"], ["f"]]
+               *
+               * then to
+               * [["a", [["b", ["c", "d"]], "e"]], "f"]
+               */
+              this.files.sort();
+              /*this.files.map(function (x) { return x.split("/"); });*/
+
+              /* TODO: above collapse of common substrings. */
+            }
+        });
+  </script>
+</polymer-element>

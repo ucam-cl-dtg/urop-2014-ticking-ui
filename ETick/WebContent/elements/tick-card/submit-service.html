@@ -24,24 +24,12 @@
                 id="ajaxPoll"
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/running'}}"
                 handleAs="json"
-                method="POST"
-                on-core-response="{{pollNext}}">
+                on-core-response="{{pollNext}}"
+                on-core-error="{{pollError}}">
         </core-ajax>
 
-        <!-- Used for local testing; TODO: remove -->
-        <core-ajax
-                id="ajaxSubmitLocal"
-                url="http://localhost:8000/testTickData.json"
-                handleAs="json"
-                on-core-response="{{startPolling}}"></core-ajax>
-        <core-ajax
-                id="ajaxPollLocal"
-                url="http://localhost:8000/testStatus.json"
-                handleAs="json"
-                on-core-response="{{pollNext}}">
-        </core-ajax>
-
-        <paper-toast id="submitError" text="Something went wrong"></paper-toast>
+        <paper-toast id="toastSubmitError" text="Error submitting. Try again."></paper-toast>
+        <paper-toast id="toastPollError" text="Error obtaining submission status. Try refreshing the page."></paper-toast>
     </template>
     <script>
         Polymer('submit-service', {
@@ -67,10 +55,7 @@
              */
             submitError: function() {
                 this.testRunning = false;
-
-                //this.$.submitError.show();
-                //TODO: somehow show an error toast
-                //TODO: one idea: publish an error attribute and have tick-card (the parent) observe it
+                this.$.toastSubmitError.show();
             },
 
             startPolling: function() {
@@ -78,18 +63,35 @@
                 this.$.ajaxPoll.go();
             },
 
+            pollError: function(e, detail) {
+                if (detail.xhr.responseText.indexOf("NoSuchTestException") > -1) {
+                    //assume last test finished
+                    this.testRunning = false;
+                } else {
+                    //no idea what could have happened. Assume connection failed (e.g. timed out) and try again
+                    this.$.toastPollError.show();
+
+                    this.job('job1', function() {
+                        this.startPolling();
+                    }, 3000);
+                }
+            },
+
+
+
             /**
              * Sets the published status attribute to the response of a pollStatus request, and starts another poll
              * if the test is incomplete
              */
             pollNext: function() {
                 this.status = this.$.ajaxPoll.response;
-                console.log(this.status);
 
                 if (this.status.progress == this.status.maxProgress) {
                     this.testRunning = false;
                 } else {
-                    this.$.ajaxPoll.go();
+                    this.job('job1', function() {
+                        this.$.ajaxPoll.go();
+                    }, 500);
                 }
             }
         });
