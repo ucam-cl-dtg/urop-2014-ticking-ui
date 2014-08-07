@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -16,7 +17,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import uk.ac.cam.cl.signups.api.Sheet;
 import uk.ac.cam.cl.signups.api.SheetInfo;
 import uk.ac.cam.cl.signups.api.Slot;
-import uk.ac.cam.cl.signups.api.beans.ColumnCreatorBean;
+import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
 import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
 import uk.ac.cam.cl.signups.api.beans.PermissionsBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
@@ -54,17 +55,22 @@ public class TickSignups {
      * @param sheetID The ID of the sheet whose free slots are needed.
      * @return A list of the start times of free slots
      * @throws ItemNotFoundException 
-     * TODO: we don't want all free slots, we want all slots a student can use to sign up for a specific tick with
      */
     @GET
-    @Path("/sheets/{sheetID}/times/{crsid}/{tickID}")
+    @Path("/sheets/{sheetID}/times/{tickID}")
     @Produces("application/json")
-    public Response listAvailableTimes(@PathParam("crsid") String crsid,
+    public Response listAvailableTimes(HttpServletRequest request,
             @PathParam("tickID") String tickID,
             @PathParam("sheetID") String sheetID) {
+        String crsid = (String) request.getSession().getAttribute(
+                "RavenRemoteUser");
         try {
             List<String> groupIDs = service.getGroupIDs(sheetID);
-            // TODO: should be precisely one ID in this list
+            if (groupIDs.size() != 1) {
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("There should be precisely one group associated "
+                                + "with this sheet, but there seems to be " + groupIDs.size()).build();
+            }
             String groupID = groupIDs.get(0);
             return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
         } catch (ItemNotFoundException e) {
@@ -97,16 +103,16 @@ public class TickSignups {
             }
         }
         try {
-            if (service.listColumnsWithFreeSlotsAt(sheetID, startTime).size() == 0) {
+            if (service.listColumnsWithFreeSlotsAt(sheetID, startTime.getTime()).size() == 0) {
                 return Response.status(Status.NOT_FOUND)
                         .entity(Strings.NOFREESLOTS).build();
             }
             if (service.getPermissions(groupID, crsid).containsKey(tickID)) { // have passed this tick
                 String ticker = service.getPermissions(groupID, crsid).get(tickID);
                 if (ticker == null) { // any ticker permitted
-                    ticker = service.listColumnsWithFreeSlotsAt(sheetID, startTime).get(0);
+                    ticker = service.listColumnsWithFreeSlotsAt(sheetID, startTime.getTime()).get(0);
                 }
-                service.book(sheetID, ticker, startTime, new SlotBookingBean(null, crsid, tickID));
+                service.book(sheetID, ticker, startTime.getTime(), new SlotBookingBean(null, crsid, tickID));
                 return Response.ok().entity(ticker).build();
             }
         } catch (ItemNotFoundException e) {
@@ -142,7 +148,7 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity("The slot was not found").build();
         }
         try {
-            service.book(sheetID, ticker, startTime, new SlotBookingBean(crsid, null, null));
+            service.book(sheetID, ticker, startTime.getTime(), new SlotBookingBean(crsid, null, null));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND)
@@ -220,7 +226,7 @@ public class TickSignups {
             @PathParam("ticker") String tickerName,
             @PathParam("startTime") Date startTime) {
         try {
-            return Response.ok(service.showBooking(sheetID, tickerName, startTime)).build();
+            return Response.ok(service.showBooking(sheetID, tickerName, startTime.getTime())).build();
         } catch (ItemNotFoundException e) {
             return Response.status(Status.NOT_FOUND).entity(e).build();
         }
@@ -299,7 +305,7 @@ public class TickSignups {
         }
         for (String ticker : tickerNames) {
             try {
-                service.createColumn(id, new ColumnCreatorBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
+                service.createColumn(id, new CreateColumnBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
             } catch (ItemNotFoundException e) {
                 e.printStackTrace();
                 throw new RuntimeException("This should only happen if the sheet or column is not found "
@@ -346,7 +352,7 @@ public class TickSignups {
             String name, Date startTime, Date endTime,
             int slotLength /* in minutes */) {
         try {
-            service.createColumn(sheetID, new ColumnCreatorBean(name, authCode, startTime, endTime, slotLength));
+            service.createColumn(sheetID, new CreateColumnBean(name, authCode, startTime, endTime, slotLength));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND).entity(e).build();
@@ -403,7 +409,7 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity("The slot was not found").build();
         }
         try {
-            service.book(sheetID, ticker, startTime, new SlotBookingBean(currentlyBookedUser, userToBook, tickID, authCode));
+            service.book(sheetID, ticker, startTime.getTime(), new SlotBookingBean(currentlyBookedUser, userToBook, tickID, authCode));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND).entity(e).build();

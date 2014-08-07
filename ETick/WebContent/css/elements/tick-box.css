@@ -1,6 +1,7 @@
 :host {
 	display:   block;
 	border-radius: 2px;
+  position: relative;
 }
 h1 {
 	margin: 0;

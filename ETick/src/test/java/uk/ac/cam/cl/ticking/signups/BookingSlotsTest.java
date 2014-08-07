@@ -44,7 +44,7 @@ import com.google.inject.Inject;
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
-public class TickSignupsTest {
+public class BookingSlotsTest {
     
     private TickSignups signups = new TickSignups();
     private WebInterface service;
