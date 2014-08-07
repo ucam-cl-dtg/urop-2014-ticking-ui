@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.signups.api.*;
 import uk.ac.cam.cl.signups.api.beans.ColumnBean;
-import uk.ac.cam.cl.signups.api.beans.ColumnCreatorBean;
+import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
 import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBean;
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
