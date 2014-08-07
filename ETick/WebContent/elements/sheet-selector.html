@@ -19,7 +19,7 @@
 
 			.custom-dropdown__select{
 				width: 100%;
-			    font-size: 1.1rem; 
+			    font-size: 1rem; 
 			    padding: .5em; /* add some space*/
 			    margin: 0; /* remove default margins */
 			    background: #f0f0f0;
@@ -45,8 +45,7 @@
 			        appearance: none;    
 			    }
 
-			    .custom-dropdown::before,
-			    .custom-dropdown::after {
+			    .custom-dropdown::before, .custom-dropdown::after {
 			        content: "";
 			        position: absolute;
 			        pointer-events: none;
@@ -69,13 +68,13 @@
 
 			    /* FF only temp fix */
 			    @-moz-document url-prefix() {
-			        .custom-dropdown__select             { padding-right: .9em }
-			        .custom-dropdown--large .custom-dropdown__select { padding-right: 1.3em }
-			        .custom-dropdown--small .custom-dropdown__select { padding-right: .5em }
+			        .custom-dropdown__select { padding-right: .9em }
 			    }
 			}
 		</style>
+
 		<!--<paper-button label="FOO" on-click="{{clicked}}"></paper-button>-->
+
 		<paper-dialog id="dialog" backdrop heading="Select Ticking Session:" transition="core-transition-top">
 			<span class="custom-dropdown">
 				<select id="selector" on-change="{{sheetSelectionChanged}}"
@@ -93,10 +92,6 @@
 	</template>
 	<script>
 		Polymer('sheet-selector', {
-			clicked: function () {
-				this.toggle();
-			},
-
 			toggle: function () {
 				this.$.dialog.toggle();
 			},
