@@ -57,6 +57,14 @@
 					{{inst}}<br>
 				</template>
 			</td></tr>
+			<tr><paper-input id="ssh"
+					floatingLabel
+					label="Public key..."
+					error="Invalid Key."
+					validate="^([a-zA-Z]+\d+[^\w\d]*)+$"
+					on-input="{{handleAddInput}}">
+				</paper-input>
+			</tr>
 		</table>
 	</template>
 	<script>
