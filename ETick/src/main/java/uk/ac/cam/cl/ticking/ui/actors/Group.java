@@ -21,9 +21,9 @@ public class Group implements Comparable<Group> {
 	private String groupId;
 
 	private String name, creator;
-	
+
 	private String info;
-	
+
 	private DateTime edited;
 	private String editedBy;
 
@@ -36,19 +36,17 @@ public class Group implements Comparable<Group> {
 	 * used when a user is creating a new group.
 	 * 
 	 * @param name
-	 *            - desired name for the group
+	 * @param creator
 	 */
-	@JsonCreator
-	public Group(@JsonProperty("name") String name,
-			@JsonProperty("creator") String creator) {
+	public Group(String name, String creator) {
 		this.setName(name);
 		this.setCreator(creator);
 		this.groupId = ObjectId.get().toString();
 	}
-	
-	//Default constructor for Jackson
+
+	// Default constructor for Jackson
 	public Group() {
-		
+
 	}
 
 	/**
@@ -94,12 +92,19 @@ public class Group implements Comparable<Group> {
 	}
 
 	/**
+	 * @return ticks
+	 */
+	public void setTicks(List<String> ticks) {
+		this.ticks = ticks;
+	}
+
+	/**
 	 * @param tickId
 	 */
 	public void addTick(String tickId) {
 		ticks.add(tickId);
 	}
-	
+
 	/**
 	 * @param tickId
 	 */
@@ -158,16 +163,27 @@ public class Group implements Comparable<Group> {
 	public int compareTo(Group o) {
 		return this.name.compareToIgnoreCase(o.name);
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
+		if (this == o)
+			return true;
 		if (!(o instanceof Group)) {
 			return false;
 		}
-		return this.groupId == ((Group)o).groupId;
+		return this.groupId == ((Group) o).groupId;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return groupId.hashCode();

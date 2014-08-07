@@ -8,6 +8,7 @@ release.properties
 **/WEB-INF/lib/
 
 *.class
+*.jar
 **/doc/
 **/logs/
 **/node_modules/

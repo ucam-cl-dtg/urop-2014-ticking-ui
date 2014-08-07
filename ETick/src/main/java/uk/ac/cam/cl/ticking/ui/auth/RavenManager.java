@@ -120,7 +120,6 @@ public class RavenManager {
 		if (user == null || !user.isLdap()) {
 			user = ldapProduceUser(crsid);
 			db.saveUser(user);
-			DatabasePopulator.testPopulate(user);
 			return Response.status(Status.CREATED).entity(user).build();
 		}
 		user.setHasLogged(true);

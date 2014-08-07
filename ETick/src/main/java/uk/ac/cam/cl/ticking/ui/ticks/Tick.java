@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author tl364
  *
  */
-public class Tick {
+public class Tick implements Comparable<Tick> {
 
 	// FORMAT: 'author','name'
 	@JsonProperty("_id")
@@ -28,9 +30,9 @@ public class Tick {
 	private String stubRepo, correctnessRepo;
 	private DateTime deadline;
 	private List<String> groups = new ArrayList<>();
-	
+
 	private Map<String, DateTime> extensions = new HashMap<>();
-	
+
 	private DateTime edited;
 
 	/**
@@ -46,10 +48,7 @@ public class Tick {
 	 * @param deadline
 	 * @param files
 	 */
-	@JsonCreator
-	public Tick(@JsonProperty("name") String name,
-			@JsonProperty("author") String author,
-			@JsonProperty("deadline") DateTime deadline) {
+	public Tick(String name, String author, DateTime deadline) {
 
 		this.setName(name);
 		this.setAuthor(author);
@@ -65,10 +64,16 @@ public class Tick {
 
 	}
 
+	public Tick(TickBean bean) {
+		this.setName(bean.getName());
+		this.setDeadline(bean.getDeadline());
+		this.setGroups(bean.getGroups());
+		this.setExtensions(bean.getExtensions());
+	}
+
 	/**
 	 * @return stubRepo
 	 */
-	@JsonProperty("stubRepo")
 	public String getStubRepo() {
 		return stubRepo;
 	}
@@ -76,15 +81,13 @@ public class Tick {
 	/**
 	 * @param stubRepo
 	 */
-	@JsonProperty("stubRepo")
 	public void setStubRepo(String stubRepo) {
 		this.stubRepo = stubRepo;
 	}
-	
+
 	/**
 	 * @return correctnessRepo
 	 */
-	@JsonProperty("correctnessRepo")
 	public String getCorrectnessRepo() {
 		return correctnessRepo;
 	}
@@ -92,7 +95,6 @@ public class Tick {
 	/**
 	 * @param correctnessRepo
 	 */
-	@JsonProperty("correctnessRepo")
 	public void setCorrectnessRepo(String correctnessRepo) {
 		this.correctnessRepo = correctnessRepo;
 	}
@@ -100,7 +102,6 @@ public class Tick {
 	/**
 	 * @return deadline
 	 */
-	@JsonProperty("deadline")
 	public DateTime getDeadline() {
 		return deadline;
 	}
@@ -108,7 +109,6 @@ public class Tick {
 	/**
 	 * @param deadline
 	 */
-	@JsonProperty("deadline")
 	public void setDeadline(DateTime deadline) {
 		this.deadline = deadline;
 	}
@@ -116,7 +116,6 @@ public class Tick {
 	/**
 	 * @return name
 	 */
-	@JsonProperty("name")
 	public String getName() {
 		return name;
 	}
@@ -124,7 +123,6 @@ public class Tick {
 	/**
 	 * @param name
 	 */
-	@JsonProperty("name")
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -132,7 +130,6 @@ public class Tick {
 	/**
 	 * @return author
 	 */
-	@JsonProperty("author")
 	public String getAuthor() {
 		return author;
 	}
@@ -140,13 +137,13 @@ public class Tick {
 	/**
 	 * @param author
 	 */
-	@JsonProperty("author")
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-	 /**
-	  * @return edited
-	  */
+
+	/**
+	 * @return edited
+	 */
 	public DateTime getEdited() {
 		return edited;
 	}
@@ -164,7 +161,7 @@ public class Tick {
 	public List<String> getGroups() {
 		return groups;
 	}
-	
+
 	/**
 	 * @param groups
 	 */
@@ -178,7 +175,7 @@ public class Tick {
 	public void addGroup(String groupId) {
 		groups.add(groupId);
 	}
-	
+
 	/**
 	 * @param groupId
 	 */
@@ -186,14 +183,27 @@ public class Tick {
 		groups.remove(groupId);
 	}
 
+	/**
+	 * 
+	 * @return extensions
+	 */
 	public Map<String, DateTime> getExtensions() {
 		return extensions;
 	}
 
+	/**
+	 * 
+	 * @param extensions
+	 */
 	public void setExtensions(Map<String, DateTime> extensions) {
 		this.extensions = extensions;
 	}
-	
+
+	/**
+	 * 
+	 * @param crsid
+	 * @param extension
+	 */
 	public void addExtension(String crsid, DateTime extension) {
 		this.extensions.put(crsid, extension);
 	}
@@ -221,6 +231,16 @@ public class Tick {
 	 */
 	public static String replaceDelimeter(String tickId) {
 		return tickId.replace(',', '/');
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(Tick o) {
+		return this.name.compareToIgnoreCase(o.name);
 	}
 
 	/*

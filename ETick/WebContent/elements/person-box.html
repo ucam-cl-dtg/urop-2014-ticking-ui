@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-icons/iconsets/social-icons.html">
+<link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
 
 <polymer-element name="person-box" attributes="name crsid college isStudent">
 	<template>
@@ -10,6 +11,7 @@
 			:host {
 				display: block;
 				border-radius: 2px;
+				position: relative;
 			}
 
 			h1 {
@@ -42,6 +44,7 @@
 					<h2 flex>{{college}}</h2>
 					<h2>{{crsid}}</h2>
 				</div>
+				<paper-ripple class="recenteringTouch" fit></paper-ripple>
 			</div>
 		</div>
 	</template>

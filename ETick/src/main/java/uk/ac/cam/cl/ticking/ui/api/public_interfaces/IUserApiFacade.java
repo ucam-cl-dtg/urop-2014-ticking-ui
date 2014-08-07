@@ -1,9 +1,11 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -26,6 +28,16 @@ public interface IUserApiFacade {
 	@Produces("application/json")
 	public abstract Response getUser(@Context HttpServletRequest request);
 
+	/**
+	 * Deletes a user from the system as well as all associated groupings. If
+	 * purge is specified, also removes all content they created, such as groups
+	 * and ticks.
+	 * 
+	 * @param request
+	 * @param crsid
+	 * @param purge
+	 * @return
+	 */
 	@DELETE
 	@Path("/{crsid}")
 	@Produces("application/json")
@@ -72,5 +84,19 @@ public interface IUserApiFacade {
 	@Produces("application/json")
 	public abstract Response getRoleGroups(@Context HttpServletRequest request,
 			@PathParam("stringRole") String stringRole);
+
+	/**
+	 * @return All Tick objects authored by the user in the session
+	 */
+	@GET
+	@Path("/ticks")
+	@Produces("application/json")
+	public abstract Response getMyTicks(@Context HttpServletRequest request);
+	
+	@PUT
+	@Path("/ssh")
+	@Produces("application/json")
+	@Consumes("text/plain")
+	public abstract Response addSSHKey(@Context HttpServletRequest request, String key);
 
 }

@@ -1,0 +1,61 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog-transition.html">
+
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<polymer-element name="sheet-selector" attributes="sheets tickId">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+		<link rel="stylesheet" type="text/css" href="../css/elements/sheet-selector.css">
+
+		<!-- Signup slots API. -->
+		<core-ajax id="slotsAPI"
+			url=""
+			handleAs="json"
+			on-core-response="{{slotsResponse}}">
+		</core-ajax>
+
+		<paper-dialog id="dialog" backdrop heading="Book a Ticking Slot:" transition="core-transition-top">
+			<span class="custom-dropdown">
+				<select id="selector" on-change="{{sheetSelectionChanged}}"
+					class="custom-dropdown__select">
+				<option disabled selected>Select Ticking Session...</option>
+				<template repeat="{{sheet in sheets}}">
+					<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
+				</template>
+			</select>
+			</span>
+			<template if="{{selection}}">
+
+				<paper-button id="sheetSubmit" class="dialogSubmit" label="DONE" on-click="{{sheetSelected}}" affirmative></paper-button>
+			</template>
+		</paper-dialog>
+	</template>
+	<script>
+		Polymer('sheet-selector', {
+			toggle: function () {
+				this.$.dialog.toggle();
+			},
+
+			sheetSelectionChanged: function () {
+				var sel = this.$.selector;
+				this.selection = sel.options[sel.selectedIndex].getAttribute('sheetid');
+			},
+
+			sheetSelected: function () {
+				this.$.slotsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
+					 this.selection + "/times/" + this.tickId;
+				this.$.slotsAPI.go();
+				console.log(this.selection + ': selected');
+			},
+
+			slotsResponse: function () {
+				console.log(this.$.slotsAPI.response);
+			}
+
+		});
+	</script>
+</polymer-element>

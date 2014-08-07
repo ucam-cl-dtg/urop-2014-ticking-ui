@@ -1,20 +1,25 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.joda.time.DateTime;
 
+import publicinterfaces.ITestService;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.RepoUserRequestBean;
@@ -23,10 +28,12 @@ import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -38,15 +45,21 @@ public class TickApiFacade implements ITickApiFacade {
 	private IDataManager db;
 	private ConfigurationLoader<Configuration> config;
 
+	private ITestService testServiceProxy;
+	private WebInterface gitServiceProxy;
+
 	/**
 	 * @param db
 	 * @param config
 	 */
 	@Inject
 	public TickApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config) {
+			ConfigurationLoader<Configuration> config,
+			ITestService testServiceProxy, WebInterface gitServiceProxy) {
 		this.db = db;
 		this.config = config;
+		this.testServiceProxy = testServiceProxy;
+		this.gitServiceProxy = gitServiceProxy;
 	}
 
 	/*
@@ -62,17 +75,37 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.ok().entity(tick).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#deleteTick
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
+	 */
 	@Override
 	public Response deleteTick(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		//TODO remove repo?
+		// TODO remove checkstyles?
 		Tick tick = db.getTick(tickId);
 		if (!crsid.equals(tick.getAuthor())) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		db.removeTick(tickId);
+
+		try {
+			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId)); // throws the
+																	// exceptions
+			db.removeTick(tickId);
+		} catch (IOException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
+		} catch (RepositoryNotFoundException e) {
+			db.removeTick(tickId);
+			// Not finding the repo still indicates we want to delete the tick
+			return Response.status(Status.NOT_FOUND).entity(e).build();
+		}
+
 		return Response.ok().build();
 	}
 
@@ -94,6 +127,7 @@ public class TickApiFacade implements ITickApiFacade {
 				tick.setDeadline(extension);
 			}
 		}
+		Collections.sort(ticks);
 		return Response.ok().entity(ticks).build();
 	}
 
@@ -106,25 +140,21 @@ public class TickApiFacade implements ITickApiFacade {
 	 * uk.ac.cam.cl.ticking.ui.ticks.Tick)
 	 */
 	@Override
-	public Response newTick(HttpServletRequest request, Tick tick) {
+	public Response newTick(HttpServletRequest request, TickBean tickBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
-		if (db.getTick(tick.getTickId()) != null) {
-			return Response.status(Status.CONFLICT).entity(Strings.EXISTS)
-					.build();
-		}
-
-		if (!validatePermissions(tick.getGroups(), crsid)) {
+		if (!validatePermissions(tickBean.getGroups(), crsid)) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
-		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getConfig()
-				.getGitApiLocation());
+		Tick tick = new Tick(tickBean);
+		tick.setAuthor(crsid);
+		tick.initTickId();
 
-		WebInterface proxy = target.proxy(WebInterface.class);
+		testServiceProxy.createNewTest(tick.getTickId(), tickBean.getCheckstyleOpts());
+
 		String repo;
 		/*
 		 * Here we try to create two repositories. If the first create fails, we
@@ -135,14 +165,14 @@ public class TickApiFacade implements ITickApiFacade {
 		 * name exception thrown
 		 */
 		try {
-			repo = proxy.addRepository(new RepoUserRequestBean(crsid + "/"
-					+ tick.getName(), crsid));
+			repo = gitServiceProxy.addRepository(new RepoUserRequestBean(crsid + "/"
+					+ tickBean.getName(), crsid));
 		} catch (IOException e) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		} catch (DuplicateRepoNameException e) {
 			try {
-				repo = proxy.getRepoURI(crsid + "/" + tick.getName());
+				repo = gitServiceProxy.getRepoURI(crsid + "/" + tickBean.getName());
 			} catch (RepositoryNotFoundException e1) {
 				throw new RuntimeException("Schrodinger's repository");
 				// The repo simultaneously does and doesn't exist
@@ -153,8 +183,8 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 		String correctnessRepo;
 		try {
-			correctnessRepo = proxy.addRepository(new RepoUserRequestBean(crsid
-					+ "/" + tick.getName() + "/correctness", crsid));
+			correctnessRepo = gitServiceProxy.addRepository(new RepoUserRequestBean(crsid
+					+ "/" + tickBean.getName() + "/correctness", crsid));
 		} catch (IOException | DuplicateRepoNameException e) {
 			/*
 			 * Here if we encounter a duplicate repository name then the second
@@ -167,10 +197,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
-		tick.setAuthor(crsid);
 		tick.setStubRepo(repo);
 		tick.setCorrectnessRepo(correctnessRepo);
-		tick.initTickId();
 
 		for (String groupId : tick.getGroups()) {
 			Group g = db.getGroup(groupId);
@@ -187,18 +215,26 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.status(Status.CREATED).entity(tick).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#updateTick
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean)
+	 */
 	@Override
-	public Response updateTick(HttpServletRequest request, Tick tick)
-			throws IOException, DuplicateRepoNameException {
+	public Response updateTick(HttpServletRequest request, String tickId,
+			TickBean tickBean) throws IOException, DuplicateRepoNameException {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
-		if (!validatePermissions(tick.getGroups(), crsid)) {
+		if (!validatePermissions(tickBean.getGroups(), crsid)) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
-		Tick prevTick = db.getTick(tick.getTickId());
+		Tick prevTick = db.getTick(tickId);
 
 		if (prevTick != null) {
 
@@ -207,26 +243,36 @@ public class TickApiFacade implements ITickApiFacade {
 						.entity(Strings.INVALIDROLE).build();
 			}
 
+			testServiceProxy.createNewTest(tickId, tickBean.getCheckstyleOpts());
+
 			prevTick.setEdited(DateTime.now());
 			for (String groupId : prevTick.getGroups()) {
 				Group g = db.getGroup(groupId);
-				g.removeTick(tick.getTickId());
+				g.removeTick(tickId);
 				db.saveGroup(g);
 			}
-			for (String groupId : tick.getGroups()) {
+			for (String groupId : tickBean.getGroups()) {
 				Group g = db.getGroup(groupId);
-				g.addTick(tick.getTickId());
+				g.addTick(tickId);
 				db.saveGroup(g);
 			}
-			prevTick.setGroups(tick.getGroups());
-			prevTick.setDeadline(tick.getDeadline());
+			prevTick.setGroups(tickBean.getGroups());
+			prevTick.setDeadline(tickBean.getDeadline());
 			db.saveTick(prevTick);
 			return Response.status(Status.CREATED).entity(prevTick).build();
 		} else {
-			return newTick(request, tick);
+			// TODO should this behave like so?
+			return newTick(request, tickBean);
 		}
 	}
 
+	/**
+	 * 
+	 * @param groupIds
+	 * @param crsid
+	 * @return whether the user has author permissions for all of the supplied
+	 *         groups
+	 */
 	private boolean validatePermissions(List<String> groupIds, String crsid) {
 		for (String groupId : groupIds) {
 			List<Role> roles = db.getRoles(groupId, crsid);
@@ -272,29 +318,49 @@ public class TickApiFacade implements ITickApiFacade {
 	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response forkTick(HttpServletRequest request, String tickId)
-			throws IOException {
+	public Response forkTick(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
-		ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.getConfig()
-				.getGitApiLocation());
-		WebInterface proxy = target.proxy(WebInterface.class);
-		String output;
+		Fork fork = db.getFork(crsid + "," + tickId);
+		if (fork != null) {
+			return Response.ok(fork).build();
+		}
+
+		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
 		try {
-			output = proxy.forkRepository(new ForkRequestBean(null, crsid,
+			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));
 		} catch (DuplicateRepoNameException e) {
-			output = e.getMessage() + Strings.FORKED;
+			repo = e.getMessage();
+		} catch (IOException e) {
+			// The repo that was being forked was empty, however, it has still
+			// been forked thus continue
+
+		}
+
+		try {
+			fork = new Fork(crsid, tickId, repo);
+			db.insertFork(fork);
+		} catch (DuplicateDataEntryException e) {
+			throw new RuntimeException("Schrodinger's repository");
+			// The fork simultaneously does and doesn't exist
 		}
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
-		return Response.status(Status.CREATED).entity(output).build();
+		return Response.status(Status.CREATED).entity(fork).build();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#setDeadline
+	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
+	 * org.joda.time.DateTime)
+	 */
 	@Override
 	public Response setDeadline(HttpServletRequest request, String tickId,
 			DateTime date) {
