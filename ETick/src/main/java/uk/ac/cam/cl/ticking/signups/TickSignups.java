@@ -5,12 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -21,7 +16,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import uk.ac.cam.cl.signups.api.Sheet;
 import uk.ac.cam.cl.signups.api.SheetInfo;
 import uk.ac.cam.cl.signups.api.Slot;
-import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
+import uk.ac.cam.cl.signups.api.beans.ColumnCreatorBean;
 import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
 import uk.ac.cam.cl.signups.api.beans.PermissionsBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
@@ -123,25 +118,12 @@ public class TickSignups {
         return Response.status(Status.FORBIDDEN)
                 .entity("Student does not have permission to book this slot").build();
     }
-    
-    /**
-     * Equivalent to deleting the existing booking and making a
-     * new booking at the given time.
-     * @return The ticker that the student has been signed up to
-     * see at the given time, or null if the booking was unsuccessful.
-     */
-    public Response modifyBooking(String crsid, String groupID,
-            String sheetID, String tickID, Date oldStartTime, Date newStartTime) {
-        Response unbookResponse = unbookSlot(crsid, groupID, sheetID, tickID, oldStartTime);
-        if (unbookResponse.getStatus() != Status.OK.getStatusCode()) {
-            return unbookResponse;
-        }
-        return makeBooking(crsid, groupID, sheetID, tickID, newStartTime);
-    }
-    
+       
     /**
      * Unbooks the given user from the given slot.
      */
+    @DELETE
+    @Path("/sheets/{sheetID}/bookings")
     public Response unbookSlot(String crsid, String groupID,
             String sheetID, String tickID, Date startTime) {
         String ticker = null;
@@ -213,7 +195,7 @@ public class TickSignups {
      * Returns a list of the slots for the specified ticker.
      */
     @GET
-    @Path("/sheets/{sheetID}/{ticker}")
+    @Path("/sheets/{sheetID}/tickers/{ticker}")
     @Produces("application/json")
     public Response listSlots(@PathParam("sheetID") String sheetID, @PathParam("ticker") String tickerName) {
         try {
@@ -245,7 +227,7 @@ public class TickSignups {
      * user in the given sheet.
      */
     @DELETE
-    @Path("/sheets/{sheetID}/bookings/{crsid}")
+    @Path("/students/{crsid}/bookings/{sheetID}")
     public Response removeAllStudentBookings(String sheetID, String crsid, String authCode) {
         try {
             service.removeAllUserBookings(sheetID, crsid, authCode);
@@ -310,7 +292,7 @@ public class TickSignups {
         }
         for (String ticker : tickerNames) {
             try {
-                service.createColumn(id, new CreateColumnBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
+                service.createColumn(id, new ColumnCreatorBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
             } catch (ItemNotFoundException e) {
                 e.printStackTrace();
                 throw new RuntimeException("This should only happen if the sheet or column is not found "
@@ -356,7 +338,7 @@ public class TickSignups {
             String name, Date startTime, Date endTime,
             int slotLength /* in minutes */) {
         try {
-            service.createColumn(sheetID, new CreateColumnBean(name, authCode, startTime, endTime, slotLength));
+            service.createColumn(sheetID, new ColumnCreatorBean(name, authCode, startTime, endTime, slotLength));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND).entity(e).build();
