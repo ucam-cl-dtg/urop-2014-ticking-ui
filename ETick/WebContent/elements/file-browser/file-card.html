@@ -8,8 +8,7 @@
 <polymer-element name="file-card"
     attributes="content comments
                 name id highlight
-                syntaxStyleSheet
-                selectedFileId">
+                syntaxStyleSheet">
   <template>
     <!-- HighlightJS colourscheme -->
     <!--
@@ -206,12 +205,6 @@
                 this.styleSheetElement.textContent =
                   this.$.syntaxAjax.response;
               }
-            }
-
-          , selectedFileIdChanged:
-            function ()
-            {
-              console.log(this.shadowRoot.getElementById(this.selectedFileId));
             }
         });
   </script>
