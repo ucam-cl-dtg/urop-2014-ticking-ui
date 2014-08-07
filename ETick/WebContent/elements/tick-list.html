@@ -48,10 +48,10 @@
 		</div>
 
 		<!-- Tick list. -->
-		<core-selector id="selector" on-core-select="{{selected}}"
+		<core-selector id="selector" on-core-select="{{selected}}" valueattr="tickID"
 			layout horizontal center wrap>
 			<template repeat="{{tick in ticks | tickListFilter($.searchBox.query)}}">
-				<tick-box tick="{{tick}}"></tick-box>
+				<tick-box tickID="{{tick._id}}" tick="{{tick}}"></tick-box>
 			</template>
 		</core-selector>
 
@@ -76,7 +76,7 @@
 			},
 
 			selected: function() {
-				this.selectedTicks = this.$.selector.selected;
+				this.selectedTick = this.$.selector.selected;
 			}
 		});
 	</script>

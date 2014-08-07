@@ -72,7 +72,6 @@
 			    }
 			}
 		</style>
-		<paper-button label="DIALOG" on-click="{{clicked}}"></paper-button>
 		<paper-dialog id="dialog" backdrop heading="Select Ticking Session:" transition="core-transition-top">
 			<span class="custom-dropdown">
 				<select id="selector" on-change="{{sheetSelectionChanged}}"
@@ -90,10 +89,6 @@
 	</template>
 	<script>
 		Polymer('sheet-selector', {
-			clicked: function () {
-				this.toggle();
-			},
-
 			toggle: function () {
 				this.$.dialog.toggle();
 			},

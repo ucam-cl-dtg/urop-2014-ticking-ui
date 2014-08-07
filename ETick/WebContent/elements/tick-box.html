@@ -1,5 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<polymer-element name="tick-box" attributes="tick">
+<polymer-element name="tick-box" attributes="tick tickID">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/tick-box.css">
 		<div layout horizontal center id="container">
@@ -25,6 +25,7 @@
 				this.date = d.getDate();
 				this.day = weekdays[d.getDay()];
 				this.month = months[d.getMonth()];
+				this.tick
 			}
 		});
 	</script>
