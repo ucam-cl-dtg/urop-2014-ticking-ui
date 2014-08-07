@@ -59,11 +59,10 @@ public class TickSignups {
     @GET
     @Path("/sheets/{sheetID}/times/{tickID}")
     @Produces("application/json")
-    public Response listAvailableTimes(HttpServletRequest request,
+    public Response listAvailableTimes(//HttpServletRequest request,
             @PathParam("tickID") String tickID,
             @PathParam("sheetID") String sheetID) {
-        String crsid = (String) request.getSession().getAttribute(
-                "RavenRemoteUser");
+        String crsid = "rds46"; //(String) request.getSession().getAttribute("RavenRemoteUser");
         try {
             List<String> groupIDs = service.getGroupIDs(sheetID);
             if (groupIDs.size() != 1) {
