@@ -60,11 +60,11 @@
                 ticking_service + "/fork/" + this.tickId;
 
               this.$.setTickResult.params =
-                {   "humanPass"      : tickStatus
-                  , "signedUp"       : false
-                  , "tickerComments" : comment
-                  , "commitId"       : this.commitId
-                }
+                  '{   "humanPass"      : tickStatus'
+                + '  , "signedUp"       : false'
+                + '  , "tickerComments" : comment'
+                + '  , "commitId"       : this.commitId'
+                + '}'
 
               this.$.setTickResult.go();
             }
