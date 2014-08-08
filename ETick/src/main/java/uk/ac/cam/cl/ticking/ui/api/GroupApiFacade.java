@@ -13,6 +13,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.joda.time.DateTime;
 
+import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
+import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
@@ -35,6 +37,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 	// not currently used but could quite possibly be needed in the future, will
 	// remove if not
 	private ConfigurationLoader<Configuration> config;
+	
+	private TickSignups tickSignupService;
 
 	/**
 	 * @param db
@@ -42,9 +46,10 @@ public class GroupApiFacade implements IGroupApiFacade {
 	 */
 	@Inject
 	public GroupApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config) {
+			ConfigurationLoader<Configuration> config, TickSignups tickSignupService) {
 		this.db = db;
 		this.config = config;
+		this.tickSignupService = tickSignupService;
 	}
 
 	/*
@@ -126,6 +131,14 @@ public class GroupApiFacade implements IGroupApiFacade {
 					.entity(Strings.INVALIDROLE).build();
 		}
 		Group group = new Group(groupBean.getName(), crsid);
+		
+		try {
+			tickSignupService.createGroup(group.getGroupId());
+		} catch (DuplicateNameException e1) {
+			return addGroup(request, roles, groupBean);
+			//The groupId clashed with the signups groups ids, try again
+		}
+		
 		if (groupBean.getName().equalsIgnoreCase("xyzzy")) {
 			return Response.status(Status.NOT_FOUND)
 					.entity("Nothing happens...").build();

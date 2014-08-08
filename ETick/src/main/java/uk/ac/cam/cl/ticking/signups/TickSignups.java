@@ -562,4 +562,8 @@ public class TickSignups {
         return Response.ok().build();
     }
     
+    public void createGroup(String groupID) throws DuplicateNameException {
+        service.addGroup(new Group(groupID));
+    }
+    
 }
