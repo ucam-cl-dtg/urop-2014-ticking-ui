@@ -165,7 +165,7 @@ public class TickSignups {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         Slot booking = null;
         for (Slot slot : service.listUserSlots(crsid)) {
-            if (slot.getComment().equals("tickID")) {
+            if (slot.getComment().equals(tickID)) {
                 booking = slot;
             }
         }
