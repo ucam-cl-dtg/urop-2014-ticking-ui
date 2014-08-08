@@ -170,7 +170,7 @@ public class TickApiFacade implements ITickApiFacade {
 			} catch (InternalServerErrorException e) {
 				RemoteFailureHandler h = new RemoteFailureHandler();
 				SerializableException s = h.readException(e);
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(Strings.EXISTS).build();
+				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(Strings.IDEMPOTENTRETRY).build();
 
 			} catch (IOException | DuplicateRepoNameException e) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
@@ -191,7 +191,7 @@ public class TickApiFacade implements ITickApiFacade {
 			} catch (InternalServerErrorException e) {
 				RemoteFailureHandler h = new RemoteFailureHandler();
 				SerializableException s = h.readException(e);
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(Strings.EXISTS).build();
+				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(Strings.IDEMPOTENTRETRY).build();
 
 			} catch (IOException | DuplicateRepoNameException e) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
@@ -314,49 +314,6 @@ public class TickApiFacade implements ITickApiFacade {
 		db.saveGroup(g);
 		db.saveTick(t);
 		return Response.status(Status.CREATED).entity(g).build();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#forkTick
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
-	 */
-	@Override
-	public Response forkTick(HttpServletRequest request, String tickId) {
-		String crsid = (String) request.getSession().getAttribute(
-				"RavenRemoteUser");
-
-		Fork fork = db.getFork(crsid + "," + tickId);
-		if (fork != null) {
-			return Response.ok(fork).build();
-		}
-
-		String repo = null;
-		String repoName = Tick.replaceDelimeter(tickId);
-		try {
-			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null,
-					crsid, repoName, null));
-		} catch (DuplicateRepoNameException e) {
-			repo = e.getMessage();
-		} catch (IOException e) {
-			// The repo that was being forked was empty, however, it has still
-			// been forked thus continue
-
-		}
-
-		try {
-			fork = new Fork(crsid, tickId, repo);
-			db.insertFork(fork);
-		} catch (DuplicateDataEntryException e) {
-			throw new RuntimeException("Schrodinger's repository");
-			// The fork simultaneously does and doesn't exist
-		}
-
-		// Execution will only reach this point if there are no git errors else
-		// IOException is thrown
-		return Response.status(Status.CREATED).entity(fork).build();
 	}
 
 	/*

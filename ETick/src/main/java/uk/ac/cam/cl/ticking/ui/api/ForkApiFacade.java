@@ -3,6 +3,7 @@ package uk.ac.cam.cl.ticking.ui.api;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -16,6 +17,8 @@ import publicinterfaces.ReportNotFoundException;
 import publicinterfaces.ReportResult;
 import publicinterfaces.TickNotInDBException;
 import publicinterfaces.UserNotInDBException;
+import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
+import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
@@ -27,6 +30,7 @@ import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
 
@@ -82,30 +86,26 @@ public class ForkApiFacade implements IForkApiFacade {
 		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
 		
-		/*ResteasyClient client = new ResteasyClientBuilder().build();
-		ResteasyWebTarget target = client.target(config.
-				getConfig().getGitApiLocation());
-
-		gitServiceProxy = target.proxy(WebInterface.class);*/
 		try {
 			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null, crsid,
 					repoName, null));
-			log.info(repo);
-		} catch (DuplicateRepoNameException e) {
-			repo = e.getMessage();
-			log.info(repo);
-		} catch (IOException e) {
-			log.warn(e);
-			// The repo that was being forked was empty, however, it has still
-			// been forked thus continue
+		
+		} catch (InternalServerErrorException e) {
+			RemoteFailureHandler h = new RemoteFailureHandler();
+			SerializableException s = h.readException(e);
+			repo = s.getMessage();
 
+		} catch (IOException | DuplicateRepoNameException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
+			//Due to exception chaining this shouldn't happen
 		}
 
 		try {
 			fork = new Fork(crsid, tickId, repo);
 			db.insertFork(fork);
 		} catch (DuplicateDataEntryException e) {
-			throw new RuntimeException("Schrodinger's repository");
+			throw new RuntimeException("Schrodinger's fork");
 			// The fork simultaneously does and doesn't exist
 		}
 
