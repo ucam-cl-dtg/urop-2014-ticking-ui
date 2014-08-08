@@ -43,7 +43,8 @@
       <div class="main">
         <!-- Ticker comments -->
         <template if="{{comments != null}}">
-          <p>{{comments}}</p>
+          Ticker comments:
+          <pre class="ticker-comments">{{comments}}</pre>
         </template>
 
         <select name="syntaxSelect" value="{{syntaxStyleSheet}}">
