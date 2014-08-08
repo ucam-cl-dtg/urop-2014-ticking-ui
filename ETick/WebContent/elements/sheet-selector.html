@@ -31,19 +31,19 @@
 			<div class="custom-dropdown">
 				<select id="selector" on-change="{{sheetSelectionChanged}}"
 					class="custom-dropdown__select">
-				<option disabled selected>Select Ticking Session...</option>
-				<template repeat="{{sheet in sheets}}">
-					<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
-				</template>
-			</select>
+					<option disabled selected>Select Ticking Session...</option>
+					<template repeat="{{sheet in sheets}}">
+						<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
+						</template>
+				</select>
 			</div>
 			<div class="custom-dropdown">
 				<select id="slotSelector" on-change="{{slotSelectionChanged}}"
 					class="custom-dropdown__select">
-				<option disabled selected>Select Ticking Slot...</option>
-				<template repeat="{{date in dates | dateFilter}}">
-					<option value="{{date}}">{{date}}</option>
-				</template>
+					<option disabled selected>Select Ticking Slot...</option>
+					<template repeat="{{date in dates | dateFilter}}">
+						<option value="{{date}}">{{date}}</option>
+					</template>
 				</select>
 			</div>
 		</div>
