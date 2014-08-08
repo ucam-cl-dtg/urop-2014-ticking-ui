@@ -20,6 +20,17 @@
             }
         </style>
 
+        <!-- Call to delete a sign up -->
+        <core-ajax id="ajaxDeleteBooking"
+                   url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/bookings/' + tickId + '/'}}"
+                   handleAs="json"
+                   method="DELETE"
+                   on-core-response="{{deleteSuccess}}"
+                   >
+        </core-ajax>
+
+
+
         <!-- Sign up button -->
         <core-collapse opened?="{{!signedUp && !testRunning && unitPass}}">
             <paper-button class="greenButton" label="SIGN UP" on-tap="{{openSignupDialog}}"></paper-button>
@@ -46,17 +57,31 @@
         <!-- TODO: confirm cancel sign up dialog -->
         <paper-dialog id="cancelDialog" heading="Cancel Sign up?" backdrop transition="core-transition-top">
             <paper-button class="dialogNo" dismissive label="No"></paper-button>
-            <paper-button class="dialogYes" affirmative label="Yes"></paper-button>
+            <paper-button class="dialogYes" affirmative label="Yes" on-tap="{{deleteBooking}}"></paper-button>
         </paper-dialog>
     </template>
     <script>
         Polymer('signup-component', {
+            domReady: function() {
+                this.$.signupDialog.addEventListener('slot-booked', function(e){
+                    console.log(e);
+                });
+            },
+
             openSignupDialog: function() {
                 this.$.signupDialog.toggle();
             },
 
             showCancelDialog: function() {
                 this.$.cancelDialog.toggle();
+            },
+
+            deleteBooking: function() {
+                this.$.ajaxDeleteBooking.go();
+            },
+
+            deleteSuccess: function() {
+                this.signedUp = false;
             }
         });
     </script>
