@@ -2,7 +2,7 @@
 
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="on-login" attributes="groupItems">
+<polymer-element name="on-login" attributes="">
 	<template>
 			<!-- API call: adds user if not already registered. -->
 			<core-ajax id="loginAjax"
@@ -42,10 +42,12 @@
 				this.ldap = this.$.loginAjax.response;
 				// Do somthing with this.$.loginAjax.response if needed.
 				this.$.sidebarAjax.go();
+				this.$.sidebarTickAjax.go();
 			},
 			sidebarResponse: function() {
 				this.groupItems = this.$.sidebarAjax.response;
-			}
+			},
+
 			sidebarTickResponse: function() {
 				this.tickItems = this.$.sidebarTickAjax.response;
 			}
