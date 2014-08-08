@@ -126,18 +126,17 @@ public class ForkApiFacade implements IForkApiFacade {
 		if (fork != null) {
 			if (forkBean.getHumanPass() != null) {
 				fork.setHumanPass(forkBean.getHumanPass());
-				if (forkBean.getHumanPass()) {
 
-					try {
-						testServiceProxy.setTickerResult(crsid, tickId,
-								ReportResult.PASS,
-								forkBean.getTickerComments(),
-								forkBean.getCommitId());
-					} catch (UserNotInDBException | TickNotInDBException
-							| ReportNotFoundException e) {
-						return Response.status(Status.NOT_FOUND).entity(e)
-								.build();
-					}
+				ReportResult result = fork.getHumanPass() ? ReportResult.PASS : ReportResult.FAIL;
+				try {
+					testServiceProxy.setTickerResult(crsid, tickId,
+							result,
+							forkBean.getTickerComments(),
+							forkBean.getCommitId());
+				} catch (UserNotInDBException | TickNotInDBException
+						| ReportNotFoundException e) {
+					return Response.status(Status.NOT_FOUND).entity(e)
+							.build();
 				}
 			}
 			if (forkBean.getUnitPass() != null) {
