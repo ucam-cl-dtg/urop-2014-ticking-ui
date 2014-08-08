@@ -129,6 +129,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			fork.setReportAvailable(true);
 			fork.setUnitPass(status.getInfo().equals(ReportResult.PASS));
 			db.saveFork(fork);
+			//TODO whitelist signup
 		}
 
 		return Response.ok(status).build();
