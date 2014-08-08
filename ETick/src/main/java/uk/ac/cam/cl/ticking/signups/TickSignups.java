@@ -369,7 +369,7 @@ public class TickSignups {
             @PathParam("crsid") String crsid,
             @PathParam("groupID") String groupID,
             @PathParam("tickID") String tickID,
-            @PathParam("ticker") String ticker) {
+            @PathParam("ticker") String ticker) { // TODO: maybe put ticker in body to allow it to have spaces?
         String callerCRSID = (String) request.getSession().getAttribute("RavenRemoteUser");
         if (!db.getRoles(groupID, callerCRSID).contains(Role.MARKER)) {
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
