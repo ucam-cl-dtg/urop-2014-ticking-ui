@@ -20,6 +20,7 @@ import publicinterfaces.TickNotInDBException;
 import publicinterfaces.UserNotInDBException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.ticking.signups.TickSignups;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
@@ -156,10 +157,24 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response getLast(HttpServletRequest request, String tickId) {
-		String crsid = (String) request.getSession().getAttribute(
+	public Response getLast(HttpServletRequest request, String tickId, String crsid) {
+		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-
+		if (crsid.equals("")) {
+			crsid = myCrsid;
+		}
+		boolean marker = false;
+		List<String> groupIds = db.getTick(tickId).getGroups();
+		for (String groupId : groupIds) {
+			List<Role> roles = db.getRoles(groupId, myCrsid);
+			if (roles.contains(Role.MARKER)) {
+				marker = true;
+			}
+		}
+		if (!marker||!myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId)))) {
+			return Response.status(401)
+					.entity(Strings.INVALIDROLE).build();
+		}
 		Report status;
 		try {
 			status = testServiceProxy.getLastReport(crsid, tickId);
@@ -182,10 +197,26 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
 	 */
 	@Override
-	public Response getAll(HttpServletRequest request, String tickId) {
-		String crsid = (String) request.getSession().getAttribute(
+	public Response getAll(HttpServletRequest request, String tickId, String crsid) {
+		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
+		if (crsid.equals("")) {
+			crsid = myCrsid;
+		}
+		boolean marker = false;
+		List<String> groupIds = db.getTick(tickId).getGroups();
+		for (String groupId : groupIds) {
+			List<Role> roles = db.getRoles(groupId, myCrsid);
+			if (roles.contains(Role.MARKER)) {
+				marker = true;
+			}
+		}
+		if (!marker||!myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId)))) {
+			return Response.status(401)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		
 		List<Report> status;
 		try {
 			status = testServiceProxy.getAllReports(crsid, tickId);
