@@ -27,7 +27,7 @@
                    handleAs="json"
                    method="DELETE"
                    on-core-response="{{deleteSuccess}}"
-                   >
+                   on-core-error="{{deleteError}}">
         </core-ajax>
 
 
@@ -61,7 +61,8 @@
             <paper-button class="dialogYes" affirmative label="Yes" on-tap="{{deleteBooking}}"></paper-button>
         </paper-dialog>
 
-        <paper-toast id="toastDeleteSuccess" text="Booking cancelled"></paper-toast>
+        <paper-toast id="toastDeleteSuccess" text="Booking cancelled."></paper-toast>
+        <paper-toast id="toastDeleteError" text="Error cancelling booking."></paper-toast>
     </template>
     <script>
         Polymer('signup-component', {
@@ -88,6 +89,10 @@
             deleteSuccess: function() {
                 this.signedUp = false;
                 this.$.toastDeleteSuccess.toggle();
+            },
+
+            deleteError: function() {
+                this.$.toastDeleteError.toggle();
             }
         });
     </script>
