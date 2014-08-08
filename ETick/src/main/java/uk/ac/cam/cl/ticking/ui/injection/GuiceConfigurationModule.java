@@ -2,6 +2,7 @@ package uk.ac.cam.cl.ticking.ui.injection;
 
 import publicinterfaces.ITestService;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
+import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
 import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.api.ForkApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.GroupApiFacade;
@@ -112,7 +113,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private void configureRemoteApis() {
 		bind(WebInterface.class).toInstance(GitApi.getWebInterface());
 		bind(ITestService.class).toInstance(TestApi.getITestService());
-		bind(uk.ac.cam.cl.signups.interfaces.WebInterface.class).toInstance(SignupApi.getWebInterface());
+		bind(SignupsWebInterface.class).toInstance(SignupApi.getWebInterface());
 	}
 
 	@Inject
@@ -183,10 +184,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 
 	@Inject
 	@Provides
-	private static TickSignups getTickSignupsSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config, uk.ac.cam.cl.signups.interfaces.WebInterface signupServiceProxy) {
+	private static TickSignups getTickSignupsSingleton(IDataManager db, 
+	        SignupsWebInterface signupServiceProxy) {
 		if (tickSignups == null) {
-			tickSignups = new TickSignups(config, signupServiceProxy);
+			tickSignups = new TickSignups(signupServiceProxy);
 		}
 		return tickSignups;
 	}

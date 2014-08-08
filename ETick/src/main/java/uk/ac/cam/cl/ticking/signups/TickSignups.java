@@ -1,5 +1,6 @@
 package uk.ac.cam.cl.ticking.signups;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,9 +18,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,13 +31,9 @@ import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
 import uk.ac.cam.cl.signups.api.exceptions.ItemNotFoundException;
 import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
-import uk.ac.cam.cl.signups.interfaces.WebInterface;
-import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
-import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
-import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
+import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
 
 @Path("/signups")
@@ -47,12 +41,10 @@ public class TickSignups {
     /* For logging */
     Logger log = LoggerFactory.getLogger(TickSignups.class);
     
-    private WebInterface service;
-    private ConfigurationLoader<Configuration> config;
+    private SignupsWebInterface service;
     
     @Inject
-    public TickSignups(ConfigurationLoader<Configuration> config, WebInterface service) {
-    	this.config = config;
+    public TickSignups(SignupsWebInterface service) {
         this.service = service;
     }
     
@@ -159,43 +151,54 @@ public class TickSignups {
      * Unbooks the given user from the given slot.
      */
     @DELETE
-    @Path("/sheets/{sheetID}/bookings")
+    @Path("/bookings/{tickID}")
     @Consumes("application/json")
-    public Response unbookSlot(String crsid, String groupID, // TODO: ideally only need crsid and tickID, because this should uniquely identify a booking
-            @PathParam("sheetID") String sheetID, String tickID, Date startTime) {
-        String ticker = null;
+    public Response unbookSlot(@Context HttpServletRequest request, @PathParam("tickID") String tickID) {
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        Slot booking = null;
         for (Slot slot : service.listUserSlots(crsid)) {
-            if (slot.getStartTime().equals(startTime) &&
-                    slot.getComment().equals(tickID) &&
-                    slot.getSheetID().equals(sheetID)) {
-                ticker = slot.getColumnName();
+            if (slot.getComment().equals("tickID")) {
+                booking = slot;
             }
         }
-        if (ticker == null) {
-            return Response.status(Status.NOT_FOUND).entity("The slot was not found").build();
+        if (booking == null) {
+            return Response.status(Status.NOT_FOUND).entity("No booking was found for this tick").build();
         }
         try {
-            service.book(sheetID, ticker, startTime.getTime(), new SlotBookingBean(crsid, null, null));
+            service.book(booking.getSheetID(), booking.getColumnName(),
+                    booking.getStartTime().getTime(), new SlotBookingBean(crsid, null, null));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
-            return Response.status(Status.NOT_FOUND)
-                    .entity(e).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("The booking for this tick was found to exist and "
+                            + "then not found to exist. See following exception:\n"
+                            + e).build();
         } catch (NotAllowedException e) {
             e.printStackTrace();
-            return Response.status(Status.FORBIDDEN)
-                    .entity(e).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("The removal of the booking should have been allowed but "
+                            + "for some reason was not. See following exception:\n"
+                            + e).build();
         }
         return Response.ok().build();
     }
     
     /**
-     * Returns a list of the bookings made by one user.
+     * Returns a list of the bookings in the future made by one user.
      */
     @GET
-    @Path("/students/{crsid}/bookings")
+    @Path("/bookings")
     @Produces("application/json")
-    public Response listStudentBookings(@PathParam("crsid") String crsid) {
-        return Response.ok(service.listUserSlots(crsid)).build();
+    public Response listStudentBookings(@Context HttpServletRequest request) {
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        List<Slot> toReturn = new ArrayList<Slot>();
+        for (Slot s :service.listUserSlots(crsid)) {
+            Date endTime = new Date(s.getStartTime().getTime() + s.getDuration());
+            if (endTime.after(new Date())) {
+                toReturn.add(s);
+            }
+        }
+        return Response.ok(toReturn).build();
     }
     
     /* Below are the methods for the ticker workflow */
@@ -421,7 +424,7 @@ public class TickSignups {
     @POST
     @Path("/sheets/{sheetID}/bookings/{startTime}")
     @Consumes("application/json")
-    // TODO: unify with normal modify booking and even perhaps make booking
+    // TODO: unify with normal modify booking and even perhaps make booking TODO: maybe not
     public Response forceModifyBooking(String sheetID, String authCode, String tickID,
             Date startTime, String currentlyBookedUser, String userToBook) {
         String ticker = null;

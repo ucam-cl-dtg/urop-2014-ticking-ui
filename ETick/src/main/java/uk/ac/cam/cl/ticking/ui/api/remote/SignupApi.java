@@ -9,13 +9,13 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 
 import publicinterfaces.ITestService;
-import uk.ac.cam.cl.signups.interfaces.WebInterface;
+import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
 
 public class SignupApi {
 
-	private static WebInterface signupService;
+	private static SignupsWebInterface signupService;
 
 	static {
 		Configuration config = (Configuration) ConfigurationRegister.getLoader(
@@ -32,7 +32,7 @@ public class SignupApi {
 		ResteasyWebTarget target = client.target(config.
 				getSignupsApiLocation());
 
-		signupService = target.proxy(WebInterface.class);
+		signupService = target.proxy(SignupsWebInterface.class);
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class SignupApi {
 	 * 
 	 * @return signupService handle
 	 */
-	public static WebInterface getWebInterface() {
+	public static SignupsWebInterface getWebInterface() {
 		return signupService;
 	}
 }
