@@ -105,6 +105,11 @@
 			bookingsResponse: function () {
 				this.$.bookingSucessfulToast.text = "Booking created for " + this.slotSelection + ".";
 				this.$.bookingSucessfulToast.show();
+
+				this.fire('slot-booked', {
+					sheetId: this.sheetSelection,
+					slot: (new Date(this.slotSelection))
+				})
 			},
 
 			bookingsError: function (e, detail) {
