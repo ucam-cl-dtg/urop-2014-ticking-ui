@@ -1,10 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
-
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog-transition.html">
-
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
 <polymer-element name="sheet-selector" attributes="sheets tickId">
 	<template>
@@ -24,7 +22,8 @@
 			contentType="application/json"
 			handleAs="json"
 			method="POST"
-			on-core-response="{{bookingsResponse}}">
+			on-core-response="{{bookingsResponse}}"
+			on-core-error="{{bookingsError}}">
 		</core-ajax>
 
 		<paper-dialog id="dialog" backdrop heading="Book a Ticking Slot:" transition="core-transition-top">
@@ -54,6 +53,11 @@
 			</template>
 
 		</paper-dialog>
+
+		<!-- Booking response toasts. -->
+		<paper-toast id="bookingSucessfulToast" duration="3000"></paper-toast>
+		<paper-toast id="bookingErrorToast" duration="3000"></paper-toast>
+
 	</template>
 	<script>
 		Polymer('sheet-selector', {
@@ -76,12 +80,12 @@
 				var parseDate = Date.parse(this.slotSelection);
 				this.$.bookingsAPI.body = '{ "tickID" : "' + this.tickId + '", "startTime" : "' + parseDate + '" }';
 				console.log(this.$.bookingsAPI.body);
-				// this.$.bookingsAPI.go();
+				this.$.bookingsAPI.go();
 			},
 
 			slotsResponse: function () {
 				var r = this.$.slotsAPI.response;
-				r = ["2012-07-14T01:00:00+01:00", "2012-07-14T01:00:00+01:00"];
+				console.log(r);
 				this.dates = r.map(function (obj) {
 					return new Date(obj);
 				});
@@ -99,6 +103,16 @@
 						return obj.toLocaleString();
 					});
 				}
+			},
+
+			bookingsResponse: function () {
+				this.$.bookingSucessfulToast.text = "Booking created for " + this.slotSelection + ".";
+				this.$.bookingSucessfulToast.show();
+			},
+
+			bookingsError: function (e, detail) {
+				this.$.bookingErrorToast.text = detail.xhr.responseText;
+				this.$.bookingErrorToast.show();
 			}
 
 		});
