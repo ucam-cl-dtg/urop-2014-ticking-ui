@@ -10,124 +10,123 @@
 <link rel="import" href="TickerSignupsViewport.html">
 
 <polymer-element name="ticker-signups-card" attributes="crsId tickId repoName ticker groupId sessionId">
-  <template>
-    <style>
-    :host {
-      display: block;
-      position: relative;
-      padding: 20px;
-      width: 100%;
-      font-size: 1.2rem;
-      font-weight: 300;
-    }
-	.topBar {
-		height : 100%;
-		width : 100%;
-	}
-	.viewer-panel {
-	  display: block;
-      position: relative;
-      padding: 20px;
-      width: 100%;
-      font-size: 1.2rem;
-      font-weight: 300;
-	}
-	core-item.core-selected {
-		color: purple;
-	}
+    <template>
+        <style>
+            :host {
 
-    </style>
-	
-	<!-- Get sessions for this group - note group context will need to be provided! -->
-    <core-ajax
-        id="ajaxLoadSessions"
-        url="{{pathLoadGroupSessions}}"
-        handleAs="json"
-		contentType="application/json"
-        on-core-response="{{sessionsDataLoaded}}"
-        on-core-error="{{alertError}}">
-    </core-ajax>
-	
-	<div class="topBar" layout horizontal>
-			<core-toolbar flex style="background:#afbfff">
-				<paper-icon-button id="navicon" icon="list" size="5" align="left" on-tap="{{toggleMenu}}"></paper-icon-button>
-				<div id="title"></div>
-			</core-toolbar>
-	</div>
+                padding: 20px;
+                width: 100%;
+                font-size: 1.2rem;
+                font-weight: 300;
+            }
+            .topBar {
+                height : 100%;
+                width : 100%;
+            }
+            .viewer-panel {
 
-	<div layout horizontal>
-	<div class="navigation-panel" layout horizontal>
-		<core-collapse id="panel" horizontal="true" opened="true" layout vertical  
-					   style="background:#e8eaf6;border-color:#1a237e;border-right-style:
+                padding: 20px;
+                width: 100%;
+                font-size: 1.2rem;
+                font-weight: 300;
+            }
+            core-item.core-selected {
+                color: purple;
+            }
+
+        </style>
+
+        <!-- Get sessions for this group - note group context will need to be provided! -->
+        <core-ajax
+                id="ajaxLoadSessions"
+                url="{{pathLoadGroupSessions}}"
+                handleAs="json"
+                contentType="application/json"
+                on-core-response="{{sessionsDataLoaded}}"
+                on-core-error="{{alertError}}">
+        </core-ajax>
+
+      >
+        <div class="topBar" layout horizontal>
+            <core-toolbar flex style="background:#afbfff">
+                <paper-icon-button id="navicon" icon="list" size="5" align="left" on-tap="{{toggleMenu}}"></paper-icon-button>
+                <div id="title"></div>
+            </core-toolbar>
+        </div>
+
+        <div layout horizontal>
+            <div class="navigation-panel" layout horizontal>
+                <core-collapse id="panel" horizontal="true" opened="true" layout vertical
+                               style="background:#e8eaf6;border-color:#1a237e;border-right-style:
 					   solid;border-bottom-style:solid;border-width:1px" on-core-select="{{panelAction1}}">
-				<core-menu>
-					<template repeat="{{session in sessions}}">
-						<core-item icon="book" label="{{session.name}}" id="{{session._id}}" on-tap="{{panelAction2}}"></core-item>
-					</template>
-				</core-menu>
-		</core-collapse>
-	</div>
-	<div flex class="viewer-panel">
-		<ticker-signups-viewport crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
-	</div>
-	</div>
+                    <core-menu>
+                        <template repeat="{{session in sessions}}">
+                            <core-item icon="book" label="{{session.name}}" id="{{session._id}}" on-tap="{{panelAction2}}"></core-item>
+                        </template>
+                    </core-menu>
+                </core-collapse>
+            </div>
+            <div flex class="viewer-panel">
+                <ticker-signups-viewport crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
+            </div>
+        </div>
 
 
-  </template>
-  <script>
-  Polymer( 'ticker-signups-card', {
-			ready: function() {
-				this.pathLoadGroupSessions = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/" + this.groupId;
-				this.$.title.innerHTML ="Please Select a Session to View";
-				this.$.ajaxLoadSessions.go();
-				this.$.view.hidden = true;
-			},
-			toggleMenu: function() {
-				this.$.panel.toggle();
-			},
-			sessionsDataLoaded: function() {
-				var loadedSessions = this.$.ajaxLoadSessions.response.slice(0);
-				console.log(loadedSessions);
-				this.sessions = [];
-				
-				for (var i = 0; i < loadedSessions.length; i++) {
-					this.sessions.push({_id: loadedSessions[i]._id, name: loadedSessions[i].title, location: loadedSessions[i].location, description: loadedSessions[i].description});
-				}
-				
-				if (this.sessions.length === 0) {
-					this.$.title.innerHTML ="Sorry, there are no Ticking Sessions available for this Group yet";
-				}
-			},
-			panelAction1: function(e,detail) {
-				if (detail.isSelected) {
-					console.log(detail.item);
-					var selectedItem = detail.item.label;
-					var selectedItemId = detail.item.id;
-					for(i=0;i<this.sessions.length;i++){
-						if(this.sessions[i]._id === selectedItemId) {
-							var selectedItemLocation = "Location : " + this.sessions[i].location;
-							var selectedItemDescription = "Description : " + this.sessions[i].description;
-							break;
-						}
-					}
-					console.log(selectedItemLocation + " " + selectedItemDescription);
-					this.$.title.innerHTML ="Signups Sheet for " + selectedItem;
-					this.sessionId = selectedItemId;
-					this.description = selectedItemDescription;
-					this.location = selectedItemLocation;
-					this.$.view.hidden = false;
-					this.$.view.refresh();
-				}
-			},
-			panelAction2: function() {
-				this.toggleMenu();
-			},
-			alertError: function() {
-				alert("Sorry, something went wrong");
-			},
-			crsIdChanged: function() {
-				console.log("In this card: " + this.crsId + " " + this.tickId + " " + this.repoName + " " + this.ticker);
-			}
-		})
-  </script>
+    </template>
+    <script>
+        Polymer( 'ticker-signups-card', {
+            ready: function() {
+                this.pathLoadGroupSessions = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/" + this.groupId;
+                this.$.title.innerHTML ="Please Select a Session to View";
+                this.$.ajaxLoadSessions.go();
+                this.$.view.hidden = true;
+            },
+            toggleMenu: function() {
+                this.$.panel.toggle();
+            },
+            sessionsDataLoaded: function() {
+                var loadedSessions = this.$.ajaxLoadSessions.response.slice(0);
+                console.log(loadedSessions);
+                this.sessions = [];
+
+                for (var i = 0; i < loadedSessions.length; i++) {
+                    this.sessions.push({_id: loadedSessions[i]._id, name: loadedSessions[i].title, location: loadedSessions[i].location, description: loadedSessions[i].description});
+                }
+
+                if (this.sessions.length === 0) {
+                    this.$.title.innerHTML ="Sorry, there are no Ticking Sessions available for this Group yet";
+                }
+            },
+            panelAction1: function(e,detail) {
+                if (detail.isSelected) {
+                    console.log(detail.item);
+                    var selectedItem = detail.item.label;
+                    var selectedItemId = detail.item.id;
+                    for(i=0;i<this.sessions.length;i++){
+                        if(this.sessions[i]._id === selectedItemId) {
+                            var selectedItemLocation = "Location : " + this.sessions[i].location;
+                            var selectedItemDescription = "Description : " + this.sessions[i].description;
+                            break;
+                        }
+                    }
+                    console.log(selectedItemLocation + " " + selectedItemDescription);
+                    this.$.title.innerHTML ="Signups Sheet for " + selectedItem;
+                    this.sessionId = selectedItemId;
+                    this.description = selectedItemDescription;
+                    this.location = selectedItemLocation;
+                    this.$.view.hidden = false;
+                    this.$.view.refresh();
+                }
+            },
+            panelAction2: function() {
+                this.toggleMenu();
+            },
+            alertError: function() {
+                alert("Sorry, something went wrong");
+            },
+            crsIdChanged: function() {
+                console.log("In this card: " + this.crsId + " " + this.tickId + " " + this.repoName + " " + this.ticker);
+            }
+        })
+    </script>
 </polymer-element>
