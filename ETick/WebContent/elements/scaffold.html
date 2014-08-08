@@ -26,7 +26,7 @@
 			<div id="title">Tickl</div>
 
 			<div flex layout horizontal end-justified>
-			<core-selector id="navMenu" valueattr="id" selected="dashButton" selectedAttribute="">
+			<core-selector id="navMenu" valueattr="id" selected="dashButton" class="fix" selectedAttribute="">
 
 				<template if="{{!$.loginAPIs.ldap.isStudent}}">
 	                <menu-button id="ticksMenu" label="Ticks" valueattr="label">
@@ -164,7 +164,6 @@
 				this.noGroup();
 				this.$.tickTemp.model = { showTickCreator: false };
 
-				console.log(newValue);
 				this.tickId = newValue.getAttribute('tickId');
 				this.$.tickTemp.model = { showTickCreator: true, tickId: this.tickId };
 			}

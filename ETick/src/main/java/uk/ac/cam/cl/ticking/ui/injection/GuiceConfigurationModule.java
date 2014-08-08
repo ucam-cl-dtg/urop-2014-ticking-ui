@@ -151,9 +151,9 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static GroupApiFacade getGroupApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config) {
+			ConfigurationLoader<Configuration> config, TickSignups tickSignupService) {
 		if (groupApiFacade == null) {
-			groupApiFacade = new GroupApiFacade(db, config);
+			groupApiFacade = new GroupApiFacade(db, config, tickSignupService);
 		}
 		return groupApiFacade;
 	}
