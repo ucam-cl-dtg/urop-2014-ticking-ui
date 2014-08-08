@@ -35,6 +35,7 @@ import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
 import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -137,6 +138,9 @@ public class TickSignups {
                     ticker = service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime()).get(0);
                 }
                 service.book(sheetID, ticker, bean.getStartTime(), new SlotBookingBean(null, crsid, bean.getTickID()));
+                Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
+                f.setSignedUp(true);
+                db.saveFork(f);
                 return Response.ok().entity(ticker).build();
             }
         } catch (ItemNotFoundException e) {
@@ -171,6 +175,10 @@ public class TickSignups {
         try {
             service.book(booking.getSheetID(), booking.getColumnName(),
                     booking.getStartTime().getTime(), new SlotBookingBean(crsid, null, null));
+            Fork f = db.getFork(Fork.generateForkId(crsid, tickID));
+            f.setSignedUp(true);
+            db.saveFork(f);
+            return Response.ok().build();
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -184,7 +192,6 @@ public class TickSignups {
                             + "for some reason was not. See following exception:\n"
                             + e).build();
         }
-        return Response.ok().build();
     }
     
     /**
@@ -289,11 +296,9 @@ public class TickSignups {
     public Response allowSignup(String crsid, String groupID, String tickID) {
         try {
             service.listSheets(groupID); // to see if group exists
-        } catch (ItemNotFoundException e) {
-            String groupAuthCode;
+        } catch (ItemNotFoundException e) { // if it doesn't, create it
             try {
-                groupAuthCode = service.addGroup(new Group(groupID));
-                db.addAuthCode(groupID, groupAuthCode);
+                createGroup(groupID);
             } catch (DuplicateNameException e1) {
                 e1.printStackTrace();
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -440,12 +445,10 @@ public class TickSignups {
             service.addSheetToGroup(bean.getGroupID(),
                     new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
         } catch (ItemNotFoundException e) { // group doesn't yet exist: create and retry
-            String groupAuthCode;
             try {
-                groupAuthCode = service.addGroup(new Group(bean.getGroupID()));
+                createGroup(bean.getGroupID());
                 service.addSheetToGroup(bean.getGroupID(),
                         new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
-                db.addAuthCode(bean.getGroupID(), groupAuthCode);
             } catch (DuplicateNameException e1) {
                 e1.printStackTrace();
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -563,7 +566,8 @@ public class TickSignups {
     }
     
     public void createGroup(String groupID) throws DuplicateNameException {
-        service.addGroup(new Group(groupID));
+        String groupAuthCode = service.addGroup(new Group(groupID));
+        db.addAuthCode(groupID, groupAuthCode);
     }
     
 }
