@@ -43,7 +43,7 @@
 				<select id="slotSelector" on-change="{{slotSelectionChanged}}"
 					class="custom-dropdown__select">
 				<option disabled selected>Select Ticking Slot...</option>
-				<template repeat="{{date in dates}}">
+				<template repeat="{{date in dates | dateFilter}}">
 					<option value="{{date}}">{{date}}</option>
 				</template>
 				</select>
@@ -73,7 +73,7 @@
 				console.log('Book:\nSheet: ' + this.sheetSelection + 'Slot: ' + this.slotSelection);
 				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
 					this.sheetSelection + "/bookings";
-				var parseDate = (new Date(this.slotSelection)).parse();
+				var parseDate = Date.parse(this.selecton);
 				this.$.bookingsAPI.body = '{ "tickID" : "' + this.tickId + '", "startTime" : "' + parseDate + '" }';
 				console.log(this.$.bookingsAPI.body);
 				// this.$.bookingsAPI.go();
@@ -82,7 +82,7 @@
 			slotsResponse: function () {
 				var r = this.$.slotsAPI.response;
 				r = ["2012-07-14T01:00:00+01:00", "2012-07-14T01:00:00+01:00"];
-				var ds = r.map(function (obj) {
+				this.dates = r.map(function (obj) {
 					return new Date(obj);
 				});
 			},
@@ -91,6 +91,14 @@
 				var sel = this.$.slotSelector;
 				this.slotSelection = sel.options[sel.selectedIndex].value;
 				console.log(this.slotSelection);
+			},
+
+			dateFilter: function(items) {
+				if (items) {
+					return items.map(function (obj) {
+						return obj.toLocaleString();
+					});
+				}
 			}
 
 		});
