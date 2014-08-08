@@ -57,7 +57,7 @@
                                  .replace(/\&/gm, "\\&")
                                  .replace(/\r/gm, "\\r")
                                  .replace(/\t/gm, "\\t")
-                                 .replace(/\b/gm, "\\b")
+                                 .replace(/[\b]/gm, "\\b")
                                  .replace(/\f/gm, "\\f");
               }
 
