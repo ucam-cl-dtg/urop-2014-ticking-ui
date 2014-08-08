@@ -186,7 +186,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				marker = true;
 			}
 		}
-		if (!marker||!myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId)))) {
+		if (!(marker||myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId))))) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
