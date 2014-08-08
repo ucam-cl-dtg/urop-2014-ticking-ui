@@ -162,10 +162,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static SubmissionApiFacade getSubmissionApiSingleton(
 			IDataManager db, ConfigurationLoader<Configuration> config,
-			ITestService testServiceProxy) {
+			ITestService testServiceProxy, TickSignups tickSignupService ) {
 		if (submissionApiFacade == null) {
 			submissionApiFacade = new SubmissionApiFacade(db, config,
-					testServiceProxy);
+					testServiceProxy, tickSignupService);
 		}
 		return submissionApiFacade;
 	}
