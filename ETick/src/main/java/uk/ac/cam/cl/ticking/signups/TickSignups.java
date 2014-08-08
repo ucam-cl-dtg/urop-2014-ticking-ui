@@ -287,6 +287,20 @@ public class TickSignups {
     }
     
     public Response allowSignup(String crsid, String groupID, String tickID) {
+        try {
+            service.listSheets(groupID); // to see if group exists
+        } catch (ItemNotFoundException e) {
+            String groupAuthCode;
+            try {
+                groupAuthCode = service.addGroup(new Group(groupID));
+                db.addAuthCode(groupID, groupAuthCode);
+            } catch (DuplicateNameException e1) {
+                e1.printStackTrace();
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("The group was found to both exist and not exist "
+                                + "in the signups database, sorry.\n"+e1).build();
+            }
+        }
         String groupAuthCode = db.getAuthCode(groupID);
         try {
             Map<String, String> map = new HashMap<String, String>();
@@ -546,6 +560,10 @@ public class TickSignups {
             return Response.status(Status.FORBIDDEN).entity(e).build();
         }
         return Response.ok().build();
+    }
+    
+    public void createGroup(String groupID) throws DuplicateNameException {
+        service.addGroup(new Group(groupID));
     }
     
 }
