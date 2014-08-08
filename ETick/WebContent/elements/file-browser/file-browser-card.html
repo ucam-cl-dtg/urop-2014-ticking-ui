@@ -7,22 +7,24 @@
 <link rel="import" href="status-list.html"/>
 <link rel="import" href="ticker-set-result.html"/>
 
-<polymer-element name="file-browser-card" attributes="repoName highlight">
+<polymer-element name="file-browser-card"
+                 attributes="repoName highlight tickId">
   <!-- TODO: get ALL reports -->
   <template>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="file-browser-style.css"/>
     <files-service id="service"
-                   repoName="{{repoName}}"
+                   date="{{date}}"
                    files="{{files}}"
+                   errors="{{errors}}"
+                   tickId="{{tickId}}"
+                   repoName="{{repoName}}"
+                   comments="{{comments}}"
+                   commitId="{{commitId}}"
+                   testCount="{{testCount}}"
                    testResult="{{testResult}}"
                    tickerResult="{{tickerResult}}"
-                   reportResult="{{reportResult}}"
-                   comments="{{comments}}"
-                   errors="{{errors}}"
-                   commitId="{{commitId}}"
-                   date="{{date}}"
-                   testCount="{{testCount}}">
+                   reportResult="{{reportResult}}">
     </files-service>
     <div class="container" horizontal layout>
       <div class="sidebar">
