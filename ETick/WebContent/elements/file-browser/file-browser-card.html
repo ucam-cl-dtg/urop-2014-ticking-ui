@@ -1,28 +1,31 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/core-splitter/core-splitter.html"/>
+<link rel="import" href="../../bower_components/marked-element/marked-element.html"/>
 <link rel="import" href="files-service.html"/>
 <link rel="import" href="file-card.html"/>
 <link rel="import" href="files-list.html"/>
 <link rel="import" href="status-list.html"/>
 <link rel="import" href="ticker-set-result.html"/>
 
-<polymer-element name="file-browser-card" attributes="repoName highlight">
+<polymer-element name="file-browser-card"
+                 attributes="repoName highlight tickId crsid">
   <!-- TODO: get ALL reports -->
   <template>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="file-browser-style.css"/>
     <files-service id="service"
-                   repoName="{{repoName}}"
+                   date="{{date}}"
                    files="{{files}}"
+                   errors="{{errors}}"
+                   tickId="{{tickId}}"
+                   repoName="{{repoName}}"
+                   comments="{{comments}}"
+                   commitId="{{commitId}}"
+                   testCount="{{testCount}}"
                    testResult="{{testResult}}"
                    tickerResult="{{tickerResult}}"
-                   reportResult="{{reportResult}}"
-                   comments="{{comments}}"
-                   errors="{{errors}}"
-                   commitId="{{commitId}}"
-                   date="{{date}}"
-                   testCount="{{testCount}}">
+                   reportResult="{{reportResult}}">
     </files-service>
     <div class="container" horizontal layout>
       <div class="sidebar">
@@ -41,7 +44,12 @@
       <div class="main">
         <!-- Ticker comments -->
         <template if="{{comments != null}}">
-          <p>{{comments}}</p>
+          Ticker comments:
+          <!-- Indentation due to marked element considering spaces -->
+          <marked-element
+              class="ticker-comments">
+{{comments}}
+          </marked-element>
         </template>
 
         <select name="syntaxSelect" value="{{syntaxStyleSheet}}">
