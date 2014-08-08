@@ -3,7 +3,7 @@
 <link rel="import" href="date-calendar.html">
 
 
-<polymer-element name="slot-box" attributes="datetime tickId ticker" noscript>
+<polymer-element name="slot-box" attributes="datetime tickName ticker" noscript>
 	<template>
 		<style>
 			:host {
@@ -31,7 +31,7 @@
 			<date-calendar hexColorPrimary="#FF8000" hexColorSecondary="#fff" datetime="{{datetime}}"></date-calendar>
 			<div flex></div>
 			<div layout vertical end>
-				<h1>{{tickId}}</h1>
+				<h1>{{tickName}}</h1>
 				<h2>Ticker: {{ticker}}</h2>
 			</div>
 			<paper-ripple class="recenteringTouch" fit></paper-ripple>

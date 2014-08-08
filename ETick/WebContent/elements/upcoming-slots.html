@@ -30,9 +30,9 @@
 
 		<!-- Tick list. -->
 		<div layout horizontal center wrap>
-			<template repeat="{{slot in slots}}">
+			<template repeat="{{slot in slots | slotListFilter($.searchBox.query)}}">
 				<slot-box 	datetime="{{slot.startTime}}" 
-							tickId="{{slot.tickName}}" 
+							tickName="{{slot.tickName}}" 
 							ticker="{{slot.ticker}}">
 				</slot-box>
 			</template>
@@ -49,8 +49,7 @@
 
 			slotFilter: function(item) {
 				var q = this.$.searchBox.query.toLowerCase();
-				return (item.tickId.toLowerCase().indexOf(q) > -1 ||
-						item.ticker.toLowerCase().indexOf(q) > -1);
+				return (item.tickName.toLowerCase().indexOf(q) > -1);
 			},
 		});
 	</script>
