@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="submit-service" attributes="tickId status testRunning">
+<polymer-element name="submit-service" attributes="tickId status testRunning reportAvailable">
     <template>
         <!-- submit this tick for testing -->
         <core-ajax
@@ -69,7 +69,7 @@
                     //no idea what could have happened. Assume connection failed (e.g. timed out) and try again
                     this.$.toastPollError.show();
 
-                    this.job('job1', function() {
+                    this.job('polymer-is-forcing-me-to-name-this-job', function() {
                         this.startPolling();
                     }, 3000);
                 }
@@ -85,8 +85,9 @@
                 if (this.status.progress == this.status.maxProgress) {
                     console.log(this.status);
                     this.testRunning = false;
+                    this.reportAvailable = true;
                 } else {
-                    this.job('job1', function() {
+                    this.job('delayed-re-poll', function() {
                         this.$.ajaxPoll.go();
                     }, 500);
                 }
