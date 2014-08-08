@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -20,6 +21,8 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.joda.time.DateTime;
 
 import publicinterfaces.ITestService;
+import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
+import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.RepoUserRequestBean;
@@ -94,8 +97,9 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 
 		try {
-			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId)); // throws the
-																	// exceptions
+			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId)); // throws
+																				// the
+			// exceptions
 			db.removeTick(tickId);
 		} catch (IOException e) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
@@ -153,7 +157,8 @@ public class TickApiFacade implements ITickApiFacade {
 		tick.setAuthor(crsid);
 		tick.initTickId();
 
-		testServiceProxy.createNewTest(tick.getTickId(), tickBean.getCheckstyleOpts());
+		testServiceProxy.createNewTest(tick.getTickId(),
+				tickBean.getCheckstyleOpts());
 
 		String repo;
 		/*
@@ -165,14 +170,21 @@ public class TickApiFacade implements ITickApiFacade {
 		 * name exception thrown
 		 */
 		try {
-			repo = gitServiceProxy.addRepository(new RepoUserRequestBean(crsid + "/"
-					+ tickBean.getName(), crsid));
+			repo = gitServiceProxy.addRepository(new RepoUserRequestBean(crsid
+					+ "/" + tickBean.getName(), crsid));
 		} catch (IOException e) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
+		} catch (InternalServerErrorException e) {
+			RemoteFailureHandler h = new RemoteFailureHandler();
+			SerializableException s = h.readException(e);
+			log.warn(s.getClass());
+			repo = s.getMessage();
+
 		} catch (DuplicateRepoNameException e) {
 			try {
-				repo = gitServiceProxy.getRepoURI(crsid + "/" + tickBean.getName());
+				repo = gitServiceProxy.getRepoURI(crsid + "/"
+						+ tickBean.getName());
 			} catch (RepositoryNotFoundException e1) {
 				throw new RuntimeException("Schrodinger's repository");
 				// The repo simultaneously does and doesn't exist
@@ -181,10 +193,12 @@ public class TickApiFacade implements ITickApiFacade {
 					"Found a clashing repository name, assuming this is due to a previous error and continuing",
 					e);
 		}
+		
 		String correctnessRepo;
 		try {
-			correctnessRepo = gitServiceProxy.addRepository(new RepoUserRequestBean(crsid
-					+ "/" + tickBean.getName() + "/correctness", crsid));
+			correctnessRepo = gitServiceProxy
+					.addRepository(new RepoUserRequestBean(crsid + "/"
+							+ tickBean.getName() + "/correctness", crsid));
 		} catch (IOException | DuplicateRepoNameException e) {
 			/*
 			 * Here if we encounter a duplicate repository name then the second
@@ -206,10 +220,12 @@ public class TickApiFacade implements ITickApiFacade {
 			db.saveGroup(g);
 		}
 
+		
 		try {
 			db.insertTick(tick);
 		} catch (DuplicateDataEntryException de) {
-			return Response.status(Status.CONFLICT).build();
+			return Response.status(Status.CONFLICT).entity(Strings.EXISTS)
+					.build();
 		}
 
 		return Response.status(Status.CREATED).entity(tick).build();
@@ -243,7 +259,8 @@ public class TickApiFacade implements ITickApiFacade {
 						.entity(Strings.INVALIDROLE).build();
 			}
 
-			testServiceProxy.createNewTest(tickId, tickBean.getCheckstyleOpts());
+			testServiceProxy
+					.createNewTest(tickId, tickBean.getCheckstyleOpts());
 
 			prevTick.setEdited(DateTime.now());
 			for (String groupId : prevTick.getGroups()) {
@@ -330,8 +347,8 @@ public class TickApiFacade implements ITickApiFacade {
 		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
 		try {
-			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null, crsid,
-					repoName, null));
+			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null,
+					crsid, repoName, null));
 		} catch (DuplicateRepoNameException e) {
 			repo = e.getMessage();
 		} catch (IOException e) {

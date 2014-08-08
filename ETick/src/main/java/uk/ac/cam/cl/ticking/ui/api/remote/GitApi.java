@@ -36,7 +36,7 @@ public class GitApi {
 	/**
 	 * Provides a handle to the GitApi
 	 * 
-	 * @return DB handle
+	 * @return gitService handle
 	 */
 	public static WebInterface getWebInterface() {
 		return webInterface;
