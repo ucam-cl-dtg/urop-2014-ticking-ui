@@ -7,6 +7,7 @@
 <link rel="import" href="tick-list.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="tick-card/tick-card.html">
+<link rel="import" href="file-browser/file-browser-card.html">
 
 <polymer-element name="x-group" attributes="gid name info creator">
 	<template>
@@ -24,7 +25,7 @@
 			handleAs="json"
 			on-core-response="{{sheetListResponse}}">
 		</core-ajax>
-
+		
 		<!-- Group info card. -->
 		<main-card animated>
 			<div layout vertical start>
@@ -44,9 +45,14 @@
 					<div style="padding: 15px">
 						<h2>DESCRIPTION:</h2>
 						<p>{{info}}</p>
-						<h2>TICKING SESSIONS:</h2>
+						<div layout horizontal center style="margin: 0; padding: 0;">
+							<h2>TICKING SESSIONS:</h2>
+							<template if="{{isAuthor}}">
+								<paper-icon-button id="addSessionButton" icon="add"></paper-icon-button>
+							</template>
+						</div>
 						<template repeat="{{sheet in sheets}}">
-							<p>{{sheet.title}}</p>
+							<p>{{sheet.title}}, <i style="color: #7C7C7C; font-size: 0.9rem;">{{sheet.location}}</i></p>
 						</template>
 					</div>
 					</template>
@@ -75,11 +81,25 @@
 				canFork="{{isSubmitter}}"></tick-list>
 		</main-card>
 
-		<template if="{{selectedSheetID}}">
+		<template if="{{selectedTickId}}">
 			<main-card animated>
-				<tick-card id="tickCard" tickId="{{selectedSheetID}}" sheets="{{sheets}}"></tick-card>
-			</main-card>
+			<tick-card id="tickCard"
+				tickName="{{selectedTickName}}"
+				tickId="{{selectedTickId}}"
+				sheets="{{sheets}}"
+				crsid="{{crsid}}"
+				repoName="{{repoName}}"></tick-card>
+		</main-card>
 		</template>
+
+        <template if="{{crsid}}">
+            <main-card animated>
+                <file-browser-card tickId="{{selectedTickId}}"
+                                   crsid="{{crsid}}"
+                                   repoName="{{repoName}}">
+                </file-browser-card>
+            </main-card>
+        </template>
 
 		<!-- Group content card. -->
 		<!-- <main-card animated>
@@ -108,6 +128,7 @@
 
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
+
 				// Check for permissions.
 				this.isAuthor = (this.roles.indexOf('AUTHOR') > -1);
 				this.isSubmitter = (this.roles.indexOf('SUBMITTER') > -1);
@@ -139,7 +160,8 @@
 			},
 
 			forkClickedHandler: function (e, detail) {
-				this.selectedSheetID = detail.sheetid;
+				this.selectedTickId = detail.tickId;
+				this.selectedTickName = detail.tickName;
 			}
 		});
 	</script>

@@ -17,6 +17,10 @@ public class MakeBookingBean {
         this.tickID = tickID;
         this.startTime = startTime;
     }
+    
+    public MakeBookingBean() {
+        // Default constructor
+    }
 
     public String getTickID() {
         return tickID;
@@ -24,6 +28,14 @@ public class MakeBookingBean {
 
     public Long getStartTime() {
         return startTime;
+    }
+
+    public void setTickID(String tickID) {
+        this.tickID = tickID;
+    }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
     }
 
 }

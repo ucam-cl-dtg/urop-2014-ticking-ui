@@ -33,6 +33,10 @@ public class CreateSheetBean {
         this.tickerNames = tickerNames;
         this.groupID = groupID;
     }
+    
+    public CreateSheetBean() {
+        // Default constructor
+    }
 
     public String getTitle() {
         return title;
@@ -65,5 +69,39 @@ public class CreateSheetBean {
     public String getGroupID() {
         return groupID;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setSlotLengthInMinutes(int slotLengthInMinutes) {
+        this.slotLengthInMinutes = slotLengthInMinutes;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setTickerNames(List<String> tickerNames) {
+        this.tickerNames = tickerNames;
+    }
+
+    public void setGroupID(String groupID) {
+        this.groupID = groupID;
+    }
+    
+    
     
 }

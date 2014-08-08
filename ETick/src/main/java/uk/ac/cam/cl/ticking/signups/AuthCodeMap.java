@@ -14,12 +14,18 @@ import com.fasterxml.jackson.annotation.*;
  */
 public class AuthCodeMap {
     
+	@Id
     private String _id;
     private String authCode;
     
-    public AuthCodeMap(@Id String _id, @JsonProperty("authCode") String authCode) {
+    public AuthCodeMap(String _id, String authCode) {
         this._id = _id;
         this.authCode = authCode;
+    }
+    
+    //Default constructor for Jackson
+    public AuthCodeMap() {
+    	
     }
 
     public String get_id() {

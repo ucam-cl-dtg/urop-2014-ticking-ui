@@ -35,6 +35,7 @@ import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
 import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -137,6 +138,9 @@ public class TickSignups {
                     ticker = service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime()).get(0);
                 }
                 service.book(sheetID, ticker, bean.getStartTime(), new SlotBookingBean(null, crsid, bean.getTickID()));
+                Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
+                f.setSignedUp(true);
+                db.saveFork(f);
                 return Response.ok().entity(ticker).build();
             }
         } catch (ItemNotFoundException e) {
@@ -161,7 +165,7 @@ public class TickSignups {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         Slot booking = null;
         for (Slot slot : service.listUserSlots(crsid)) {
-            if (slot.getComment().equals("tickID")) {
+            if (slot.getComment().equals(tickID)) {
                 booking = slot;
             }
         }
@@ -171,6 +175,10 @@ public class TickSignups {
         try {
             service.book(booking.getSheetID(), booking.getColumnName(),
                     booking.getStartTime().getTime(), new SlotBookingBean(crsid, null, null));
+            Fork f = db.getFork(Fork.generateForkId(crsid, tickID));
+            f.setSignedUp(false);
+            db.saveFork(f);
+            return Response.ok().build();
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -184,7 +192,6 @@ public class TickSignups {
                             + "for some reason was not. See following exception:\n"
                             + e).build();
         }
-        return Response.ok().build();
     }
     
     /**
@@ -273,11 +280,27 @@ public class TickSignups {
      */
     @DELETE
     @Path("/students/{crsid}/bookings/{sheetID}")
-    @Consumes("text/plain")
-    public Response removeAllStudentBookings(@PathParam("sheetID") String sheetID,
-            @PathParam("crsid") String crsid, String authCode) {
+    public Response removeAllStudentBookings(@Context HttpServletRequest request,
+            @PathParam("sheetID") String sheetID,
+            @PathParam("crsid") String crsid) {
+        String callingCRSID = (String) request.getSession().getAttribute("RavenRemoteUser");
+        List<String> groupIDs;
         try {
-            service.removeAllUserBookings(sheetID, crsid, authCode);
+            groupIDs = service.getGroupIDs(sheetID);
+        } catch (ItemNotFoundException e) {
+            return Response.status(Status.NOT_FOUND).entity(e).build();
+        }
+        if (groupIDs.size() != 1) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("There should be precisely one group associated "
+                            + "with this sheet, but there seems to be " + groupIDs.size()).build();
+        }
+        String groupID = groupIDs.get(0);
+        if (!db.getRoles(groupID, callingCRSID).contains(Role.MARKER)) {
+            return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+        }
+        try {
+            service.removeAllUserBookings(sheetID, crsid, db.getAuthCode(sheetID));
             return Response.ok().build();
         } catch (NotAllowedException e) {
             return Response.status(Status.FORBIDDEN).entity(e).build();
@@ -286,7 +309,21 @@ public class TickSignups {
         }
     }
     
+  
+    
     public Response allowSignup(String crsid, String groupID, String tickID) {
+        try {
+            service.listSheets(groupID); // to see if group exists
+        } catch (ItemNotFoundException e) { // if it doesn't, create it
+            try {
+                createGroup(groupID);
+            } catch (DuplicateNameException e1) {
+                e1.printStackTrace();
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("The group was found to both exist and not exist "
+                                + "in the signups database, sorry.\n"+e1).build();
+            }
+        }
         String groupAuthCode = db.getAuthCode(groupID);
         try {
             Map<String, String> map = new HashMap<String, String>();
@@ -336,6 +373,24 @@ public class TickSignups {
         if (!db.getRoles(groupID, callerCRSID).contains(Role.MARKER)) {
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
+        String groupAuthCode = db.getAuthCode(groupID);
+        try {
+            Map<String, String> map = new HashMap<String, String>();
+            map.put(tickID, ticker);
+            service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            return Response.ok().build();
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.FORBIDDEN)
+                    .entity(e).build();
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.NOT_FOUND)
+                    .entity(e).build();
+        }
+    }
+    
+    public Response assignTickerForTickForUser(String crsid, String groupID, String tickID, String ticker) {
         String groupAuthCode = db.getAuthCode(groupID);
         try {
             Map<String, String> map = new HashMap<String, String>();
@@ -408,12 +463,10 @@ public class TickSignups {
             service.addSheetToGroup(bean.getGroupID(),
                     new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
         } catch (ItemNotFoundException e) { // group doesn't yet exist: create and retry
-            String groupAuthCode;
             try {
-                groupAuthCode = service.addGroup(new Group(bean.getGroupID()));
+                createGroup(bean.getGroupID());
                 service.addSheetToGroup(bean.getGroupID(),
                         new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
-                db.addAuthCode(bean.getGroupID(), groupAuthCode);
             } catch (DuplicateNameException e1) {
                 e1.printStackTrace();
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -528,6 +581,11 @@ public class TickSignups {
             return Response.status(Status.FORBIDDEN).entity(e).build();
         }
         return Response.ok().build();
+    }
+    
+    public void createGroup(String groupID) throws DuplicateNameException {
+        String groupAuthCode = service.addGroup(new Group(groupID));
+        db.addAuthCode(groupID, groupAuthCode);
     }
     
 }

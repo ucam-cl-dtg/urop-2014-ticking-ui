@@ -1,14 +1,14 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
-<polymer-element name="report-component" attributes="reportAvailable">
+<polymer-element name="report-component" attributes="reportAvailable crsid repoName repo">
     <template>
         <link rel="stylesheet" href="../../css/shared-styles.css">
         <link rel="stylesheet" href="tick-components.css">
 
         <!-- View report button -->
         <core-collapse opened?="{{reportAvailable}}">
-            <paper-button class="greenButton" label="VIEW LATEST REPORT"></paper-button>
+            <paper-button class="greenButton" label="LATEST REPORT" on-tap="{{showReport}}"></paper-button>
         </core-collapse>
 
         <!-- No report available error message -->
@@ -17,6 +17,14 @@
         </core-collapse>
     </template>
     <script>
-        Polymer({});
+        Polymer('report-component', {
+            showReport: function() {
+                var regex = /urop2014\.dtg\.cl\.cam\.ac\.uk\/(.*)\.git/;
+                this.repoName = this.repo.match(regex)[1];
+
+                regex = /(.*)\/.*\/.*/;
+                this.crsid = this.repoName.match(regex)[1];
+            }
+        });
     </script>
 </polymer-element>

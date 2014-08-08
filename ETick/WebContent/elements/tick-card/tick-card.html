@@ -5,7 +5,7 @@
 <link rel="import" href="signup-component.html">
 <link rel="import" href="fork-service.html">
 
-<polymer-element name="tick-card" attributes="tickId sheets">
+<polymer-element name="tick-card" attributes="tickName tickId sheets crsid repoName">
     <template>
         <style>
             #mainContainer {
@@ -29,7 +29,7 @@
         </fork-service>
 
         <div id="mainContainer">
-            <h1>{{tickId}}</h1>
+            <h1>{{tickName}}</h1>
             <div>{{repo}}</div>
 
             <br>
@@ -45,7 +45,10 @@
                 </submit-component>
                 <div class="spacer"></div>
                 <report-component flex
-                        reportAvailable="{{reportAvailable}}"></report-component>
+                        reportAvailable="{{reportAvailable}}"
+                        crsid="{{crsid}}"
+                        repoName="{{repoName}}"
+                        repo="{{repo}}"></report-component>
                 <div class="spacer"></div>
                 <signup-component flex
                         sheets="{{sheets}}"
@@ -68,7 +71,8 @@
                 this.reportAvailable  = null;
                 this.repo = null;
 
-
+                this.crsid = null;
+                this.repoName = null;
             },
 
             domReady: function() {
