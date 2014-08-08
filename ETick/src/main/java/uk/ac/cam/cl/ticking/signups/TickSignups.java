@@ -191,11 +191,11 @@ public class TickSignups {
     @Produces("application/json")
     public Response listStudentBookings(@Context HttpServletRequest request) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
-        List<Slot> toReturn = new ArrayList<Slot>();
+        List<BookingInfo> toReturn = new ArrayList<BookingInfo>();
         for (Slot s :service.listUserSlots(crsid)) {
             Date endTime = new Date(s.getStartTime().getTime() + s.getDuration());
             if (endTime.after(new Date())) {
-                toReturn.add(s);
+                toReturn.add(new BookingInfo(s));
             }
         }
         return Response.ok(toReturn).build();
