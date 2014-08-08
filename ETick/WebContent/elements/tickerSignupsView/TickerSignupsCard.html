@@ -9,7 +9,7 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="TickerSignupsViewport.html">
 
-<polymer-element name="ticker-signups-card">
+<polymer-element name="ticker-signups-card" attributes="crsId tickId repoName ticker groupId sessionId">
   <template>
     <style>
     :host {
@@ -68,7 +68,7 @@
 		</core-collapse>
 	</div>
 	<div flex class="viewer-panel">
-		<ticker-signups-viewport id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
+		<ticker-signups-viewport crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
 	</div>
 	</div>
 
@@ -77,7 +77,7 @@
   <script>
   Polymer( 'ticker-signups-card', {
 			ready: function() {
-				this.pathLoadGroupSessions = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/53e3a05de4b0f3b586f207df";
+				this.pathLoadGroupSessions = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/" + this.groupId;
 				this.$.title.innerHTML ="Please Select a Session to View";
 				this.$.ajaxLoadSessions.go();
 				this.$.view.hidden = true;
@@ -87,10 +87,11 @@
 			},
 			sessionsDataLoaded: function() {
 				var loadedSessions = this.$.ajaxLoadSessions.response.slice(0);
+				console.log(loadedSessions);
 				this.sessions = [];
 				
 				for (var i = 0; i < loadedSessions.length; i++) {
-					this.sessions.push({_id: loadedSessions[i]._id, name: loadedSessions[i].title});
+					this.sessions.push({_id: loadedSessions[i]._id, name: loadedSessions[i].title, location: loadedSessions[i].location, description: loadedSessions[i].description});
 				}
 				
 				if (this.sessions.length === 0) {
@@ -99,11 +100,17 @@
 			},
 			panelAction1: function(e,detail) {
 				if (detail.isSelected) {
+					console.log(detail.item);
 					var selectedItem = detail.item.label;
 					var selectedItemId = detail.item.id;
-					var selectedItemLocation = "Location : " + detail.item.location;
-					var selectedItemDescription = "Description : " + detail.item.description;
-					
+					for(i=0;i<this.sessions.length;i++){
+						if(this.sessions[i]._id === selectedItemId) {
+							var selectedItemLocation = "Location : " + this.sessions[i].location;
+							var selectedItemDescription = "Description : " + this.sessions[i].description;
+							break;
+						}
+					}
+					console.log(selectedItemLocation + " " + selectedItemDescription);
 					this.$.title.innerHTML ="Signups Sheet for " + selectedItem;
 					this.sessionId = selectedItemId;
 					this.description = selectedItemDescription;
@@ -117,6 +124,9 @@
 			},
 			alertError: function() {
 				alert("Sorry, something went wrong");
+			},
+			crsIdChanged: function() {
+				console.log("In this card: " + this.crsId + " " + this.tickId + " " + this.repoName + " " + this.ticker);
 			}
 		})
   </script>
