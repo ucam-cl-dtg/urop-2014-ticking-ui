@@ -46,6 +46,9 @@ public class TickApiFacade implements ITickApiFacade {
 
 	Logger log = Logger.getLogger(ConfigurationLoader.class.getName());
 	private IDataManager db;
+	// not currently used but could quite possibly be needed in the future, will
+	// remove if not
+	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
 	private ITestService testServiceProxy;
@@ -134,7 +137,7 @@ public class TickApiFacade implements ITickApiFacade {
 		Collections.sort(ticks);
 		return Response.ok().entity(ticks).build();
 	}
-		
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -156,32 +159,35 @@ public class TickApiFacade implements ITickApiFacade {
 		Tick tick = new Tick(tickBean);
 		tick.setAuthor(crsid);
 		tick.initTickId();
-		
+
 		Tick failed = db.getTick(tick.getTickId());
-		if (failed!=null&&failed.getStubRepo()!=null&&failed.getCorrectnessRepo()!=null) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(Strings.EXISTS).build();
+		if (failed != null && failed.getStubRepo() != null
+				&& failed.getCorrectnessRepo() != null) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(Strings.EXISTS).build();
 		}
 
-		if (failed == null || failed.getStubRepo()==null) {
+		if (failed == null || failed.getStubRepo() == null) {
 			String repo;
 			try {
-				repo = gitServiceProxy.addRepository(new RepoUserRequestBean(crsid
-						+ "/" + tickBean.getName(), crsid));
+				repo = gitServiceProxy.addRepository(new RepoUserRequestBean(
+						crsid + "/" + tickBean.getName(), crsid));
 			} catch (InternalServerErrorException e) {
 				RemoteFailureHandler h = new RemoteFailureHandler();
 				SerializableException s = h.readException(e);
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(Strings.IDEMPOTENTRETRY).build();
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
 
 			} catch (IOException | DuplicateRepoNameException e) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 						.build();
-				//Due to exception chaining this shouldn't happen
+				// Due to exception chaining this shouldn't happen
 			}
 			tick.setStubRepo(repo);
 		} else {
 			tick.setStubRepo(failed.getStubRepo());
 		}
-		
+
 		if (failed == null || failed.getCorrectnessRepo() == null) {
 			String correctnessRepo;
 			try {
@@ -191,12 +197,13 @@ public class TickApiFacade implements ITickApiFacade {
 			} catch (InternalServerErrorException e) {
 				RemoteFailureHandler h = new RemoteFailureHandler();
 				SerializableException s = h.readException(e);
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(Strings.IDEMPOTENTRETRY).build();
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
 
 			} catch (IOException | DuplicateRepoNameException e) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 						.build();
-				//Due to exception chaining this shouldn't happen
+				// Due to exception chaining this shouldn't happen
 			}
 			tick.setCorrectnessRepo(correctnessRepo);
 		} else {
@@ -205,7 +212,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
-		
+
 		testServiceProxy.createNewTest(tick.getTickId(),
 				tickBean.getCheckstyleOpts());
 
@@ -214,7 +221,7 @@ public class TickApiFacade implements ITickApiFacade {
 			g.addTick(tick.getTickId());
 			db.saveGroup(g);
 		}
-		
+
 		db.saveTick(tick);
 
 		return Response.status(Status.CREATED).entity(tick).build();
