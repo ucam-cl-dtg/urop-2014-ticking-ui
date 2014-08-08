@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../sheet-selector.html">
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 
 <polymer-element name="signup-component" attributes="tickId sheets signedUp unitPass testRunning">
     <template>
@@ -59,12 +60,16 @@
             <paper-button class="dialogNo" dismissive label="No"></paper-button>
             <paper-button class="dialogYes" affirmative label="Yes" on-tap="{{deleteBooking}}"></paper-button>
         </paper-dialog>
+
+        <paper-toast id="toastDeleteSuccess" text="Booking cancelled"></paper-toast>
     </template>
     <script>
         Polymer('signup-component', {
             domReady: function() {
+                var that = this;
                 this.$.signupDialog.addEventListener('slot-booked', function(e){
                     console.log(e);
+                    that.signedUp = true;
                 });
             },
 
@@ -82,6 +87,7 @@
 
             deleteSuccess: function() {
                 this.signedUp = false;
+                this.$.toastDeleteSuccess.toggle();
             }
         });
     </script>
