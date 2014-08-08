@@ -162,10 +162,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static SubmissionApiFacade getSubmissionApiSingleton(
 			IDataManager db, ConfigurationLoader<Configuration> config,
-			ITestService testServiceProxy) {
+			ITestService testServiceProxy, TickSignups tickSignupService ) {
 		if (submissionApiFacade == null) {
 			submissionApiFacade = new SubmissionApiFacade(db, config,
-					testServiceProxy);
+					testServiceProxy, tickSignupService);
 		}
 		return submissionApiFacade;
 	}
@@ -174,10 +174,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static ForkApiFacade getForkApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ITestService testService, WebInterface gitService) {
+			ITestService testService, WebInterface gitService, TickSignups tickSignupService) {
 		if (forkApiFacade == null) {
 			forkApiFacade = new ForkApiFacade(db, config, testService,
-					gitService);
+					gitService, tickSignupService);
 		}
 		return forkApiFacade;
 	}
@@ -187,7 +187,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static TickSignups getTickSignupsSingleton(IDataManager db, 
 	        SignupsWebInterface signupServiceProxy) {
 		if (tickSignups == null) {
-			tickSignups = new TickSignups(signupServiceProxy);
+			tickSignups = new TickSignups(db, signupServiceProxy);
 		}
 		return tickSignups;
 	}

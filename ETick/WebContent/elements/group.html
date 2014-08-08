@@ -7,6 +7,7 @@
 <link rel="import" href="tick-list.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="tick-card/tick-card.html">
+<link rel="import" href="file-browser/file-browser-card.html">
 
 <polymer-element name="x-group" attributes="gid name info creator">
 	<template>
@@ -82,9 +83,22 @@
 
 		<template if="{{selectedSheetID}}">
 			<main-card animated>
-				<tick-card id="tickCard" tickId="{{selectedSheetID}}" sheets="{{sheets}}"></tick-card>
+				<tick-card id="tickCard"
+                           tickId="{{selectedSheetID}}"
+                           sheets="{{sheets}}"
+                           crsid="{{crsid}}"
+                           repoName="{{repoName}}"></tick-card>
 			</main-card>
 		</template>
+
+        <template if="{{crsid}}">
+            <main-card animated>
+                <file-browser-card tickId="{{selectedSheetID}}"
+                                   crsid="{{crsid}}"
+                                   repoName="{{repoName}}">
+                </file-browser-card>
+            </main-card>
+        </template>
 
 		<!-- Group content card. -->
 		<!-- <main-card animated>

@@ -1,80 +1,18 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
-<!--
-  TODO:
-  `<files-service>` provides retrieval of files using AJAX.
-
-  Just uses the filesLoaded handler to load the files into the
-  `files` attribute.
-
-  @element files-service
-  @homepage http://www.github.com/ucam-cl-dtg/urop-2014-ticking-ui
--->
-
-<!--
-  An array of file objects, with the following format:
-
-TODO:
-  <table border="0">
-    <tr>
-      <td><code>name</code></td>
-      <td>String</td>
-      <td>File name with full path.</td>
-    </tr>
-     <tr>
-      <td><code>content</code></td>
-      <td>String</td>
-        <td>Content of the file, using <LF> for new lines.</td>
-    </tr>
-    <tr>
-      <td><code>comments</code></td>
-      <td>Object</td>
-      <td>
-        Comments using the following format;
-        <table border="0">
-          <tr>
-            <td><code>begin</code></td>
-            <td>Number</td>
-            <td>Start character, from the beginning of the file
-              (counting new lines as a single character).</td>
-          </tr>
-          <tr>
-            <td><code>end</code></td>
-            <td>Number</td>
-            <td>End character, from the beginning of the file
-              (counting new lines as a single character).</td>
-          </tr>
-          <tr>
-            <td><code>line</code></td>
-            <td>Number</td>
-            <td>File number, instead of `begin` and `end`.</td>
-          </tr>
-          <tr>
-            <td><code>message</code></td>
-            <td>String</td>
-            <td>Message of the comment.</td>
-          </tr>
-          <tr>
-            <td><code>class</code></td>
-            <td>String</td>
-            <td>Class to encapsulate comment block in (for styling).</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-
-  @attribute files
-  @type Array
-  @default []
--->
 <polymer-element name="files-service"
-    attributes="files testResult
-                tickerResult reportResult
-                comments errors
-                commitId date
-                testCount repoName">
+    attributes="date
+                files
+                errors
+                tickId
+                comments
+                commitId
+                repoName
+                testCount
+                testResult
+                tickerResult
+                reportResult">
   <template>
     <style>
     :host {
@@ -101,8 +39,7 @@ TODO:
             "use strict";
 
             this.$.report.url =
-              /* TODO: Use ticker service */
-              tester_service + "/" + this.repoName + "/last";
+              ticking_service + "/submission/" + this.tickId + "/last";
 
           }
 
