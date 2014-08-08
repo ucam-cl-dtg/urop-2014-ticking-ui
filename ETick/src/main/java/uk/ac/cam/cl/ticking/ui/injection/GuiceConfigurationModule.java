@@ -16,6 +16,7 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.remote.GitApi;
+import uk.ac.cam.cl.ticking.ui.api.remote.SignupApi;
 import uk.ac.cam.cl.ticking.ui.api.remote.TestApi;
 import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
 import uk.ac.cam.cl.ticking.ui.configuration.AcademicTemplate;
@@ -111,6 +112,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private void configureRemoteApis() {
 		bind(WebInterface.class).toInstance(GitApi.getWebInterface());
 		bind(ITestService.class).toInstance(TestApi.getITestService());
+		bind(uk.ac.cam.cl.signups.interfaces.WebInterface.class).toInstance(SignupApi.getWebInterface());
 	}
 
 	@Inject
@@ -182,9 +184,9 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static TickSignups getTickSignupsSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config) {
+			ConfigurationLoader<Configuration> config, uk.ac.cam.cl.signups.interfaces.WebInterface signupServiceProxy) {
 		if (tickSignups == null) {
-			tickSignups = new TickSignups();
+			tickSignups = new TickSignups(config, signupServiceProxy);
 		}
 		return tickSignups;
 	}

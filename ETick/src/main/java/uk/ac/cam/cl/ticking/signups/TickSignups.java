@@ -48,14 +48,12 @@ public class TickSignups {
     Logger log = LoggerFactory.getLogger(TickSignups.class);
     
     private WebInterface service;
-    @Inject private ConfigurationLoader<Configuration> config;
+    private ConfigurationLoader<Configuration> config;
     
-    public TickSignups() {
-        Guice.createInjector(new GuiceConfigurationModule()).injectMembers(this);
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target(config.getConfig()
-                .getSignupsApiLocation());
-        service = target.proxy(WebInterface.class);
+    @Inject
+    public TickSignups(ConfigurationLoader<Configuration> config, WebInterface service) {
+    	this.config = config;
+        this.service = service;
     }
     
     /* Below are the methods for the student workflow */

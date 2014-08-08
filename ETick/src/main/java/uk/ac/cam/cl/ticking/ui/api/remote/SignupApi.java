@@ -1,7 +1,6 @@
 package uk.ac.cam.cl.ticking.ui.api.remote;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -10,12 +9,13 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 
 import publicinterfaces.ITestService;
+import uk.ac.cam.cl.signups.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
 
-public class TestApi {
+public class SignupApi {
 
-	private static ITestService testService;
+	private static WebInterface signupService;
 
 	static {
 		Configuration config = (Configuration) ConfigurationRegister.getLoader(
@@ -30,17 +30,17 @@ public class TestApi {
 		
 		ResteasyClient client = new ResteasyClientBuilder().maxPooledPerRoute(200).httpEngine(engine).build();
 		ResteasyWebTarget target = client.target(config.
-				getTestApiLocation());
+				getSignupsApiLocation());
 
-		testService = target.proxy(ITestService.class);
+		signupService = target.proxy(WebInterface.class);
 	}
 
 	/**
-	 * Provides a handle to the TestApi
+	 * Provides a handle to the SignupApi
 	 * 
-	 * @return testService handle
+	 * @return signupService handle
 	 */
-	public static ITestService getITestService() {
-		return testService;
+	public static WebInterface getWebInterface() {
+		return signupService;
 	}
 }
