@@ -3,12 +3,6 @@
 
 <polymer-element name="submit-service" attributes="tickId status testRunning">
     <template>
-        <style>
-            :host {
-                /*display: none;*/
-            }
-        </style>
-
         <!-- submit this tick for testing -->
         <core-ajax
                 id="ajaxSubmit"
@@ -28,7 +22,7 @@
                 on-core-error="{{pollError}}">
         </core-ajax>
 
-        <paper-toast id="toastSubmitError" text="Error submitting. Try again."></paper-toast>
+        <paper-toast id="toastSubmitError" text="Error submitting. Have you recently submitted this tick in another tab?"></paper-toast>
         <paper-toast id="toastPollError" text="Error obtaining submission status. Try refreshing the page."></paper-toast>
     </template>
     <script>
