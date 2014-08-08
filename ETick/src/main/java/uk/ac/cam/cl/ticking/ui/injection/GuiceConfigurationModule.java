@@ -174,10 +174,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static ForkApiFacade getForkApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ITestService testService, WebInterface gitService) {
+			ITestService testService, WebInterface gitService, TickSignups tickSignupService) {
 		if (forkApiFacade == null) {
 			forkApiFacade = new ForkApiFacade(db, config, testService,
-					gitService);
+					gitService, tickSignupService);
 		}
 		return forkApiFacade;
 	}

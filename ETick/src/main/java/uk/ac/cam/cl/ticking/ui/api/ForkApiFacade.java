@@ -158,8 +158,9 @@ public class ForkApiFacade implements IForkApiFacade {
 				}
 				fork.setLastTickedBy(crsid);
 				fork.setLastTickedOn(DateTime.now());
-				
-				tickSignupService.
+				for (String groupId : groupIds) {
+					//tickSignupService.assignTickerForTickForUser(crsid, groupId, tickId, forkBean.getTicker());
+				}
 			}
 			if (forkBean.getUnitPass() != null) {
 				fork.setUnitPass(forkBean.getUnitPass());
