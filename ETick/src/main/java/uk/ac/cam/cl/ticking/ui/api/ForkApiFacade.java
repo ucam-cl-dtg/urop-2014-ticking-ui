@@ -19,7 +19,9 @@ import publicinterfaces.UserNotInDBException;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.git.api.FileBean;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
+import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
@@ -55,7 +57,8 @@ public class ForkApiFacade implements IForkApiFacade {
 	@Inject
 	public ForkApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ITestService testServiceProxy, WebInterface gitServiceProxy, TickSignups tickSignupService) {
+			ITestService testServiceProxy, WebInterface gitServiceProxy,
+			TickSignups tickSignupService) {
 		this.db = db;
 		this.config = config;
 		this.testServiceProxy = testServiceProxy;
@@ -121,11 +124,11 @@ public class ForkApiFacade implements IForkApiFacade {
 	}
 
 	@Override
-	public Response markFork(HttpServletRequest request, String crsid, String tickId,
-			ForkBean forkBean) {
+	public Response markFork(HttpServletRequest request, String crsid,
+			String tickId, ForkBean forkBean) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		
+
 		boolean marker = false;
 		List<String> groupIds = db.getTick(tickId).getGroups();
 		for (String groupId : groupIds) {
@@ -138,36 +141,62 @@ public class ForkApiFacade implements IForkApiFacade {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
+
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork != null) {
 			if (forkBean.getHumanPass() != null) {
 				fork.setHumanPass(forkBean.getHumanPass());
 
-				ReportResult result = forkBean.getHumanPass() ? ReportResult.PASS : ReportResult.FAIL;
+				ReportResult result = forkBean.getHumanPass() ? ReportResult.PASS
+						: ReportResult.FAIL;
 				log.info(result);
 				try {
-					testServiceProxy.setTickerResult(crsid, tickId,
-							result,
+					testServiceProxy.setTickerResult(crsid, tickId, result,
 							forkBean.getTickerComments(),
 							forkBean.getCommitId());
 				} catch (UserNotInDBException | TickNotInDBException
 						| ReportNotFoundException e) {
-					return Response.status(Status.NOT_FOUND).entity(e)
-							.build();
+					return Response.status(Status.NOT_FOUND).entity(e).build();
 				}
 				fork.setLastTickedBy(crsid);
 				fork.setLastTickedOn(DateTime.now());
 				for (String groupId : groupIds) {
-					tickSignupService.assignTickerForTickForUser(crsid, groupId, tickId, forkBean.getTicker());
+					tickSignupService.assignTickerForTickForUser(crsid,
+							groupId, tickId, forkBean.getTicker());
 				}
 			}
-			
+
 			db.saveFork(fork);
 			return Response.status(Status.CREATED).entity(fork).build();
 		}
 		return Response.status(Status.NOT_FOUND).build();
 
+	}
+
+	@Override
+	public Response getAllFiles(HttpServletRequest request, String crsid,
+			String tickId, String commitId) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		boolean marker = false;
+		List<String> groupIds = db.getTick(tickId).getGroups();
+		for (String groupId : groupIds) {
+			List<Role> roles = db.getRoles(groupId, myCrsid);
+			if (roles.contains(Role.MARKER)) {
+				marker = true;
+			}
+		}
+		if (!marker||!myCrsid.equals(db.getFork(Fork.generateForkId(myCrsid, tickId)))) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		List<FileBean> files;
+		try {
+			files = gitServiceProxy.getAllFiles(crsid+"/"+Tick.replaceDelimeter(tickId), commitId);
+		} catch (IOException | RepositoryNotFoundException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+		}
+		return Response.ok(files).build();
 	}
 
 }

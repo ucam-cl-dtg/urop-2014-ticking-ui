@@ -280,11 +280,27 @@ public class TickSignups {
      */
     @DELETE
     @Path("/students/{crsid}/bookings/{sheetID}")
-    @Consumes("text/plain")
-    public Response removeAllStudentBookings(@PathParam("sheetID") String sheetID,
-            @PathParam("crsid") String crsid, String authCode) {
+    public Response removeAllStudentBookings(@Context HttpServletRequest request,
+            @PathParam("sheetID") String sheetID,
+            @PathParam("crsid") String crsid) {
+        String callingCRSID = (String) request.getSession().getAttribute("RavenRemoteUser");
+        List<String> groupIDs;
         try {
-            service.removeAllUserBookings(sheetID, crsid, authCode);
+            groupIDs = service.getGroupIDs(sheetID);
+        } catch (ItemNotFoundException e) {
+            return Response.status(Status.NOT_FOUND).entity(e).build();
+        }
+        if (groupIDs.size() != 1) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("There should be precisely one group associated "
+                            + "with this sheet, but there seems to be " + groupIDs.size()).build();
+        }
+        String groupID = groupIDs.get(0);
+        if (!db.getRoles(groupID, callingCRSID).contains(Role.MARKER)) {
+            return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+        }
+        try {
+            service.removeAllUserBookings(sheetID, crsid, db.getAuthCode(sheetID));
             return Response.ok().build();
         } catch (NotAllowedException e) {
             return Response.status(Status.FORBIDDEN).entity(e).build();
@@ -292,6 +308,8 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity(e).build();
         }
     }
+    
+  
     
     public Response allowSignup(String crsid, String groupID, String tickID) {
         try {
