@@ -45,6 +45,7 @@
       </paper-button>
       <paper-button raisedButton
                     class="colored bluegrey"
+                    label="NO SHOW"
                     on-tap="{{noShow}}">
       </paper-button>
     </div>
@@ -109,6 +110,7 @@
                 "/signups/students/"
                 + this.crsid
                 + "/bookings/" + this.sheetId;
+              this.$.setNoShow.go();
             }
         });
   </script>
