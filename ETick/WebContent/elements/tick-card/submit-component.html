@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="submit-service.html">
 
-<polymer-element name="submit-component" attributes="tickId signedUp testRunning reportAvailable">
+<polymer-element name="submit-component" attributes="tickId signedUp testRunning reportAvailable unitPass">
     <template>
         <!-- STYLES -->
         <link rel="stylesheet" href="../../css/shared-styles.css">
@@ -14,7 +14,8 @@
                         tickId="{{tickId}}"
                         status="{{status}}"
                         testRunning="{{testRunning}}"
-                        reportAvailable="{{reportAvailable}}">
+                        reportAvailable="{{reportAvailable}}"
+                        unitPass="{{unitPass}}">
         </submit-service>
 
         <!--Submit button -->
