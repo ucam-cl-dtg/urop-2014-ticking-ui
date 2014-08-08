@@ -353,6 +353,24 @@ public class TickSignups {
         }
     }
     
+    public Response assignTickerForTickForUser(String crsid, String groupID, String tickID, String ticker) {
+        String groupAuthCode = db.getAuthCode(groupID);
+        try {
+            Map<String, String> map = new HashMap<String, String>();
+            map.put(tickID, ticker);
+            service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            return Response.ok().build();
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.FORBIDDEN)
+                    .entity(e).build();
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.NOT_FOUND)
+                    .entity(e).build();
+        }
+    }
+    
     /* Below are the methods for the author workflow */
     
     /**

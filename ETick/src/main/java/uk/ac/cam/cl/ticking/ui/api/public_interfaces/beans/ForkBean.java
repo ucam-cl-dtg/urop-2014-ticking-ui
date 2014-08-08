@@ -17,6 +17,7 @@ public class ForkBean {
 	private Boolean testing = false;
 	private Boolean reportAvailable = false;
 	
+	private String ticker;
 	private String tickerComments;
 	private String commitId;
 
@@ -131,5 +132,21 @@ public class ForkBean {
 	 */
 	public void setCommitId(String commitId) {
 		this.commitId = commitId;
+	}
+
+	/**
+	 * 
+	 * @return ticker
+	 */
+	public String getTicker() {
+		return ticker;
+	}
+
+	/**
+	 * 
+	 * @param ticker
+	 */
+	public void setTicker(String ticker) {
+		this.ticker = ticker;
 	}
 }
