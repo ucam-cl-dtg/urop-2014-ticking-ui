@@ -38,6 +38,6 @@ menu-button.core-selected, paper-button.core-selected {
 	color: #5252C5;
 }
 
-#navMenu core-item:hover, core-item.core-selected {
+#navMenu core-item:hover, #navMenu core-item.core-selected {
 	color: #05007A;
 }
