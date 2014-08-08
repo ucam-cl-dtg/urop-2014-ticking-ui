@@ -8,7 +8,7 @@
 
 <polymer-element name="tick-list" attributes="gid canFork">
 	<template>
-		<style>
+		<style shim-shadowdom>
 			:host {
 				display: block;
 			}
@@ -26,8 +26,15 @@
 			tick-box:nth-child(even) {
 				background: #e9e9e9;
 			}
-			tick-box.core-selected {
-				
+			tick-box.core-selected{
+				background: #e1bee7;
+				color: #6300CE;
+			}
+			tick-box.core-selected::shadow h2 {
+				color: #000;
+			}
+			tick-box::shadow paper-ripple {
+				color: #3C00FF;
 			}
 	</style>
 		<core-ajax
