@@ -68,7 +68,7 @@
 		</core-collapse>
 	</div>
 	<div flex class="viewer-panel">
-		<ticker-signups-viewport id="view" sessionId="{{sessionId}}"></ticker-signups-viewport>
+		<ticker-signups-viewport id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
 	</div>
 	</div>
 
@@ -101,8 +101,13 @@
 				if (detail.isSelected) {
 					var selectedItem = detail.item.label;
 					var selectedItemId = detail.item.id;
+					var selectedItemLocation = "Location : " + detail.item.location;
+					var selectedItemDescription = "Description : " + detail.item.description;
+					
 					this.$.title.innerHTML ="Signups Sheet for " + selectedItem;
 					this.sessionId = selectedItemId;
+					this.description = selectedItemDescription;
+					this.location = selectedItemLocation;
 					this.$.view.hidden = false;
 					this.$.view.refresh();
 				}
