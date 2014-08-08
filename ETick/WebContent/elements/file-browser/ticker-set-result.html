@@ -8,6 +8,7 @@
                  attributes="crsid
                              ticker
                              tickId
+                             sheetId
                              repoName
                              commitId">
   <template>
@@ -15,10 +16,13 @@
     <link rel="stylesheet" href="ticker-set-result-style.css"/>
 
     <core-ajax id="setTickResult"
-               method="PUT"
-               contentType="application/json">
+               method="PUT">
     </core-ajax>
 
+    <core-ajax id="setNoShow"
+               method="DELETE"
+               contentType="application/json">
+    </core-ajax>
 
     <div class="top">
       <core-input id="tickerComment"
@@ -38,6 +42,10 @@
                     class="colored red"
                     label="FAIL"
                     on-tap="{{failTick}}">
+      </paper-button>
+      <paper-button raisedButton
+                    class="colored bluegrey"
+                    on-tap="{{noShow}}">
       </paper-button>
     </div>
   </template>
@@ -81,14 +89,26 @@
               this.$.setTickResult.go();
             }
 
-          , passTick: function ()
+          , passTick:
+            function ()
             {
               this.sendTick(true,  this.$.tickerComment.value);
             }
 
-          , failTick: function ()
+          , failTick:
+            function ()
             {
               this.sendTick(false, this.$.tickerComment.value);
+            }
+
+          , noShow:
+            function ()
+            {
+              this.$.setNoShow.url =
+              ticking_service +
+                "/signups/students/"
+                + this.crsid
+                + "/bookings/" + this.sheetId;
             }
         });
   </script>

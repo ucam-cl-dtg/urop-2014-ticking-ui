@@ -11,6 +11,7 @@
 <polymer-element name="file-browser-card"
                  attributes="repoName
                              highlight
+                             sheetId
                              tickId
                              crsid
                              ticker">
@@ -125,7 +126,8 @@
           <ticker-set-result commitId="{{commitId}}"
                              crsid="{{crsid}}"
                              ticker="{{ticker}}"
-                             tickId="{{tickId}}">
+                             tickId="{{tickId}}"
+                             sheetId="{{sheetId}}">
           </ticker-set-result>
         </template>
 
