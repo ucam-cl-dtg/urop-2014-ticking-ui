@@ -44,6 +44,10 @@
 					<div style="padding: 15px">
 						<h2>DESCRIPTION:</h2>
 						<p>{{info}}</p>
+						<h2>TICKING SESSIONS:</h2>
+						<template repeat="{{sheet in sheets}}">
+							<p>{{sheet.title}}</p>
+						</template>
 					</div>
 					</template>
 				</div>

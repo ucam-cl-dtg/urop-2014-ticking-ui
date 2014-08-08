@@ -29,7 +29,7 @@
         </fork-service>
 
         <div id="mainContainer">
-            <h1>Tick Card</h1>
+            <h1>{{tickId}}</h1>
             <div>{{repo}}</div>
 
             <br>
@@ -40,7 +40,8 @@
                         tickId="{{tickId}}"
                         signedUp="{{signedUp}}"
                         testRunning="{{testRunning}}"
-                        reportAvailable="{{reportAvailable}}">
+                        reportAvailable="{{reportAvailable}}"
+                        unitPass="{{unitPass}}">
                 </submit-component>
                 <div class="spacer"></div>
                 <report-component flex

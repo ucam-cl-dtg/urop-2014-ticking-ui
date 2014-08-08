@@ -1,6 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="date-calendar.html">
-<polymer-element name="tick-box" attributes="tick tickID" noscript>
+
+
+<polymer-element name="slot-box" attributes="datetime tickName ticker" noscript>
 	<template>
 		<style>
 			:host {
@@ -25,12 +28,11 @@
 			}
 		</style>
 		<div layout horizontal center id="container">
-			<date-calendar datetime="{{tick.deadline}}"
-				hexColorPrimary="#F75EA7" hexColorSecondary="#CE00E0"></date-calendar>
+			<date-calendar hexColorPrimary="#FF8000" hexColorSecondary="#fff" datetime="{{datetime}}"></date-calendar>
 			<div flex></div>
 			<div layout vertical end>
-				<h1>{{tick.name}}</h1>
-				<h2>Author: {{tick.author}}</h2>
+				<h1>{{tickName}}</h1>
+				<h2>Ticker: {{ticker}}</h2>
 			</div>
 			<paper-ripple class="recenteringTouch" fit></paper-ripple>
 		</div>

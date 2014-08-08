@@ -1,6 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
@@ -8,9 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.joda.time.DateTime;
 
 import publicinterfaces.ITestService;
 import publicinterfaces.ReportNotFoundException;
@@ -22,6 +21,7 @@ import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IForkApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ForkBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
@@ -38,8 +38,11 @@ public class ForkApiFacade implements IForkApiFacade {
 
 	Logger log = Logger.getLogger(ConfigurationLoader.class.getName());
 	private IDataManager db;
+	// not currently used but could quite possibly be needed in the future, will
+	// remove if not
+	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
-	
+
 	private WebInterface gitServiceProxy;
 	private ITestService testServiceProxy;
 
@@ -82,14 +85,14 @@ public class ForkApiFacade implements IForkApiFacade {
 		if (fork != null) {
 			return Response.ok(fork).build();
 		}
-		
+
 		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
-		
+
 		try {
-			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null, crsid,
-					repoName, null));
-		
+			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null,
+					crsid, repoName, null));
+
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
@@ -98,7 +101,7 @@ public class ForkApiFacade implements IForkApiFacade {
 		} catch (IOException | DuplicateRepoNameException e) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
-			//Due to exception chaining this shouldn't happen
+			// Due to exception chaining this shouldn't happen
 		}
 
 		try {
@@ -115,27 +118,43 @@ public class ForkApiFacade implements IForkApiFacade {
 	}
 
 	@Override
-	public Response updateFork(HttpServletRequest request, String tickId,
+	public Response updateFork(HttpServletRequest request, String crsid, String tickId,
 			ForkBean forkBean) {
-		String crsid = (String) request.getSession().getAttribute(
+		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+		
+		boolean marker = false;
+		List<String> groupIds = db.getTick(tickId).getGroups();
+		for (String groupId : groupIds) {
+			List<Role> roles = db.getRoles(groupId, myCrsid);
+			if (roles.contains(Role.MARKER)) {
+				marker = true;
+			}
+		}
+		if (!marker) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork != null) {
 			if (forkBean.getHumanPass() != null) {
 				fork.setHumanPass(forkBean.getHumanPass());
-				if (forkBean.getHumanPass()) {
-					
-					try {
-						testServiceProxy.setTickerResult(crsid, tickId,
-								ReportResult.PASS,
-								forkBean.getTickerComments(),
-								forkBean.getCommitId());
-					} catch (UserNotInDBException | TickNotInDBException
-							| ReportNotFoundException e) {
-						return Response.status(Status.NOT_FOUND).entity(e)
-								.build();
-					}
+
+				ReportResult result = forkBean.getHumanPass() ? ReportResult.PASS : ReportResult.FAIL;
+				log.info(result);
+				try {
+					testServiceProxy.setTickerResult(crsid, tickId,
+							result,
+							forkBean.getTickerComments(),
+							forkBean.getCommitId());
+				} catch (UserNotInDBException | TickNotInDBException
+						| ReportNotFoundException e) {
+					return Response.status(Status.NOT_FOUND).entity(e)
+							.build();
 				}
+				fork.setLastTickedBy(crsid);
+				fork.setLastTickedOn(DateTime.now());
 			}
 			if (forkBean.getUnitPass() != null) {
 				fork.setUnitPass(forkBean.getUnitPass());

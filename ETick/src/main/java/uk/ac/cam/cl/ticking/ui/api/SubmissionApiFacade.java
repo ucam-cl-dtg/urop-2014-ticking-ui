@@ -35,8 +35,11 @@ import com.google.inject.Inject;
 public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 	private IDataManager db;
+	// not currently used but could quite possibly be needed in the future, will
+	// remove if not
+	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
-	
+
 	private ITestService testServiceProxy;
 
 	/**
@@ -124,7 +127,9 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 			fork.setTesting(false);
 			fork.setReportAvailable(true);
+			fork.setUnitPass(status.getInfo().equals(ReportResult.PASS));
 			db.saveFork(fork);
+			//TODO whitelist signup
 		}
 
 		return Response.ok(status).build();
