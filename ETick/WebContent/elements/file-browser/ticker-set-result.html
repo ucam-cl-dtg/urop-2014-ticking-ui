@@ -5,7 +5,11 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html"/>
 
 <polymer-element name="ticker-set-result"
-                 attributes="repoName crsid tickId commitId">
+                 attributes="crsid
+                             ticker
+                             tickId
+                             repoName
+                             commitId">
   <template>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="ticker-set-result-style.css"/>
@@ -67,10 +71,11 @@
                   + this.tickId;
 
               this.$.setTickResult.body =
-                  '{   "humanPass"      : "' + tickStatus + '"'
-                + '  , "signedUp"       : false'
-                + '  , "tickerComments" : "' + comment + '"'
-                + '  , "commitId"       : "' + this.commitId + '"'
+                  '{   "humanPass"      : "' + tickStatus + '"\n'
+                + '  , "signedUp"       : false\n'
+                + '  , "tickerComments" : "' + comment + '"\n'
+                + '  , "commitId"       : "' + this.commitId + '"\n'
+                + '  , "ticker"         : "' + this.ticker + '"\n"'
                 + '}'
 
               this.$.setTickResult.go();
