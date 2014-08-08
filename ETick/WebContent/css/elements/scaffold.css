@@ -15,7 +15,7 @@ core-toolbar {
 	color: #fff;
 }
 
-core-selector {
+core-selector.fix {
 	/* To remove space between inline-block elements. */
 	font-size: 0;
 }
@@ -34,10 +34,10 @@ menu-button.core-selected, paper-button.core-selected {
 	background: #2a56c6;
 }
 
-core-item {
+#navMenu core-item {
 	color: #5252C5;
 }
 
-core-item:hover, core-item.core-selected {
+#navMenu core-item:hover, core-item.core-selected {
 	color: #05007A;
 }

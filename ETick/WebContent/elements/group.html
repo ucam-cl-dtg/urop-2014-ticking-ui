@@ -81,19 +81,20 @@
 				canFork="{{isSubmitter}}"></tick-list>
 		</main-card>
 
-		<template if="{{selectedSheetID}}">
+		<template if="{{selectedTickId}}">
 			<main-card animated>
-				<tick-card id="tickCard"
-                           tickId="{{selectedSheetID}}"
-                           sheets="{{sheets}}"
-                           crsid="{{crsid}}"
-                           repoName="{{repoName}}"></tick-card>
-			</main-card>
+			<tick-card id="tickCard"
+				tickName="{{selectedTickName}}"
+				tickId="{{selectedTickId}}"
+				sheets="{{sheets}}"
+				crsid="{{crsid}}"
+				repoName="{{repoName}}"></tick-card>
+		</main-card>
 		</template>
 
         <template if="{{crsid}}">
             <main-card animated>
-                <file-browser-card tickId="{{selectedSheetID}}"
+                <file-browser-card tickId="{{selectedTickId}}"
                                    crsid="{{crsid}}"
                                    repoName="{{repoName}}">
                 </file-browser-card>
@@ -127,6 +128,7 @@
 
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
+
 				// Check for permissions.
 				this.isAuthor = (this.roles.indexOf('AUTHOR') > -1);
 				this.isSubmitter = (this.roles.indexOf('SUBMITTER') > -1);
@@ -158,7 +160,8 @@
 			},
 
 			forkClickedHandler: function (e, detail) {
-				this.selectedSheetID = detail.sheetid;
+				this.selectedTickId = detail.tickId;
+				this.selectedTickName = detail.tickName;
 			}
 		});
 	</script>
