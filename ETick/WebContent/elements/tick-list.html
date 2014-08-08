@@ -53,10 +53,10 @@
 		</div>
 
 		<!-- Tick list. -->
-		<core-selector id="selector" on-core-select="{{selected}}" valueattr="tickID"
+		<core-selector id="selector" on-core-select="{{selected}}" valueattr="tickId"
 			layout horizontal center wrap>
 			<template repeat="{{tick in ticks | tickListFilter($.searchBox.query)}}">
-				<tick-box tickID="{{tick._id}}" tick="{{tick}}"></tick-box>
+				<tick-box tickId="{{tick._id}}" tick="{{tick}}"></tick-box>
 			</template>
 		</core-selector>
 
@@ -87,7 +87,7 @@
 			forkClicked: function () {
 				if (this.selectedTick)
 					this.fire('fork-clicked', {
-						sheetid: this.selectedTick
+						tickId: this.selectedTick
 					});
 			}
 		});
