@@ -1,6 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
@@ -8,9 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.joda.time.DateTime;
 
 import publicinterfaces.ITestService;
 import publicinterfaces.ReportNotFoundException;
@@ -22,6 +21,7 @@ import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IForkApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ForkBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
@@ -118,10 +118,24 @@ public class ForkApiFacade implements IForkApiFacade {
 	}
 
 	@Override
-	public Response updateFork(HttpServletRequest request, String tickId,
+	public Response updateFork(HttpServletRequest request, String crsid, String tickId,
 			ForkBean forkBean) {
-		String crsid = (String) request.getSession().getAttribute(
+		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+		
+		boolean marker = false;
+		List<String> groupIds = db.getTick(tickId).getGroups();
+		for (String groupId : groupIds) {
+			List<Role> roles = db.getRoles(groupId, myCrsid);
+			if (roles.contains(Role.MARKER)) {
+				marker = true;
+			}
+		}
+		if (!marker) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork != null) {
 			if (forkBean.getHumanPass() != null) {
@@ -139,6 +153,8 @@ public class ForkApiFacade implements IForkApiFacade {
 					return Response.status(Status.NOT_FOUND).entity(e)
 							.build();
 				}
+				fork.setLastTickedBy(crsid);
+				fork.setLastTickedOn(DateTime.now());
 			}
 			if (forkBean.getUnitPass() != null) {
 				fork.setUnitPass(forkBean.getUnitPass());
