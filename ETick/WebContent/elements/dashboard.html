@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="user-card.html">
 <link rel="import" href="main-card.html">
+<link rel="import" href="upcoming-slots.html">
 
 <polymer-element name="user-dash" attributes="">
 	<template>
@@ -18,6 +19,10 @@
 		</core-ajax>
 		<main-card animated>
 			<user-card id="userCard" ldap="{{data}}"></user-card>
+		</main-card>
+
+		<main-card animated>
+			<upcoming-slots></upcoming-slots>
 		</main-card>
 	</template>
 
