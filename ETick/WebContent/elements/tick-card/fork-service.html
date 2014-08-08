@@ -38,7 +38,12 @@
                 this.humanPass = forkObj.humanPass;
                 this.signedUp = forkObj.signedUp;
                 this.testRunning = forkObj.testing;
+                this.reportAvailable = forkObj.reportAvailable;
                 this.repo = forkObj.repo;
+
+                if (this.testRunning) {
+                    this.fire('test-running')
+                }
 
                 /*this.unitPass = true;
                 this.humanPass = false;
