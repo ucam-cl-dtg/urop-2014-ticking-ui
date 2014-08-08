@@ -26,6 +26,7 @@ public class Fork {
 	private boolean humanPass = false;
 	private boolean signedUp = false;
 	private boolean testing = false;
+	private boolean reportAvailable = false;
 
 	/**
 	 * Create a new instance of the Submission object.
@@ -136,7 +137,7 @@ public class Fork {
 
 	/**
 	 * 
-	 * @param signedUp
+	 * @param signedUpr
 	 */
 	public void setSignedUp(boolean signedUp) {
 		this.signedUp = signedUp;
@@ -149,7 +150,7 @@ public class Fork {
 	public boolean isTesting() {
 		return testing;
 	}
- 
+
 	/**
 	 * 
 	 * @param testing
@@ -158,9 +159,22 @@ public class Fork {
 		this.testing = testing;
 	}
 
+	/**
+	 * @return reportAvailable
+	 */
+	public boolean isReportAvailable() {
+		return reportAvailable;
+	}
+
+	/**
+	 * @param reportAvailable
+	 */
+	public void setReportAvailable(boolean reportAvailable) {
+		this.reportAvailable = reportAvailable;
+	}
+
 	public static String generateForkId(String crsid, String tickId) {
-			return crsid+","+tickId;
-		}
-	
-	
+		return crsid + "," + tickId;
+	}
+
 }

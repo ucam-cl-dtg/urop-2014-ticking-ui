@@ -15,6 +15,7 @@ public class ForkBean {
 	private Boolean humanPass = false;
 	private Boolean signedUp = false;
 	private Boolean testing = false;
+	private Boolean reportAvailable = false;
 	
 	private String tickerComments;
 	private String commitId;
@@ -84,6 +85,20 @@ public class ForkBean {
 	 */
 	public void setTesting(boolean testing) {
 		this.testing = testing;
+	}
+	
+	/**
+	 * @return reportAvailable
+	 */
+	public Boolean getReportAvailable() {
+		return reportAvailable;
+	}
+
+	/**
+	 * @param reportAvailable
+	 */
+	public void setReportAvailable(Boolean reportAvailable) {
+		this.reportAvailable = reportAvailable;
 	}
 
 	/**

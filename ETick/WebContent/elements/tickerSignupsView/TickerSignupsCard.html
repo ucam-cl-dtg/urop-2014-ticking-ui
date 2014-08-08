@@ -1,0 +1,118 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../../bower_components/core-item/core-item.html">
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="TickerSignupsViewport.html">
+
+<polymer-element name="ticker-signups-card">
+  <template>
+    <style>
+    :host {
+      display: block;
+      position: relative;
+      padding: 20px;
+      width: 100%;
+      font-size: 1.2rem;
+      font-weight: 300;
+    }
+	.topBar {
+		height : 100%;
+		width : 100%;
+	}
+	.viewer-panel {
+	  display: block;
+      position: relative;
+      padding: 20px;
+      width: 100%;
+      font-size: 1.2rem;
+      font-weight: 300;
+	}
+	core-item.core-selected {
+		color: purple;
+	}
+
+    </style>
+	
+	<!-- Get sessions for this group - note group context will need to be provided! -->
+    <core-ajax
+        id="ajaxLoadSessions"
+        url="{{pathLoadGroupSessions}}"
+        handleAs="json"
+		contentType="application/json"
+        on-core-response="{{sessionsDataLoaded}}"
+        on-core-error="{{alertError}}">
+    </core-ajax>
+	
+	<div class="topBar" layout horizontal>
+			<core-toolbar flex style="background:#afbfff">
+				<paper-icon-button id="navicon" icon="list" size="5" align="left" on-tap="{{toggleMenu}}"></paper-icon-button>
+				<div id="title"></div>
+			</core-toolbar>
+	</div>
+
+	<div layout horizontal>
+	<div class="navigation-panel" layout horizontal>
+		<core-collapse id="panel" horizontal="true" opened="true" layout vertical  
+					   style="background:#e8eaf6;border-color:#1a237e;border-right-style:
+					   solid;border-bottom-style:solid;border-width:1px" on-core-select="{{panelAction1}}">
+				<core-menu>
+					<template repeat="{{session in sessions}}">
+						<core-item icon="book" label="{{session.name}}" id="{{session._id}}" on-tap="{{panelAction2}}"></core-item>
+					</template>
+				</core-menu>
+		</core-collapse>
+	</div>
+	<div flex class="viewer-panel">
+		<ticker-signups-viewport id="view" sessionId="{{sessionId}}"></ticker-signups-viewport>
+	</div>
+	</div>
+
+
+  </template>
+  <script>
+  Polymer( 'ticker-signups-card', {
+			ready: function() {
+				this.pathLoadGroupSessions = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/53e3a05de4b0f3b586f207df";
+				this.$.title.innerHTML ="Please Select a Session to View";
+				this.$.ajaxLoadSessions.go();
+				this.$.view.hidden = true;
+			},
+			toggleMenu: function() {
+				this.$.panel.toggle();
+			},
+			sessionsDataLoaded: function() {
+				var loadedSessions = this.$.ajaxLoadSessions.response.slice(0);
+				this.sessions = [];
+				
+				for (var i = 0; i < loadedSessions.length; i++) {
+					this.sessions.push({_id: loadedSessions[i]._id, name: loadedSessions[i].title});
+				}
+				
+				if (this.sessions.length === 0) {
+					this.$.title.innerHTML ="Sorry, there are no Ticking Sessions available for this Group yet";
+				}
+			},
+			panelAction1: function(e,detail) {
+				if (detail.isSelected) {
+					var selectedItem = detail.item.label;
+					var selectedItemId = detail.item.id;
+					this.$.title.innerHTML ="Signups Sheet for " + selectedItem;
+					this.sessionId = selectedItemId;
+					this.$.view.hidden = false;
+					this.$.view.refresh();
+				}
+			},
+			panelAction2: function() {
+				this.toggleMenu();
+			},
+			alertError: function() {
+				alert("Sorry, something went wrong");
+			}
+		})
+  </script>
+</polymer-element>

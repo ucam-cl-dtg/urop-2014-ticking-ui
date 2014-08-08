@@ -123,6 +123,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		if (status.getProgress() == status.getMaxProgress()) {
 			Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 			fork.setTesting(false);
+			fork.setReportAvailable(true);
 			db.saveFork(fork);
 		}
 

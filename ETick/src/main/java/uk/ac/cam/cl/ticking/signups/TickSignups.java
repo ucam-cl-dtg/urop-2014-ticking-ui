@@ -13,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -69,7 +70,7 @@ public class TickSignups {
     @GET
     @Path("/sheets/{sheetID}/times/{tickID}")
     @Produces("application/json")
-    public Response listAvailableTimes(HttpServletRequest request,
+    public Response listAvailableTimes(@Context HttpServletRequest request,
             @PathParam("tickID") String tickID,
             @PathParam("sheetID") String sheetID) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
@@ -103,10 +104,23 @@ public class TickSignups {
     @POST
     @Path("/sheets/{sheetID}/bookings")
     @Consumes("application/json")    
-    public Response makeBooking( // TODO: get crsid from raven; work out groupID from sheet.
+    public Response makeBooking(@Context HttpServletRequest request,
             @PathParam("sheetID") String sheetID, String tickID, Long startTime) {
-        String crsid = "rds46";
-        String groupID = null;
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        List<String> groupIDs;
+        try {
+            groupIDs = service.getGroupIDs(sheetID);
+        } catch (ItemNotFoundException e) {
+            return Response.status(Status.NOT_FOUND).entity(e).build();
+        }
+        if (groupIDs.size() != 1) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("There should be precisely one group associated "
+                            + "with this sheet, but there seems to be " + groupIDs.size()).build();
+        }
+        String groupID = groupIDs.get(0);
+        log.info("Attempting to book slot for user " + crsid + " for tickID " + tickID +
+                " at time " + new Date(startTime) + " on sheet " + sheetID + " in group " + groupID);
         for (Slot slot : service.listUserSlots(crsid)) {
             if (slot.getStartTime().equals(startTime)) {
                 return Response.status(Status.FORBIDDEN)

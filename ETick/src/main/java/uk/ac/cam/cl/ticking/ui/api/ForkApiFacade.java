@@ -143,6 +143,9 @@ public class ForkApiFacade implements IForkApiFacade {
 			if (forkBean.isSignedUp() != null) {
 				fork.setSignedUp(forkBean.isSignedUp());
 			}
+			if (forkBean.getReportAvailable() != null) {
+				fork.setReportAvailable(forkBean.getReportAvailable());
+			}
 			db.saveFork(fork);
 			return Response.status(Status.CREATED).entity(fork).build();
 		}
