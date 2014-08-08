@@ -15,7 +15,7 @@ core-toolbar {
 	color: #fff;
 }
 
-core-selector {
+core-selector.fix {
 	/* To remove space between inline-block elements. */
 	font-size: 0;
 }
