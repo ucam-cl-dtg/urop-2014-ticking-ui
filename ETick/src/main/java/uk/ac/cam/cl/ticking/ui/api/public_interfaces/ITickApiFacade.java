@@ -135,5 +135,11 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	public abstract Response setDeadline(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId, DateTime date);
+	
+	@GET
+	@Path("/{tickId}/{commitId}/files")
+	@Produces("application/json")
+	public abstract Response getAllFiles(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId, @PathParam("commitId") String commitId);
 
 }
