@@ -176,7 +176,7 @@ public class TickSignups {
             service.book(booking.getSheetID(), booking.getColumnName(),
                     booking.getStartTime().getTime(), new SlotBookingBean(crsid, null, null));
             Fork f = db.getFork(Fork.generateForkId(crsid, tickID));
-            f.setSignedUp(true);
+            f.setSignedUp(false);
             db.saveFork(f);
             return Response.ok().build();
         } catch (ItemNotFoundException e) {
