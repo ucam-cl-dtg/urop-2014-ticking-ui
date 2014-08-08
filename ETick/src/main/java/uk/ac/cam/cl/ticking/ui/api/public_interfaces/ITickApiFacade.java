@@ -123,20 +123,6 @@ public interface ITickApiFacade {
 			DuplicateRepoNameException;
 
 	/**
-	 * @param request
-	 * @param name
-	 * @return URL of the new repository to clone
-	 * @throws IOException
-	 * @throws DuplicateRepoNameException
-	 * 
-	 */
-	@POST
-	@Path("/{tickId}")
-	@Produces("application/json")
-	public abstract Response forkTick(@Context HttpServletRequest request,
-			@PathParam("tickId") String tickId);
-
-	/**
 	 * Updates the deadline of a tick in the database
 	 * 
 	 * @param request

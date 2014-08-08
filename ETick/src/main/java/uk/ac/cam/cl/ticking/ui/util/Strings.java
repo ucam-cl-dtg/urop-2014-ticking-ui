@@ -20,7 +20,7 @@ public class Strings {
 
 	public static final String FORKED = "You have already forked this repository, state has not been lost.";
 
-	public static final String GROUPNAMECLASH = "A group with that name already exists";
+	public static final String IDEMPOTENTRETRY = "Oops: Something went wrong, please try again";
 	
 	public static final String EXISTINGTIMEBOOKING = "Error: You already have a booking at this time.";
 	
