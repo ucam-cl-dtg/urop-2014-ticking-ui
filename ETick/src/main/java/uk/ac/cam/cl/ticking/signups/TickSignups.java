@@ -1,5 +1,6 @@
 package uk.ac.cam.cl.ticking.signups;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +18,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cl.signups.api.Group;
 import uk.ac.cam.cl.signups.api.Sheet;
 import uk.ac.cam.cl.signups.api.SheetInfo;
 import uk.ac.cam.cl.signups.api.Slot;
@@ -33,13 +32,11 @@ import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
 import uk.ac.cam.cl.signups.api.exceptions.ItemNotFoundException;
 import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
-import uk.ac.cam.cl.signups.interfaces.WebInterface;
-import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
-import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
-import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
+import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
+import uk.ac.cam.cl.ticking.ui.actors.Role;
+import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
 
 @Path("/signups")
@@ -47,15 +44,13 @@ public class TickSignups {
     /* For logging */
     Logger log = LoggerFactory.getLogger(TickSignups.class);
     
-    private WebInterface service;
-    @Inject private ConfigurationLoader<Configuration> config;
+    private SignupsWebInterface service;
+    private IDataManager db;
     
-    public TickSignups() {
-        Guice.createInjector(new GuiceConfigurationModule()).injectMembers(this);
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target(config.getConfig()
-                .getSignupsApiLocation());
-        service = target.proxy(WebInterface.class);
+    @Inject
+    public TickSignups(IDataManager db, SignupsWebInterface service) {
+        this.service = service;
+        this.db = db;
     }
     
     /* Below are the methods for the student workflow */
@@ -103,32 +98,45 @@ public class TickSignups {
      */
     @POST
     @Path("/sheets/{sheetID}/bookings")
-    @Consumes("application/json")    
-    public Response makeBooking( // TODO: get crsid from raven; work out groupID from sheet.
-            @PathParam("sheetID") String sheetID, String tickID, Long startTime) {
-        String crsid = "rds46";
-        String groupID = null;
+    @Consumes("application/json")
+    public Response makeBooking(@Context HttpServletRequest request,
+            @PathParam("sheetID") String sheetID, MakeBookingBean bean) {
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        List<String> groupIDs;
+        try {
+            groupIDs = service.getGroupIDs(sheetID);
+        } catch (ItemNotFoundException e) {
+            return Response.status(Status.NOT_FOUND).entity(e).build();
+        }
+        if (groupIDs.size() != 1) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("There should be precisely one group associated "
+                            + "with this sheet, but there seems to be " + groupIDs.size()).build();
+        }
+        String groupID = groupIDs.get(0);
+        log.info("Attempting to book slot for user " + crsid + " for tickID " + bean.getTickID() +
+                " at time " + new Date(bean.getStartTime()) + " on sheet " + sheetID + " in group " + groupID);
         for (Slot slot : service.listUserSlots(crsid)) {
-            if (slot.getStartTime().equals(startTime)) {
+            if (slot.getStartTime().equals(bean.getStartTime())) {
                 return Response.status(Status.FORBIDDEN)
                         .entity(Strings.EXISTINGTIMEBOOKING).build();
             }
-            if (slot.getComment().equals(tickID)) {
+            if (slot.getComment().equals(bean.getTickID())) {
                 return Response.status(Status.FORBIDDEN)
                         .entity(Strings.EXISTINGTICKBOOKING).build();
             }
         }
         try {
-            if (service.listColumnsWithFreeSlotsAt(sheetID, startTime).size() == 0) {
+            if (service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime()).size() == 0) {
                 return Response.status(Status.NOT_FOUND)
                         .entity(Strings.NOFREESLOTS).build();
             }
-            if (service.getPermissions(groupID, crsid).containsKey(tickID)) { // have passed this tick
-                String ticker = service.getPermissions(groupID, crsid).get(tickID);
+            if (service.getPermissions(groupID, crsid).containsKey(bean.getTickID())) { // have passed this tick
+                String ticker = service.getPermissions(groupID, crsid).get(bean.getTickID());
                 if (ticker == null) { // any ticker permitted
-                    ticker = service.listColumnsWithFreeSlotsAt(sheetID, startTime).get(0);
+                    ticker = service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime()).get(0);
                 }
-                service.book(sheetID, ticker, startTime, new SlotBookingBean(null, crsid, tickID));
+                service.book(sheetID, ticker, bean.getStartTime(), new SlotBookingBean(null, crsid, bean.getTickID()));
                 return Response.ok().entity(ticker).build();
             }
         } catch (ItemNotFoundException e) {
@@ -141,50 +149,61 @@ public class TickSignups {
                     .entity(e).build();
         }
         return Response.status(Status.FORBIDDEN)
-                .entity("Student does not have permission to book this slot").build();
+                .entity("You do not have permission to book this slot").build();
     }
        
     /**
      * Unbooks the given user from the given slot.
      */
     @DELETE
-    @Path("/sheets/{sheetID}/bookings")
-    @Consumes("application/json")
-    public Response unbookSlot(String crsid, String groupID, // TODO: ideally only need crsid and tickID, because this should uniquely identify a booking
-            @PathParam("sheetID") String sheetID, String tickID, Date startTime) {
-        String ticker = null;
+    @Path("/bookings/{tickID}")
+    public Response unbookSlot(@Context HttpServletRequest request, @PathParam("tickID") String tickID) {
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        Slot booking = null;
         for (Slot slot : service.listUserSlots(crsid)) {
-            if (slot.getStartTime().equals(startTime) &&
-                    slot.getComment().equals(tickID) &&
-                    slot.getSheetID().equals(sheetID)) {
-                ticker = slot.getColumnName();
+            if (slot.getComment().equals("tickID")) {
+                booking = slot;
             }
         }
-        if (ticker == null) {
-            return Response.status(Status.NOT_FOUND).entity("The slot was not found").build();
+        if (booking == null) {
+            return Response.status(Status.NOT_FOUND).entity("No booking was found for this tick").build();
         }
         try {
-            service.book(sheetID, ticker, startTime.getTime(), new SlotBookingBean(crsid, null, null));
+            service.book(booking.getSheetID(), booking.getColumnName(),
+                    booking.getStartTime().getTime(), new SlotBookingBean(crsid, null, null));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
-            return Response.status(Status.NOT_FOUND)
-                    .entity(e).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("The booking for this tick was found to exist and "
+                            + "then not found to exist. See following exception:\n"
+                            + e).build();
         } catch (NotAllowedException e) {
             e.printStackTrace();
-            return Response.status(Status.FORBIDDEN)
-                    .entity(e).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("The removal of the booking should have been allowed but "
+                            + "for some reason was not. See following exception:\n"
+                            + e).build();
         }
         return Response.ok().build();
     }
     
     /**
-     * Returns a list of the bookings made by one user.
+     * Returns a list of the bookings in the future made by one user.
      */
     @GET
-    @Path("/students/{crsid}/bookings")
+    @Path("/bookings")
     @Produces("application/json")
-    public Response listStudentBookings(@PathParam("crsid") String crsid) {
-        return Response.ok(service.listUserSlots(crsid)).build();
+    // TODO: check in order
+    public Response listStudentBookings(@Context HttpServletRequest request) {
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        List<BookingInfo> toReturn = new ArrayList<BookingInfo>();
+        for (Slot s :service.listUserSlots(crsid)) {
+            Date endTime = new Date(s.getStartTime().getTime() + s.getDuration());
+            if (endTime.after(new Date())) {
+                toReturn.add(new BookingInfo(s));
+            }
+        }
+        return Response.ok(toReturn).build();
     }
     
     /* Below are the methods for the ticker workflow */
@@ -254,8 +273,9 @@ public class TickSignups {
      */
     @DELETE
     @Path("/students/{crsid}/bookings/{sheetID}")
-    @Consumes("application/json")
-    public Response removeAllStudentBookings(String sheetID, String crsid, String authCode) {
+    @Consumes("text/plain")
+    public Response removeAllStudentBookings(@PathParam("sheetID") String sheetID,
+            @PathParam("crsid") String crsid, String authCode) {
         try {
             service.removeAllUserBookings(sheetID, crsid, authCode);
             return Response.ok().build();
@@ -266,18 +286,60 @@ public class TickSignups {
         }
     }
     
+    public Response allowSignup(String crsid, String groupID, String tickID) {
+        String groupAuthCode = db.getAuthCode(groupID);
+        try {
+            Map<String, String> map = new HashMap<String, String>();
+            map.put(tickID, null);
+            service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            return Response.ok().build();
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.FORBIDDEN)
+                    .entity(e).build();
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.NOT_FOUND)
+                    .entity(e).build();
+        }
+    }
+    
+    public Response disallowSignup(String crsid, String groupID, String tickID) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(tickID, null);
+        try {
+            service.removePermissions(groupID, crsid, new PermissionsBean(map, db.getAuthCode(groupID)));
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Permission was denied - it shouldn't be.\n" + e).build();
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity(e).build();
+        }
+        return Response.ok().build();
+    }
+    
     /**
      * Ensures that the given student is assigned the given ticker
      * (if possible) in the future for the specified tick.
      */
     @POST
-    @Path("/students/{crsid}/permissions")
-    @Consumes("application/json")
-    public Response assignTickerForTickForUser(String crsid, String groupID,
-            String tickID, String ticker, String groupAuthCode) {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(tickID, ticker);
+    @Path("/students/{crsid}/permissions/{groupID}/{tickID}/{ticker}")
+    public Response assignTickerForTickForUser(@Context HttpServletRequest request,
+            @PathParam("crsid") String crsid,
+            @PathParam("groupID") String groupID,
+            @PathParam("tickID") String tickID,
+            @PathParam("ticker") String ticker) {
+        String callerCRSID = (String) request.getSession().getAttribute("RavenRemoteUser");
+        if (!db.getRoles(groupID, callerCRSID).contains(Role.MARKER)) {
+            return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+        }
+        String groupAuthCode = db.getAuthCode(groupID);
         try {
+            Map<String, String> map = new HashMap<String, String>();
+            map.put(tickID, ticker);
             service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
             return Response.ok().build();
         } catch (NotAllowedException e) {
@@ -300,28 +362,32 @@ public class TickSignups {
     @Path("/sheets")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response createSheet(String title, String description, String location,
-            Date startTime, int slotLengthInMinutes, Date endTime, List<String> tickerNames,
-            String groupID, String groupAuthCode) {
-        long sheetLengthInMinutes = (endTime.getTime() - startTime.getTime())/60000;
-        if (sheetLengthInMinutes % slotLengthInMinutes != 0) {
+    public Response createSheet(@Context HttpServletRequest request, CreateSheetBean bean) {
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        if (!db.getRoles(bean.getGroupID(), crsid).contains(Role.AUTHOR)) {
+            return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+        }
+        long sheetLengthInMinutes = (bean.getEndTime().getTime() - bean.getStartTime().getTime())/60000;
+        if (sheetLengthInMinutes % bean.getSlotLengthInMinutes() != 0) {
             return Response.status(Status.BAD_REQUEST).entity("The difference in minutes "
                     + "between the start and end times should be an integer multiple of "
                     + "the length of the slots").build();
         }
-        Sheet newSheet = new Sheet(title, description, location);
+        Sheet newSheet = new Sheet(bean.getTitle(), bean.getDescription(), bean.getLocation());
         String id;
         String auth;
         try {
             SheetInfo info = service.addSheet(newSheet);
             id = info.getSheetID();
             auth = info.getAuthCode();
+            db.addAuthCode(id, auth);
         } catch (DuplicateNameException e) {
             return Response.serverError().entity("This sheet already seems to exist").build();
         }
-        for (String ticker : tickerNames) {
+        for (String ticker : bean.getTickerNames()) {
             try {
-                service.createColumn(id, new CreateColumnBean(ticker, auth, startTime, endTime, slotLengthInMinutes));
+                service.createColumn(id, new CreateColumnBean(ticker, auth, bean.getStartTime(),
+                        bean.getEndTime(), bean.getSlotLengthInMinutes()));
             } catch (ItemNotFoundException e) {
                 e.printStackTrace();
                 throw new RuntimeException("This should only happen if the sheet or column is not found "
@@ -330,24 +396,49 @@ public class TickSignups {
                 e.printStackTrace();
                 throw new RuntimeException("We should have permission to access the sheet we have just created");
             } catch (DuplicateNameException e) {
-                e.printStackTrace();
-                return Response.status(Status.BAD_REQUEST).entity("You must have specified two "
-                        + "identical columns (or slots)").build();
-                // TODO: delete sheet?
+                /*
+                 * Actually, this isn't the end of the world, we can just ignore it.
+                 * e.printStackTrace();
+                 * return Response.status(Status.BAD_REQUEST).entity("You must have specified two "
+                 *      + "identical columns (or slots)").build();
+                 */
             }
         }
         try {
-            service.addSheetToGroup(groupID, new GroupSheetBean(id, groupAuthCode, auth));
-        } catch (ItemNotFoundException e) {
-            // TODO Create group?
-            e.printStackTrace();
-            return Response.status(Status.NOT_IMPLEMENTED).build();
+            service.addSheetToGroup(bean.getGroupID(),
+                    new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
+        } catch (ItemNotFoundException e) { // group doesn't yet exist: create and retry
+            String groupAuthCode;
+            try {
+                groupAuthCode = service.addGroup(new Group(bean.getGroupID()));
+                service.addSheetToGroup(bean.getGroupID(),
+                        new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
+                db.addAuthCode(bean.getGroupID(), groupAuthCode);
+            } catch (DuplicateNameException e1) {
+                e1.printStackTrace();
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("The group was found to both exist and not exist "
+                                + "in the signups database, sorry.\n"+e1).build();
+            } catch (ItemNotFoundException e1) {
+                e1.printStackTrace();
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("The group was not found in the signups database, we "
+                                + "attempted to create it, but it still wasn't found."
+                                + "\n"+e1).build();
+            } catch (NotAllowedException e1) {
+                e1.printStackTrace();
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("The group was not found in the signups database, "
+                                + "we attempted to create it, but permission was not "
+                                + "given - it should have been").build();
+            }
         } catch (NotAllowedException e) {
-            // Store auth codes in database and check user permissions before providing them?
             e.printStackTrace();
-            return Response.status(Status.NOT_IMPLEMENTED).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("The auth codes stored by the database were for some "
+                            + "reason found to be incorrect./n" + e).build();
         }
-        return Response.ok().entity(/*TODO*/"TODO").build();
+        return Response.ok().build();
     }
     
     /**
@@ -364,7 +455,8 @@ public class TickSignups {
     @Path("/sheets/{sheetID}/tickers")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response addColumn(String sheetID, String authCode, 
+    //TODO: argument needs to be a bean
+    public Response addColumn(@PathParam("sheetID") String sheetID, String authCode, 
             String name, Date startTime, Date endTime,
             int slotLength /* in minutes */) {
         try {
@@ -388,9 +480,10 @@ public class TickSignups {
      */
     @DELETE
     @Path("/sheets/{sheetID}/tickers/{ticker}")
-    @Consumes("application/json")
+    @Consumes("text/plain")
     @Produces("application/json")
-    public Response deleteColumn(String sheetID, String ticker, String authCode) {
+    public Response deleteColumn(@PathParam("sheetID") String sheetID,
+            @PathParam("ticker") String ticker, String authCode) {
         try {
             service.deleteColumn(sheetID, ticker, authCode);
         } catch (NotAllowedException e) {
@@ -410,12 +503,13 @@ public class TickSignups {
     @POST
     @Path("/sheets/{sheetID}/bookings/{startTime}")
     @Consumes("application/json")
-    // TODO: unify with normal modify booking and even perhaps make booking
-    public Response forceModifyBooking(String sheetID, String authCode, String tickID,
-            Date startTime, String currentlyBookedUser, String userToBook) {
+    // TODO: check arguments 
+    // TODO: unify with normal modify booking and even perhaps make booking TODO: maybe not
+    public Response forceModifyBooking(@PathParam("sheetID") String sheetID, String authCode, String tickID,
+            @PathParam("sheetID") Long startTime, String currentlyBookedUser, String userToBook) {
         String ticker = null;
         for (Slot slot : service.listUserSlots(currentlyBookedUser)) {
-            if (slot.getStartTime().equals(startTime) &&
+            if (slot.getStartTime().getTime() == startTime &&
                     slot.getComment().equals(tickID) &&
                     slot.getSheetID().equals(sheetID)) {
                 ticker = slot.getColumnName();
@@ -425,7 +519,7 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity("The slot was not found").build();
         }
         try {
-            service.book(sheetID, ticker, startTime.getTime(), new SlotBookingBean(currentlyBookedUser, userToBook, tickID, authCode));
+            service.book(sheetID, ticker, startTime, new SlotBookingBean(currentlyBookedUser, userToBook, tickID, authCode));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND).entity(e).build();

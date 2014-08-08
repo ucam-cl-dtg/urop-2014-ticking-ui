@@ -7,22 +7,47 @@
         <link rel="stylesheet" href="../../css/shared-styles.css">
         <link rel="stylesheet" href="tick-components.css">
 
-        <core-collapse opened?="{{!signedUp && !testRunning}}">
+        <style>
+            .dialogYes {
+                background-color: #259b24; /* Material Green 500 */
+                color: #FFFFFF;
+                margin-left: 5px;
+            }
+            .dialogNo {
+                background-color: #e51c23; /* Material Red 500 */
+                color: #FFFFFF;
+                margin-right: 5px;
+            }
+        </style>
+
+        <!-- Sign up button -->
+        <core-collapse opened?="{{!signedUp && !testRunning && unitPass}}">
             <paper-button class="greenButton" label="SIGN UP" on-tap="{{openSignupDialog}}"></paper-button>
         </core-collapse>
 
+        <!-- Cancel sign up button -->
         <core-collapse opened?="{{signedUp}}">
             <paper-button class="greenButton" label="CANCEL SIGN UP" on-tap="{{showCancelDialog}}"></paper-button>
         </core-collapse>
 
-        <core-collapse hidden?="{{testRunning || !unitPass}}>
-            <div class="error">Sign up unavailable (unit tests not passed)</div>
+        <!-- Error message: sign up unavailable because the unit tester has not been passed -->
+        <core-collapse opened?="{{!testRunning && !unitPass}}">
+            <div class="error">Sign up unavailable (automated tests not passed)</div>
         </core-collapse>
 
+        <!-- Error message: sign up unavailable because a test is running -->
         <core-collapse opened?="{{testRunning}}">
             <div class="error">Sign up unavailable (test running)</div>
         </core-collapse>
+
+        <!-- Sign ups dialog -->
         <sheet-selector id="signupDialog" sheets="{{sheets}}" tickId="{{tickId}}"></sheet-selector>
+
+        <!-- TODO: confirm cancel sign up dialog -->
+        <paper-dialog id="cancelDialog" heading="Cancel Sign up?" backdrop transition="core-transition-top">
+            <paper-button class="dialogNo" dismissive label="No"></paper-button>
+            <paper-button class="dialogYes" affirmative label="Yes"></paper-button>
+        </paper-dialog>
     </template>
     <script>
         Polymer('signup-component', {
@@ -31,7 +56,7 @@
             },
 
             showCancelDialog: function() {
-                //TODO
+                this.$.cancelDialog.toggle();
             }
         });
     </script>

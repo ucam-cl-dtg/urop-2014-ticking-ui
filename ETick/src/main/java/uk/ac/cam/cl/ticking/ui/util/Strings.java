@@ -9,6 +9,7 @@ public class Strings {
 	public static final String GROUPSCOLLECTION = "Groups";
 	public static final String USERSCOLLECTION = "Users";
 	public static final String GROUPINGSCOLLECTION = "Groupings";
+	public static final String AUTHCODESCOLLECTION = "authCodes";
 
 	public static final String[] ACADEMICINSTITUTIONS = { "Computer Laboratory" };
 
@@ -20,7 +21,7 @@ public class Strings {
 
 	public static final String FORKED = "You have already forked this repository, state has not been lost.";
 
-	public static final String GROUPNAMECLASH = "A group with that name already exists";
+	public static final String IDEMPOTENTRETRY = "Oops: Something went wrong, please try again";
 	
 	public static final String EXISTINGTIMEBOOKING = "Error: You already have a booking at this time.";
 	

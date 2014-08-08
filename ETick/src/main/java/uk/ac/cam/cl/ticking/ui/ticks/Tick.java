@@ -233,6 +233,14 @@ public class Tick implements Comparable<Tick> {
 		return tickId.replace(',', '/');
 	}
 
+    /**
+     * @param tickId
+     * @return The name of the tick extracted from the tick ID.
+     */
+    public static String getNameFromID(String tickId) {
+        return tickId.split(",")[1];
+    }
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -267,4 +275,5 @@ public class Tick implements Comparable<Tick> {
 	public int hashCode() {
 		return tickId.hashCode();
 	}
+
 }

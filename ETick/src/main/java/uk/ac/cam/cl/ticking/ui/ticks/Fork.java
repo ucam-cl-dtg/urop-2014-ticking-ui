@@ -1,5 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.ticks;
 
+import org.joda.time.DateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -26,6 +28,10 @@ public class Fork {
 	private boolean humanPass = false;
 	private boolean signedUp = false;
 	private boolean testing = false;
+	private boolean reportAvailable = false;
+	
+	private String lastTickedBy;
+	private DateTime lastTickedOn;
 
 	/**
 	 * Create a new instance of the Submission object.
@@ -128,6 +134,22 @@ public class Fork {
 
 	/**
 	 * 
+	 * @return lastTickedBy
+	 */
+	public String getLastTickedBy() {
+		return lastTickedBy;
+	}
+
+	/**
+	 * 
+	 * @param lastTickedBy
+	 */
+	public void setLastTickedBy(String lastTickedBy) {
+		this.lastTickedBy = lastTickedBy;
+	}
+
+	/**
+	 * 
 	 * @return signedUp
 	 */
 	public boolean isSignedUp() {
@@ -136,7 +158,7 @@ public class Fork {
 
 	/**
 	 * 
-	 * @param signedUp
+	 * @param signedUpr
 	 */
 	public void setSignedUp(boolean signedUp) {
 		this.signedUp = signedUp;
@@ -149,7 +171,7 @@ public class Fork {
 	public boolean isTesting() {
 		return testing;
 	}
- 
+
 	/**
 	 * 
 	 * @param testing
@@ -158,9 +180,38 @@ public class Fork {
 		this.testing = testing;
 	}
 
+	/**
+	 * @return reportAvailable
+	 */
+	public boolean isReportAvailable() {
+		return reportAvailable;
+	}
+
+	/**
+	 * @param reportAvailable
+	 */
+	public void setReportAvailable(boolean reportAvailable) {
+		this.reportAvailable = reportAvailable;
+	}
+
+	/**
+	 * 
+	 * @return lastTimedOn
+	 */
+	public DateTime getLastTickedOn() {
+		return lastTickedOn;
+	}
+
+	/**
+	 * 
+	 * @param lastTickedOn
+	 */
+	public void setLastTickedOn(DateTime lastTickedOn) {
+		this.lastTickedOn = lastTickedOn;
+	}
+
 	public static String generateForkId(String crsid, String tickId) {
-			return crsid+","+tickId;
-		}
-	
-	
+		return crsid + "," + tickId;
+	}
+
 }

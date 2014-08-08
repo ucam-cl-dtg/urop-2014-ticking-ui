@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="ticker-set-result-style.css"/>
 
     <core-ajax id="setTickResult"
-               method="PUT">
+               method="PUT"
+               contentType="application/json">
     </core-ajax>
 
 
@@ -44,38 +45,45 @@
             {
               "use strict";
 
-              if (tickStatus != "PASS")
-              {
-                tickStatus = "FAIL";
-              }
-
               if (typeof comment == typeof undefined)
               {
                 comment = null;
               }
+              else
+              {
+                comment = comment.replace(/\n/gm, "\\n")
+                                 .replace(/\'/gm, "\\'")
+                                 .replace(/\"/gm, '\\"')
+                                 .replace(/\&/gm, "\\&")
+                                 .replace(/\r/gm, "\\r")
+                                 .replace(/\t/gm, "\\t")
+                                 .replace(/[\b]/gm, "\\b")
+                                 .replace(/\f/gm, "\\f");
+              }
 
-              /* TODO: Test this */
               this.$.setTickResult.url =
-                ticking_service + "/fork/" + this.tickId;
+                ticking_service + "/fork/"
+                  + this.crsid + "/"
+                  + this.tickId;
 
-              this.$.setTickResult.params =
-                {   "humanPass"      : tickStatus
-                  , "signedUp"       : false
-                  , "tickerComments" : comment
-                  , "commitId"       : this.commitId
-                }
+              this.$.setTickResult.body =
+                  '{   "humanPass"      : "' + tickStatus + '"'
+                + '  , "signedUp"       : false'
+                + '  , "tickerComments" : "' + comment + '"'
+                + '  , "commitId"       : "' + this.commitId + '"'
+                + '}'
 
               this.$.setTickResult.go();
             }
 
           , passTick: function ()
             {
-              this.sendTick("PASS", undefined);
+              this.sendTick(true,  this.$.tickerComment.value);
             }
 
           , failTick: function ()
             {
-              this.sendTick("FAIL", this.$.tickerComment);
+              this.sendTick(false, this.$.tickerComment.value);
             }
         });
   </script>

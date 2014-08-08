@@ -59,10 +59,11 @@ public interface IForkApiFacade {
 	 * @return
 	 */
 	@PUT
-	@Path("/{tickId}")
+	@Path("/{crsid}/{tickId}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response updateFork(@Context HttpServletRequest request,
+			@PathParam("crsid") String crsid,
 			@PathParam("tickId") String tickId, ForkBean forkBean);
 
 }

@@ -9,6 +9,7 @@
 <link rel="import" href="onlogin.html">
 <link rel="import" href="group.html">
 <link rel="import" href="create-group.html">
+<link rel="import" href="tick-creator/tick-creator-card.html">
 
 <polymer-element name="page-scaffold" attributes="">
 	<template>
@@ -27,14 +28,14 @@
 			<div flex layout horizontal end-justified>
 			<core-selector id="navMenu" valueattr="id" selected="dashButton" selectedAttribute="">
 
-                <menu-button id="ticksMenu" label="Ticks" valueattr="label">
-                    <template repeat="{{item in items}}">
-                        <core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}"></core-item>
-                    </template>
-                    <template if="{{!$.loginAPIs.ldap.isStudent}}">
-                        <core-item id="createTickItem" icon="add" label="Create..."></core-item>
-                    </template>
-                </menu-button>
+				<template if="{{!$.loginAPIs.ldap.isStudent}}">
+	                <menu-button id="ticksMenu" label="Ticks" valueattr="label">
+	                    <template repeat="{{tick in ticks}}">
+	                        <core-item icon="check-box" label="{{tick.name}}" tickId="{{tick._id}}"></core-item>
+	                    </template>
+	                    <core-item id="createTickItem" icon="add" label="Create..." tickId=""></core-item>
+	                </menu-button>
+	            </template>
 
 				<menu-button id="groupsMenu" label="Groups" valueattr="label">
 					<template repeat="{{item in items}}">
@@ -68,6 +69,12 @@
 		<template id="groupTemp" if="{{gid}}">
 			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}"></x-group>
 		</template>
+		
+		<template id="tickTemp" if="{{showTickCreator}}">
+			<main-card animated>
+				<tick-creator-card tickId="{{tickId}}"></tick-creator-card>
+			</main-card>
+		</template>
 
 	</core-header-panel>
 	</template>
@@ -80,20 +87,28 @@
 				'$.groupsMenu.selection': 'groupSelectionChanged',
                 '$.ticksMenu.selection': 'tickSelectionChanged',
 				'$.navMenu.selection': 'navSelectionChanged',
-				'$.loginAPIs.groupItems' : 'groupItemsChanged'
+				'$.loginAPIs.groupItems' : 'groupItemsChanged',
+				'$.loginAPIs.tickItems' : 'tickItemsChanged'
 			},
 
 			navSelectionChanged: function(oldValue, newValue) {
 				if (newValue.id === "dashButton") {
 					this.showDash = true;
-					this.$.groupTemp.model = {gid: null};
-					this.$.groupsMenu.selected = "-1";
+					this.noGroup();
+					this.noTickCreator();
 				}
 			},
 
 			logoutClicked: function () {
 				this.$.loginAPIs.$.logoutAjax.go();
 		    	window.location.href = 'https://raven.cam.ac.uk/auth/logout.html';
+			},
+
+			// Group menu handlers:
+
+			noGroup: function () {
+				this.$.groupTemp.model = {gid: null};
+				this.$.groupsMenu.selected = "-1";
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
@@ -104,6 +119,8 @@
 				}
 				else {
 					this.showDash = false;
+					this.noTickCreator();
+
 					this.$.groupTemp.model = {gid: null};
 					this.$.groupTemp.model = { 
 						gid: newValue.getAttribute('gid'),
@@ -113,20 +130,6 @@
 					};
 				}
 			},
-
-            tickSelectionChanged: function (oldValue, newValue) {
-                if (!newValue || (oldValue && oldValue.id === "createTickItem")) return;
-
-                this.showDash = false;
-                if (newValue.id === "createTickItem") {
-                    //this.$.createGroup.toggleDialog();
-                    //this.$.groupsMenu.selected = oldValue ? oldValue.label : "-1";
-                }
-                else {
-                    this.$.groupTemp.model = {gid: null};
-                    this.$.groupTemp.model = {gid: newValue.getAttribute('gid')};
-                }
-            },
 
 			groupCreatedHandler: function (e, detail) {
 				this.$.loginAPIs.$.sidebarAjax.go();
@@ -142,6 +145,28 @@
 				setTimeout(function () {
 					this.$.groupsMenu.selected = this.toSelect
 				}.bind(this), 0);
+			},
+
+			// Tick menu handlers:
+
+			noTickCreator: function () {
+				this.$.ticksMenu.selected = "-1";
+				this.$.tickTemp.model = { showTickCreator: false };
+			},
+
+			tickItemsChanged: function (oldValue, newValue) {
+				this.ticks = newValue;
+			},
+
+			tickSelectionChanged: function (oldValue, newValue) {
+				if (!newValue) return;
+				this.showDash = false;
+				this.noGroup();
+				this.$.tickTemp.model = { showTickCreator: false };
+
+				console.log(newValue);
+				this.tickId = newValue.getAttribute('tickId');
+				this.$.tickTemp.model = { showTickCreator: true, tickId: this.tickId };
 			}
 
 		});

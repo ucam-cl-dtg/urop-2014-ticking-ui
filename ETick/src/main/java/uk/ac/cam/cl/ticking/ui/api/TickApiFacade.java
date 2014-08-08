@@ -46,6 +46,9 @@ public class TickApiFacade implements ITickApiFacade {
 
 	Logger log = Logger.getLogger(ConfigurationLoader.class.getName());
 	private IDataManager db;
+	// not currently used but could quite possibly be needed in the future, will
+	// remove if not
+	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
 	private ITestService testServiceProxy;
@@ -157,62 +160,61 @@ public class TickApiFacade implements ITickApiFacade {
 		tick.setAuthor(crsid);
 		tick.initTickId();
 
-		testServiceProxy.createNewTest(tick.getTickId(),
-				tickBean.getCheckstyleOpts());
-
-		String repo;
-		/*
-		 * Here we try to create two repositories. If the first create fails, we
-		 * abort. If the second fails, we abort, however the first repository
-		 * still exists. We throw this back to the user as a failure and they
-		 * must try again. On this retry we will find that the first repository
-		 * already exists as expected, hence we ignore the duplicate repository
-		 * name exception thrown
-		 */
-		try {
-			repo = gitServiceProxy.addRepository(new RepoUserRequestBean(crsid
-					+ "/" + tickBean.getName(), crsid));
-		} catch (IOException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-					.build();
-		} catch (InternalServerErrorException e) {
-			RemoteFailureHandler h = new RemoteFailureHandler();
-			SerializableException s = h.readException(e);
-			log.warn(s.getClass());
-			repo = s.getMessage();
-
-		} catch (DuplicateRepoNameException e) {
-			try {
-				repo = gitServiceProxy.getRepoURI(crsid + "/"
-						+ tickBean.getName());
-			} catch (RepositoryNotFoundException e1) {
-				throw new RuntimeException("Schrodinger's repository");
-				// The repo simultaneously does and doesn't exist
-			}
-			log.info(
-					"Found a clashing repository name, assuming this is due to a previous error and continuing",
-					e);
+		Tick failed = db.getTick(tick.getTickId());
+		if (failed != null && failed.getStubRepo() != null
+				&& failed.getCorrectnessRepo() != null) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(Strings.EXISTS).build();
 		}
-		
-		String correctnessRepo;
-		try {
-			correctnessRepo = gitServiceProxy
-					.addRepository(new RepoUserRequestBean(crsid + "/"
-							+ tickBean.getName() + "/correctness", crsid));
-		} catch (IOException | DuplicateRepoNameException e) {
-			/*
-			 * Here if we encounter a duplicate repository name then the second
-			 * create did not fail, and we should not be here again with the
-			 * same repo name meaning, if we are, something has gone wrong.
-			 */
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-					.build();
+
+		if (failed == null || failed.getStubRepo() == null) {
+			String repo;
+			try {
+				repo = gitServiceProxy.addRepository(new RepoUserRequestBean(
+						crsid + "/" + tickBean.getName(), crsid));
+			} catch (InternalServerErrorException e) {
+				RemoteFailureHandler h = new RemoteFailureHandler();
+				SerializableException s = h.readException(e);
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+
+			} catch (IOException | DuplicateRepoNameException e) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+						.build();
+				// Due to exception chaining this shouldn't happen
+			}
+			tick.setStubRepo(repo);
+		} else {
+			tick.setStubRepo(failed.getStubRepo());
+		}
+
+		if (failed == null || failed.getCorrectnessRepo() == null) {
+			String correctnessRepo;
+			try {
+				correctnessRepo = gitServiceProxy
+						.addRepository(new RepoUserRequestBean(crsid + "/"
+								+ tickBean.getName() + "/correctness", crsid));
+			} catch (InternalServerErrorException e) {
+				RemoteFailureHandler h = new RemoteFailureHandler();
+				SerializableException s = h.readException(e);
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+
+			} catch (IOException | DuplicateRepoNameException e) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+						.build();
+				// Due to exception chaining this shouldn't happen
+			}
+			tick.setCorrectnessRepo(correctnessRepo);
+		} else {
+			tick.setCorrectnessRepo(failed.getCorrectnessRepo());
 		}
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
-		tick.setStubRepo(repo);
-		tick.setCorrectnessRepo(correctnessRepo);
+
+		testServiceProxy.createNewTest(tick.getTickId(),
+				tickBean.getCheckstyleOpts());
 
 		for (String groupId : tick.getGroups()) {
 			Group g = db.getGroup(groupId);
@@ -220,13 +222,7 @@ public class TickApiFacade implements ITickApiFacade {
 			db.saveGroup(g);
 		}
 
-		
-		try {
-			db.insertTick(tick);
-		} catch (DuplicateDataEntryException de) {
-			return Response.status(Status.CONFLICT).entity(Strings.EXISTS)
-					.build();
-		}
+		db.saveTick(tick);
 
 		return Response.status(Status.CREATED).entity(tick).build();
 	}
@@ -325,49 +321,6 @@ public class TickApiFacade implements ITickApiFacade {
 		db.saveGroup(g);
 		db.saveTick(t);
 		return Response.status(Status.CREATED).entity(g).build();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#forkTick
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
-	 */
-	@Override
-	public Response forkTick(HttpServletRequest request, String tickId) {
-		String crsid = (String) request.getSession().getAttribute(
-				"RavenRemoteUser");
-
-		Fork fork = db.getFork(crsid + "," + tickId);
-		if (fork != null) {
-			return Response.ok(fork).build();
-		}
-
-		String repo = null;
-		String repoName = Tick.replaceDelimeter(tickId);
-		try {
-			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null,
-					crsid, repoName, null));
-		} catch (DuplicateRepoNameException e) {
-			repo = e.getMessage();
-		} catch (IOException e) {
-			// The repo that was being forked was empty, however, it has still
-			// been forked thus continue
-
-		}
-
-		try {
-			fork = new Fork(crsid, tickId, repo);
-			db.insertFork(fork);
-		} catch (DuplicateDataEntryException e) {
-			throw new RuntimeException("Schrodinger's repository");
-			// The fork simultaneously does and doesn't exist
-		}
-
-		// Execution will only reach this point if there are no git errors else
-		// IOException is thrown
-		return Response.status(Status.CREATED).entity(fork).build();
 	}
 
 	/*

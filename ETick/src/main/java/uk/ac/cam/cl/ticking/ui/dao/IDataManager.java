@@ -290,5 +290,19 @@ public interface IDataManager {
 	 * @return List of forks from the given author
 	 */
 	public List<Fork> getForks(String author);
+	
+	/**
+	 * Stores the id/authCode pair.
+	 * @param id
+	 * @param authCode
+	 */
+	public void addAuthCode(String id, String authCode);
+	
+	/**
+	 * 
+	 * @param id
+	 * @return The authCode corresponding to the given id. Null if none exists.
+	 */
+	public String getAuthCode(String id);
 
 }

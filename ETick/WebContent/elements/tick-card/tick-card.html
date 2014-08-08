@@ -18,6 +18,7 @@
 
         <!-- for managing fork object data -->
         <fork-service
+                id="forkService"
                 tickId="{{tickId}}"
                 unitPass="{{unitPass}}"
                 humanPass="{{humanPass}}"
@@ -28,7 +29,7 @@
         </fork-service>
 
         <div id="mainContainer">
-            <h1>Tick Card</h1>
+            <h1>{{tickId}}</h1>
             <div>{{repo}}</div>
 
             <br>
@@ -39,7 +40,8 @@
                         tickId="{{tickId}}"
                         signedUp="{{signedUp}}"
                         testRunning="{{testRunning}}"
-                        humanPass="{{humanPass}}">
+                        reportAvailable="{{reportAvailable}}"
+                        unitPass="{{unitPass}}">
                 </submit-component>
                 <div class="spacer"></div>
                 <report-component flex
@@ -65,15 +67,26 @@
                 this.testRunning = null;
                 this.reportAvailable  = null;
                 this.repo = null;
+
+
             },
 
-            testRunningChanged: function() {
+            domReady: function() {
+                var that = this.$;
+                this.$.forkService.addEventListener('test-running', function(e) {
+                    that.submitComponent.continuePolling();
+                });
+            }
+
+
+
+           /* testRunningChanged: function() {
                 console.log(this.testRunning);
 
                 if (this.testRunning == true) {
                     this.$.submitComponent.continuePolling();
                 }
-            }
+            }*/
         });
     </script>
 </polymer-element>

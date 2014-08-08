@@ -2,11 +2,13 @@ package uk.ac.cam.cl.ticking.ui.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.internal.MongoJackModule;
 
+import uk.ac.cam.cl.ticking.signups.AuthCodeMap;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
@@ -31,6 +33,7 @@ public class MongoDataManager implements IDataManager {
 	private final JacksonDBCollection<Group, String> groupColl;
 	private final JacksonDBCollection<Grouping, String> groupingColl;
 	private final JacksonDBCollection<Fork, String> forkColl;
+	private final JacksonDBCollection<AuthCodeMap, String> authCodeColl;
 
 	/**
 	 * @param database
@@ -57,6 +60,9 @@ public class MongoDataManager implements IDataManager {
 		groupingColl = JacksonDBCollection.wrap(
 				database.getCollection(Strings.GROUPINGSCOLLECTION),
 				Grouping.class, String.class, objectMapper);
+		authCodeColl = JacksonDBCollection.wrap(
+                database.getCollection(Strings.AUTHCODESCOLLECTION),
+                AuthCodeMap.class, String.class, objectMapper);
 	}
 
 	/*
@@ -609,5 +615,25 @@ public class MongoDataManager implements IDataManager {
 		cursor.close();
 		return forks;
 	}
+
+    /* (non-Javadoc)
+     * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#addAuthCode(java.lang.String, java.lang.String)
+     */
+    @Override
+    public void addAuthCode(String id, String authCode) {
+        authCodeColl.save(new AuthCodeMap(id, authCode));
+    }
+
+    /* (non-Javadoc)
+     * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getAuthCode(java.lang.String)
+     */
+    @Override
+    public String getAuthCode(String id) {
+        try {
+            return authCodeColl.findOneById(id).getAuthCode();
+        } catch(MongoException e) {
+            return null; // as per javadoc
+        }
+    }
 
 }
