@@ -9,7 +9,11 @@
 <link rel="import" href="ticker-set-result.html"/>
 
 <polymer-element name="file-browser-card"
-                 attributes="repoName highlight tickId crsid">
+                 attributes="repoName
+                             highlight
+                             tickId
+                             crsid
+                             ticker">
   <!-- TODO: get ALL reports -->
   <template>
     <link rel="stylesheet" href="style.css"/>
@@ -114,10 +118,13 @@
         </template>
 
         <!-- Pass/fail button -->
-        <ticker-set-result commitId="{{commitId}}"
-                           crsid="{{crsid}}"
-                           tickId="{{tickId}}">
-        </ticker-set-result>
+        <template if="{{ticker != undefined}}">
+          <ticker-set-result commitId="{{commitId}}"
+                             crsid="{{crsid}}"
+                             ticker="{{ticker}}"
+                             tickId="{{tickId}}">
+          </ticker-set-result>
+        </template>
 
       </div>
     </div>
