@@ -1,6 +1,7 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/core-splitter/core-splitter.html"/>
+<link rel="import" href="../../bower_components/marked-element/marked-element.html"/>
 <link rel="import" href="files-service.html"/>
 <link rel="import" href="file-card.html"/>
 <link rel="import" href="files-list.html"/>
@@ -44,7 +45,11 @@
         <!-- Ticker comments -->
         <template if="{{comments != null}}">
           Ticker comments:
-          <pre class="ticker-comments">{{comments}}</pre>
+          <!-- Indentation due to marked element considering spaces -->
+          <marked-element
+              class="ticker-comments">
+{{comments}}
+          </marked-element>
         </template>
 
         <select name="syntaxSelect" value="{{syntaxStyleSheet}}">
