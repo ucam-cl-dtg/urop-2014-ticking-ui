@@ -15,8 +15,7 @@
 		<core-ajax id="slotsAPI"
 			url=""
 			handleAs="json"
-			on-core-response="{{slotsResponse}}"
-			on-core-error="{{slotsResponse}}">
+			on-core-response="{{slotsResponse}}">
 		</core-ajax>
 
 		<!-- Signup make bookings API. -->
@@ -53,6 +52,7 @@
 			<template if="{{slotSelection}}">
 				<paper-button id="sheetSubmit" class="dialogSubmit" label="SIGN UP" on-click="{{signUpClicked}}" affirmative></paper-button>
 			</template>
+
 		</paper-dialog>
 	</template>
 	<script>
@@ -73,7 +73,7 @@
 				console.log('Book:\nSheet: ' + this.sheetSelection + 'Slot: ' + this.slotSelection);
 				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
 					this.sheetSelection + "/bookings";
-				var parseDate = Date.parse(this.selecton);
+				var parseDate = Date.parse(this.slotSelection);
 				this.$.bookingsAPI.body = '{ "tickID" : "' + this.tickId + '", "startTime" : "' + parseDate + '" }';
 				console.log(this.$.bookingsAPI.body);
 				// this.$.bookingsAPI.go();

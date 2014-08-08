@@ -1,0 +1,35 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="date-calendar.html">
+
+<polymer-element name="upcoming-slots" attributes="slots">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+	</template>
+	<script>
+		Polymer('upcoming-slots', {
+			domReady: function () {
+				this.slots = [
+					{
+						startTime: "2012-07-14T01:00:00+01:00",
+						comment: "rmk35,tester",
+						columnName: "Foo"
+					},
+					{
+						startTime: "2012-07-14T01:00:00+01:00",
+						comment: "rmk35,tester",
+						columnName: "Foo"
+					},
+					{
+						startTime: "2012-07-14T01:00:00+01:00",
+						comment: "rmk35,tester",
+						columnName: "Foo"
+					}
+				]
+			}
+		});
+	</script>
+</polymer-element>
