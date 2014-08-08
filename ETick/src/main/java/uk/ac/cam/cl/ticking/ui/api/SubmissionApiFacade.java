@@ -6,9 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.joda.time.DateTime;
 
 import publicinterfaces.ITestService;
@@ -22,6 +19,7 @@ import publicinterfaces.TestStillRunningException;
 import publicinterfaces.TickNotInDBException;
 import publicinterfaces.UserNotInDBException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
+import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
@@ -41,6 +39,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	private ConfigurationLoader<Configuration> config;
 
 	private ITestService testServiceProxy;
+	private TickSignups tickSignupService;
 
 	/**
 	 * @param db
@@ -49,10 +48,11 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	@Inject
 	public SubmissionApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ITestService testServiceProxy) {
+			ITestService testServiceProxy, TickSignups tickSignupService) {
 		this.db = db;
 		this.config = config;
 		this.testServiceProxy = testServiceProxy;
+		this.tickSignupService = tickSignupService;
 	}
 
 	/*
@@ -127,7 +127,20 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 			fork.setTesting(false);
 			fork.setReportAvailable(true);
-			fork.setUnitPass(status.getInfo().equals(ReportResult.PASS));
+			
+			List<String> groupIds = db.getTick(tickId).getGroups();
+			
+			boolean unitPass = status.getInfo().equals(ReportResult.PASS);
+			if (unitPass) {
+				for (String groupId : groupIds) {
+					tickSignupService.allowSignup(crsid, groupId, tickId);
+				}
+			} else {
+				for (String groupId : groupIds) {
+					tickSignupService.disallowSignup(crsid, groupId, tickId);
+				}
+			}
+			fork.setUnitPass(unitPass);
 			db.saveFork(fork);
 			//TODO whitelist signup
 		}
