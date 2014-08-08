@@ -11,18 +11,29 @@
 				display: block;
 			}
 		</style>
+
+		<!-- Logging in API call. -->
 		<core-ajax id="loginAjax"
 			auto
 			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user"
 			handleAs="json"
 			on-core-response="{{loginResponse}}">
 		</core-ajax>
+
+		<!-- Upcoming events API call. -->
+		<core-ajax id="upcomingAPI"
+			auto
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/bookings"
+			handleAs="json"
+			on-core-response="{{upcomingResponse}}">
+		</core-ajax>
+
 		<main-card animated>
 			<user-card id="userCard" ldap="{{data}}"></user-card>
 		</main-card>
 
 		<main-card animated>
-			<upcoming-slots></upcoming-slots>
+			<upcoming-slots slots="{{slots}}"></upcoming-slots>
 		</main-card>
 	</template>
 
@@ -31,6 +42,10 @@
 			loginResponse: function() {
 				this.data = this.$.loginAjax.response;
 			},
+
+			upcomingResponse: function() {
+				this.slots = this.$.upcomingAPI.response;
+			}
 		});
 	</script>
 </polymer-element>

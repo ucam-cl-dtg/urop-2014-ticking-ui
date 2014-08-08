@@ -32,34 +32,14 @@
 		<div layout horizontal center wrap>
 			<template repeat="{{slot in slots}}">
 				<slot-box 	datetime="{{slot.startTime}}" 
-							tickId="{{slot.comment}}" 
-							ticker="{{slot.columnName}}">
+							tickId="{{slot.tickName}}" 
+							ticker="{{slot.ticker}}">
 				</slot-box>
 			</template>
 		</div>
 	</template>
 	<script>
 		Polymer('upcoming-slots', {
-			domReady: function () {
-				this.slots = [
-					{
-						startTime: "2012-07-14T01:00:00+01:00",
-						comment: "rmk35,tester",
-						columnName: "Foo"
-					},
-					{
-						startTime: "2012-07-14T01:00:00+01:00",
-						comment: "rmk35,tester",
-						columnName: "Foo"
-					},
-					{
-						startTime: "2012-07-14T01:00:00+01:00",
-						comment: "rmk35,tester",
-						columnName: "Foo"
-					}
-				]
-			},
-
 			slotListFilter: function(items, q) {
 				if (items && q) {
 					return items.filter(this.slotFilter.bind(this));
