@@ -127,6 +127,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 			fork.setTesting(false);
 			fork.setReportAvailable(true);
+			fork.setUnitPass(status.getInfo().equals(ReportResult.PASS));
 			db.saveFork(fork);
 		}
 
