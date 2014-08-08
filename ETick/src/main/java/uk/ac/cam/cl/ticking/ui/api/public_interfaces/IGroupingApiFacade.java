@@ -1,20 +1,16 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import uk.ac.cam.cl.ticking.ui.actors.Grouping;
-import uk.ac.cam.cl.ticking.ui.actors.Role;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupingBean;
 
 /**
  * A RESTful interface for requests regarding groupings of Users, Groups and
@@ -39,18 +35,26 @@ public interface IGroupingApiFacade {
 	 * @return the stored grouping object
 	 */
 	@POST
-	@Path("/")
+	@Path("/{groupId}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public abstract Response addGrouping(@Context HttpServletRequest request,
-			@QueryParam("crsid") String crsid, @QueryParam("gid") String gid,
-			List<Role> roles);
-	
+	public abstract Response addGroupings(@Context HttpServletRequest request,
+			@PathParam("groupId") String groupId, GroupingBean groupingBean);
+
+	/**
+	 * Deletes a grouping, effectively revoking a user's particular role in a
+	 * group
+	 * 
+	 * @param request
+	 * @param grouping
+	 * @return the success of the request
+	 */
 	@DELETE
-	@Path("/")
+	@Path("/{groupId}")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public abstract Response deleteGrouping(@Context HttpServletRequest request,
-			Grouping grouping);
+	public abstract Response deleteGroupings(
+			@Context HttpServletRequest request,
+			@PathParam("groupId") String groupId, GroupingBean groupingBean);
 
 }

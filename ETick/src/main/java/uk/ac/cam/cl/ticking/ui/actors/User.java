@@ -24,8 +24,10 @@ public class User implements Comparable<User> {
 	private List<String> institutions;
 	private String college;
 
+	private String ssh;
+
 	private boolean ldap;
-	
+
 	private boolean hasLogged;
 
 	private boolean isStudent;
@@ -50,15 +52,9 @@ public class User implements Comparable<User> {
 	 * @param college
 	 * @param status
 	 */
-	@JsonCreator
-	public User(@JsonProperty("_id") String crsid,
-			@JsonProperty("surname") String surname,
-			@JsonProperty("regName") String regName,
-			@JsonProperty("displayName") String displayName,
-			@JsonProperty("email") String email,
-			@JsonProperty("institutions") List<String> institutions,
-			@JsonProperty("college") String college,
-			@JsonProperty("isStudent") boolean isStudent) {
+	public User(String crsid, String surname, String regName,
+			String displayName, String email, List<String> institutions,
+			String college, boolean isStudent) {
 		this.setCrsid(crsid);
 		this.setSurname(surname);
 		this.setRegName(regName);
@@ -68,6 +64,13 @@ public class User implements Comparable<User> {
 		this.setCollege(college);
 		this.setIsStudent(isStudent);
 		this.setLdap(true);
+	}
+	
+	/**
+	 * Empty default constructor for Jackson
+	 */
+	public User() {
+		
 	}
 
 	/**
@@ -87,7 +90,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @return surname
 	 */
-	@JsonProperty("surname")
 	public String getSurname() {
 		return surname;
 	}
@@ -95,7 +97,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @param surname
 	 */
-	@JsonProperty("surname")
 	public void setSurname(String surname) {
 		this.surname = surname;
 	}
@@ -103,7 +104,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @return regName
 	 */
-	@JsonProperty("regName")
 	public String getRegName() {
 		return regName;
 	}
@@ -111,7 +111,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @param regName
 	 */
-	@JsonProperty("regName")
 	public void setRegName(String regName) {
 		this.regName = regName;
 	}
@@ -119,7 +118,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @return displayName
 	 */
-	@JsonProperty("displayName")
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -127,7 +125,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @param displayName
 	 */
-	@JsonProperty("displayName")
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
@@ -135,7 +132,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @return email
 	 */
-	@JsonProperty("email")
 	public String getEmail() {
 		return email;
 	}
@@ -143,7 +139,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @param email
 	 */
-	@JsonProperty("email")
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -151,7 +146,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @return institutions
 	 */
-	@JsonProperty("institutions")
 	public List<String> getInstitutions() {
 		return institutions;
 	}
@@ -159,7 +153,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @param institutions
 	 */
-	@JsonProperty("institutions")
 	public void setInstitutions(List<String> institutions) {
 		this.institutions = institutions;
 	}
@@ -167,7 +160,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @return college
 	 */
-	@JsonProperty("college")
 	public String getCollege() {
 		return college;
 	}
@@ -175,15 +167,29 @@ public class User implements Comparable<User> {
 	/**
 	 * @param college
 	 */
-	@JsonProperty("college")
 	public void setCollege(String college) {
 		this.college = college;
 	}
 
 	/**
+	 * 
+	 * @return ssh
+	 */
+	public String getSsh() {
+		return ssh;
+	}
+
+	/**
+	 * 
+	 * @param ssh
+	 */
+	public void setSsh(String ssh) {
+		this.ssh = ssh;
+	}
+
+	/**
 	 * @return isStudent
 	 */
-	@JsonProperty("isStudent")
 	public boolean getIsStudent() {
 		return isStudent;
 	}
@@ -191,7 +197,6 @@ public class User implements Comparable<User> {
 	/**
 	 * @param isStudent
 	 */
-	@JsonProperty("isStudent")
 	public void setIsStudent(boolean isStudent) {
 		this.isStudent = isStudent;
 	}
@@ -224,22 +229,38 @@ public class User implements Comparable<User> {
 		this.hasLogged = hasLogged;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(User o) {
 		String compareMe = (surname == null) ? crsid : surname;
 		String compareThem = (o.surname == null) ? o.crsid : o.surname;
 		return compareMe.compareToIgnoreCase(compareThem);
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
+		if (this == o)
+			return true;
 		if (!(o instanceof User)) {
 			return false;
 		}
-		return this.crsid == ((User)o).crsid;
+		return this.crsid == ((User) o).crsid;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return crsid.hashCode();

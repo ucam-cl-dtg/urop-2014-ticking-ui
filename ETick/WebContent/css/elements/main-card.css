@@ -24,7 +24,7 @@
 }
 
 #card.hidden {
-	display none;
+	display: none;
 }
 
 :host(.dragging:host) {

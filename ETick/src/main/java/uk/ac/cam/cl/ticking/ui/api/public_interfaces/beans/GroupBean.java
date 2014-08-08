@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This class stores the name and identifier for a group
+ * This class stores the user defined aspects of a group for use during creator.
  * 
  * @author tl364
  *
@@ -15,29 +15,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class GroupBean {
 
 	private String name;
-	
+
 	private String info;
 
 	private List<String> ticks = new ArrayList<String>();
 
 	/**
-	 * Create a new instance of a Group object
-	 * 
-	 * This will generate a group identifier automatically and should only be
-	 * used when a user is creating a new group.
 	 * 
 	 * @param name
 	 * @param info
 	 */
-	@JsonCreator
-	public GroupBean(@JsonProperty("name") String name, @JsonProperty("info") String info) {
+	public GroupBean(String name, String info) {
 		this.setName(name);
 		this.setInfo(info);
 	}
-	
-	//Default constructor for Jackson
+
+	// Default constructor for Jackson
 	public GroupBean() {
-		
+
 	}
 
 	/**
@@ -67,7 +62,7 @@ public class GroupBean {
 	public void addTick(String tickId) {
 		ticks.add(tickId);
 	}
-	
+
 	/**
 	 * @param tickId
 	 */

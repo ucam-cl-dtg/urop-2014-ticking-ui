@@ -38,21 +38,21 @@ public interface IGroupApiFacade {
 	@GET
 	@Path("/{groupId}")
 	@Produces("application/json")
-	public abstract Response getGroup(@PathParam("groupId") String groupId,
-			@QueryParam("byName") boolean byName);
+	public abstract Response getGroup(@PathParam("groupId") String groupId);
 
+	/**
+	 * Deletes the specified group, clearing up any dangling associations with
+	 * groupings and ticks
+	 * 
+	 * @param request
+	 * @param groupId
+	 * @return the success of the request
+	 */
 	@DELETE
 	@Path("/{groupId}")
 	@Produces("application/json")
 	public abstract Response deleteGroup(@Context HttpServletRequest request,
 			@PathParam("groupId") String groupId);
-
-	@DELETE
-	@Path("/{groupId}/{crsid}")
-	@Produces("application/json")
-	public abstract Response deleteUser(@Context HttpServletRequest request,
-			@PathParam("groupId") String groupId,
-			@PathParam("crsid") String crsid);
 
 	/**
 	 * 
@@ -74,10 +74,12 @@ public interface IGroupApiFacade {
 	public abstract Response getGroups();
 
 	/**
-	 * Commits the given group object to the database
+	 * Creates a new group object from the bean and commits it to the database.
 	 * 
-	 * @param g
-	 * @return the group object that has been committed to the database
+	 * @param request
+	 * @param roles
+	 * @param groupBean
+	 * @return the group object committed
 	 */
 	@POST
 	@Path("/")
@@ -88,10 +90,14 @@ public interface IGroupApiFacade {
 			GroupBean groupBean);
 
 	/**
-	 * Commits the given group object to the database
+	 * Updates the group object with the given groupId with the data in the
+	 * bean. If there is no group object with the groupId, the bean is passed to
+	 * the create method.
 	 * 
-	 * @param g
-	 * @return the group object that has been committed to the database
+	 * @param request
+	 * @param groupId
+	 * @param groupBean
+	 * @return the group object updated
 	 */
 	@PUT
 	@Path("/{groupId}")
@@ -99,5 +105,24 @@ public interface IGroupApiFacade {
 	@Consumes("application/json")
 	public abstract Response updateGroup(@Context HttpServletRequest request,
 			@PathParam("groupId") String groupId, GroupBean groupBean);
+
+	/**
+	 * 
+	 * @param request
+	 * @param groupId
+	 * @param members
+	 * @param ticks
+	 * @param groupBean
+	 * @return the cloned group object
+	 */
+	@POST
+	@Path("/{groupId}")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public abstract Response cloneGroup(@Context HttpServletRequest request,
+			@PathParam("groupId") String groupId,
+			@DefaultValue("true") @QueryParam("members") boolean members,
+			@DefaultValue("true") @QueryParam("ticks") boolean ticks,
+			GroupBean groupBean);
 
 }

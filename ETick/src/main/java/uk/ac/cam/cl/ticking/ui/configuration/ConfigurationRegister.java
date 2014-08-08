@@ -2,10 +2,15 @@ package uk.ac.cam.cl.ticking.ui.configuration;
 
 import java.util.HashMap;
 
+/**
+ * A factory class for creating and registering loaders for specified files.
+ * 
+ * @author tl364
+ *
+ */
 public class ConfigurationRegister {
 
-	private static HashMap<Class<? extends ConfigurationFile>, ConfigurationLoader<?>> loaders = 
-			new HashMap<Class<? extends ConfigurationFile>, ConfigurationLoader<?>>();
+	private static HashMap<Class<? extends ConfigurationFile>, ConfigurationLoader<?>> loaders = new HashMap<Class<? extends ConfigurationFile>, ConfigurationLoader<?>>();
 
 	static {
 		loaders.put(Configuration.class,

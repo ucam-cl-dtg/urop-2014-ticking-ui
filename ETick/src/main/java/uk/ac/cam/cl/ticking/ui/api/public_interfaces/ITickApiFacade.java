@@ -43,6 +43,13 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	public abstract Response getTick(@PathParam("tickId") String tickId);
 
+	/**
+	 * Deletes a tick, removing all associations with groups.
+	 * 
+	 * @param request
+	 * @param tickId
+	 * @return the success of the request
+	 */
 	@DELETE
 	@Path("/{tickId}")
 	@Produces("application/json")
@@ -60,13 +67,11 @@ public interface ITickApiFacade {
 			@PathParam("groupId") String groupId);
 
 	/**
-	 * Commits the given tick object to the database, but only after a
-	 * repository has been successfully created for it via the GitAPI. If a
-	 * groupId is given as a queryparam, the Tick will also be added to that
-	 * group via the addTick method.
+	 * Creates a new tick from a bean, calling the respective APIs to create a
+	 * stub repo, a correctness repo, and store the desired checkstyle options
 	 * 
 	 * @param request
-	 * @param tick
+	 * @param tickBean
 	 * @return the tick object that has been committed to the database
 	 * @throws IOException
 	 * @throws DuplicateRepoNameException
@@ -79,6 +84,18 @@ public interface ITickApiFacade {
 	public abstract Response newTick(@Context HttpServletRequest request,
 			TickBean tickBean) throws IOException, DuplicateRepoNameException;
 
+	/**
+	 * Updates the tick object in the database with the information in the bean.
+	 * If the tick object does not exist, the bean is passed to the creation
+	 * method.
+	 * 
+	 * @param request
+	 * @param tickId
+	 * @param tickBean
+	 * @return the created tick object
+	 * @throws IOException
+	 * @throws DuplicateRepoNameException
+	 */
 	@PUT
 	@Path("/{tickId}")
 	@Produces("application/json")
@@ -117,8 +134,16 @@ public interface ITickApiFacade {
 	@Path("/{tickId}")
 	@Produces("application/json")
 	public abstract Response forkTick(@Context HttpServletRequest request,
-			@PathParam("tickId") String tickId) throws IOException;
+			@PathParam("tickId") String tickId);
 
+	/**
+	 * Updates the deadline of a tick in the database
+	 * 
+	 * @param request
+	 * @param tickId
+	 * @param date
+	 * @return The updated tick object
+	 */
 	@PUT
 	@Path("/{tickId}/deadline")
 	@Produces("application/json")

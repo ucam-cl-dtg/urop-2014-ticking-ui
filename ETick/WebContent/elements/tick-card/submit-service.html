@@ -1,0 +1,102 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="submit-service" attributes="tickId status testRunning">
+    <template>
+        <style>
+            :host {
+                /*display: none;*/
+            }
+        </style>
+
+        <!-- submit this tick for testing -->
+        <core-ajax
+                id="ajaxSubmit"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/'}}"
+                handleAs="json"
+                method="POST"
+                on-core-response="{{startPolling}}"
+                on-core-error="{{submitError}}">
+        </core-ajax>
+
+        <!-- poll the tick's status -->
+        <core-ajax
+                id="ajaxPoll"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/running'}}"
+                handleAs="json"
+                on-core-response="{{pollNext}}"
+                on-core-error="{{pollError}}">
+        </core-ajax>
+
+        <paper-toast id="toastSubmitError" text="Error submitting. Try again."></paper-toast>
+        <paper-toast id="toastPollError" text="Error obtaining submission status. Try refreshing the page."></paper-toast>
+    </template>
+    <script>
+        Polymer('submit-service', {
+            created: function() {
+                this.status = {};
+            },
+
+            /**
+             * Submits the user's tick for testing
+             */
+            submit: function() {
+                console.log("submit request received");
+                console.log(this.tickId);
+                if (!(this.testRunning)) {
+                    this.status = {progress: 0, maxProgress: 1, info: "Starting..."};
+                    this.testRunning = true;
+                    this.$.ajaxSubmit.go();
+                }
+            },
+
+            /**
+             * Fired when submitting the tick failed.
+             */
+            submitError: function() {
+                this.testRunning = false;
+                this.$.toastSubmitError.show();
+            },
+
+            startPolling: function() {
+                console.log("Starting Polling");
+                this.testRunning = true;
+                this.status = {progress: 0, maxProgress: 1, info: "Starting..."};
+                this.$.ajaxPoll.go();
+            },
+
+            pollError: function(e, detail) {
+                console.log("poll error");
+
+                if (detail.xhr.responseText.indexOf("NoSuchTestException") > -1) {
+                    //assume last test finished
+                    this.testRunning = false;
+                } else {
+                    //no idea what could have happened. Assume connection failed (e.g. timed out) and try again
+                    this.$.toastPollError.show();
+
+                    this.job('job1', function() {
+                        this.startPolling();
+                    }, 3000);
+                }
+            },
+
+            /**
+             * Sets the published status attribute to the response of a pollStatus request, and starts another poll
+             * if the test is incomplete
+             */
+            pollNext: function() {
+                this.status = this.$.ajaxPoll.response;
+
+                if (this.status.progress == this.status.maxProgress) {
+                    console.log(this.status);
+                    this.testRunning = false;
+                } else {
+                    this.job('job1', function() {
+                        this.$.ajaxPoll.go();
+                    }, 500);
+                }
+            }
+        });
+    </script>
+</polymer-element>

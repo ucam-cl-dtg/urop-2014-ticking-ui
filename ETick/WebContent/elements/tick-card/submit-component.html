@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
+<link rel="import" href="submit-service.html">
+
+<polymer-element name="submit-component" attributes="tickId signedUp testRunning humanPass">
+    <template>
+        <!-- STYLES -->
+        <link rel="stylesheet" href="../../css/shared-styles.css">
+        <link rel="stylesheet" href="tick-components.css">
+
+        <submit-service id="service" tickId="{{tickId}}" status="{{status}}" testRunning="{{testRunning}}"></submit-service>
+
+        <!-- COMPONENT CONTENT -->
+        <core-collapse opened?="{{!testRunning && !signedUp}}">
+            <paper-button label="SUBMIT" class="greenButton" on-tap="{{submit}}"
+                disabled?="{{signedUp || testRunning || humanPass}}">
+            </paper-button>
+        </core-collapse>
+
+        <core-collapse opened?="{{testRunning}}">
+            <paper-progress value="{{status.progress / status.maxProgress * 100}}"></paper-progress>
+            <div id="progressCaption">{{status.info}}</div>
+        </core-collapse>
+
+        <!-- TODO: maybe replace a completely unhelpful disabled button with a more helpful error message -->
+        <core-collapse opened?="{{!testRunning && signedUp}}">
+            <div class="error">To resubmit, cancel your ticking session</div>
+        </core-collapse>
+    </template>
+    <script>
+        Polymer('submit-component', {
+            created: function() {
+                this.status = {progress: 0, maxProgress: 1, info: null};
+            },
+
+            submit: function() {
+                this.$.service.submit();
+            },
+
+            /**
+             * Expected to be called when a tick card is loaded and the test is still running
+             */
+            continuePolling: function() {
+                this.$.service.startPolling();
+            }
+        });
+    </script>
+</polymer-element>

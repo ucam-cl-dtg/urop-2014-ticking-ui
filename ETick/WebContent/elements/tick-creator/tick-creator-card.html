@@ -42,7 +42,7 @@
             height: 35px; /* Firefox/IE compatibility */
         }
         paper-button.colored {
-            background: #009933;
+            background: #259b24;
             color: #fff;
         }
         paper-toggle-button {
@@ -62,7 +62,6 @@
         }
         polyfill-next-selector {shadow: "paper-dialog h1"}
         paper-dialog::shadow h1 {
-            font-weight: 100;
             margin-bottom: 10px;
         }
         #dialogCancel {
@@ -158,7 +157,7 @@
                 <br>
             </div>
             <paper-input hidden?="{{inputDisplayNameHidden}}" id="inputDisplayName" flex label="e.g. Programming in Java Tick 1"
-                         inputValue="{{tickName}}" required error="Required" validate="\S"
+                         inputValue="{{tickName}}" required error="Required" validate="^[0-9a-zA-Z][0-9a-zA-Z_-]*$"
                          on-keyup="{{validateDisplayName}}">
             </paper-input>
         </div>
@@ -484,8 +483,8 @@
             if (!this.newTick) {
                 console.log("not a new tick");
                 this.$.ajaxPutTickData.body = JSON.stringify(masterObject);
-                this.$.ajaxPutTickData.go();
                 this.$.ajaxPutTickData.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + this.tickId;
+                this.$.ajaxPutTickData.go();
             } else {
                 console.log("new tick");
                 this.$.ajaxPostTickData.body = JSON.stringify(masterObject);

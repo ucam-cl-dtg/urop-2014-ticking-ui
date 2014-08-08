@@ -1,0 +1,79 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="submit-component.html">
+<link rel="import" href="report-component.html">
+<link rel="import" href="signup-component.html">
+<link rel="import" href="fork-service.html">
+
+<polymer-element name="tick-card" attributes="tickId sheets">
+    <template>
+        <style>
+            #mainContainer {
+                padding: 0 20px;
+            }
+            .spacer {
+                width: 20px;
+            }
+        </style>
+
+        <!-- for managing fork object data -->
+        <fork-service
+                tickId="{{tickId}}"
+                unitPass="{{unitPass}}"
+                humanPass="{{humanPass}}"
+                signedUp="{{signedUp}}"
+                testRunning="{{testRunning}}"
+                reportAvailable="{{reportAvailable}}"
+                repo="{{repo}}">
+        </fork-service>
+
+        <div id="mainContainer">
+            <h1>Tick Card</h1>
+            <div>{{repo}}</div>
+
+            <br>
+
+            <div layout horizontal>
+                <submit-component flex
+                        id="submitComponent"
+                        tickId="{{tickId}}"
+                        signedUp="{{signedUp}}"
+                        testRunning="{{testRunning}}"
+                        humanPass="{{humanPass}}">
+                </submit-component>
+                <div class="spacer"></div>
+                <report-component flex
+                        reportAvailable="{{reportAvailable}}"></report-component>
+                <div class="spacer"></div>
+                <signup-component flex
+                        sheets="{{sheets}}"
+                        signedUp="{{signedUp}}"
+                        unitPass="{{unitPass}}"
+                        testRunning="{{testRunning}}"
+                        tickId="{{tickId}}">
+                </signup-component>
+            </div>
+        </div>
+        <br><br>
+    </template>
+    <script>
+        Polymer('tick-card', {
+            created: function() {
+                this.unitPass = null;
+                this.humanPass = null;
+                this.signedUp = null;
+                this.testRunning = null;
+                this.reportAvailable  = null;
+                this.repo = null;
+            },
+
+            testRunningChanged: function() {
+                console.log(this.testRunning);
+
+                if (this.testRunning == true) {
+                    this.$.submitComponent.continuePolling();
+                }
+            }
+        });
+    </script>
+</polymer-element>

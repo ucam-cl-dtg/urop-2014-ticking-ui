@@ -2,6 +2,8 @@ package uk.ac.cam.cl.ticking.ui.actors;
 
 import static org.junit.Assert.*;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Test;
 
 public class UserTest {
