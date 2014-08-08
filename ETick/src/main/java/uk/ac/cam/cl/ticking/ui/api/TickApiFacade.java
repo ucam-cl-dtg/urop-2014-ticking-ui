@@ -178,7 +178,9 @@ public class TickApiFacade implements ITickApiFacade {
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
-			log.warn(s.getClass());
+			log.warn(s.getStackTrace());
+			log.warn(s);
+			log.warn(s.getMessage());
 			repo = s.getMessage();
 
 		} catch (DuplicateRepoNameException e) {

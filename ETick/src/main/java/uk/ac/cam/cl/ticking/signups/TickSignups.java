@@ -18,9 +18,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,12 +32,8 @@ import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
 import uk.ac.cam.cl.signups.api.exceptions.ItemNotFoundException;
 import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
 import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
-import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
-import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
-import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
 
 @Path("/signups")
@@ -49,14 +42,10 @@ public class TickSignups {
     Logger log = LoggerFactory.getLogger(TickSignups.class);
     
     private SignupsWebInterface service;
-    @Inject private ConfigurationLoader<Configuration> config;
     
-    public TickSignups() {
-        Guice.createInjector(new GuiceConfigurationModule()).injectMembers(this);
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target(config.getConfig()
-                .getSignupsApiLocation());
-        service = target.proxy(SignupsWebInterface.class);
+    @Inject
+    public TickSignups(SignupsWebInterface service) {
+        this.service = service;
     }
     
     /* Below are the methods for the student workflow */

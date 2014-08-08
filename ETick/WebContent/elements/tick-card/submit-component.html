@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="submit-service.html">
 
-<polymer-element name="submit-component" attributes="tickId signedUp testRunning humanPass">
+<polymer-element name="submit-component" attributes="tickId signedUp testRunning">
     <template>
         <!-- STYLES -->
         <link rel="stylesheet" href="../../css/shared-styles.css">
@@ -12,20 +12,21 @@
 
         <submit-service id="service" tickId="{{tickId}}" status="{{status}}" testRunning="{{testRunning}}"></submit-service>
 
-        <!-- COMPONENT CONTENT -->
+        <!--Submit button -->
         <core-collapse opened?="{{!testRunning && !signedUp}}">
             <paper-button label="SUBMIT" class="greenButton" on-tap="{{submit}}"
-                disabled?="{{signedUp || testRunning || humanPass}}">
+                disabled?="{{signedUp || testRunning}}">
             </paper-button>
         </core-collapse>
 
+        <!-- Progress bar (with caption) -->
         <core-collapse opened?="{{testRunning}}">
             <paper-progress value="{{status.progress / status.maxProgress * 100}}"></paper-progress>
             <div id="progressCaption">{{status.info}}</div>
         </core-collapse>
 
-        <!-- TODO: maybe replace a completely unhelpful disabled button with a more helpful error message -->
-        <core-collapse opened?="{{!testRunning && signedUp}}">
+        <!-- Disabled because signed up message -->
+        <core-collapse opened?="{{signedUp}}">
             <div class="error">To resubmit, cancel your ticking session</div>
         </core-collapse>
     </template>

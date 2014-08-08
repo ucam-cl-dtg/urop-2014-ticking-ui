@@ -6,10 +6,12 @@
         <link rel="stylesheet" href="../../css/shared-styles.css">
         <link rel="stylesheet" href="tick-components.css">
 
+        <!-- View report button -->
         <core-collapse opened?="{{reportAvailable}}">
             <paper-button class="greenButton" label="VIEW LATEST REPORT"></paper-button>
         </core-collapse>
 
+        <!-- No report available error message -->
         <core-collapse opened?="{{!reportAvailable}}">
             <div class="error">No reports available</div>
         </core-collapse>
