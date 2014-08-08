@@ -24,6 +24,7 @@ import publicinterfaces.ITestService;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.git.api.FileBean;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.RepoUserRequestBean;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
@@ -344,5 +345,23 @@ public class TickApiFacade implements ITickApiFacade {
 		tick.setDeadline(date);
 		db.saveTick(tick);
 		return Response.status(Status.CREATED).entity(tick).build();
+	}
+	
+	@Override
+	public Response getAllFiles(HttpServletRequest request,
+			String tickId, String commitId) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		if (!myCrsid.equals(db.getTick(tickId).getAuthor())) {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		List<FileBean> files;
+		try {
+			files = gitServiceProxy.getAllFiles(Tick.replaceDelimeter(tickId), commitId);
+		} catch (IOException | RepositoryNotFoundException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+		}
+		return Response.ok(files).build();
 	}
 }

@@ -3,19 +3,16 @@
 <link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
 
-<polymer-element name="ticker-signups-viewport" attributes="sessionId description location">
+<polymer-element name="ticker-signups-viewport" attributes="sessionId description location crsId tickId repoName ticker">
   <template>
     <style>
     :host {
-      display: block;
-      position: relative;
       background-color: white;
       padding: 10px;
       width: 100%;
       font-size: 1.2rem;
 	  color: black;
       font-weight: 300;
-	  border: black solid 1px;
     }
     .card-header {
       margin-bottom: 10px;
@@ -61,11 +58,11 @@
 				<template repeat="{{slot in slots}}">
 					<span layout horizontal center style="border:black solid 1px" flex>
 						<div align="left" flex three>
-							<core-item label="{{slot.timeStamp}}  {{slot.student}}   {{slot.comment}}" style="min-height:20px" span></core-item>
+							<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
 						</div>
 						<div hidden?="{{slot.hidden}}" flex>
 							<span>View Report</span>
-							<core-icon-button label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
+							<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
 						</div>
 					</span>
 				</template>
@@ -76,9 +73,11 @@
   <script>
   Polymer('ticker-signups-viewport', {
 			ready: function() {
-				this.selectedSlotId = "";
 			},
 			refresh: function() {
+				this.crsId = "";
+				this.tickId = "";
+				this.repoName = "";
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
 				if (this.location === "Location : undefined") {
 					this.location = "Location : No location is available";
@@ -95,13 +94,15 @@
 					this.tickers.push({name: loadedTickers[i].name});
 				}
 				this.selected = 0;
+				this.ticker = this.tickers[0].name;
 			},	
 			slotsDataLoaded: function() {
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
+				console.log(loadedSlots);
 				this.slots = [];
 				for (var i = 0; i < loadedSlots.length; i++) {
-					var hour = loadedSlots[i].startTime.split(":")[1];
-					var min = loadedSlots[i].startTime.split(":")[2].split(".")[0];
+					var hour = loadedSlots[i].startTime.split(":")[0].split("T")[1];
+					var min = loadedSlots[i].startTime.split(":")[1];
 					var timeSlot = hour + ":" + min;
 					<!-- check this conversion is right -->
 					var durationInMinutes = loadedSlots[i].duration/60000;
@@ -140,8 +141,19 @@
 					this.$.ajaxLoadSlots.go();
 				}
 			},
-			showSlotOptions : function(event) {
-				var newSlotId = event.target.id;
+			getReport : function(event) {
+				var slotId = event.target.id;
+				console.log(slotId);
+				for(i=0;i<this.slots.length;i++) {
+					if(this.slots[i]._id === slotId) {
+						console.log(this.slots[i]);
+						this.crsId = this.slots[i].student;
+						this.tickId = this.slots[i].comment;
+						this.repoName = this.crsId + "/" + this.tickId.replace(",","/");
+						console.log(this.crsId + " " + this.tickId + " " + this.repoName + " " + this.ticker);
+						break;
+					}
+				}
 			}
 		})
   </script>

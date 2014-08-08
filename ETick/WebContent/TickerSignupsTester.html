@@ -1,19 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>Ticker View Card Test Page</title>
-  <script src="bower_components/platform/platform.js"></script>
-  <link rel="import" href="elements/main-card.html">
-  <link rel="import" href="elements/tickerSignupsView/TickerSignupsCard.html">
-  <link rel="import" href="elements/tickerSignupsView/TickerSignupsViewport.html">
-  <link rel="stylesheet" type="text/css" href="css/font.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Ticker View Card Test Page</title>
+    <script src="bower_components/platform/platform.js"></script>
+    <link rel="import" href="elements/main-card.html">
+    <link rel="import" href="bower_components/polymer/polymer.html">
+    <link rel="import" href="elements/tickerSignupsView/TickerSignupsCard.html">
+    <link rel="import" href="elements/tickerSignupsView/TickerSignupsViewport.html">
+    <link rel="import" href="elements/file-browser/file-browser-card.html">
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+
 </head>
 <body unresolved>
-	<div class="container">
-        <main-card animated swipeable>
-			<ticker-signups-card id="card"></ticker-signups-card>
-        </main-card>
-    </div>
+<ticker-signups-page groupId="53e3a05de4b0f3b586f207df"></ticker-signups-page>
 </body>
 </html>
+<polymer-element name="ticker-signups-page" attributes="groupId">
+    <template>
+
+
+        <div class="container">
+            <main-card animated swipeable>
+                <ticker-signups-card sessionId="{{sessionId}}" crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="card"></ticker-signups-card>
+            </main-card>
+            <template if="{{crsId}}">
+                <main-card animated swipeable>
+                    <file-browser-card sessionId="{{sessionId}}" crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
+                </main-card>
+            </template>
+        </div>
+    </template>
+    <script>
+        Polymer({});
+    </script>
+</polymer-element>

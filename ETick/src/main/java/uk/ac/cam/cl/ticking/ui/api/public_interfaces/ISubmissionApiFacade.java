@@ -1,11 +1,13 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -55,7 +57,7 @@ public interface ISubmissionApiFacade {
 	@Path("/{tickId}/last")
 	@Produces("application/json")
 	public abstract Response getLast(@Context HttpServletRequest request,
-			@PathParam("tickId") String tickId);
+			@PathParam("tickId") String tickId, @DefaultValue("") @QueryParam("crsid") String crsid);
 
 	/**
 	 * @param request
@@ -66,6 +68,6 @@ public interface ISubmissionApiFacade {
 	@Path("/{tickId}")
 	@Produces("application/json")
 	public abstract Response getAll(@Context HttpServletRequest request,
-			@PathParam("tickId") String tickId);
+			@PathParam("tickId") String tickId, @DefaultValue("") @QueryParam("crsid") String crsid);
 
 }
