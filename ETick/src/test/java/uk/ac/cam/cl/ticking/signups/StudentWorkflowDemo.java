@@ -22,7 +22,7 @@ import uk.ac.cam.cl.signups.api.beans.SlotBean;
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
 import uk.ac.cam.cl.signups.api.exceptions.ItemNotFoundException;
 import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
-import uk.ac.cam.cl.signups.interfaces.WebInterface;
+import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
@@ -43,7 +43,7 @@ import com.google.inject.Injector;
 public class StudentWorkflowDemo {
     
     private TickSignups signups = new TickSignups();
-    private WebInterface service;
+    private SignupsWebInterface service;
     @Inject private ConfigurationLoader<Configuration> config;
     
     {
@@ -54,7 +54,7 @@ public class StudentWorkflowDemo {
                 //"http://localhost:8080/UROP_SIGNUPS/rest/"
                 );
 
-        service = target.proxy(WebInterface.class);
+        service = target.proxy(SignupsWebInterface.class);
     }
     
     private String id;
