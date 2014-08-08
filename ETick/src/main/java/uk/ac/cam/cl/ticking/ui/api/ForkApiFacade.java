@@ -21,6 +21,7 @@ import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
+import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IForkApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ForkBean;
@@ -45,6 +46,7 @@ public class ForkApiFacade implements IForkApiFacade {
 
 	private WebInterface gitServiceProxy;
 	private ITestService testServiceProxy;
+	private TickSignups tickSignupService;
 
 	/**
 	 * @param db
@@ -53,11 +55,12 @@ public class ForkApiFacade implements IForkApiFacade {
 	@Inject
 	public ForkApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ITestService testServiceProxy, WebInterface gitServiceProxy) {
+			ITestService testServiceProxy, WebInterface gitServiceProxy, TickSignups tickSignupService) {
 		this.db = db;
 		this.config = config;
 		this.testServiceProxy = testServiceProxy;
 		this.gitServiceProxy = gitServiceProxy;
+		this.tickSignupService = tickSignupService;
 	}
 
 	@Override
@@ -155,6 +158,9 @@ public class ForkApiFacade implements IForkApiFacade {
 				}
 				fork.setLastTickedBy(crsid);
 				fork.setLastTickedOn(DateTime.now());
+				for (String groupId : groupIds) {
+					//tickSignupService.assignTickerForTickForUser(crsid, groupId, tickId, forkBean.getTicker());
+				}
 			}
 			if (forkBean.getUnitPass() != null) {
 				fork.setUnitPass(forkBean.getUnitPass());

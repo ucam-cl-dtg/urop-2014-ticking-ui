@@ -130,7 +130,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			
 			List<String> groupIds = db.getTick(tickId).getGroups();
 			
-			boolean unitPass = status.getInfo().equals(ReportResult.PASS);
+			boolean unitPass = status.getInfo().equals("PASS");
 			if (unitPass) {
 				for (String groupId : groupIds) {
 					tickSignupService.allowSignup(crsid, groupId, tickId);

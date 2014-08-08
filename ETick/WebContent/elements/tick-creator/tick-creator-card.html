@@ -412,7 +412,7 @@
             this.$.collapseGroups.opened = this.$.groupsSwitch.checked;
         },
         validateDisplayName: function() {
-            if (this.$.inputDisplayName.inputValue.trim() == "") {
+            if ((this.$.inputDisplayName.inputValue.trim() == "")||this.$.inputDisplayName.invalid) {
                 this.displayValid = false;
             } else {
                 this.displayValid = true;
