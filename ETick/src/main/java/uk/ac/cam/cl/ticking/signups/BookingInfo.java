@@ -19,12 +19,14 @@ public class BookingInfo {
     String tickName;
     String tickID;
     Date startTime;
+    String groupName;
     
-    public BookingInfo(Slot slot) {
+    public BookingInfo(Slot slot, String groupName) {
         ticker = slot.getColumnName();
         tickID = slot.getComment();
         tickName = Tick.getNameFromID(tickID);
         startTime = slot.getStartTime();
+        groupName = groupName;
     }
 
     public String getTicker() {
