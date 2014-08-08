@@ -62,7 +62,7 @@ public interface IForkApiFacade {
 	@Path("/{crsid}/{tickId}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public abstract Response updateFork(@Context HttpServletRequest request,
+	public abstract Response markFork(@Context HttpServletRequest request,
 			@PathParam("crsid") String crsid,
 			@PathParam("tickId") String tickId, ForkBean forkBean);
 

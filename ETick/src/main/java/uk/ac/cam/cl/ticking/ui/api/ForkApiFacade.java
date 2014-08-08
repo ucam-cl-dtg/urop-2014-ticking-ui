@@ -121,7 +121,7 @@ public class ForkApiFacade implements IForkApiFacade {
 	}
 
 	@Override
-	public Response updateFork(HttpServletRequest request, String crsid, String tickId,
+	public Response markFork(HttpServletRequest request, String crsid, String tickId,
 			ForkBean forkBean) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
@@ -162,15 +162,7 @@ public class ForkApiFacade implements IForkApiFacade {
 					tickSignupService.assignTickerForTickForUser(crsid, groupId, tickId, forkBean.getTicker());
 				}
 			}
-			if (forkBean.getUnitPass() != null) {
-				fork.setUnitPass(forkBean.getUnitPass());
-			}
-			if (forkBean.isSignedUp() != null) {
-				fork.setSignedUp(forkBean.isSignedUp());
-			}
-			if (forkBean.getReportAvailable() != null) {
-				fork.setReportAvailable(forkBean.getReportAvailable());
-			}
+			
 			db.saveFork(fork);
 			return Response.status(Status.CREATED).entity(fork).build();
 		}
