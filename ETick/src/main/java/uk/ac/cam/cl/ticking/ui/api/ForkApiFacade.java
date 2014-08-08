@@ -38,8 +38,11 @@ public class ForkApiFacade implements IForkApiFacade {
 
 	Logger log = Logger.getLogger(ConfigurationLoader.class.getName());
 	private IDataManager db;
+	// not currently used but could quite possibly be needed in the future, will
+	// remove if not
+	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
-	
+
 	private WebInterface gitServiceProxy;
 	private ITestService testServiceProxy;
 
@@ -82,14 +85,14 @@ public class ForkApiFacade implements IForkApiFacade {
 		if (fork != null) {
 			return Response.ok(fork).build();
 		}
-		
+
 		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
-		
+
 		try {
-			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null, crsid,
-					repoName, null));
-		
+			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null,
+					crsid, repoName, null));
+
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
@@ -98,7 +101,7 @@ public class ForkApiFacade implements IForkApiFacade {
 		} catch (IOException | DuplicateRepoNameException e) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
-			//Due to exception chaining this shouldn't happen
+			// Due to exception chaining this shouldn't happen
 		}
 
 		try {
@@ -124,7 +127,7 @@ public class ForkApiFacade implements IForkApiFacade {
 			if (forkBean.getHumanPass() != null) {
 				fork.setHumanPass(forkBean.getHumanPass());
 				if (forkBean.getHumanPass()) {
-					
+
 					try {
 						testServiceProxy.setTickerResult(crsid, tickId,
 								ReportResult.PASS,
