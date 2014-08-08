@@ -1,0 +1,139 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+
+<polymer-element name="ticker-signups-viewport" attributes="sessionId">
+  <template>
+    <style>
+    :host {
+      display: block;
+      position: relative;
+      background-color: white;
+      padding: 10px;
+      width: 100%;
+      font-size: 1.2rem;
+	  color: black;
+      font-weight: 300;
+	  border: black solid 1px;
+    }
+    .card-header {
+      margin-bottom: 10px;
+    }
+	polyfill-next-selector{ shadow: "paper-radio-button #ink[checked]"; }
+	paper-radio-button::shadow #ink[checked] {
+		color: rgb(15, 157, 88);
+	}
+    </style>
+	
+	<!-- Get tickers for this session -->
+    <core-ajax
+        id="ajaxLoadTickers"
+        url="{{pathLoadTickers}}"
+        handleAs="json"
+		contentType="application/json"
+        on-core-response="{{tickersDataLoaded}}"
+        on-core-error="{{alertError}}">
+    </core-ajax>
+	
+	<!-- Get slots for this session and ticker -->
+    <core-ajax
+        id="ajaxLoadSlots"
+        url="{{pathLoadSlots}}"
+        handleAs="json"
+		contentType="application/json"
+        on-core-response="{{slotsDataLoaded}}"
+        on-core-error="{{alertError}}">
+    </core-ajax>
+	
+    <div id="header" layout vertical center></div>
+	<!-- todo: info bar ie when/where is the session -->
+	
+	<div layout vertical align="center">
+		<div id="ticker-select-panel">
+			<paper-radio-group selected={{selected}} on-change="{{tickerChange}}" layout horizontal flex>
+				<template repeat="{{ticker in tickers}}">
+					<paper-radio-button label="{{ticker.name}}" flex></paper-radio-button>
+				</template>
+			</paper-radio-group>
+		</div>
+		<div id="slots-view-panel" layout horizontal flex>
+				<!-- <core-menu>
+					<template repeat="{{time in times}}">
+						<core-item label="{{time}}"  style="border:black solid 1px;height:{{defaultHeight}}px" layout vertical top></core-item>
+					</template>
+				</core-menu> -->
+				<core-menu flex>
+					<template repeat="{{slot in slots}}">
+						<core-item label="{{slot.timeStamp}}  {{slot.student}}   {{slot.comment}}" id="{{slot._id}}" style="border:black solid 1px;min-height:{{slot.height}}px;font-size:{{slot.textHeight}}px"></core-item>
+					</template>
+				</core-menu>
+		</div>
+	</div>
+	
+  </template>
+  <script>
+  Polymer('ticker-signups-viewport', {
+			ready: function() {
+				this.defaultHeight = 100;
+			},
+			refresh: function() {
+				this.times = [];
+				this.times.push("00:00");
+				this.times.push("00:05");
+				this.times.push("00:10");
+				this.times.push("00:15");
+				this.times.push("00:20");
+				this.times.push("00:25");
+				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
+				this.$.ajaxLoadTickers.go();
+			},
+			tickersDataLoaded: function() {
+				var loadedTickers = this.$.ajaxLoadTickers.response.slice(0);
+				this.tickers = [];
+				for (var i = 0; i < loadedTickers.length; i++) {
+					this.tickers.push({name: loadedTickers[i].name});
+				}
+				this.selected = 0;
+			},	
+			slotsDataLoaded: function() {
+				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
+				this.slots = [];
+				for (var i = 0; i < loadedSlots.length; i++) {
+					var hour = loadedSlots[i].startTime.split(":")[1];
+					var min = loadedSlots[i].startTime.split(":")[2].split(".")[0];
+					var timeSlot = hour + ":" + min;
+					<!-- check this conversion is right -->
+					var durationInMinutes = loadedSlots[i].duration/60000;
+					var student = loadedSlots[i].bookedUser;
+					var comment = loadedSlots[i].comment;
+					if(student === undefined || student===null) {
+						student = "";
+						comment = "Empty Slot";
+					}
+					<!-- sort out leading zero -->
+					var endMin = parseInt(min) + parseInt(durationInMinutes);
+					var endHour = parseInt(hour);
+					while (endMin > 60) {
+						endMin = endMin%60;
+						endHour++;
+					}
+					var timeStamp = hour + ":" + min + " - " + endHour + ":" + endMin;
+					var height = (durationInMinutes/5)*this.defaultHeight;
+					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
+									 time : timeSlot, height : height, textHeight:height-2, timeStamp: timeStamp});
+				}
+				console.log(this.slots);
+			},
+			alertError: function() {
+				alert("Sorry, something went wrong");
+			},
+			tickerChange: function(event) {
+				if(event.target.checked) {
+					this.ticker = event.target.label;
+					this.pathLoadSlots = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId + "/tickers/" + this.ticker;
+					this.$.ajaxLoadSlots.go();
+				}
+			}
+		})
+  </script>
+</polymer-element>
