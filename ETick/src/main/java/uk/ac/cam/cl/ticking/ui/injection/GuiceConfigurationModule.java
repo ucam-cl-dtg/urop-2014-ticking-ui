@@ -187,7 +187,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static TickSignups getTickSignupsSingleton(IDataManager db, 
 	        SignupsWebInterface signupServiceProxy) {
 		if (tickSignups == null) {
-			tickSignups = new TickSignups(signupServiceProxy);
+			tickSignups = new TickSignups(db, signupServiceProxy);
 		}
 		return tickSignups;
 	}
