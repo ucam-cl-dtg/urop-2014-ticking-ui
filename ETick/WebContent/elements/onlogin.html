@@ -2,7 +2,8 @@
 
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="on-login" attributes="">
+<polymer-element name="on-login" attributes="groupItems tickItems">
+
 	<template>
 			<!-- API call: adds user if not already registered. -->
 			<core-ajax id="loginAjax"
@@ -18,7 +19,7 @@
 				on-core-response="{{sidebarResponse}}">
 			</core-ajax>
 			
-			<!-- API call to populate sidebar menu. -->
+			<!-- API call to populate sidebar tick menu. -->
 			<core-ajax id="sidebarTickAjax"
 				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ticks"
 				handleAs="json"
@@ -50,6 +51,7 @@
 
 			sidebarTickResponse: function() {
 				this.tickItems = this.$.sidebarTickAjax.response;
+				console.log(this.tickItems);
 			}
 		});
 	</script>
