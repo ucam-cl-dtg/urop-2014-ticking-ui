@@ -9,19 +9,19 @@
 
         <style>
             .dialogYes {
-                background-color: #259b24; /* MD Green 500 */
+                background-color: #259b24; /* Material Green 500 */
                 color: #FFFFFF;
                 margin-left: 5px;
             }
             .dialogNo {
-                background-color: #e51c23; /* MD No 500 */
+                background-color: #e51c23; /* Material Red 500 */
                 color: #FFFFFF;
                 margin-right: 5px;
             }
         </style>
 
         <!-- Sign up button -->
-        <core-collapse opened?="{{!signedUp && !testRunning && unitPass}}">
+        <core-collapse opened?="{{!signedUp && !testRunning && !unitPass}}">
             <paper-button class="greenButton" label="SIGN UP" on-tap="{{openSignupDialog}}"></paper-button>
         </core-collapse>
 
