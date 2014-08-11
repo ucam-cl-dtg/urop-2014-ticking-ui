@@ -79,8 +79,7 @@
               this.$.setTickResult.url =
                 ticking_service + "/fork/"
                   + this.crsid + "/"
-                  + this.tickId + "?date="
-                  + this.reportCreationDate.valueOf();
+                  + this.tickId + "/";
 
               this.$.setTickResult.body =
                   '{   "humanPass"      : "' + tickStatus + '"\n'
@@ -88,6 +87,8 @@
                 + '  , "tickerComments" : "' + comment + '"\n'
                 + '  , "commitId"       : "' + this.commitId + '"\n'
                 + '  , "ticker"         : "' + this.ticker + '"\n'
+                  '  , "date"           : "' +
+                    this.reportCreationDate.toISOString() + '"\n'
                 + '}'
 
               this.$.setTickResult.go();
