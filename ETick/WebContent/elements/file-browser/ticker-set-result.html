@@ -79,7 +79,7 @@
                 ticking_service + "/fork/"
                   + this.crsid + "/"
                   + this.tickId + "/"
-                  + this.reportCreationDate;
+                  + this.reportCreationDate.valueOf();
 
               this.$.setTickResult.body =
                   '{   "humanPass"      : "' + tickStatus + '"\n'
