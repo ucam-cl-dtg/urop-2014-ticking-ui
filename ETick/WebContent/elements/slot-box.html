@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="date-calendar.html">
+<link rel="import" href="time-clock.html">
 
 
 <polymer-element name="slot-box" attributes="datetime tickName ticker" noscript>
@@ -35,6 +36,7 @@
 		</style>
 		<div layout horizontal center id="container">
 			<date-calendar hexColorPrimary="#FF8000" hexColorSecondary="#fff" datetime="{{datetime}}"></date-calendar>
+			<time-clock datetime="{{datetime}}"></time-clock>
 			<div flex></div>
 			<div layout vertical end>
 				<h3>{{groupName}}</h3>

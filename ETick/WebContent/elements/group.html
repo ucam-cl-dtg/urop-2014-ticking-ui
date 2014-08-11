@@ -7,6 +7,7 @@
 <link rel="import" href="tick-list.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="tick-card/tick-card.html">
+<link rel="import" href="ticker-signup.html">
 <link rel="import" href="file-browser/file-browser-card.html">
 
 <polymer-element name="x-group" attributes="gid name info creator">
@@ -101,6 +102,10 @@
             </main-card>
         </template>
 
+        <template if="{{isMarker}}">
+        	<ticker-signup groupId="{{gid}}"></ticker-signup>
+        </template>
+
 		<!-- Group content card. -->
 		<!-- <main-card animated>
 			<paper-tabs selected=0 on-core-select="{{tabSelectedAction}}">
@@ -132,7 +137,7 @@
 				// Check for permissions.
 				this.isAuthor = (this.roles.indexOf('AUTHOR') > -1);
 				this.isSubmitter = (this.roles.indexOf('SUBMITTER') > -1);
-
+				this.isMarker = (this.roles.indexOf('MARKER') > -1);
 			},
 
 			// tabSelectedAction: function(e, detail) {

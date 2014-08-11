@@ -8,6 +8,8 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog-transition.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="static-list.html">
+<link rel="import" href="static-list-labels.html">
 <link rel="import" href="../date-entry.html">
 
 <polymer-element name="tick-creator-card" attributes="tickId">
@@ -127,15 +129,13 @@
             on-core-response="{{savingDefaultsLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
-<!-- url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles" -->
     <core-ajax
             id="ajaxLoadStatic"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/testFiles'}}"
             handleAs="json"
             on-core-response="{{staticDataLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
-    <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"-->
     <core-ajax
             id="ajaxSendStatic"
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
@@ -213,27 +213,27 @@
 
         <h4>STYLISTIC CHECKS</h4>
         <div class="checkboxContainer" layout horizontal>
-            <paper-checkbox checked="{{useDefaults}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
-            <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Use Defaults</span>
+            <paper-checkbox checked="{{checkJava}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
+            <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Analyse .java files</span>
             <paper-button
                     id="cmdRestoreDefaults"
                     label="RESTORE DEFAULTS"
                     raisedButton
                     end-justified
                     on-tap="{{cmdRestoreDefaults}}"
-                    hidden?="{{useDefaults}}">
+                    hidden?="{{!checkJava}}">
             </paper-button>
         </div>
-        <core-collapse id="collapseStylistic">
+        <core-collapse id="collapseStylistic" opened?="{{checkJava}}">
             <static-list-labels></static-list-labels>
-            <static-list id="staticList"></static-list>
+            <static-list id="staticList" staticOptions="{{staticOptions}}"></static-list>
         </core-collapse>
 
         <!-- SAVE button -->
         <span layout horizontal>
             <span flex></span>
-            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveEverything}}"
-                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid)}}">
+            <paper-button raisedButton class="colored" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
+                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
             </paper-button>
             <span flex></span>
         </span>
@@ -245,8 +245,8 @@
         <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}"></paper-button>
     </paper-dialog>
 
-    <paper-toast id="toastLoadError" text="Error loading the tick." duration="8000"></paper-toast>
-    <paper-toast id="toastSaveError" text="Error saving the tick." duration="8000"></paper-toast>
+    <paper-toast id="toastLoadError" text="Error loading the tick."></paper-toast>
+    <paper-toast id="toastSaveError" text="Error saving the tick."></paper-toast>
 </template>
 <script>
     Polymer('tick-creator-card', {
@@ -257,19 +257,13 @@
            // this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
             this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
             //"http://localhost:8000/testTickData.json";
-                    //
 
-            //for local testing, TODO: remove
-            /*this.pathLoadGroups = "http://localhost:8000/testGroups.json";
-            this.pathLoadTickData = "http://localhost:8000/testTickData.json";
-            this.pathPutTickData = "http://localhost:8000/UROP_UI/api/tick";*/
-
-
-
-            this.useDefaults = true; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
+            this.checkJava = false; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
             this.groups = [];
+            this.saving = false;
             this.newTick = null;
             this.tickData = {};
+            this.staticOptions = [];
 
             if (this.tickId == null || this.tickId == "") {
                 this.newTick = true;
@@ -278,22 +272,28 @@
                 this.tickDataLoaded();
             } else {
                 this.newTick = false;
-                this.useDefaults = false;
+                this.checkJava = false;
+                this.$.ajaxLoadTickData.go();
                 this.$.ajaxLoadStatic.go();
             }
         },
         staticDataLoaded: function() {
-            this.$.staticList.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
+            this.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
 
-            for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
-                this.$.staticList.staticOptions[i].closed = false;
+            if (this.staticOptions.length == 0) {
+                this.$.ajaxLoadDefaults.go();
+            } else {
+                this.checkJava = true;
+                for (var i = 0; i < this.staticOptions.length; i++) {
+                    this.staticOptions[i].closed = false;
+                }
             }
         },
         defaultsLoaded: function() {
-            this.$.staticList.staticOptions = this.$.ajaxLoadDefaults.response.slice(0);
+            this.staticOptions = this.$.ajaxLoadDefaults.response.slice(0);
 
-            for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
-                this.$.staticList.staticOptions[i].closed = false;
+            for (var i = 0; i < this.staticOptions.length; i++) {
+                this.staticOptions[i].closed = false;
             }
         },
         savingDefaultsLoaded: function() {
@@ -329,6 +329,8 @@
             this.processLoadedTickData();
         },
         tickDataSaved: function() {
+            this.saving = false;
+
             this.newTick = false;
             this.tickData = this.$.ajaxPostTickData.response;
 
@@ -336,6 +338,8 @@
             this.processLoadedTickData();
         },
         tickDataUpdated: function() {
+            this.saving = false;
+
             this.newTick = false;
             this.tickData = this.$.ajaxPutTickData.response;
             this.processLoadedTickData();
@@ -400,7 +404,7 @@
             this.$.ajaxLoadGroups.go();
         },
         toggleStylistic: function() {
-            this.$.collapseStylistic.toggle();
+            //this.$.collapseStylistic.toggle();
         },
         toggleCodeTemplate: function() {
             this.$.collapseCodeTemplate.opened = this.$.codeTemplateSwitch.checked;
@@ -412,58 +416,10 @@
             this.$.collapseGroups.opened = this.$.groupsSwitch.checked;
         },
         validateDisplayName: function() {
-            if ((this.$.inputDisplayName.inputValue.trim() == "")||this.$.inputDisplayName.invalid) {
-                this.displayValid = false;
-            } else {
-                this.displayValid = true;
-            }
-        },
-        /**
-         * Update the originally sent tick object with the data the user has entered on this card, then send it to the
-         * front end's back end
-         */
-        saveTickData: function () {
-            console.log("Preparing call for Tom!");
-
-                //Set name if a new tick
-                if (this.newTick) {
-                    this.tickData.name = this.$.inputDisplayName.inputValue.trim();
-                }
-                console.log("name set");
-                //Don't set template repository (this is generated by back end)
-
-                //Update master deadline
-                if (this.$.deadlineSwitch.checked) {
-                    var year = this.year;
-                    var month = this.month - 1;
-                    var day = this.day;
-                    var date = new Date();
-                    date.setUTCDate(day);
-                    date.setUTCMonth(month);
-                    date.setUTCFullYear(year);
-                    this.tickData.deadline = date.toISOString();
-                } else {
-                    this.tickData.deadline = null;
-                }
-                console.log("deadline set");
-                //update groups
-                this.tickData.groups = [];
-                if (this.$.groupsSwitch.checked) {
-                    for (var i = 0; i < this.groups.length; i++) {
-                        if (this.groups[i].selected) {
-                            this.tickData.groups[this.tickData.groups.length] = this.groups[i]._id;
-                        }
-                    }
-                }
-                console.log("groups set");
-                this.$.ajaxPutTickData.body = JSON.stringify(this.tickData);
-                console.log("firing ajax");
-                this.$.ajaxPutTickData.go();
-                console.log("ajax fired");
-
+            this.displayValid = !((this.$.inputDisplayName.inputValue.trim() == "") || this.$.inputDisplayName.invalid);
         },
         saveEverything: function() {
-            console.log("Saving everything");
+            this.saving = true;
 
             var tickData = this.buildTickData();
             var staticData = this.buildStaticData();
@@ -531,47 +487,20 @@
         buildStaticData: function() {
             var sendData = [];
 
-            if (this.useDefaults) {
-                console.log("using default send data");
-                sendData = this.defaults;
-            } else {
-                console.log("using custom send data");
-                for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
-                    if (!(this.$.staticList.staticOptions[i].closed)) {
-                        sendData[sendData.length] = {
-                            text: this.$.staticList.staticOptions[i].text,
-                            checkedIndex: this.$.staticList.staticOptions[i].checkedIndex,
-                            code: this.$.staticList.staticOptions[i].code};
-                    }
+            if (!this.checkJava) {
+                return sendData;
+            }
+
+            for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
+                if (!(this.$.staticList.staticOptions[i].closed)) {
+                    sendData[sendData.length] = {
+                        text: this.$.staticList.staticOptions[i].text,
+                        checkedIndex: this.$.staticList.staticOptions[i].checkedIndex,
+                        code: this.$.staticList.staticOptions[i].code};
                 }
             }
+
             return sendData;
-        },
-        saveStaticOpts: function() {
-            var sendData = [];
-
-            if (this.useDefaults) {
-                if (this.defaults == null) {
-                    this.$.ajaxSaveLoadDefaults.go();
-                } else {
-                    sendData = this.defaults;
-                }
-            } else {
-                for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
-                    if (!(this.$.staticList.staticOptions[i].closed)) {
-                        sendData[sendData.length] = {
-                            text: this.$.staticList.staticOptions[i].text,
-                            checkedIndex: this.$.staticList.staticOptions[i].checkedIndex,
-                            code: this.$.staticList.staticOptions[i].code};
-                    }
-                }
-            }
-
-            console.log(sendData);
-            this.$.ajaxSendStatic.body = JSON.stringify(sendData);
-
-            // this.$.ajaxSendStatic.body = this.$.staticList.staticOptions;
-            this.$.ajaxSendStatic.go();
         },
         cmdRestoreDefaults: function() {
             this.$.alertRestoreDefaults.toggle();
@@ -588,7 +517,8 @@
             this.$.toastLoadError.show();
         },
         showSaveErrorToast: function(e, detail) {
-            console.log("Save error!");
+            this.saving = false;
+
             if (detail.xhr.responseText != null) {
                 this.$.toastSaveError.text = detail.xhr.responseText;
             } else {

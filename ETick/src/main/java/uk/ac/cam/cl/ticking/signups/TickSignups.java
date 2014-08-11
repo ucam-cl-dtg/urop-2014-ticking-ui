@@ -35,9 +35,11 @@ import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
 import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
 
 @Path("/signups")
@@ -423,7 +425,7 @@ public class TickSignups {
         if (!db.getRoles(bean.getGroupID(), crsid).contains(Role.AUTHOR)) {
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
-        long sheetLengthInMinutes = (bean.getEndTime().getTime() - bean.getStartTime().getTime())/60000;
+        long sheetLengthInMinutes = (bean.getEndTime() - bean.getStartTime())/60000;
         if (sheetLengthInMinutes % bean.getSlotLengthInMinutes() != 0) {
             return Response.status(Status.BAD_REQUEST).entity("The difference in minutes "
                     + "between the start and end times should be an integer multiple of "
@@ -442,8 +444,8 @@ public class TickSignups {
         }
         for (String ticker : bean.getTickerNames()) {
             try {
-                service.createColumn(id, new CreateColumnBean(ticker, auth, bean.getStartTime(),
-                        bean.getEndTime(), bean.getSlotLengthInMinutes()));
+                service.createColumn(id, new CreateColumnBean(ticker, auth, new Date(bean.getStartTime()),
+                        new Date(bean.getEndTime()), bean.getSlotLengthInMinutes()*60000));
             } catch (ItemNotFoundException e) {
                 e.printStackTrace();
                 throw new RuntimeException("This should only happen if the sheet or column is not found "
@@ -509,12 +511,21 @@ public class TickSignups {
     @Path("/sheets/{sheetID}/tickers")
     @Consumes("application/json")
     @Produces("application/json")
-    //TODO: argument needs to be a bean
-    public Response addColumn(@PathParam("sheetID") String sheetID, String authCode, 
-            String name, Date startTime, Date endTime,
-            int slotLength /* in minutes */) {
+    public Response addColumn(@Context HttpServletRequest request,
+            @PathParam("sheetID") String sheetID,
+            AddColumnBean bean) {
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         try {
-            service.createColumn(sheetID, new CreateColumnBean(name, authCode, startTime, endTime, slotLength));
+            if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.MARKER)) {
+                return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+            }
+        } catch (ItemNotFoundException e1) {
+            return Response.status(Status.NOT_FOUND).entity("The given signup "
+                    + "sheet was not found").build();
+        }
+        try {
+            service.createColumn(sheetID,new CreateColumnBean(bean.getName(),
+                    db.getAuthCode(sheetID), bean.getStartTime(), bean.getEndTime(), bean.getSlotLength()));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND).entity(e).build();
@@ -534,12 +545,20 @@ public class TickSignups {
      */
     @DELETE
     @Path("/sheets/{sheetID}/tickers/{ticker}")
-    @Consumes("text/plain")
-    @Produces("application/json")
-    public Response deleteColumn(@PathParam("sheetID") String sheetID,
-            @PathParam("ticker") String ticker, String authCode) {
+    public Response deleteColumn(@Context HttpServletRequest request,
+            @PathParam("sheetID") String sheetID,
+            @PathParam("ticker") String ticker) {
+    String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+    try {
+        if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.MARKER)) {
+            return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+        }
+    } catch (ItemNotFoundException e1) {
+        return Response.status(Status.NOT_FOUND).entity("The given signup "
+                + "sheet was not found").build();
+    }
         try {
-            service.deleteColumn(sheetID, ticker, authCode);
+            service.deleteColumn(sheetID, ticker, db.getAuthCode(sheetID));
         } catch (NotAllowedException e) {
             e.printStackTrace();
             return Response.status(Status.FORBIDDEN).entity(e).build();

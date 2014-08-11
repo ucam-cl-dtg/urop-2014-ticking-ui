@@ -15,14 +15,14 @@ public class CreateSheetBean {
     private String title;
     private String description;
     private String location;
-    private Date startTime;
+    private Long startTime;
     private int slotLengthInMinutes;
-    private Date endTime;
+    private Long endTime;
     private List<String> tickerNames;
     private String groupID;
     
     public CreateSheetBean(String title, String description, String location,
-            Date startTime, int slotLengthInMinutes, Date endTime,
+            Long startTime, int slotLengthInMinutes, Long endTime,
             List<String> tickerNames, String groupID, String groupAuthCode) {
         this.title = title;
         this.description = description;
@@ -50,7 +50,7 @@ public class CreateSheetBean {
         return location;
     }
 
-    public Date getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
 
@@ -58,7 +58,7 @@ public class CreateSheetBean {
         return slotLengthInMinutes;
     }
 
-    public Date getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
 
@@ -82,7 +82,7 @@ public class CreateSheetBean {
         this.location = location;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(Long startTime) {
         this.startTime = startTime;
     }
 
@@ -90,7 +90,7 @@ public class CreateSheetBean {
         this.slotLengthInMinutes = slotLengthInMinutes;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(Long endTime) {
         this.endTime = endTime;
     }
 
