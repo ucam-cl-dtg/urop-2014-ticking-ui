@@ -6,7 +6,7 @@
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="datetime-picker.html">
 
-<polymer-element name="add-session" attributes="">
+<polymer-element name="add-session" attributes="gid">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
 		<style>
@@ -20,7 +20,7 @@
 			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets"
 			method="POST"
 			contentType="application/json"
-			on-core-respose="{{addSessionResponse}}"
+			on-core-response="{{addSessionResponse}}"
 			on-core-error="{{addSessionError}}">
 		</core-ajax>
 
@@ -34,10 +34,12 @@
 					required
 					placeholder="Session title..."
 					on-input="{{validate}}"></paper-input>
+
 				<paper-input id="descInput"
 					multiline
 					placeholder="Description..."
 					maxRows="5"></paper-input>
+
 				<paper-input id="locInput"
 					floatingInput
 					placeholder="Location..."></paper-input>
@@ -55,6 +57,17 @@
 					<datetime-picker id="endTime"></datetime-picker>
 				</div>
 			</div>
+
+			<h2 class="subtitle">Ticking Slot Length:</h2>
+
+				<paper-input id="slotLengthInput"
+					placeholder="Slot length (minutes)..."
+					validate="^[0-9]+$"
+					error="Invalid slot length.">
+				</paper-input>
+
+
+
 
 			<template if="{{showSubmit}}">
 				<paper-button id="addSubmit" class="dialogSubmit" label="CREATE" on-click="{{createButtonClicked}}" affirmative></paper-button>
@@ -81,13 +94,21 @@
 				this.title = this.$.titleInput.inputValue;
 				this.description = this.$.descInput.inputValue;
 				this.location = this.$.locInput.inputValue;
-				this.startTime = this.$.startTime.value;
-				this.endTime = this.$.endTime.value;
+				this.startTime = Date.parse(this.$.startTime.value);
+				this.endTime = Date.parse(this.$.endTime.value);
+				this.slotLength = this.$.slotLengthInput.inputValue;
+				this.tickers = ["Ticker Foo", "Ticker SuperFoo"];
+
+
+				var call = this.$.addSessionAPI;
+				call.body = '{"title" : "' + this.title + '", "description" : "' + this.description + '", "location" : "' + this.location + '", "startTime" : "' + this.startTime + '", "endTime" : "' + this.endTime + '", "slotLengthInMinutes" : "' + this.slotLength + '", "tickerNames" : ' + JSON.stringify(this.tickers) + ', "groupID" : "' + this.gid + '" }';
+				call.go();
 			},
 
 			addSessionResponse: function () {
 				var toast = this.$.addSessionSuccess;
 				toast.text = "Successfully created new ticking session '" + this.title + "'.";
+				this.fire('sheet-created');
 				toast.show();
 			},
 

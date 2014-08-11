@@ -53,7 +53,7 @@
 							<div layout horizontal center style="margin: 0; padding: 0;">
 								<h2>TICKING SESSIONS:</h2>
 								<template if="{{isAuthor}}">
-									<add-session></add-session>
+									<add-session gid="{{gid}}" on-sheet-created="{{sheetCreated}}"></add-session>
 								</template>
 							</div>
 							<template repeat="{{sheet in sheets}}">
@@ -169,6 +169,10 @@
 			forkClickedHandler: function (e, detail) {
 				this.selectedTickId = detail.tickId;
 				this.selectedTickName = detail.tickName;
+			},
+
+			sheetCreated: function () {
+				this.$.sheetListAPI.go();
 			}
 		});
 	</script>
