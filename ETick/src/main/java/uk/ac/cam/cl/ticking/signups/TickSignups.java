@@ -185,6 +185,38 @@ public class TickSignups {
         }
     }
     
+    public Response unbookSlot(String crsid, String tickID) {
+        Slot booking = null;
+        for (Slot slot : service.listUserSlots(crsid)) {
+            if (slot.getComment().equals(tickID)) {
+                booking = slot;
+            }
+        }
+        if (booking == null) {
+            return Response.status(Status.NOT_FOUND).entity("No booking was found for this tick").build();
+        }
+        try {
+            service.book(booking.getSheetID(), booking.getColumnName(),
+                    booking.getStartTime().getTime(), new SlotBookingBean(crsid, null, null));
+            Fork f = db.getFork(Fork.generateForkId(crsid, tickID));
+            f.setSignedUp(false);
+            db.saveFork(f);
+            return Response.ok().build();
+        } catch (ItemNotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("The booking for this tick was found to exist and "
+                            + "then not found to exist. See following exception:\n"
+                            + e).build();
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("The removal of the booking should have been allowed but "
+                            + "for some reason was not. See following exception:\n"
+                            + e).build();
+        }
+    }
+    
     /**
      * Returns a list of the bookings in the future made by one user.
      */
