@@ -458,10 +458,18 @@ public class TickSignups {
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
         long sheetLengthInMinutes = (bean.getEndTime() - bean.getStartTime())/60000;
+        if (bean.getEndTime() <= bean.getStartTime()) {
+            return Response.status(Status.BAD_REQUEST).entity("The end time must be after "
+                    + "the start time").build();
+        }
         if (sheetLengthInMinutes % bean.getSlotLengthInMinutes() != 0) {
             return Response.status(Status.BAD_REQUEST).entity("The difference in minutes "
                     + "between the start and end times should be an integer multiple of "
                     + "the length of the slots").build();
+        }
+        if (sheetLengthInMinutes/bean.getSlotLengthInMinutes() > 500) {
+            return Response.status(Status.BAD_REQUEST).entity("This sheet would have a silly "
+                    + "number of slots if created.").build();
         }
         Sheet newSheet = new Sheet(bean.getTitle(), bean.getDescription(), bean.getLocation());
         String id;
@@ -574,9 +582,24 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity("The given signup "
                     + "sheet was not found").build();
         }
+        long sheetLengthInMinutes = (bean.getEndTime() - bean.getStartTime())/60000;
+        if (bean.getEndTime() <= bean.getStartTime()) {
+            return Response.status(Status.BAD_REQUEST).entity("The end time must be after "
+                    + "the start time").build();
+        }
+        if (sheetLengthInMinutes % bean.getSlotLengthInMinutes() != 0) {
+            return Response.status(Status.BAD_REQUEST).entity("The difference in minutes "
+                    + "between the start and end times should be an integer multiple of "
+                    + "the length of the slots").build();
+        }
+        if (sheetLengthInMinutes/bean.getSlotLengthInMinutes() > 500) {
+            return Response.status(Status.BAD_REQUEST).entity("This sheet would have a silly "
+                    + "number of slots if created.").build();
+        }
         try {
-            service.createColumn(sheetID,new CreateColumnBean(bean.getName(),
-                    db.getAuthCode(sheetID), bean.getStartTime(), bean.getEndTime(), bean.getSlotLength()));
+            service.createColumn(sheetID, new CreateColumnBean(bean.getName(),
+                    db.getAuthCode(sheetID), new Date(bean.getStartTime()), new Date(bean.getEndTime()),
+                    bean.getSlotLengthInMinutes()*60000));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
