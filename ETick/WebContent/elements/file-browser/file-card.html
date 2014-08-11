@@ -1,6 +1,7 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/highlightjs-element/highlightjs-element.html"/>
+<link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html"/>
 <link rel="import" href="../../elements/main-card.html"/>
 
 <link rel="stylesheet" href="style.css"/>
@@ -149,9 +150,52 @@
               var syntax   = spans_to_comments(hljs
                                .highlightAuto(this.content || '').value)
 
-              this.$.codeContent.innerHTML =
+              this.$.codeContent.innerHTML = "<ol><li>" +
                   mixin_comments_with_data(this.content
-                    , comments.concat(syntax));
+                    , comments.concat(syntax)
+                    , function (comments, text)
+                      {
+                        rtn = new String();
+
+                        var open = "";
+                        if (comments.length > 0)
+                        {
+                          /*
+                          open += "<span title=\"";
+                          open += comments.reduce(function (prev, comment)
+                                                  {
+                                                    prev.push(
+                                                      prev.length+1
+                                                      + ". " +
+                                                      comment.message
+                                                    );
+                                                    return prev;
+                                                  }, []).join("\n");
+                          open += "\">";
+                          */
+                          open += "<span class=\"";
+                          open += comments.map(function (x)
+                                              {
+                                                return x.class;
+                                              }).join(" ");
+                          open += "\">";
+                        }
+                        else
+                        {
+                          open += "<span>";
+                        }
+
+                        var close = "</span>";
+
+                        rtn += open;
+                        rtn += text.replace(/\n/g,
+                                  close + "</li><li>" + open);
+                        rtn += close;
+
+                        return rtn;
+                      }
+                  ) + "</li></ol>";
+              console.log(this.$.codeContent.innerHTML);
             }
           , commentsChanged:
             function (oldValue, newValue)
