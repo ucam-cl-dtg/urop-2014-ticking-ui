@@ -5,7 +5,6 @@
  */
 package uk.ac.cam.cl.ticking.signups;
 
-import java.util.Date;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -13,16 +12,16 @@ import java.util.Date;
 public class AddColumnBean {
     
     private String name;
-    private Date startTime;
-    private Date endTime;
-    private int slotLength; // in minutes
+    private Long startTime;
+    private Long endTime;
+    private int slotLengthInMinutes;
     
-    public AddColumnBean(String name, Date startTime, Date endTime,
-            int slotLength) {
+    public AddColumnBean(String name, Long startTime, Long endTime,
+            int slotLengthInMinutes) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.slotLength = slotLength; // in minutes
+        this.slotLengthInMinutes = slotLengthInMinutes;
     }
     
     public AddColumnBean() {
@@ -37,28 +36,28 @@ public class AddColumnBean {
         this.name = name;
     }
 
-    public Date getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(Long startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(Long endTime) {
         this.endTime = endTime;
     }
 
-    public int getSlotLength() {
-        return slotLength;
+    public int getSlotLengthInMinutes() {
+        return slotLengthInMinutes;
     }
 
-    public void setSlotLength(int slotLength) {
-        this.slotLength = slotLength;
+    public void setSlotLengthInMinutes(int slotLengthInMinutes) {
+        this.slotLengthInMinutes = slotLengthInMinutes;
     }
     
     
