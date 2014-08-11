@@ -42,7 +42,7 @@
 					class="custom-dropdown__select">
 					<option disabled selected>Select Ticking Slot...</option>
 					<template repeat="{{date in dates}}">
-						<option value="{{date}}">{{date}}</option>
+						<option value="{{date}}">{{date | dateFilter}}</option>
 					</template>
 				</select>
 			</div>
@@ -94,16 +94,12 @@
 				this.slotSelection = sel.options[sel.selectedIndex].value;
 			},
 
-			dateFilter: function(items) {
-				if (items) {
-					return items.map(function (obj) {
-						return obj.toLocaleString();
-					});
-				}
+			dateFilter: function(item) {
+				return item.toLocaleString();
 			},
 
 			bookingsResponse: function () {
-				this.$.bookingSucessfulToast.text = "Booking created for " + this.slotSelection + ".";
+				this.$.bookingSucessfulToast.text = "Booking created for " + (new Date(this.slotSelection)).toLocaleString() + ".";
 				this.$.bookingSucessfulToast.show();
 
 				this.fire('slot-booked', {
