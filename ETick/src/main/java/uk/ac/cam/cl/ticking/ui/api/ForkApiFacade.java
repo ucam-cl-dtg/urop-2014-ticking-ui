@@ -182,6 +182,9 @@ public class ForkApiFacade implements IForkApiFacade {
 			String tickId, String commitId) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+		if (crsid.equals("")) {
+			crsid = myCrsid;
+		}
 		boolean marker = false;
 		List<String> groupIds = db.getTick(tickId).getGroups();
 		for (String groupId : groupIds) {
@@ -190,7 +193,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				marker = true;
 			}
 		}
-		if (!(marker||myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId))))) {
+		if (!(marker||myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId)).getAuthor()))) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
