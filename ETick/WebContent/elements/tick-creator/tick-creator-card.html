@@ -8,6 +8,8 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog-transition.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="static-list.html">
+<link rel="import" href="static-list-labels.html">
 <link rel="import" href="../date-entry.html">
 
 <polymer-element name="tick-creator-card" attributes="tickId">
@@ -127,7 +129,6 @@
             on-core-response="{{savingDefaultsLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
-<!-- url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles" -->
     <core-ajax
             id="ajaxLoadStatic"
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/testFiles'}}"
@@ -135,7 +136,6 @@
             on-core-response="{{staticDataLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
-    <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"-->
     <core-ajax
             id="ajaxSendStatic"
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
@@ -226,7 +226,7 @@
         </div>
         <core-collapse id="collapseStylistic">
             <static-list-labels></static-list-labels>
-            <static-list id="staticList"></static-list>
+            <static-list id="staticList" staticOptions="{{staticOptions}}"></static-list>
         </core-collapse>
 
         <!-- SAVE button -->
@@ -257,19 +257,12 @@
            // this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
             this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
             //"http://localhost:8000/testTickData.json";
-                    //
-
-            //for local testing, TODO: remove
-            /*this.pathLoadGroups = "http://localhost:8000/testGroups.json";
-            this.pathLoadTickData = "http://localhost:8000/testTickData.json";
-            this.pathPutTickData = "http://localhost:8000/UROP_UI/api/tick";*/
-
-
 
             this.useDefaults = true; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
             this.groups = [];
             this.newTick = null;
             this.tickData = {};
+            this.staticOptions = [];
 
             if (this.tickId == null || this.tickId == "") {
                 this.newTick = true;
@@ -279,6 +272,7 @@
             } else {
                 this.newTick = false;
                 this.useDefaults = false;
+                this.$.ajaxLoadTickData.go();
                 this.$.ajaxLoadStatic.go();
             }
         },
@@ -290,11 +284,23 @@
             }
         },
         defaultsLoaded: function() {
-            this.$.staticList.staticOptions = this.$.ajaxLoadDefaults.response.slice(0);
+            /*this.$.staticList.staticOptions = this.$.ajaxLoadDefaults.response.slice(0);
 
             for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
                 this.$.staticList.staticOptions[i].closed = false;
             }
+
+            console.log("static list static options should have changed");
+            console.log(this.$.staticList.staticOptions);*/
+
+            this.staticOptions = this.$.ajaxLoadDefaults.response.slice(0);
+
+            for (var i = 0; i < this.staticOptions.length; i++) {
+                this.staticOptions[i].closed = false;
+            }
+
+            console.log("static list static options should have changed");
+            console.log(this.staticOptions);
         },
         savingDefaultsLoaded: function() {
             this.defaults = this.$.ajaxSaveLoadDefaults.response.slice(0);
@@ -412,7 +418,7 @@
             this.$.collapseGroups.opened = this.$.groupsSwitch.checked;
         },
         validateDisplayName: function() {
-            if ((this.$.inputDisplayName.inputValue.trim() == "")||this.$.inputDisplayName.invalid) {
+            if ((this.$.inputDisplayName.inputValue.trim() == "") || this.$.inputDisplayName.invalid) {
                 this.displayValid = false;
             } else {
                 this.displayValid = true;
@@ -422,7 +428,7 @@
          * Update the originally sent tick object with the data the user has entered on this card, then send it to the
          * front end's back end
          */
-        saveTickData: function () {
+        /*saveTickData: function () {
             console.log("Preparing call for Tom!");
 
                 //Set name if a new tick
@@ -461,7 +467,7 @@
                 this.$.ajaxPutTickData.go();
                 console.log("ajax fired");
 
-        },
+        },*/
         saveEverything: function() {
             console.log("Saving everything");
 
