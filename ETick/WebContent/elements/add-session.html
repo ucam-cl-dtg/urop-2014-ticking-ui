@@ -2,19 +2,24 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="datetime-picker.html">
 
 <polymer-element name="add-session" attributes="">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
 		<style>
+			paper-input {
+				width: 100%;
+			}
 		</style>
 		<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
 		<paper-dialog id="addDialog" heading="Create Ticking Session"
 			backdrop transition="core-transition-top">
-			<b>Session Information</b>
+			<h2 class="subtitle">Session Information</h2>
 			<div layout vertical center>
 				<paper-input id="titleInput" 
 					floatingInput 
+					required
 					placeholder="Session title..."></paper-input>
 				<paper-input id="descInput"
 					multiline
@@ -23,6 +28,17 @@
 				<paper-input id="locInput"
 					floatingInput
 					placeholder="Location..."></paper-input>
+			</div>
+			<div layout horizontal center>
+				<div layout vertical>
+					<h2 class="subtitle">Start Date/Time</h2>
+					<datetime-picker></datetime-picker>
+				</div>
+				<div style="padding: 8px;"></div>
+				<div layout vertical>
+					<h2 class="subtitle">End Date/Time</h2>
+					<datetime-picker></datetime-picker>
+				</div>
 			</div>
 		</paper-dialog>
 	</template>
