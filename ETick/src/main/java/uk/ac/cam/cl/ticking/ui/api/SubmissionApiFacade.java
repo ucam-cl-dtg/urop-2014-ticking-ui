@@ -171,7 +171,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 				marker = true;
 			}
 		}
-		if (!(marker||myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId))))) {
+		if (!(marker||myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId)).getAuthor()))) {
 			return Response.status(401)
 					.entity(Strings.INVALIDROLE).build();
 		}

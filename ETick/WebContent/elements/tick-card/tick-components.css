@@ -1,5 +1,7 @@
 paper-button {
     width: 100%;
+    background: #4285f4;
+    color: #fff;
 }
 
 paper-progress {

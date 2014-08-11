@@ -36,7 +36,7 @@
     <div class="container" horizontal layout>
       <div class="sidebar">
         <p class="result">
-          You have {{testResult=="FAIL" ? "failed." : "passed!"}}
+          You have {{reportResult=="FAIL" || testResult=="FAIL" ? "failed." : "passed!"}}
         </p>
         <files-list files="{{files}}"
                     selectedFileId="{{selectedFileId}}">
