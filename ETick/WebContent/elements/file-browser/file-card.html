@@ -160,15 +160,6 @@
                         var open = "";
                         if (comments.length > 0)
                         {
-                          open += comments.reduce(function (prev, comment)
-                                                  {
-                                                    prev.push(
-                                                      prev.length+1
-                                                      + ". " +
-                                                      comment.message
-                                                    );
-                                                    return prev;
-                                                  }, []).join("\n");
                           open += "<span class=\"";
                           open += comments.map(function (x)
                                               {
