@@ -43,21 +43,24 @@
 				</div>
 				<p class="creator">Created by: {{creator}}</p>
 				<div id="infoContainer">
-					<template if="{{!(info === '')}}">
 					<div style="padding: 15px">
-						<h2>DESCRIPTION:</h2>
-						<p>{{info}}</p>
-						<div layout horizontal center style="margin: 0; padding: 0;">
-							<h2>TICKING SESSIONS:</h2>
-							<template if="{{isAuthor}}">
-								<add-session></add-session>
+						<template if="{{info}}">
+							<h2>DESCRIPTION:</h2>
+							<p>{{info}}</p>
+						</template>
+
+						<template if="{{sheets}}">
+							<div layout horizontal center style="margin: 0; padding: 0;">
+								<h2>TICKING SESSIONS:</h2>
+								<template if="{{isAuthor}}">
+									<add-session></add-session>
+								</template>
+							</div>
+							<template repeat="{{sheet in sheets}}">
+								<p>{{sheet.title}}, <i style="color: #7C7C7C; font-size: 0.9rem;">{{sheet.location}}</i></p>
 							</template>
-						</div>
-						<template repeat="{{sheet in sheets}}">
-							<p>{{sheet.title}}, <i style="color: #7C7C7C; font-size: 0.9rem;">{{sheet.location}}</i></p>
 						</template>
 					</div>
-					</template>
 				</div>
 			</div>
 		</main-card>

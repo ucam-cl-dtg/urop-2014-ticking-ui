@@ -95,6 +95,7 @@
             on-core-response="{{tickDataLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
+    <!---->
     <core-ajax
             id="ajaxPutTickData"
             handleAs="json"
@@ -156,8 +157,8 @@
                 <div>{{tickName}}</div>
                 <br>
             </div>
-            <paper-input hidden?="{{inputDisplayNameHidden}}" id="inputDisplayName" flex label="e.g. Programming in Java Tick 1"
-                         inputValue="{{tickName}}" required error="Required" validate="^[0-9a-zA-Z][0-9a-zA-Z_-]*$"
+            <paper-input hidden?="{{inputDisplayNameHidden}}" id="inputDisplayName" flex label="e.g. 1A-Java-Tick-1"
+                         inputValue="{{tickName}}" required error="Required; can't have spaces" validate="^[0-9a-zA-Z][0-9a-zA-Z_-]*$"
                          on-keyup="{{validateDisplayName}}">
             </paper-input>
         </div>
@@ -253,6 +254,7 @@
 <script>
     Polymer('tick-creator-card', {
         ready: function() {
+            console.log("1: ready");
             this.styleLabel = "";
 
             this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/";
@@ -269,12 +271,11 @@
 
             if (this.tickId == null || this.tickId == "") {
                 this.newTick = true;
-                this.tickData = {};
                 this.$.ajaxLoadDefaults.go();
-                this.tickDataLoaded();
             } else {
                 this.newTick = false;
                 this.checkJava = false;
+                console.log("2: loading tick data");
                 this.$.ajaxLoadTickData.go();
                 this.$.ajaxLoadStatic.go();
             }
@@ -324,10 +325,15 @@
             }
         },
         tickDataLoaded: function() {
+            console.log("3: loaded tick data");
             this.tickData = this.$.ajaxLoadTickData.response;
             if (!this.newTick){
                 this.tickId = this.tickData._id;
             }
+
+            console.log("4: tick data is:");
+            console.log(this.tickData);
+
             this.processLoadedTickData();
         },
         tickDataSaved: function() {
@@ -364,17 +370,23 @@
          * Once the ajax get request is complete, bind the fields on this card to the received data
          */
         processLoadedTickData: function() {
+            console.log("5: processing loaded tick data");
+
             //Set up display name
             if (this.newTick) {
+                console.log("6: set display name");
                 //if the tick name is blank, then a new tick is being created, so show the tick naming input
                 this.$.divDisplayName.hidden = true;
                 this.inputDisplayNameHidden = false;
             } else {
+                console.log("6: ERR: didn't set display name");
                 //Otherwise, the tick already exists so show the read only field
                 this.$.divDisplayName.hidden = false;
                 this.inputDisplayNameHidden = true;
                 this.tickName = this.tickData.name;
             }
+
+            console.log("7: script ok");
 
             if (!this.newTick) {
                 this.$.collapseCodeTemplate.opened = true;
@@ -525,6 +537,7 @@
             this.$.ajaxLoadDefaults.go();
         },
         showLoadErrorToast: function(e, detail) {
+            console.log("ERR: couldn't load");
             if (detail.xhr.responseText != null) {
                 this.$.toastLoadError.text = detail.xhr.responseText;
             } else {
