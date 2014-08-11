@@ -6,7 +6,7 @@
 <polymer-element name="signup-component" attributes="tickId sheets signedUp unitPass testRunning humanPass">
     <template>
         <link rel="stylesheet" type="text/css" href="../../css/shared-styles.css" shim-shadowdom>
-        <link rel="stylesheet" type="text/css" href="tick-components.css" shadowdom>
+        <link rel="stylesheet" type="text/css" href="tick-components.css" shim-shadowdom>
 
         <style>
             .dialogYes {
@@ -39,7 +39,7 @@
 
         <!-- Cancel sign up button -->
         <core-collapse opened?="{{signedUp && !humanPass}}">
-            <paper-button class="greenButton" label="CANCEL SIGN UP" on-tap="{{showCancelDialog}}"></paper-button>
+            <paper-button label="CANCEL SIGN UP" on-tap="{{showCancelDialog}}"></paper-button>
         </core-collapse>
 
         <!-- Error message: sign up unavailable because the unit tester has not been passed -->
