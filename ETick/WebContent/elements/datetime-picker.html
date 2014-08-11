@@ -1,0 +1,30 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<polymer-element name="datetime-picker" attributes="">
+	<template>
+		<style>
+			#datetimeInput {
+				padding: 8px;
+				border: 0;
+				margin: 0;
+				font-size: 1rem;
+				font: inherit;
+				border-radius: 5px;
+			}
+			#datetimeInput:focus {
+				outline: none;
+				background: #f0f0f0;
+			}
+		</style>
+		<div>
+			<input id="datetimeInput" type="datetime-local" on-change="{{inputValueChanged}}"></input>
+		</div>			
+	</template>
+	<script>
+		Polymer('datetime-picker', {
+			inputValueChanged: function () {
+				console.log('Here');
+				console.log(this.$.datetimeInput.value);
+			}
+		});
+	</script>
+</polymer-element>
