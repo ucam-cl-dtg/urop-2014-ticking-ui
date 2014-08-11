@@ -36,6 +36,10 @@ paper-button.red {
   background: #e51c23;
   color: #fff;
 }
+paper-button.bluegrey {
+  background: #607d8b;
+  color: #fff;
+}
 
 paper-toggle-button {
   margin-top: 23px;
