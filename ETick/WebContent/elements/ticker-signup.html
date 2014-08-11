@@ -1,0 +1,22 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="main-card.html">
+<link rel="import" href="tickerSignupsView/TickerSignupsCard.html">
+<link rel="import" href="tickerSignupsView/TickerSignupsViewport.html">
+<link rel="import" href="file-browser/file-browser-card.html">
+
+<polymer-element name="ticker-signup" attributes="groupId" noscript>
+<template>
+	<style>
+	</style>
+	<div class="container">
+            <main-card animated swipeable>
+                <ticker-signups-card groupId="{{groupId}}" id="card"></ticker-signups-card>
+            </main-card>
+            <template if="{{crsId}}">
+                <main-card animated swipeable>
+                    <file-browser-card></file-browser-card>
+                </main-card>
+            </template>
+        </div>
+</template>
+</polymer-element>
