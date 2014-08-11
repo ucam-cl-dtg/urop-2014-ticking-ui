@@ -160,8 +160,6 @@
                         var open = "";
                         if (comments.length > 0)
                         {
-                          /*
-                          open += "<span title=\"";
                           open += comments.reduce(function (prev, comment)
                                                   {
                                                     prev.push(
@@ -171,13 +169,26 @@
                                                     );
                                                     return prev;
                                                   }, []).join("\n");
-                          open += "\">";
-                          */
                           open += "<span class=\"";
                           open += comments.map(function (x)
                                               {
                                                 return x.class;
                                               }).join(" ");
+                          open += "\" title=\""
+                          open += comments.reduce(function (prev, comment)
+                                                  {
+                                                    if (typeof comment.message
+                                                        != typeof undefined)
+                                                    {
+                                                      prev.push(
+                                                        prev.length+1
+                                                        + ". " +
+                                                        comment.message
+                                                      );
+                                                    }
+                                                    return prev;
+                                                  }, [])
+                                              .join("\n");
                           open += "\">";
                         }
                         else
