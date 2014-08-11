@@ -74,7 +74,6 @@
 			},
 
 			signUpClicked: function () {
-				console.log('Book:\nSheet: ' + this.sheetSelection + 'Slot: ' + this.slotSelection);
 				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
 					this.sheetSelection + "/bookings";
 				var parseDate = Date.parse(this.slotSelection);
