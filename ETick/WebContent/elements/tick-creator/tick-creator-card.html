@@ -95,6 +95,7 @@
             on-core-response="{{tickDataLoaded}}"
             on-core-error="{{showLoadErrorToast}}">
     </core-ajax>
+    <!---->
     <core-ajax
             id="ajaxPutTickData"
             handleAs="json"
@@ -156,8 +157,8 @@
                 <div>{{tickName}}</div>
                 <br>
             </div>
-            <paper-input hidden?="{{inputDisplayNameHidden}}" id="inputDisplayName" flex label="e.g. Programming in Java Tick 1"
-                         inputValue="{{tickName}}" required error="Required" validate="^[0-9a-zA-Z][0-9a-zA-Z_-]*$"
+            <paper-input hidden?="{{inputDisplayNameHidden}}" id="inputDisplayName" flex label="e.g. 1A-Java-Tick-1"
+                         inputValue="{{tickName}}" required error="Required; can't have spaces" validate="^[0-9a-zA-Z][0-9a-zA-Z_-]*$"
                          on-keyup="{{validateDisplayName}}">
             </paper-input>
         </div>
@@ -269,9 +270,7 @@
 
             if (this.tickId == null || this.tickId == "") {
                 this.newTick = true;
-                this.tickData = {};
                 this.$.ajaxLoadDefaults.go();
-                this.tickDataLoaded();
             } else {
                 this.newTick = false;
                 this.checkJava = false;
