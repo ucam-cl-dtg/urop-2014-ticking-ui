@@ -67,7 +67,7 @@ public interface IForkApiFacade {
 			@PathParam("tickId") String tickId, ForkBean forkBean);
 	
 	@GET
-	@Path("{crsid}/{tickId}/{commitId}/files")
+	@Path("/{crsid}/{tickId}/{commitId}/files")
 	@Produces("application/json")
 	public abstract Response getAllFiles(@Context HttpServletRequest request,
 			@PathParam("crsid") String crsid, @PathParam("tickId") String tickId, @PathParam("commitId") String commitId);

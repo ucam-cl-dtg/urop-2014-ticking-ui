@@ -39,7 +39,8 @@
           {
             "use strict";
 
-            if (typeof this.crsid == typeof undefined)
+            if (typeof this.crsid == typeof undefined
+              ||this.crsid == null)
             {
               this.$.report.url =
                 ticking_service + "/submission/" + this.tickId + "/last";
@@ -74,13 +75,14 @@
                 return;
             }
             /* Load files, fires due to auto attribute */
-            if (typeof this.crsid == typeof undefined)
+            if (typeof this.crsid == typeof undefined
+              ||this.crsid == null)
             {
               this.$.fileContent.url =
                 /* TODO: Use ticker service—test */
                 ticking_service + "/tick/"
                 + this.tickId + "/"
-                + this.$.report.response.commitId;
+                + this.$.report.response.commitId
                 + "/files";
             }
             else
@@ -88,8 +90,9 @@
               this.$.fileContent.url =
                 /* TODO: Use ticker service—test */
                 ticking_service + "/fork/"
+                + this.crsid + "/"
                 + this.tickId + "/"
-                + this.$.report.response.commitId;
+                + this.$.report.response.commitId
                 + "/files";
             }
 
