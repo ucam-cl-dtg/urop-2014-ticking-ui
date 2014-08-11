@@ -213,18 +213,18 @@
 
         <h4>STYLISTIC CHECKS</h4>
         <div class="checkboxContainer" layout horizontal>
-            <paper-checkbox checked="{{useDefaults}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
-            <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Use Defaults</span>
+            <paper-checkbox checked="{{checkJava}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
+            <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Analyse .java files</span>
             <paper-button
                     id="cmdRestoreDefaults"
                     label="RESTORE DEFAULTS"
                     raisedButton
                     end-justified
                     on-tap="{{cmdRestoreDefaults}}"
-                    hidden?="{{useDefaults}}">
+                    hidden?="{{!checkJava}}">
             </paper-button>
         </div>
-        <core-collapse id="collapseStylistic">
+        <core-collapse id="collapseStylistic" opened?="{{checkJava}}">
             <static-list-labels></static-list-labels>
             <static-list id="staticList" staticOptions="{{staticOptions}}"></static-list>
         </core-collapse>
@@ -258,7 +258,7 @@
             this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
             //"http://localhost:8000/testTickData.json";
 
-            this.useDefaults = true; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
+            this.checkJava = false; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
             this.groups = [];
             this.newTick = null;
             this.tickData = {};
@@ -271,16 +271,24 @@
                 this.tickDataLoaded();
             } else {
                 this.newTick = false;
-                this.useDefaults = false;
+                this.checkJava = false;
                 this.$.ajaxLoadTickData.go();
                 this.$.ajaxLoadStatic.go();
             }
         },
         staticDataLoaded: function() {
-            this.$.staticList.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
+            this.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
 
-            for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
-                this.$.staticList.staticOptions[i].closed = false;
+            console.log(this.staticOptions);
+
+            if (this.staticOptions.length == 0) {
+                console.log("loading defaults");
+                this.$.ajaxLoadDefaults.go();
+            } else {
+                this.checkJava = true;
+                for (var i = 0; i < this.staticOptions.length; i++) {
+                    this.staticOptions[i].closed = false;
+                }
             }
         },
         defaultsLoaded: function() {
@@ -406,7 +414,7 @@
             this.$.ajaxLoadGroups.go();
         },
         toggleStylistic: function() {
-            this.$.collapseStylistic.toggle();
+            //this.$.collapseStylistic.toggle();
         },
         toggleCodeTemplate: function() {
             this.$.collapseCodeTemplate.opened = this.$.codeTemplateSwitch.checked;
@@ -537,23 +545,23 @@
         buildStaticData: function() {
             var sendData = [];
 
-            if (this.useDefaults) {
-                console.log("using default send data");
-                sendData = this.defaults;
-            } else {
-                console.log("using custom send data");
-                for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
-                    if (!(this.$.staticList.staticOptions[i].closed)) {
-                        sendData[sendData.length] = {
-                            text: this.$.staticList.staticOptions[i].text,
-                            checkedIndex: this.$.staticList.staticOptions[i].checkedIndex,
-                            code: this.$.staticList.staticOptions[i].code};
-                    }
+            if (!this.checkJava) {
+                return sendData;
+            }
+
+            console.log("using custom send data");
+            for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
+                if (!(this.$.staticList.staticOptions[i].closed)) {
+                    sendData[sendData.length] = {
+                        text: this.$.staticList.staticOptions[i].text,
+                        checkedIndex: this.$.staticList.staticOptions[i].checkedIndex,
+                        code: this.$.staticList.staticOptions[i].code};
                 }
             }
+
             return sendData;
         },
-        saveStaticOpts: function() {
+        /*saveStaticOpts: function() {
             var sendData = [];
 
             if (this.useDefaults) {
@@ -578,7 +586,7 @@
 
             // this.$.ajaxSendStatic.body = this.$.staticList.staticOptions;
             this.$.ajaxSendStatic.go();
-        },
+        },*/
         cmdRestoreDefaults: function() {
             this.$.alertRestoreDefaults.toggle();
         },
