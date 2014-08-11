@@ -129,7 +129,7 @@ public class ForkApiFacade implements IForkApiFacade {
 
 	@Override
 	public Response markFork(HttpServletRequest request, String crsid,
-			String tickId, long date, ForkBean forkBean) {
+			String tickId, ForkBean forkBean) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
@@ -157,7 +157,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				try {
 					testServiceProxy.setTickerResult(crsid, tickId, result,
 							forkBean.getTickerComments(),
-							forkBean.getCommitId(), new Date(date));
+							forkBean.getCommitId(), forkBean.getReportDate().toDate());
 				} catch (UserNotInDBException | TickNotInDBException
 						| ReportNotFoundException e) {
 					return Response.status(Status.NOT_FOUND).entity(e).build();

@@ -1,5 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans;
 
+import org.joda.time.DateTime;
+
 
 /**
  * This class stores information regarding a submission for a tickId
@@ -20,6 +22,8 @@ public class ForkBean {
 	private String ticker;
 	private String tickerComments;
 	private String commitId;
+	
+	private DateTime reportDate;
 
 	/**
 	 * Default constructor for Jackson JSON to POJO because java
@@ -148,5 +152,21 @@ public class ForkBean {
 	 */
 	public void setTicker(String ticker) {
 		this.ticker = ticker;
+	}
+
+	/**
+	 * 
+	 * @return reportDate
+	 */
+	public DateTime getReportDate() {
+		return reportDate;
+	}
+
+	/**
+	 * 
+	 * @param reportDate
+	 */
+	public void setReportDate(DateTime reportDate) {
+		this.reportDate = reportDate;
 	}
 }
