@@ -4,6 +4,7 @@
 <polymer-element name="files-service"
     attributes="date
                 files
+                crsid
                 errors
                 tickId
                 comments
@@ -38,8 +39,18 @@
           {
             "use strict";
 
-            this.$.report.url =
-              ticking_service + "/submission/" + this.tickId + "/last";
+            if (typeof this.crsid == typeof undefined
+              ||this.crsid == null)
+            {
+              this.$.report.url =
+                ticking_service + "/submission/" + this.tickId + "/last";
+            }
+            else
+            {
+              this.$.report.url =
+                ticking_service + "/submission/" + this.tickId + "/last"
+                + "?crsid=" + this.crsid;
+            }
 
           }
 
@@ -64,11 +75,25 @@
                 return;
             }
             /* Load files, fires due to auto attribute */
-            this.$.fileContent.url =
-              /* TODO: Use ticker service */
-              git_service + "/bundle/"
-              + this.$.report.response.repoName + ".git/"
-              + this.$.report.response.commitId;
+            if (typeof this.crsid == typeof undefined
+              ||this.crsid == null)
+            {
+              this.$.fileContent.url =
+                /* TODO: Use ticker service—test */
+                ticking_service + "/tick/"
+                + this.tickId + "/"
+                + this.$.report.response.commitId;
+                + "/files";
+            }
+            else
+            {
+              this.$.fileContent.url =
+                /* TODO: Use ticker service—test */
+                ticking_service + "/fork/"
+                + this.tickId + "/"
+                + this.$.report.response.commitId;
+                + "/files";
+            }
 
             /* Make a copy of the loaded data */
             this.testResult   = this.$.report.response.testResult;
