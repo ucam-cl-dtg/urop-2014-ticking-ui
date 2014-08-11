@@ -82,7 +82,7 @@
                 /* TODO: Use ticker service—test */
                 ticking_service + "/tick/"
                 + this.tickId + "/"
-                + this.$.report.response.commitId;
+                + this.$.report.response.commitId
                 + "/files";
             }
             else
@@ -90,8 +90,9 @@
               this.$.fileContent.url =
                 /* TODO: Use ticker service—test */
                 ticking_service + "/fork/"
+                + this.crsid + "/"
                 + this.tickId + "/"
-                + this.$.report.response.commitId;
+                + this.$.report.response.commitId
                 + "/files";
             }
 
