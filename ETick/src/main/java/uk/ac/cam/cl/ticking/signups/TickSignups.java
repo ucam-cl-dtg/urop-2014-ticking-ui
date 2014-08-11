@@ -80,7 +80,7 @@ public class TickSignups {
             log.info("sheetID: " + sheetID);
             return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
         } catch (ItemNotFoundException e) {
-            return Response.status(Status.NOT_FOUND).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity("Not Found Error: " + e.getMessage()).build();
         }
     }
     
@@ -137,11 +137,11 @@ public class TickSignups {
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND)
-                    .entity(e).build();
+                    .entity("Not found error: " + e.getMessage()).build();
         } catch (NotAllowedException e) {
             e.printStackTrace();
             return Response.status(Status.FORBIDDEN)
-                    .entity(e).build();
+                    .entity("Not allowed: " + e.getMessage()).build();
         }
         return Response.status(Status.FORBIDDEN)
                 .entity("You do not have permission to book this slot").build();
@@ -255,7 +255,7 @@ public class TickSignups {
         try {
             return Response.ok(service.listSheets(groupID)).build();
         } catch (ItemNotFoundException e) {
-            return Response.status(404).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
     }
     
@@ -269,7 +269,7 @@ public class TickSignups {
         try {
             return Response.ok(service.listColumns(sheetID)).build();
         } catch (ItemNotFoundException e) {
-            return Response.status(404).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
     }
     
@@ -283,7 +283,7 @@ public class TickSignups {
         try {
             return Response.ok(service.listColumnSlots(sheetID, tickerName)).build();
         } catch (ItemNotFoundException e) {
-            return Response.status(Status.NOT_FOUND).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
     }
     
@@ -300,7 +300,7 @@ public class TickSignups {
         try {
             return Response.ok(service.showBooking(sheetID, tickerName, startTime.getTime())).build();
         } catch (ItemNotFoundException e) {
-            return Response.status(Status.NOT_FOUND).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
     }
     
@@ -318,7 +318,7 @@ public class TickSignups {
         try {
             groupIDs = service.getGroupIDs(sheetID);
         } catch (ItemNotFoundException e) {
-            return Response.status(Status.NOT_FOUND).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
         if (groupIDs.size() != 1) {
             return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -338,9 +338,9 @@ public class TickSignups {
             service.removeAllUserBookings(sheetID, crsid, db.getAuthCode(sheetID));
             return Response.ok().build();
         } catch (NotAllowedException e) {
-            return Response.status(Status.FORBIDDEN).entity(e).build();
+            return Response.status(Status.FORBIDDEN).entity("Error: " + e.getMessage()).build();
         } catch (ItemNotFoundException e) {
-            return Response.status(Status.NOT_FOUND).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
     }
     
@@ -368,11 +368,11 @@ public class TickSignups {
         } catch (NotAllowedException e) {
             e.printStackTrace();
             return Response.status(Status.FORBIDDEN)
-                    .entity(e).build();
+                    .entity("Not allowed error: " + e.getMessage()).build();
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND)
-                    .entity(e).build();
+                    .entity("Not found error: " + e.getMessage()).build();
         }
     }
     
@@ -388,7 +388,7 @@ public class TickSignups {
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity(e).build();
+                    .entity("Internal server error: " + e.getMessage()).build();
         }
         return Response.ok().build();
     }
@@ -417,11 +417,11 @@ public class TickSignups {
         } catch (NotAllowedException e) {
             e.printStackTrace();
             return Response.status(Status.FORBIDDEN)
-                    .entity(e).build();
+                    .entity("Not allowed: " + e.getMessage()).build();
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND)
-                    .entity(e).build();
+                    .entity("Not found error: " + e.getMessage()).build();
         }
     }
     
@@ -435,11 +435,11 @@ public class TickSignups {
         } catch (NotAllowedException e) {
             e.printStackTrace();
             return Response.status(Status.FORBIDDEN)
-                    .entity(e).build();
+                    .entity("Not allowed: " + e.getMessage()).build();
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
             return Response.status(Status.NOT_FOUND)
-                    .entity(e).build();
+                    .entity("Not found error: " + e.getMessage()).build();
         }
     }
     
@@ -579,13 +579,14 @@ public class TickSignups {
                     db.getAuthCode(sheetID), bean.getStartTime(), bean.getEndTime(), bean.getSlotLength()));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
-            return Response.status(Status.NOT_FOUND).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         } catch (NotAllowedException e) {
             e.printStackTrace();
-            return Response.status(Status.FORBIDDEN).entity(e).build();
+            return Response.status(Status.FORBIDDEN).entity("Not allowed: " + e.getMessage()).build();
         } catch (DuplicateNameException e) {
             e.printStackTrace();
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Internal server error: "
+                    + e.getMessage()).build();
         }
         return Response.ok().build();
     }
@@ -612,10 +613,10 @@ public class TickSignups {
             service.deleteColumn(sheetID, ticker, db.getAuthCode(sheetID));
         } catch (NotAllowedException e) {
             e.printStackTrace();
-            return Response.status(Status.FORBIDDEN).entity(e).build();
+            return Response.status(Status.FORBIDDEN).entity("Not allowed: " + e.getMessage()).build();
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
-            return Response.status(Status.NOT_FOUND).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
         return Response.ok().build();
     }
@@ -646,10 +647,10 @@ public class TickSignups {
             service.book(sheetID, ticker, startTime, new SlotBookingBean(currentlyBookedUser, userToBook, tickID, authCode));
         } catch (ItemNotFoundException e) {
             e.printStackTrace();
-            return Response.status(Status.NOT_FOUND).entity(e).build();
+            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         } catch (NotAllowedException e) {
             e.printStackTrace();
-            return Response.status(Status.FORBIDDEN).entity(e).build();
+            return Response.status(Status.FORBIDDEN).entity("Not allowed: " + e.getMessage()).build();
         }
         return Response.ok().build();
     }
