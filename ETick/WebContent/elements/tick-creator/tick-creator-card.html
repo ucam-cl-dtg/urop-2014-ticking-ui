@@ -272,6 +272,7 @@
             if (this.tickId == null || this.tickId == "") {
                 this.newTick = true;
                 this.$.ajaxLoadDefaults.go();
+                this.processLoadedTickData();
             } else {
                 this.newTick = false;
                 this.checkJava = false;

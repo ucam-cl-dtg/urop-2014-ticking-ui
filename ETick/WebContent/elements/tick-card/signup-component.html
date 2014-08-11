@@ -3,7 +3,7 @@
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 
-<polymer-element name="signup-component" attributes="tickId sheets signedUp unitPass testRunning">
+<polymer-element name="signup-component" attributes="tickId sheets signedUp unitPass testRunning humanPass">
     <template>
         <link rel="stylesheet" href="../../css/shared-styles.css">
         <link rel="stylesheet" href="tick-components.css">
@@ -33,29 +33,33 @@
 
 
         <!-- Sign up button -->
-        <core-collapse opened?="{{!signedUp && !testRunning && unitPass}}">
+        <core-collapse opened?="{{!signedUp && !testRunning && unitPass && !humanPass}}">
             <paper-button class="greenButton" label="SIGN UP" on-tap="{{openSignupDialog}}"></paper-button>
         </core-collapse>
 
         <!-- Cancel sign up button -->
-        <core-collapse opened?="{{signedUp}}">
+        <core-collapse opened?="{{signedUp && !humanPass}}">
             <paper-button class="greenButton" label="CANCEL SIGN UP" on-tap="{{showCancelDialog}}"></paper-button>
         </core-collapse>
 
         <!-- Error message: sign up unavailable because the unit tester has not been passed -->
-        <core-collapse opened?="{{!testRunning && !unitPass}}">
+        <core-collapse opened?="{{!testRunning && !unitPass && !humanPass}}">
             <div class="error">Sign up unavailable (automated tests not passed)</div>
         </core-collapse>
 
         <!-- Error message: sign up unavailable because a test is running -->
-        <core-collapse opened?="{{testRunning}}">
+        <core-collapse opened?="{{testRunning && !humanPass}}">
             <div class="error">Sign up unavailable (test running)</div>
+        </core-collapse>
+
+        <!-- Error message: tick has been passed -->
+        <core-collapse opened?="{{humanPass}}">
+            <div class="error">PASSED</div>
         </core-collapse>
 
         <!-- Sign ups dialog -->
         <sheet-selector id="signupDialog" sheets="{{sheets}}" tickId="{{tickId}}"></sheet-selector>
 
-        <!-- TODO: confirm cancel sign up dialog -->
         <paper-dialog id="cancelDialog" heading="Cancel Sign up?" backdrop transition="core-transition-top">
             <paper-button class="dialogNo" dismissive label="No"></paper-button>
             <paper-button class="dialogYes" affirmative label="Yes" on-tap="{{deleteBooking}}"></paper-button>
