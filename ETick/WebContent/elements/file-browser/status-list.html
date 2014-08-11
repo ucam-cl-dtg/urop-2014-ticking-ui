@@ -6,12 +6,14 @@
 <polymer-element name="status-list" attributes="errors highlight">
   <template>
     <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="status-list-style.css"/>
 
     <core-selector multi
                    id="selector"
                    valueattr="label">
       <template repeat="{{item in errors}}">
         <core-item icon='{{item.outcome}}'
+                   class="{{item.className}}"
                    label="{{item.problemDescription}}">
         </core-item>
       </template> 
@@ -33,15 +35,18 @@
                 {
                   case "PASS":
                     this.errors[i].outcome = "check";
+                    this.errors[i].className = "pass";
                     break;
 
                   case "WARNING":
                     this.errors[i].outcome = "warning";
+                    this.errors[i].className = "warning";
                     this.highlight.push(i);
                     break;
 
                   default:
                     this.errors[i].outcome = "error";
+                    this.errors[i].className = "error";
                     this.highlight.push(i);
                 }
               }
