@@ -43,9 +43,9 @@
 
 
             <core-collapse id="overview" opened>
-            <div id="details" layout vertical start>
-                <div layout horizontal end style="width: 100%;">
-                    <p class="creator">Created by {{creator}}</p>
+                <div id="details" layout vertical start>
+                    <div layout horizontal end style="width: 100%;">
+                        <p class="creator">Created by: {{creator}}</p>
 
 					<span layout horizontal end end-justified flex>
 						<template if="{{isAuthor}}">
@@ -54,30 +54,39 @@
                             <paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
                         </template>
 					</span>
-				</div>
-				<p class="creator">Created by: {{creator}}</p>
-				<div id="infoContainer">
-					<div style="padding: 15px">
-						<template if="{{info}}">
-							<h2>DESCRIPTION:</h2>
-							<p>{{info}}</p>
-						</template>
+                    </div>
 
-						<template if="{{sheets}}">
-							<div layout horizontal center style="margin: 0; padding: 0;">
-								<h2>TICKING SESSIONS:</h2>
-								<template if="{{isAuthor}}">
-									<add-session></add-session>
-								</template>
-							</div>
-							<template repeat="{{sheet in sheets}}">
-								<p>{{sheet.title}}, <i style="color: #7C7C7C; font-size: 0.9rem;">{{sheet.location}}</i></p>
-							</template>
-						</template>
-					</div>
-				</div>
-			</div>
-                </core-collapse>
+                    <div id="infoContainer">
+                        <div style="padding: 15px">
+                            <template if="{{info}}">
+                                <h2>DESCRIPTION:</h2>
+                                <p>{{info}}</p>
+                            </template>
+
+                            <template if="{{sheets}}">
+                                <div layout horizontal center style="margin: 0; padding: 0;">
+                                    <h2>TICKING SESSIONS:</h2>
+                                    <template if="{{isAuthor}}">
+                                        <add-session></add-session>
+                                    </template>
+                                </div>
+                                <template repeat="{{sheet in sheets}}">
+                                    <p>{{sheet.title}}, <i style="color: #7C7C7C; font-size: 0.9rem;">{{sheet.location}}</i></p>
+                                </template>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </core-collapse>
+
+            <core-collapse id="ticks">
+                <tick-list gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"
+                           canFork="{{isSubmitter}}"></tick-list>
+            </core-collapse>
+
+            <core-collapse id="groups">
+                <group-members gid="{{gid}}" allowAdd="{{isAuthor}}" rows="4"></group-members>
+            </core-collapse>
 		</main-card>
 		
 		<!-- <div id="headerBar" layout horizontal center>
@@ -111,9 +120,11 @@
             </main-card>
         </template>
 
-        <template if="{{isMarker}}">
-        	<ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}"></ticker-signup>
-        </template>
+        <core-collapse id="tickingSessions">
+            <template if="{{isMarker}}">
+                <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}"></ticker-signup>
+            </template>
+        </core-collapse>
 		<!-- Group content card. -->
 		<!-- <main-card animated>
 			<paper-tabs selected=0 on-core-select="{{tabSelectedAction}}">
