@@ -20,7 +20,7 @@
 
         <!--Submit button -->
         <core-collapse opened?="{{!testRunning && !signedUp && !humanPass}}">
-            <paper-button label="SUBMIT" class="greenButton" on-tap="{{submit}}"
+            <paper-button label="SUBMIT" on-tap="{{submit}}"
                 disabled?="{{signedUp || testRunning}}">
             </paper-button>
         </core-collapse>
