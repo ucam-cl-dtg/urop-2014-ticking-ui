@@ -44,7 +44,8 @@
 
 		<!-- Card heading. -->
 		<div id="headerBar" layout horizontal center>
-			<h1 flex>Members ({{number}})</h1>
+			<!--<h1 flex>Members ({{number}})</h1>-->
+            <span flex></span>
 			<template if="{{allowAdd}}">
 				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
 				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>

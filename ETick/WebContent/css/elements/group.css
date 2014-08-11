@@ -1,17 +1,24 @@
 
 paper-tabs {
-	background-color: #7171DF;
+	background-color: #2D91EC;
 	color: #fff;
 /*    box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.2);
 */
 }
 
 /* Ripple and bar colors */
+polyfill-next-selector {shadow: 'paper-tab #ink';}
 paper-tab::shadow #ink {
-	color: #ffff8d;
+	color: #a7ffeb;
 }
+polyfill-next-selector {shadow: 'paper-tab #selectionBar';}
 paper-tabs::shadow #selectionBar {
-	background-color: #ffff8d;
+	background-color: #a7ffeb;
+}
+
+polyfill-next-selector {content: 'paper-tabs .tab-content';}
+paper-tabs::content .tab-content {
+    font-size: 100px;
 }
 
 #frame {

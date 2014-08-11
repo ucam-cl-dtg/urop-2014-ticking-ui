@@ -11,6 +11,9 @@
 <link rel="import" href="add-session.html">
 <link rel="import" href="file-browser/file-browser-card.html">
 
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/core-collapse/core-collapse.html">
+
 <polymer-element name="x-group" attributes="gid name info creator">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
@@ -27,18 +30,29 @@
 			handleAs="json"
 			on-core-response="{{sheetListResponse}}">
 		</core-ajax>
-		
-		<!-- Group info card. -->
-		<main-card animated>
-			<div layout vertical start>
-				<div layout horizontal end style="width: 100%;">
-					<h1 class="groupName">{{name}}</h1>
+
+        <main-card animated>
+            <paper-tabs id="tabs" selected="0">
+                <paper-tab>{{name}}</paper-tab>
+                <paper-tab>TICKS</paper-tab>
+                <!-- Need to somehow dynamically hide this -->
+                    <paper-tab>TICKING SESSIONS</paper-tab>
+
+                <paper-tab>MEMBERS</paper-tab>
+            </paper-tabs>
+
+
+            <core-collapse id="overview" opened>
+            <div id="details" layout vertical start>
+                <div layout horizontal end style="width: 100%;">
+                    <p class="creator">Created by {{creator}}</p>
+
 					<span layout horizontal end end-justified flex>
 						<template if="{{isAuthor}}">
-							<paper-icon-button id="groupDeleteButton" icon="delete"></paper-icon-button>
-							<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
-							<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
-						</template>
+                            <paper-icon-button id="groupDeleteButton" icon="delete"></paper-icon-button>
+                            <paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
+                            <paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
+                        </template>
 					</span>
 				</div>
 				<p class="creator">Created by: {{creator}}</p>
@@ -63,6 +77,7 @@
 					</div>
 				</div>
 			</div>
+                </core-collapse>
 		</main-card>
 		
 		<!-- <div id="headerBar" layout horizontal center>
@@ -74,17 +89,9 @@
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>-->
 
-		<!-- Group members card. -->
-		<main-card animated
-			on-main-card-swipe-away="{{cardSwiped}}">
-			<group-members gid="{{gid}}" allowAdd="{{isAuthor}}" rows="4"></group-members>
-		</main-card>
 
 		<!-- Tick list card. -->
-		<main-card animated>
-			<tick-list id="ticks" gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"
-				canFork="{{isSubmitter}}"></tick-list>
-		</main-card>
+
 
 		<template if="{{selectedTickId}}">
 			<main-card animated>
@@ -107,7 +114,6 @@
         <template if="{{isMarker}}">
         	<ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}"></ticker-signup>
         </template>
-
 		<!-- Group content card. -->
 		<!-- <main-card animated>
 			<paper-tabs selected=0 on-core-select="{{tabSelectedAction}}">
@@ -131,6 +137,17 @@
 			domReady: function () {
 				this.$.roleAjax.go();
 				this.$.sheetListAPI.go();
+
+                var that = this.$;
+                this.$.tabs.addEventListener('core-select', function() {
+                    this.tabIndex = that.tabs.selected;
+                    console.log(this.tabIndex);
+
+                    that.overview.opened = this.tabIndex == 0;
+                    that.ticks.opened = this.tabIndex == 1;
+                    that.groups.opened = this.tabIndex == 3;
+                    that.tickingSessions.opened = this.tabIndex== 2;
+                });
 			},
 
 			roleResponse: function() {
@@ -141,6 +158,12 @@
 				this.isSubmitter = (this.roles.indexOf('SUBMITTER') > -1);
 				this.isMarker = (this.roles.indexOf('MARKER') > -1);
 			},
+
+            nameChanged: function() {
+                if (this.name != this.name.toUpperCase()) {
+                    this.name = this.name.toUpperCase();
+                }
+            },
 
 			// tabSelectedAction: function(e, detail) {
 			// 	if (this.pane) {

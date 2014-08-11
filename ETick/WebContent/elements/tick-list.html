@@ -48,7 +48,8 @@
 
 		<!-- Tick list card header. -->
 		<div id="headerBar" layout horizontal center>
-			<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>
+			<!--<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>-->
+            <span flex></span>
 			<template if="{{canFork}}">
 				<paper-icon-button icon="communication:call-split" on-click="{{forkClicked}}"></paper-icon-button>
 			</template>
