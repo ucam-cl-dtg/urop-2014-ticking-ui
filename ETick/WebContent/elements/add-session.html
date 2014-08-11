@@ -60,14 +60,25 @@
 
 			<h2 class="subtitle">Ticking Slot Length:</h2>
 
-				<paper-input id="slotLengthInput"
-					placeholder="Slot length (minutes)..."
-					validate="^[0-9]+$"
-					error="Invalid slot length.">
+			<paper-input id="slotLengthInput"
+				placeholder="Slot length (minutes)..."
+				validate="^[0-9]+$"
+				error="Invalid slot length.">
+			</paper-input>
+
+			<h2 class="subtitle">Tickers:</h2>
+			<template repeat="{{ticker in tickers}}">
+				<paper-input disabled value="{{ticker}}"></paper-input>
+			</template>
+
+			<div layout horizontal center>
+				<paper-input id="addTickerInput"
+					required="{{!(tickers === [])}}"
+					placeholder="New ticker name...">
 				</paper-input>
-
-
-
+				<paper-icon-button id="addTickerButton" icon="add"
+					on-click="{{addTicker}}"></paper-icon-button>
+			</div>
 
 			<template if="{{showSubmit}}">
 				<paper-button id="addSubmit" class="dialogSubmit" label="CREATE" on-click="{{createButtonClicked}}" affirmative></paper-button>
@@ -80,6 +91,12 @@
 	</template>
 	<script>
 		Polymer('add-session', {
+
+			domReady: function () {
+				this.tickers = [];
+			},
+
+
 			addClicked: function () {
 				this.$.addDialog.toggle();
 			},
@@ -116,6 +133,14 @@
 				var toast = this.$.addSessionError;
 				toast.text = detail.xhr.responseText;
 				toast.show();
+			},
+
+			addTicker: function () {
+				var s = this.$.addTickerInput.inputValue;
+				if (s) {
+					this.tickers.push(s);
+					console.log(this.tickers);
+				}
 			}
 		});
 	</script>
