@@ -13,7 +13,8 @@
                 testCount
                 testResult
                 tickerResult
-                reportResult">
+                reportResult
+                reportCreationDate">
   <template>
     <style>
     :host {
@@ -105,6 +106,8 @@
             this.commitId     = this.$.report.response.commitId;
             this.date         = this.$.report.response.creationDate;
             this.testCount    = this.$.report.response.noOfTests;
+            this.reportCreationDate =
+              this.$.report.response.creationDate;
 
             var i;
             for (i = 0; i < this.errors.length; i++)
