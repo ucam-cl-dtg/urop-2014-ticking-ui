@@ -15,6 +15,7 @@
       font-weight: 300;
     }
     .card-header {
+	  padding-top: 5px
       margin-bottom: 10px;
     }
     </style>
@@ -40,7 +41,7 @@
     </core-ajax>
 	
 	<div layout vertical>
-		<div align="left">
+		<div id="card-header" align="left">
 			<core-item icon="home" label="{{location}}"></core-item>
 			<core-item icon="today" label="{{date}}"></core-item>
 			<core-item icon="info" label="{{description}}"></core-item>
