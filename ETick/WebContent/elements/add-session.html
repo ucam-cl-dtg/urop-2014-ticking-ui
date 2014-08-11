@@ -33,6 +33,7 @@
 					floatingInput 
 					required
 					placeholder="Session title..."
+					error="Invalid session title."
 					on-input="{{validate}}"></paper-input>
 
 				<paper-input id="descInput"
@@ -49,12 +50,13 @@
 				<div layout vertical>
 					<h2 class="subtitle">Start Date/Time</h2>
 					<datetime-picker id="startTime"
-						></datetime-picker>
+						on-input="{{validate}}"></datetime-picker>
 				</div>
 				<div style="padding: 8px;"></div>
 				<div layout vertical>
 					<h2 class="subtitle">End Date/Time</h2>
-					<datetime-picker id="endTime"></datetime-picker>
+					<datetime-picker id="endTime"
+						on-input="{{validate}}"></datetime-picker>
 				</div>
 			</div>
 
@@ -78,7 +80,8 @@
 			<div layout horizontal center>
 				<paper-input id="addTickerInput"
 					required="{{!tickers || tickers.length < 1}}"
-					placeholder="New ticker name...">
+					placeholder="New ticker name..."
+					error="At least one ticker required.">
 				</paper-input>
 				<paper-icon-button id="addTickerButton" icon="add"
 					on-click="{{addTicker}}"></paper-icon-button>
@@ -105,8 +108,14 @@
 			},
 
 			validate: function () {
-				if (!this.$.titleInput.invalid) {
+				if (this.$.titleInput.inputValue &&
+					this.tickers && this.tickers.length >= 1 &&
+					this.$.startTime.value &&
+					this.$.endTime.value) {
 					this.showSubmit = true;
+				}
+				else {
+					this.showSubmit = false;
 				}
 			},
 
@@ -144,6 +153,7 @@
 					this.tickers.push(s);
 					console.log(this.tickers);
 				}
+				this.validate();
 			},
 
 			removeTicker: function (e, detail, target) {
@@ -152,6 +162,7 @@
 				if (i > -1) {
 					this.tickers.splice(i, 1);
 				}
+				this.validate();
 			}
 		});
 	</script>

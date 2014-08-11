@@ -23,6 +23,7 @@
 		Polymer('datetime-picker', {
 			inputValueChanged: function () {
 				this.value = this.$.datetimeInput.value;
+				this.fire('input');
 			}
 		});
 	</script>
