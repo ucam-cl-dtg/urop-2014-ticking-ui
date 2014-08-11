@@ -159,7 +159,7 @@ public class RavenManager {
 					u.getCollegeName(), !notStudent);
 			List<String> photos = u.getPhotos();
 			if (photos != null) {
-				user.setPhoto(photos.get(photos.size()));
+				user.setPhoto(photos.get(photos.size()-1));
 			}
 		} catch (LDAPObjectNotFoundException e) {
 			user = new User(crsid);
