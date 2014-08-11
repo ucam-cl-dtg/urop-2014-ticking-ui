@@ -68,12 +68,16 @@
 
 			<h2 class="subtitle">Tickers:</h2>
 			<template repeat="{{ticker in tickers}}">
-				<paper-input disabled value="{{ticker}}"></paper-input>
+				<div layout horizontal center>
+					<paper-input disabled value="{{ticker}}"></paper-input>
+					<paper-icon-button icon="delete" ticker="{{ticker}}" on-click="{{removeTicker}}">
+					</paper-icon-button>
+				</div>
 			</template>
 
 			<div layout horizontal center>
 				<paper-input id="addTickerInput"
-					required="{{!(tickers === [])}}"
+					required="{{!tickers || tickers.length < 1}}"
 					placeholder="New ticker name...">
 				</paper-input>
 				<paper-icon-button id="addTickerButton" icon="add"
@@ -95,7 +99,6 @@
 			domReady: function () {
 				this.tickers = [];
 			},
-
 
 			addClicked: function () {
 				this.$.addDialog.toggle();
@@ -140,6 +143,14 @@
 				if (s) {
 					this.tickers.push(s);
 					console.log(this.tickers);
+				}
+			},
+
+			removeTicker: function (e, detail, target) {
+				var name = target.getAttribute('ticker');
+				var i = this.tickers.indexOf(name);
+				if (i > -1) {
+					this.tickers.splice(i, 1);
 				}
 			}
 		});
