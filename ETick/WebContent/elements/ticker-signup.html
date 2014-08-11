@@ -10,11 +10,11 @@
 	</style>
 	<div class="container">
             <main-card animated swipeable>
-                <ticker-signups-card groupId="{{groupId}}" id="card"></ticker-signups-card>
+                <ticker-signups-card sessionId="{{sessionId}}" crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="card"></ticker-signups-card>
             </main-card>
             <template if="{{crsId}}">
                 <main-card animated swipeable>
-                    <file-browser-card></file-browser-card>
+                    <file-browser-card  crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
                 </main-card>
             </template>
         </div>
