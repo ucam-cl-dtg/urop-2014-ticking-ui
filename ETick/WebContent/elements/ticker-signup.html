@@ -8,15 +8,13 @@
 <template>
 	<style>
 	</style>
-	<div class="container">
+        <main-card animated swipeable>
+            <ticker-signups-card sessionId="{{sessionId}}" crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="card"></ticker-signups-card>
+        </main-card>
+        <template if="{{crsId}}">
             <main-card animated swipeable>
-                <ticker-signups-card sessionId="{{sessionId}}" crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="card"></ticker-signups-card>
+                <file-browser-card  crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
             </main-card>
-            <template if="{{crsId}}">
-                <main-card animated swipeable>
-                    <file-browser-card  crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
-                </main-card>
-            </template>
-        </div>
+        </template>
 </template>
 </polymer-element>
