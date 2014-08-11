@@ -60,6 +60,10 @@
 				<paper-button id="addSubmit" class="dialogSubmit" label="CREATE" on-click="{{createButtonClicked}}" affirmative></paper-button>
 			</template>
 		</paper-dialog>
+
+		<paper-toast id="addSessionSuccess" duration="3000"></paper-toast>
+		<paper-toast id="addSessionError" duration="3000"></paper-toast>
+
 	</template>
 	<script>
 		Polymer('add-session', {
@@ -79,6 +83,18 @@
 				this.location = this.$.locInput.inputValue;
 				this.startTime = this.$.startTime.value;
 				this.endTime = this.$.endTime.value;
+			},
+
+			addSessionResponse: function () {
+				var toast = this.$.addSessionSuccess;
+				toast.text = "Successfully created new ticking session '" + this.title + "'.";
+				toast.show();
+			},
+
+			addSessionError: function(e, detail) {
+				var toast = this.$.addSessionError;
+				toast.text = detail.xhr.responseText;
+				toast.show();
 			}
 		});
 	</script>
