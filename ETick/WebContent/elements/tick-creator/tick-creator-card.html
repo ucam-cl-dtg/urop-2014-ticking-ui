@@ -232,8 +232,8 @@
         <!-- SAVE button -->
         <span layout horizontal>
             <span flex></span>
-            <paper-button raisedButton class="colored" label="SAVE" on-tap="{{saveEverything}}"
-                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid)}}">
+            <paper-button raisedButton class="colored" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
+                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
             </paper-button>
             <span flex></span>
         </span>
@@ -245,8 +245,8 @@
         <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}"></paper-button>
     </paper-dialog>
 
-    <paper-toast id="toastLoadError" text="Error loading the tick." duration="8000"></paper-toast>
-    <paper-toast id="toastSaveError" text="Error saving the tick." duration="8000"></paper-toast>
+    <paper-toast id="toastLoadError" text="Error loading the tick."></paper-toast>
+    <paper-toast id="toastSaveError" text="Error saving the tick."></paper-toast>
 </template>
 <script>
     Polymer('tick-creator-card', {
@@ -260,6 +260,7 @@
 
             this.checkJava = false; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
             this.groups = [];
+            this.saving = false;
             this.newTick = null;
             this.tickData = {};
             this.staticOptions = [];
@@ -328,6 +329,8 @@
             this.processLoadedTickData();
         },
         tickDataSaved: function() {
+            this.saving = false;
+
             this.newTick = false;
             this.tickData = this.$.ajaxPostTickData.response;
 
@@ -335,6 +338,8 @@
             this.processLoadedTickData();
         },
         tickDataUpdated: function() {
+            this.saving = false;
+
             this.newTick = false;
             this.tickData = this.$.ajaxPutTickData.response;
             this.processLoadedTickData();
@@ -411,14 +416,10 @@
             this.$.collapseGroups.opened = this.$.groupsSwitch.checked;
         },
         validateDisplayName: function() {
-            if ((this.$.inputDisplayName.inputValue.trim() == "") || this.$.inputDisplayName.invalid) {
-                this.displayValid = false;
-            } else {
-                this.displayValid = true;
-            }
+            this.displayValid = !((this.$.inputDisplayName.inputValue.trim() == "") || this.$.inputDisplayName.invalid);
         },
         saveEverything: function() {
-            console.log("Saving everything");
+            this.saving = true;
 
             var tickData = this.buildTickData();
             var staticData = this.buildStaticData();
@@ -490,7 +491,6 @@
                 return sendData;
             }
 
-            console.log("using custom send data");
             for (var i = 0; i < this.$.staticList.staticOptions.length; i++) {
                 if (!(this.$.staticList.staticOptions[i].closed)) {
                     sendData[sendData.length] = {
@@ -517,7 +517,8 @@
             this.$.toastLoadError.show();
         },
         showSaveErrorToast: function(e, detail) {
-            console.log("Save error!");
+            this.saving = false;
+
             if (detail.xhr.responseText != null) {
                 this.$.toastSaveError.text = detail.xhr.responseText;
             } else {
