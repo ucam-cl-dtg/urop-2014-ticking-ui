@@ -34,12 +34,6 @@
             },
             addTest: function() {
                 this.staticOptions[this.staticOptions.length] = {text: "", checkedIndex: 1, closed: false};
-            },
-            defaultsLoaded: function() {
-                this.staticOptions = this.$.ajaxLoadDefaults.response;
-                for (var i = 0; i < this.staticOptions.length; i++) {
-                    this.staticOptions[i].closed = false;
-                }
             }
         });
     </script>
