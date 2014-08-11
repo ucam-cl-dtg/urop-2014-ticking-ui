@@ -39,16 +39,15 @@
         on-core-error="{{alertError}}">
     </core-ajax>
 	
-    <div id="header" layout vertical center></div>
-	<!-- todo: info bar ie when/where is the session -->
-	
 	<div layout vertical>
 		<div align="left">
 			<core-item icon="home" label="{{location}}"></core-item>
+			<core-item icon="today" label="{{date}}"></core-item>
 			<core-item icon="info" label="{{description}}"></core-item>
+			<!-- would it be possible for class to contain date of session too? -->
 		</div>
 		<div id="ticker-select-panel" align="center">
-			<paper-radio-group selected={{selected}} on-change="{{tickerChange}}" layout horizontal flex>
+			<paper-radio-group selected="{{selected}}" on-change="{{tickerChange}}" layout horizontal flex>
 				<template repeat="{{ticker in tickers}}">
 					<paper-radio-button label="{{ticker.name}}" flex></paper-radio-button>
 				</template>
@@ -62,7 +61,7 @@
 						</div>
 						<div hidden?="{{slot.hidden}}" flex>
 							<span>View Report</span>
-							<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
+							<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive" size="1"></core-icon-button>
 						</div>
 					</span>
 				</template>
@@ -129,10 +128,12 @@
 					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
 									 time : timeSlot, timeStamp: timeStamp, hidden : hidden});
 				}
+				this.date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
+				console.log(this.date);
 				console.log(this.slots);
 			},
 			alertError: function() {
-				alert("Sorry, something went wrong");
+				alert("Sorry, something went wrong accessing signups data");
 			},
 			tickerChange: function(event) {
 				if(event.target.checked) {
