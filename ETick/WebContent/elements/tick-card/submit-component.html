@@ -7,8 +7,8 @@
 <polymer-element name="submit-component" attributes="tickId signedUp testRunning reportAvailable unitPass humanPass">
     <template>
         <!-- STYLES -->
-        <link rel="stylesheet" href="../../css/shared-styles.css">
-        <link rel="stylesheet" href="tick-components.css">
+        <link rel="stylesheet" type="text/css" href="../../css/shared-styles.css" shim-shadowdom>
+        <link rel="stylesheet" type="text/css" href="tick-components.css" shim-shadowdom>
 
         <submit-service id="service"
                         tickId="{{tickId}}"
