@@ -2,12 +2,14 @@ package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -59,17 +61,20 @@ public interface IForkApiFacade {
 	 * @return
 	 */
 	@PUT
-	@Path("/{crsid}/{tickId}")
+	@Path("/{crsid}/{tickId}/{date}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response markFork(@Context HttpServletRequest request,
 			@PathParam("crsid") String crsid,
-			@PathParam("tickId") String tickId, ForkBean forkBean);
-	
+			@PathParam("tickId") String tickId, @PathParam("date") long date,
+			ForkBean forkBean);
+
 	@GET
-	@Path("/{crsid}/{tickId}/{commitId}/files")
+	@Path("/{tickId}/{commitId}/files")
 	@Produces("application/json")
 	public abstract Response getAllFiles(@Context HttpServletRequest request,
-			@PathParam("crsid") String crsid, @PathParam("tickId") String tickId, @PathParam("commitId") String commitId);
+			@DefaultValue("") @QueryParam("crsid") String crsid,
+			@PathParam("tickId") String tickId,
+			@PathParam("commitId") String commitId);
 
 }

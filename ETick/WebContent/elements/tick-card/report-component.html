@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
-<polymer-element name="report-component" attributes="reportAvailable crsid repoName repo testRunning">
+<polymer-element name="report-component" attributes="reportAvailable repoName repo testRunning">
     <template>
         <link rel="stylesheet" href="../../css/shared-styles.css">
         <link rel="stylesheet" href="tick-components.css">
@@ -25,9 +25,6 @@
             showReport: function() {
                 var regex = /urop2014\.dtg\.cl\.cam\.ac\.uk\/(.*)\.git/;
                 this.repoName = this.repo.match(regex)[1];
-
-                regex = /(.*)\/.*\/.*/;
-                this.crsid = this.repoName.match(regex)[1];
             }
 
             /*testRunningChanged: function() {

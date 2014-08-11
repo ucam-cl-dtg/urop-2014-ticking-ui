@@ -13,7 +13,8 @@
                 testCount
                 testResult
                 tickerResult
-                reportResult">
+                reportResult
+                reportCreationDate">
   <template>
     <style>
     :host {
@@ -79,8 +80,7 @@
               ||this.crsid == null)
             {
               this.$.fileContent.url =
-                /* TODO: Use ticker service—test */
-                ticking_service + "/tick/"
+                ticking_service + "/fork/"
                 + this.tickId + "/"
                 + this.$.report.response.commitId
                 + "/files";
@@ -88,12 +88,11 @@
             else
             {
               this.$.fileContent.url =
-                /* TODO: Use ticker service—test */
                 ticking_service + "/fork/"
-                + this.crsid + "/"
                 + this.tickId + "/"
                 + this.$.report.response.commitId
-                + "/files";
+                + "/files?crsid="
+                + this.crsid;
             }
 
             /* Make a copy of the loaded data */
