@@ -1,5 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -59,17 +61,20 @@ public interface IForkApiFacade {
 	 * @return
 	 */
 	@PUT
-	@Path("/{crsid}/{tickId}")
+	@Path("/{crsid}/{tickId}/{date}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response markFork(@Context HttpServletRequest request,
 			@PathParam("crsid") String crsid,
-			@PathParam("tickId") String tickId, ForkBean forkBean);
-	
+			@PathParam("tickId") String tickId, @PathParam("date") long date,
+			ForkBean forkBean);
+
 	@GET
 	@Path("/{crsid}/{tickId}/{commitId}/files")
 	@Produces("application/json")
 	public abstract Response getAllFiles(@Context HttpServletRequest request,
-			@PathParam("crsid") String crsid, @PathParam("tickId") String tickId, @PathParam("commitId") String commitId);
+			@PathParam("crsid") String crsid,
+			@PathParam("tickId") String tickId,
+			@PathParam("commitId") String commitId);
 
 }
