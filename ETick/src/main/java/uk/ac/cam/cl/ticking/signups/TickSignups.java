@@ -445,7 +445,7 @@ public class TickSignups {
         for (String ticker : bean.getTickerNames()) {
             try {
                 service.createColumn(id, new CreateColumnBean(ticker, auth, new Date(bean.getStartTime()),
-                        new Date(bean.getEndTime()), bean.getSlotLengthInMinutes()));
+                        new Date(bean.getEndTime()), bean.getSlotLengthInMinutes()*60000));
             } catch (ItemNotFoundException e) {
                 e.printStackTrace();
                 throw new RuntimeException("This should only happen if the sheet or column is not found "

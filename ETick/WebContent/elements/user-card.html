@@ -58,11 +58,16 @@
 		
 		<div class="card-header" layout horizontal center end-justified>
 				<div flex><h3>Welcome</h3></div>
-				<template if="{{ldap.isStudent}}">
-					<img src="../images/temp_student.svg"></img>
+				<template if="{{ldap.photo==='undefined'}}">
+					<template if="{{ldap.isStudent}}">
+						<img src="../images/temp_student.svg"></img>
+					</template>
+					<template if="{{!ldap.isStudent}}">
+						<img src="../images/temp_staff.svg"></img>
+					</template>
 				</template>
-				<template if="{{!ldap.isStudent}}">
-					<img src="../images/temp_staff.svg"></img>
+				<template if="{{ldap.photo!=='undefined'}}">
+					<img src="data:image/jpeg;base64,{{ldap.photo}}"></img>
 				</template>
 				<h2>{{ldap.displayName}}</h2>
 		</div>
