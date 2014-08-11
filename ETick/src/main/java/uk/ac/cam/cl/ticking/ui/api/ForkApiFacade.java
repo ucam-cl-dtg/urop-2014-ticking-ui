@@ -73,6 +73,9 @@ public class ForkApiFacade implements IForkApiFacade {
 				"RavenRemoteUser");
 
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+		if (fork ==  null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
 		return Response.ok(fork).build();
 	}
 
@@ -126,7 +129,7 @@ public class ForkApiFacade implements IForkApiFacade {
 
 	@Override
 	public Response markFork(HttpServletRequest request, String crsid,
-			String tickId, ForkBean forkBean) {
+			String tickId, long date, ForkBean forkBean) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
@@ -154,7 +157,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				try {
 					testServiceProxy.setTickerResult(crsid, tickId, result,
 							forkBean.getTickerComments(),
-							forkBean.getCommitId(), new Date());
+							forkBean.getCommitId(), new Date(date));
 				} catch (UserNotInDBException | TickNotInDBException
 						| ReportNotFoundException e) {
 					return Response.status(Status.NOT_FOUND).entity(e).build();
@@ -179,6 +182,9 @@ public class ForkApiFacade implements IForkApiFacade {
 			String tickId, String commitId) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+		if (crsid.equals("")) {
+			crsid = myCrsid;
+		}
 		boolean marker = false;
 		List<String> groupIds = db.getTick(tickId).getGroups();
 		for (String groupId : groupIds) {
@@ -187,7 +193,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				marker = true;
 			}
 		}
-		if (!(marker||myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId))))) {
+		if (!(marker||myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId)).getAuthor()))) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}

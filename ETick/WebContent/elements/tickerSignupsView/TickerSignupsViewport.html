@@ -43,7 +43,7 @@
 	<div layout vertical>
 		<div id="card-header" align="left">
 			<core-item icon="home" label="{{location}}"></core-item>
-			<core-item icon="today" label="{{date}}"></core-item>
+			<core-item icon="today" label="Date : {{date}}"></core-item>
 			<core-item icon="info" label="{{description}}"></core-item>
 			<!-- would it be possible for class to contain date of session too? -->
 		</div>
@@ -116,7 +116,7 @@
 					<!-- sort out leading zero -->
 					var endMin = parseInt(min) + parseInt(durationInMinutes);
 					var endHour = parseInt(hour);
-					while (endMin > 60) {
+					while (endMin >= 60) {
 						endMin = endMin%60;
 						endHour++;
 					}

@@ -62,14 +62,10 @@
                 this.validate();
             },
             validate: function() {
-                if (this.day > 0 && this.day <= 31 &&
-                        this.month > 0 && this.month <=12 &&
-                        this.year >= 0 && this.year <= 9999 && this.year != "" &&
-                        (this.year.toString().length == 4 || this.year.toString().length == 2)) {
-                    this.valid = true;
-                } else {
-                    this.valid = false;
-                }
+               this.valid = (this.day > 0 && this.day <= 31 && this.day.toString().length <= 2 &&
+                       this.month > 0 && this.month <= 12 && this.month.toString().length <= 2 &&
+                       this.year >= 0 && this.year <= 9999 && this.year != "" &&
+                       (this.year.toString().length == 4 || this.year.toString().length == 2));
             },
             isLeapYear: function() {
                 if (this.year % 4 != 0) {

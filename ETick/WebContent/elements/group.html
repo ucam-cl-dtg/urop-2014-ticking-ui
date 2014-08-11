@@ -89,15 +89,13 @@
 				tickName="{{selectedTickName}}"
 				tickId="{{selectedTickId}}"
 				sheets="{{sheets}}"
-				crsid="{{crsid}}"
 				repoName="{{repoName}}"></tick-card>
 		</main-card>
 		</template>
 
-        <template if="{{crsid}}">
+        <template if="{{repoName}}">
             <main-card animated>
                 <file-browser-card tickId="{{selectedTickId}}"
-                                   crsid="{{crsid}}"
                                    repoName="{{repoName}}">
                 </file-browser-card>
             </main-card>
