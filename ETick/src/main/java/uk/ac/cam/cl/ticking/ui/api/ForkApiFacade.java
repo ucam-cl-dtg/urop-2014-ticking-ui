@@ -157,16 +157,20 @@ public class ForkApiFacade implements IForkApiFacade {
 				try {
 					testServiceProxy.setTickerResult(crsid, tickId, result,
 							forkBean.getTickerComments(),
-							forkBean.getCommitId(), forkBean.getReportDate().toDate());
+							forkBean.getCommitId(), forkBean.getReportDate().getMillis());
 				} catch (UserNotInDBException | TickNotInDBException
 						| ReportNotFoundException e) {
 					return Response.status(Status.NOT_FOUND).entity(e).build();
 				}
 				fork.setLastTickedBy(crsid);
 				fork.setLastTickedOn(DateTime.now());
-				for (String groupId : groupIds) {
-					tickSignupService.assignTickerForTickForUser(crsid,
-							groupId, tickId, forkBean.getTicker());
+				if (!forkBean.getHumanPass()) {
+					fork.setSignedUp(false);
+					fork.setUnitPass(false);
+					for (String groupId : groupIds) {
+						tickSignupService.assignTickerForTickForUser(crsid,
+								groupId, tickId, forkBean.getTicker());
+					}
 				}
 			}
 
