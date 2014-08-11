@@ -13,7 +13,8 @@
                 testCount
                 testResult
                 tickerResult
-                reportResult">
+                reportResult
+                reportCreationDate">
   <template>
     <style>
     :host {
@@ -39,7 +40,8 @@
           {
             "use strict";
 
-            if (typeof this.crsid == typeof undefined)
+            if (typeof this.crsid == typeof undefined
+              ||this.crsid == null)
             {
               this.$.report.url =
                 ticking_service + "/submission/" + this.tickId + "/last";
@@ -74,13 +76,24 @@
                 return;
             }
             /* Load files, fires due to auto attribute */
-            this.$.fileContent.url =
-              /* TODO: Use ticker service—test */
-              ticking_service + "/fork/"
-              + this.crsid + "/"
-              + this.tickId + "/"
-              + this.$.report.response.commitId;
-              + "/files";
+            if (typeof this.crsid == typeof undefined
+              ||this.crsid == null)
+            {
+              this.$.fileContent.url =
+                ticking_service + "/fork/"
+                + this.tickId + "/"
+                + this.$.report.response.commitId
+                + "/files";
+            }
+            else
+            {
+              this.$.fileContent.url =
+                ticking_service + "/fork/"
+                + this.tickId + "/"
+                + this.$.report.response.commitId
+                + "/files?crsid="
+                + this.crsid;
+            }
 
             /* Make a copy of the loaded data */
             this.testResult   = this.$.report.response.testResult;
@@ -89,7 +102,8 @@
             this.comments     = this.$.report.response.tickerComments;
             this.errors       = this.$.report.response.items;
             this.commitId     = this.$.report.response.commitId;
-            this.date         = this.$.report.response.creationDate;
+            this.date         = new Date(this.$.report.response
+                                                    .creationDate);
             this.testCount    = this.$.report.response.noOfTests;
 
             var i;

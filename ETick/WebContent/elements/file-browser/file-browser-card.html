@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="file-browser-style.css"/>
     <files-service id="service"
                    date="{{date}}"
+                   crsid="{{crsid}}"
                    files="{{files}}"
                    errors="{{errors}}"
                    tickId="{{tickId}}"
@@ -127,7 +128,9 @@
                              crsid="{{crsid}}"
                              ticker="{{ticker}}"
                              tickId="{{tickId}}"
-                             sheetId="{{sheetId}}">
+                             sheetId="{{sheetId}}"
+                             reportCreationDate="{{date}}"
+                             on-main-card-swipe-away="{{swipeAway}}">
           </ticker-set-result>
         </template>
 
@@ -145,6 +148,12 @@
                 this.shadowRoot
                   .getElementById(this.selectedFileId);
               window.scroll(element.offsetLeft, element.offsetTop);
+            }
+
+          , swipeAway:
+            function ()
+            {
+              this.fire("main-card-swipe-away", {"card":this});
             }
         });
   </script>
