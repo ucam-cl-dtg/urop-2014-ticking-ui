@@ -41,7 +41,7 @@
 				<select id="slotSelector" on-change="{{slotSelectionChanged}}"
 					class="custom-dropdown__select">
 					<option disabled selected>Select Ticking Slot...</option>
-					<template repeat="{{date in dates | dateFilter}}">
+					<template repeat="{{date in dates}}">
 						<option value="{{date}}">{{date}}</option>
 					</template>
 				</select>

@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 
 <polymer-element name="add-session" attributes="">
 	<template>
@@ -10,6 +11,19 @@
 		<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
 		<paper-dialog id="addDialog" heading="Create Ticking Session"
 			backdrop transition="core-transition-top">
+			<h2 class="subtitle">Session Information:</h2>
+			<div layout vertical center>
+				<paper-input id="titleInput" 
+					floatingInput 
+					placeholder="Session title..."></paper-input>
+				<paper-input id="descInput"
+					multiline
+					placeholder="Description..."
+					maxRows="5"></paper-input>
+				<paper-input id="locInput"
+					floatingInput
+					placeholder="Location..."></paper-input>
+			</div>
 		</paper-dialog>
 	</template>
 	<script>
