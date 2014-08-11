@@ -80,7 +80,6 @@
               ||this.crsid == null)
             {
               this.$.fileContent.url =
-                /* TODO: Use ticker service—test */
                 ticking_service + "/tick/"
                 + this.tickId + "/"
                 + this.$.report.response.commitId
@@ -89,12 +88,11 @@
             else
             {
               this.$.fileContent.url =
-                /* TODO: Use ticker service—test */
                 ticking_service + "/fork/"
-                + this.crsid + "/"
                 + this.tickId + "/"
                 + this.$.report.response.commitId
-                + "/files";
+                + "/files?crsid="
+                + this.crsid;
             }
 
             /* Make a copy of the loaded data */
@@ -106,8 +104,6 @@
             this.commitId     = this.$.report.response.commitId;
             this.date         = this.$.report.response.creationDate;
             this.testCount    = this.$.report.response.noOfTests;
-            this.reportCreationDate =
-              this.$.report.response.creationDate;
 
             var i;
             for (i = 0; i < this.errors.length; i++)
