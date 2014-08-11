@@ -2,6 +2,8 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="datetime-picker.html">
 
 <polymer-element name="add-session" attributes="">
@@ -12,6 +14,16 @@
 				width: 100%;
 			}
 		</style>
+
+		<!-- Add session API call. -->
+		<core-ajax id="addSessionAPI"
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets"
+			method="POST"
+			contentType="application/json"
+			on-core-respose="{{addSessionResponse}}"
+			on-core-error="{{addSessionError}}">
+		</core-ajax>
+
 		<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
 		<paper-dialog id="addDialog" heading="Create Ticking Session"
 			backdrop transition="core-transition-top">
@@ -20,7 +32,8 @@
 				<paper-input id="titleInput" 
 					floatingInput 
 					required
-					placeholder="Session title..."></paper-input>
+					placeholder="Session title..."
+					on-input="{{validate}}"></paper-input>
 				<paper-input id="descInput"
 					multiline
 					placeholder="Description..."
@@ -29,23 +42,43 @@
 					floatingInput
 					placeholder="Location..."></paper-input>
 			</div>
+
 			<div layout horizontal center>
 				<div layout vertical>
 					<h2 class="subtitle">Start Date/Time</h2>
-					<datetime-picker></datetime-picker>
+					<datetime-picker id="startTime"
+						></datetime-picker>
 				</div>
 				<div style="padding: 8px;"></div>
 				<div layout vertical>
 					<h2 class="subtitle">End Date/Time</h2>
-					<datetime-picker></datetime-picker>
+					<datetime-picker id="endTime"></datetime-picker>
 				</div>
 			</div>
+
+			<template if="{{showSubmit}}">
+				<paper-button id="addSubmit" class="dialogSubmit" label="CREATE" on-click="{{createButtonClicked}}" affirmative></paper-button>
+			</template>
 		</paper-dialog>
 	</template>
 	<script>
 		Polymer('add-session', {
 			addClicked: function () {
 				this.$.addDialog.toggle();
+			},
+
+			validate: function () {
+				if (!this.$.titleInput.invalid) {
+					this.showSubmit = true;
+				}
+			},
+
+			createButtonClicked: function () {
+				this.title = this.$.titleInput.inputValue;
+				this.description = this.$.descInput.inputValue;
+				this.location = this.$.locInput.inputValue;
+				this.startTime = this.$.startTime.value;
+				this.endTime = this.$.endTime.value;
 			}
 		});
 	</script>

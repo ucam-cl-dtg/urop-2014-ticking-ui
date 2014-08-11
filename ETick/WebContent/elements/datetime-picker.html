@@ -12,18 +12,17 @@
 			}
 			#datetimeInput:focus {
 				outline: none;
-				background: #f0f0f0;
 			}
 		</style>
 		<div>
-			<input id="datetimeInput" type="datetime-local" on-change="{{inputValueChanged}}"></input>
+			<input id="datetimeInput" type="datetime-local" on-change="{{inputValueChanged}}">
+			</input>
 		</div>			
 	</template>
 	<script>
 		Polymer('datetime-picker', {
 			inputValueChanged: function () {
-				console.log('Here');
-				console.log(this.$.datetimeInput.value);
+				this.value = this.$.datetimeInput.value;
 			}
 		});
 	</script>
