@@ -74,13 +74,24 @@
                 return;
             }
             /* Load files, fires due to auto attribute */
-            this.$.fileContent.url =
-              /* TODO: Use ticker service—test */
-              ticking_service + "/fork/"
-              + this.crsid + "/"
-              + this.tickId + "/"
-              + this.$.report.response.commitId;
-              + "/files";
+            if (typeof this.crsid == typeof undefined)
+            {
+              this.$.fileContent.url =
+                /* TODO: Use ticker service—test */
+                ticking_service + "/tick/"
+                + this.tickId + "/"
+                + this.$.report.response.commitId;
+                + "/files";
+            }
+            else
+            {
+              this.$.fileContent.url =
+                /* TODO: Use ticker service—test */
+                ticking_service + "/fork/"
+                + this.tickId + "/"
+                + this.$.report.response.commitId;
+                + "/files";
+            }
 
             /* Make a copy of the loaded data */
             this.testResult   = this.$.report.response.testResult;
