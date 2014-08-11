@@ -73,6 +73,9 @@ public class ForkApiFacade implements IForkApiFacade {
 				"RavenRemoteUser");
 
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+		if (fork ==  null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
 		return Response.ok(fork).build();
 	}
 
