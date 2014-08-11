@@ -150,7 +150,8 @@
               window.scroll(element.offsetLeft, element.offsetTop);
             }
 
-          , function ()
+          , swipeAway:
+            function ()
             {
               this.fire("main-card-swipe-away", {"card":this});
             }
