@@ -23,6 +23,12 @@
 				color: #808080;
 				font-weight: 300;
 			}
+			h3 {
+				margin: 0;
+				font-size: 1rem;
+				color: #464646;
+				font-weight: 200;
+			}
 			#container {
 				padding: 10px;
 			}
@@ -31,6 +37,7 @@
 			<date-calendar hexColorPrimary="#FF8000" hexColorSecondary="#fff" datetime="{{datetime}}"></date-calendar>
 			<div flex></div>
 			<div layout vertical end>
+				<h3>{{groupName}}</h3>
 				<h1>{{tickName}}</h1>
 				<h2>Ticker: {{ticker}}</h2>
 			</div>

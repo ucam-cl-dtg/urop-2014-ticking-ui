@@ -71,13 +71,7 @@ public class TickSignups {
             @PathParam("sheetID") String sheetID) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         try {
-            List<String> groupIDs = service.getGroupIDs(sheetID);
-            if (groupIDs.size() != 1) {
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("There should be precisely one group associated "
-                                + "with this sheet, but there seems to be " + groupIDs.size()).build();
-            }
-            String groupID = groupIDs.get(0);
+            String groupID = getGroupID(sheetID);
             log.info("crsid: " + crsid);
             log.info("tickID: " + tickID);
             log.info("groupID: " + groupID);
@@ -103,18 +97,13 @@ public class TickSignups {
     public Response makeBooking(@Context HttpServletRequest request,
             @PathParam("sheetID") String sheetID, MakeBookingBean bean) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
-        List<String> groupIDs;
+        String groupID = null;
         try {
-            groupIDs = service.getGroupIDs(sheetID);
-        } catch (ItemNotFoundException e) {
-            return Response.status(Status.NOT_FOUND).entity(e).build();
+            groupID = getGroupID(sheetID);
+        } catch (ItemNotFoundException e1) {
+            return Response.status(Status.NOT_FOUND)
+                    .entity("The sheet was not found in the signups database").build();
         }
-        if (groupIDs.size() != 1) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("There should be precisely one group associated "
-                            + "with this sheet, but there seems to be " + groupIDs.size()).build();
-        }
-        String groupID = groupIDs.get(0);
         log.info("Attempting to book slot for user " + crsid + " for tickID " + bean.getTickID() +
                 " at time " + new Date(bean.getStartTime()) + " on sheet " + sheetID + " in group " + groupID);
         for (Slot slot : service.listUserSlots(crsid)) {
@@ -200,14 +189,21 @@ public class TickSignups {
     @GET
     @Path("/bookings")
     @Produces("application/json")
-    // TODO: check in order
     public Response listStudentBookings(@Context HttpServletRequest request) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         List<BookingInfo> toReturn = new ArrayList<BookingInfo>();
         for (Slot s :service.listUserSlots(crsid)) {
             Date endTime = new Date(s.getStartTime().getTime() + s.getDuration());
             if (endTime.after(new Date())) {
-                toReturn.add(new BookingInfo(s));
+                String groupName;
+                try {
+                    groupName = db.getGroup(getGroupID(s.getSheetID())).getName();
+                } catch (ItemNotFoundException e) {
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("You appear to have a booking in a sheet that doesn't"
+                                    + " exist").build();
+                }
+                toReturn.add(new BookingInfo(s, groupName));
             }
         }
         return Response.ok(toReturn).build();
@@ -300,6 +296,11 @@ public class TickSignups {
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
         try {
+            for (Slot slot : service.listUserSlots(crsid)) {
+                Fork f = db.getFork(Fork.generateForkId(crsid, slot.getComment()));
+                f.setSignedUp(false);
+                db.saveFork(f);
+            }
             service.removeAllUserBookings(sheetID, crsid, db.getAuthCode(sheetID));
             return Response.ok().build();
         } catch (NotAllowedException e) {
@@ -368,7 +369,7 @@ public class TickSignups {
             @PathParam("crsid") String crsid,
             @PathParam("groupID") String groupID,
             @PathParam("tickID") String tickID,
-            @PathParam("ticker") String ticker) {
+            @PathParam("ticker") String ticker) { // TODO: maybe put ticker in body to allow it to have spaces?
         String callerCRSID = (String) request.getSession().getAttribute("RavenRemoteUser");
         if (!db.getRoles(groupID, callerCRSID).contains(Role.MARKER)) {
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
@@ -586,6 +587,15 @@ public class TickSignups {
     public void createGroup(String groupID) throws DuplicateNameException {
         String groupAuthCode = service.addGroup(new Group(groupID));
         db.addAuthCode(groupID, groupAuthCode);
+    }
+    
+    public String getGroupID(String sheetID) throws ItemNotFoundException {
+        List<String> groupIDs = service.getGroupIDs(sheetID);
+        if (groupIDs.size() != 1) {
+            throw new RuntimeException("There should be precisely one group associated "
+                            + "with this sheet, but there seems to be " + groupIDs.size());
+        }
+        return groupIDs.get(0);
     }
     
 }
