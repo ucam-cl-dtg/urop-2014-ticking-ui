@@ -83,7 +83,6 @@
             },
             sessionsDataLoaded: function() {
                 var loadedSessions = this.$.ajaxLoadSessions.response.slice(0);
-                console.log(loadedSessions);
                 this.sessions = [];
 
                 for (var i = 0; i < loadedSessions.length; i++) {
@@ -96,7 +95,6 @@
             },
             panelAction1: function(e,detail) {
                 if (detail.isSelected) {
-                    console.log(detail.item);
                     var selectedItem = detail.item.label;
                     var selectedItemId = detail.item.id;
                     for(i=0;i<this.sessions.length;i++){
@@ -106,7 +104,6 @@
                             break;
                         }
                     }
-                    console.log(selectedItemLocation + " " + selectedItemDescription);
                     this.$.title.innerHTML ="Signups Sheet for " + selectedItem;
                     this.sessionId = selectedItemId;
                     this.description = selectedItemDescription;
@@ -122,7 +119,7 @@
                 alert("Sorry, something went wrong");
             },
             crsIdChanged: function() {
-                console.log("In this card: " + this.crsId + " " + this.tickId + " " + this.repoName + " " + this.ticker);
+                console.log("Switching report to: crsid: " + this.crsId + ", tickId: " + this.tickId + ", repoName: " + this.repoName + ", ticker: " + this.ticker);
             }
         })
     </script>

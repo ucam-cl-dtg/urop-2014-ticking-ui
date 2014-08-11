@@ -98,7 +98,6 @@
 			},	
 			slotsDataLoaded: function() {
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
-				console.log(loadedSlots);
 				this.slots = [];
 				for (var i = 0; i < loadedSlots.length; i++) {
 					var hour = loadedSlots[i].startTime.split(":")[0].split("T")[1];
@@ -130,8 +129,6 @@
 									 time : timeSlot, timeStamp: timeStamp, hidden : hidden});
 				}
 				this.date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
-				console.log(this.date);
-				console.log(this.slots);
 			},
 			alertError: function() {
 				alert("Sorry, something went wrong accessing signups data");
@@ -145,14 +142,11 @@
 			},
 			getReport : function(event) {
 				var slotId = event.target.id;
-				console.log(slotId);
 				for(i=0;i<this.slots.length;i++) {
 					if(this.slots[i]._id === slotId) {
-						console.log(this.slots[i]);
 						this.crsId = this.slots[i].student;
 						this.tickId = this.slots[i].comment;
 						this.repoName = this.crsId + "/" + this.tickId.replace(",","/");
-						console.log(this.crsId + " " + this.tickId + " " + this.repoName + " " + this.ticker);
 						break;
 					}
 				}
