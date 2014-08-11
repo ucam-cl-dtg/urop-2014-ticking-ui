@@ -1,0 +1,27 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<polymer-element name="time-clock" attributes="datetime">
+	<template>
+		<style>
+			div {
+				@font-face {
+					font-family: 'digi';
+					src: url('http://cssdeck.com/uploads/resources/fonts/digii/DS-DIGII.TTF');
+				}
+			}
+
+		</style>
+		<div style="font-size: 3rem;">
+			{{seconds}}
+		</div>
+	</template>
+	<script>
+		Polymer('time-clock', {
+			domReady: function () {
+				var d = new Date("2014-08-08T02:19:51+00:00");
+				this.seconds = d.getSeconds();
+				this.hour = d.getHours();
+				this.mins = d.getMinutes();
+			}
+		});
+	</script>
+</polymer-element>
