@@ -1,0 +1,22 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<polymer-element name="add-session" attributes="">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+		<style>
+		</style>
+		<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
+		<paper-dialog id="addDialog" heading="Create Ticking Session"
+			backdrop transition="core-transition-top">
+		</paper-dialog>
+	</template>
+	<script>
+		Polymer('add-session', {
+			addClicked: function () {
+				this.$.addDialog.toggle();
+			}
+		});
+	</script>
+</polymer-element>

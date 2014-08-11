@@ -61,13 +61,12 @@ public interface IForkApiFacade {
 	 * @return
 	 */
 	@PUT
-	@Path("/{crsid}/{tickId}/{date}")
+	@Path("/{crsid}/{tickId}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response markFork(@Context HttpServletRequest request,
 			@PathParam("crsid") String crsid,
-			@PathParam("tickId") String tickId, @PathParam("date") long date,
-			ForkBean forkBean);
+			@PathParam("tickId") String tickId, ForkBean forkBean);
 
 	@GET
 	@Path("/{tickId}/{commitId}/files")
