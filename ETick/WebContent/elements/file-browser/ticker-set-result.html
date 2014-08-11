@@ -10,7 +10,8 @@
                              tickId
                              sheetId
                              repoName
-                             commitId">
+                             commitId
+                             reportCreationDate">
   <template>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="ticker-set-result-style.css"/>
@@ -77,7 +78,8 @@
               this.$.setTickResult.url =
                 ticking_service + "/fork/"
                   + this.crsid + "/"
-                  + this.tickId;
+                  + this.tickId + "/"
+                  + this.reportCreationDate;
 
               this.$.setTickResult.body =
                   '{   "humanPass"      : "' + tickStatus + '"\n'
