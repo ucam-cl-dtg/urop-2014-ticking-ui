@@ -497,6 +497,25 @@ public class TickSignups {
         return Response.ok().build();
     }
     
+    @DELETE
+    @Path("/sheets/{sheetID}")
+    public Response deleteSheet(@Context HttpServletRequest request,
+            @PathParam("sheetID") String sheetID) {
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        try {
+            if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.AUTHOR)) {
+                return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+            }
+            service.deleteSheet(sheetID, db.getAuthCode(sheetID));
+            return Response.ok().build();
+        } catch (ItemNotFoundException e) {
+            return Response.status(Status.NOT_FOUND).entity("The given sheet was not found.").build();
+        } catch (NotAllowedException e) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("There was a problem - "
+                    + "the authCode is allegedly wrong, but it never should be. Exactpion:\n" + e).build();
+        }
+    }
+    
     /**
      * Adds a new column to the sheet, filled with regularly spaced
      * empty slots.
