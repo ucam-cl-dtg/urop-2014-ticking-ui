@@ -129,7 +129,8 @@
                              ticker="{{ticker}}"
                              tickId="{{tickId}}"
                              sheetId="{{sheetId}}"
-                             reportCreationDate="{{date}}">
+                             reportCreationDate="{{date}}"
+                             on-main-card-swipe-away="{{swipeAway}}">
           </ticker-set-result>
         </template>
 
@@ -147,6 +148,11 @@
                 this.shadowRoot
                   .getElementById(this.selectedFileId);
               window.scroll(element.offsetLeft, element.offsetTop);
+            }
+
+          , function ()
+            {
+              this.fire("main-card-swipe-away", {"card":this});
             }
         });
   </script>
