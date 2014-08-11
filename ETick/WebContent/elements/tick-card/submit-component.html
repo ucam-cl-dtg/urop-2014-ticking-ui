@@ -4,11 +4,11 @@
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="submit-service.html">
 
-<polymer-element name="submit-component" attributes="tickId signedUp testRunning reportAvailable unitPass">
+<polymer-element name="submit-component" attributes="tickId signedUp testRunning reportAvailable unitPass humanPass">
     <template>
         <!-- STYLES -->
-        <link rel="stylesheet" href="../../css/shared-styles.css">
-        <link rel="stylesheet" href="tick-components.css">
+        <link rel="stylesheet" type="text/css" href="../../css/shared-styles.css" shim-shadowdom>
+        <link rel="stylesheet" type="text/css" href="tick-components.css" shim-shadowdom>
 
         <submit-service id="service"
                         tickId="{{tickId}}"
@@ -19,21 +19,25 @@
         </submit-service>
 
         <!--Submit button -->
-        <core-collapse opened?="{{!testRunning && !signedUp}}">
-            <paper-button label="SUBMIT" class="greenButton" on-tap="{{submit}}"
+        <core-collapse opened?="{{!testRunning && !signedUp && !humanPass}}">
+            <paper-button label="SUBMIT" on-tap="{{submit}}"
                 disabled?="{{signedUp || testRunning}}">
             </paper-button>
         </core-collapse>
 
         <!-- Progress bar (with caption) -->
-        <core-collapse opened?="{{testRunning}}">
+        <core-collapse opened?="{{testRunning && !humanPass}}">
             <paper-progress id="progressBar" value="{{displayProgress}}"></paper-progress>
             <div id="progressCaption">{{status.info}}</div>
         </core-collapse>
 
         <!-- Disabled because signed up message -->
-        <core-collapse opened?="{{signedUp}}">
+        <core-collapse opened?="{{signedUp && !humanPass}}">
             <div class="error">To resubmit, cancel your ticking session</div>
+        </core-collapse>
+
+        <core-collapse opened?="{{humanPass}}">
+            <div class="error">PASSED</div>
         </core-collapse>
     </template>
     <script src="../../bower_components/web-animations-js/web-animations.js"></script>

@@ -269,9 +269,14 @@
             this.tickData = {};
             this.staticOptions = [];
 
+
+        },
+
+        domReady: function() {
             if (this.tickId == null || this.tickId == "") {
                 this.newTick = true;
                 this.$.ajaxLoadDefaults.go();
+                this.processLoadedTickData();
             } else {
                 this.newTick = false;
                 this.checkJava = false;
@@ -280,6 +285,7 @@
                 this.$.ajaxLoadStatic.go();
             }
         },
+
         staticDataLoaded: function() {
             this.staticOptions = this.$.ajaxLoadStatic.response.slice(0);
 
