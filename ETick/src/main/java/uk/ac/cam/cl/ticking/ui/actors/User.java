@@ -23,6 +23,7 @@ public class User implements Comparable<User> {
 	private String email;
 	private List<String> institutions;
 	private String college;
+	private String photo;
 
 	private String ssh;
 
@@ -169,6 +170,24 @@ public class User implements Comparable<User> {
 	 */
 	public void setCollege(String college) {
 		this.college = college;
+	}
+
+	/**
+	 * Gets photo as an encoded base 64 jpeg To display in soy template, use
+	 * <img src="data:image/jpeg;base64,{$user.photo}" /> or similar
+	 * 
+	 * @return String photo
+	 */
+	public String getPhoto() {
+		return photo;
+	}
+
+	/**
+	 * 
+	 * @param photo
+	 */
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 
 	/**

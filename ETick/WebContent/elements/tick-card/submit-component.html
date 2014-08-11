@@ -27,7 +27,7 @@
 
         <!-- Progress bar (with caption) -->
         <core-collapse opened?="{{testRunning}}">
-            <paper-progress value="{{status.progress / status.maxProgress * 100}}"></paper-progress>
+            <paper-progress id="progressBar" value="{{displayProgress}}"></paper-progress>
             <div id="progressCaption">{{status.info}}</div>
         </core-collapse>
 
@@ -36,10 +36,45 @@
             <div class="error">To resubmit, cancel your ticking session</div>
         </core-collapse>
     </template>
+    <script src="../../bower_components/web-animations-js/web-animations.js"></script>
     <script>
         Polymer('submit-component', {
+            observe: {
+                'status.progress': 'progressUpdated'
+            },
+
             created: function() {
                 this.status = {progress: 0, maxProgress: 1, info: null};
+                this.displayProgress = 0;
+                this.targetProgress = 0;
+            },
+
+            progressUpdated: function() {
+                //this.displayProgress = this.status.progress;
+                this.targetProgress = this.status.progress / this.status.maxProgress * 100;
+                this.startProgressAnimation();
+            },
+
+            startProgressAnimation: function() {
+                //this.stepProgressAnimation();
+                this.stepProgressAnimation();
+            },
+
+            stepProgressAnimation: function() {
+                if (this.displayProgress < this.targetProgress) {
+                    this.displayProgress+= Math.ceil(.001 * (this.targetProgress - this.displayProgress));
+                    var that = this;
+                    this.job('animate', function() {
+                        that.stepProgressAnimation();
+                    }, 16);
+                }
+            },
+
+            statusChanged: function() {
+                if (this.status.progress == 0) {
+                    this.displayProgress = 0;
+                    this.targetProgress = 0;
+                }
             },
 
             submit: function() {

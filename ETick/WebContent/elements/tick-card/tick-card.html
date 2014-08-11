@@ -30,7 +30,7 @@
 
         <div id="mainContainer">
             <h1>{{tickName}}</h1>
-            <div>{{repo}}</div>
+            <div  onClick="this.select();">{{repo}}</div>
 
             <br>
 
@@ -48,7 +48,8 @@
                         reportAvailable="{{reportAvailable}}"
                         crsid="{{crsid}}"
                         repoName="{{repoName}}"
-                        repo="{{repo}}"></report-component>
+                        repo="{{repo}}"
+                        testRunning="{{testRunning}}"></report-component>
                 <div class="spacer"></div>
                 <signup-component flex
                         sheets="{{sheets}}"
