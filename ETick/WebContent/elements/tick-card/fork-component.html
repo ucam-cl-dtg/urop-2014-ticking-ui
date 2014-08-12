@@ -11,12 +11,14 @@
             <div flex></div>
             <div class="spacer"></div>
 
-            <core-collapse flex opened?="{{!initialising}}">
-                <paper-button label="Initialise"></paper-button>
-            </core-collapse>
-            <core-collapse flex opened?="{{initialising}}">
+            <div flex>
+                <core-collapse opened?="{{!initialising}}">
+                <paper-button label="Initialise" on-tap="{{createFork}}"></paper-button>
+                </core-collapse>
+                <core-collapse opened?="{{initialising}}">
                 <div class="error">Initialising...</div>
-            </core-collapse>
+                </core-collapse>
+            </div>
 
             <div class="spacer"></div>
             <div flex></div>
@@ -27,6 +29,11 @@
         Polymer('fork-component', {
            created: function() {
                this.initialising = false;
+           },
+
+           createFork: function() {
+               this.initialising = true;
+               this.fire('create-fork');
            }
         });
     </script>

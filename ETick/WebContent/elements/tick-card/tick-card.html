@@ -34,7 +34,9 @@
             <br>
 
             <core-collapse opened?="{{!forked}}">
-                <fork-component></fork-component>
+                <fork-component
+                        on-create-fork="{{createFork}}">
+                </fork-component>
             </core-collapse>
 
             <core-collapse opened?="{{forked}}">
@@ -89,7 +91,12 @@
                 this.$.forkService.addEventListener('test-running', function(e) {
                     that.submitComponent.continuePolling();
                 });
+            },
+
+            createFork: function() {
+                console.log("need to fire fork request");
             }
+
 
 
 
