@@ -1,31 +1,45 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 
-<polymer-element name="fork-service" attributes="unitPass humanPass signedUp testRunning reportAvailable repo tickId">
+<polymer-element name="fork-service" attributes="unitPass humanPass signedUp testRunning reportAvailable repo tickId forked">
     <template>
-        <style>
-            :host {
-                display: none;
-            }
-        </style>
-
         <!-- Load fork object for this tick -->
         <core-ajax
                 id="ajaxLoad"
                 auto
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/' + tickId + '/'}}"
                 handleAs="json"
-                method="POST"
-                on-core-response="{{forkObjectLoaded}}">
+                method="GET"
+                on-core-response="{{forkGetSuccess}}"
+                on-core-error="{{forkLoadError}}">
         </core-ajax>
+
+        <core-ajax
+                id="ajaxCreate"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/' + tickId + '/'}}"
+                handleAs="json"
+                method="POST"
+                on-core-response="{{forkPostSuccess}}"
+                on-core-error="{{forkLoadError}}">
+        </core-ajax>
+
+        <paper-dialog id="toastLoadError"></paper-dialog>
     </template>
     <script>
         Polymer('fork-service', {
-            forkObjectLoaded: function() {
+            forkGetSuccess: function() {
+                this.forkObjectLoaded(this.$.ajaxLoad.response);
+            },
+
+            forkPostSuccess: function() {
+                this.forkObjectLoaded(this.$.ajaxCreate.response);
+            },
+
+            forkObjectLoaded: function(forkObj) {
                 console.log("fork loaded");
 
-                var forkObj = this.$.ajaxLoad.response;
-                console.log(forkObj);
+                this.forked = true;
 
                 this.unitPass = forkObj.unitPass;
                 this.humanPass = forkObj.humanPass;
@@ -44,9 +58,26 @@
                 this.testRunning = false;
                 this.reportAvailable = true;
                 this.repo = "http://stuff";*/
-            }
+            },
 
-            //TODO: handle ajaxLoad on-core-error
+            createFork: function() {
+                console.log("creating fork...");
+                this.$.ajaxCreate.go();
+            },
+
+            forkLoadError: function(e, detail) {
+                //hide repo
+                this.repo = null;
+
+                if (detail.xhr.status == 404) {
+                    //not been forked yet
+                    this.forked = false;
+                } else {
+                    //something else went wrong
+                    this.$.toastLoadError.text = detail.xhr.responseText;
+                    this.$.toastLoadError.toggle();
+                }
+            }
         });
     </script>
 </polymer-element>
