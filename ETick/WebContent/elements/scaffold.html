@@ -10,7 +10,6 @@
 <link rel="import" href="onlogin.html">
 <link rel="import" href="group.html">
 <link rel="import" href="create-group.html">
-<link rel="import" href="delete-group.html">
 <link rel="import" href="tick-creator/tick-creator-card.html">
 
 <polymer-element name="page-scaffold" attributes="">
@@ -68,10 +67,9 @@
 			<user-dash id="dash"></user-dash>
 		</template>
 
-		<delete-group id="groupDeletor"></delete-group>
 		<template id="groupTemp" if="{{gid}}">
 			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}"
-				on-delete-clicked="{{groupDeleteHandler}}"></x-group>
+				on-delete-group="{{groupDeletedHandler}}"></x-group>
 		</template>
 		
 		<template id="tickTemp" if="{{showTickCreator}}">
@@ -179,7 +177,11 @@
 			},
 
 			groupDeletedHandler: function () {
-				this.
+				console.log(this.$.groupTemp.model.gid);
+				this.$.loginAPIs.$.sidebarAjax.go();
+				this.toSelect = "-1";
+				this.noGroup();
+				// this.$.navMenu.selected = "dashButton";
 			}
 		});
 	</script>

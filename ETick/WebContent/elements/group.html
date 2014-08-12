@@ -10,6 +10,7 @@
 <link rel="import" href="ticker-signup.html">
 <link rel="import" href="add-session.html">
 <link rel="import" href="file-browser/file-browser-card.html">
+<link rel="import" href="are-you-sure.html">
 
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
@@ -31,6 +32,10 @@
 			on-core-response="{{sheetListResponse}}">
 		</core-ajax>
 
+		<!-- Confirmation dialog. -->
+		<are-you-sure id="confirm"
+			on-yes="{{deleteConfirmed}}"></are-you-sure>
+
         <main-card animated>
             <paper-tabs id="tabs" selected="0">
                 <paper-tab>{{name}}</paper-tab>
@@ -47,7 +52,7 @@
 
 					<span layout horizontal end end-justified flex>
 						<template if="{{isAuthor}}">
-							<paper-icon-button id="groupDeleteButton"icon="delete" on-click="{{deleteButtonClicked}}"></paper-icon-button>
+							<paper-icon-button id="groupDeleteButton" icon="delete" on-click="{{deleteButtonClicked}}"></paper-icon-button>
 							<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
 							<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
 						</template>
@@ -194,7 +199,11 @@
 			},
 
 			deleteButtonClicked: function () {
-				this.fire('delete-clicked');
+				this.$.confirm.toggle();
+			},
+
+			deleteConfirmed: function () {
+				this.fire('delete-group');
 			}
 		});
 	</script>
