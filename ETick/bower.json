@@ -11,8 +11,19 @@
     "angular-loader": "1.2.x",
     "angular-mocks": "~1.2.x",
     "html5-boilerplate": "~4.3.0",
-    "polymer": "Polymer/polymer#~0.3.3",
-    "core-elements": "Polymer/core-elements#~0.3.3",
-    "paper-elements": "Polymer/paper-elements#~0.3.3"
-  }
+    "polymer": "Polymer/polymer#~0.3.4",
+    "core-elements": "Polymer/core-elements#~0.3.4",
+    "paper-elements": "Polymer/paper-elements#~0.3.4"
+  },
+  "authors": [
+    "Alexander Simpson <as2388@cam.ac.uk>"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "WebContent/bower_components",
+    "test",
+    "tests"
+  ]
 }

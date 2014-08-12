@@ -1,0 +1,40 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<polymer-element name="fork-component">
+    <template>
+        <link rel="stylesheet" type="text/css" href="../../css/shared-styles.css">
+        <link rel="stylesheet" type="text/css" href="tick-components.css">
+
+        <div layout horizontal>
+            <div class="spacer"></div>
+            <div flex></div>
+            <div class="spacer"></div>
+
+            <div flex>
+                <core-collapse opened?="{{!initialising}}">
+                <paper-button label="Initialise" on-tap="{{createFork}}"></paper-button>
+                </core-collapse>
+                <core-collapse opened?="{{initialising}}">
+                <div class="error">Initialising...</div>
+                </core-collapse>
+            </div>
+
+            <div class="spacer"></div>
+            <div flex></div>
+            <div class="spacer"></div>
+        </div>
+    </template>
+    <script>
+        Polymer('fork-component', {
+           created: function() {
+               this.initialising = false;
+           },
+
+           createFork: function() {
+               this.initialising = true;
+               this.fire('create-fork');
+           }
+        });
+    </script>
+</polymer-element>

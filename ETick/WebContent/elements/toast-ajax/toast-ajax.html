@@ -1,0 +1,180 @@
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<link rel="import" href="../../bower_components/platform/platform.js"/>
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html"/>
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html"/>
+
+<polymer-element name="toast-ajax"
+                 attributes="completeMessage errorMessage
+                 waitMessage responseMessage waitBeforeToast
+                 captureResponse captureError captureComplete
+                 
+                 url handleAs auto params
+                 response method headers
+                 body contentType
+                 withCredentials">
+  <template>
+    <core-ajax id="ajax"
+               url="{{url}}"
+               handleAs="{{handleAs}}"
+               params="{{params}}"
+               response="{{response}}"
+               method="{{method}}"
+               headers="{{headers}}"
+               body="{{body}}"
+               contentType="{{contentType}}"
+               withCredentials="{{withCredentials}}"
+               
+               on-core-response="{{coreResponse}}"
+               on-core-error="{{coreError}}"
+               on-core-complete="{{coreComplete}}">
+    </core-ajax>
+    <paper-toast id="toastElement" text=""></paper-toast>
+  </template>
+  <script>
+    Polymer('toast-ajax',
+      {   url: ''
+        , handleAs: 'text'
+        , auto: false
+        , params: ''
+        , method: ''
+        , contentType: 'application/x-www-form-urlencoded'
+        , withCredentials: false
+
+        , timeOut: undefined
+        , poppedUp: false
+        , captureResponse: false
+        , captureError: false
+        , captureComplete: false
+
+        , go:
+          function ()
+          {
+            "use strict";
+
+            if (this.waitBeforeToast != 0
+              &&this.timeOut == null)
+            {
+              this.timeOut = window.setTimeout(
+                function ()
+                {
+                  if (true || this.waitMessage != null)
+                  {
+                    this.poppedUp = true;
+                    this.$.toastElement.text = this.waitMessage;
+                    this.$.toastElement.show();
+                  }
+                }.bind(this)
+                , this.waitBeforeToast);
+            }
+
+            this.$.ajax.go();
+          }
+
+        , urlChanged:
+          function ()
+          {
+            if (!this.handleAs) {
+              var ext = String(this.url).split('.').pop();
+              switch (ext) {
+              case 'json':
+                this.handleAs = 'json';
+                break;
+              }
+            }
+            this.autoGo();
+          }
+
+        , paramsChanged:
+          function ()
+          {
+            this.autoGo();
+          }
+
+        , autoChanged:
+          function ()
+          {
+            this.autoGo();
+          }
+
+        , autoGo:
+          function ()
+          {
+            if (this.auto)
+            {
+              this.goJob = this.job(this.goJob, this.go, 0);
+            }
+          }
+
+        , popUpToast:
+          function (text)
+          {
+            "use strict";
+
+            if (this.timeOut != null)
+            {
+              clearTimeout(this.timeOut);
+            }
+
+            if (this.poppedUp)
+            {
+              if (true || text != null)
+              {
+                this.$.toastElement.dismiss();
+                this.$.toastElement.text = text;
+                this.$.toastElement.show();
+              }
+
+              this.poppedUp = false;
+            }
+          }
+
+        , coreResponse:
+          function (e)
+          {
+            "use strict";
+            this.fire('core-response', e.detail);
+
+            if (this.captureResponse)
+            {
+              this.popUpToast(e.detail.response);
+            }
+            else
+            {
+              this.popUpToast(this.responseMessage);
+            }
+          }
+
+        , coreError:
+          function (e)
+          {
+            "use strict";
+            this.fire('core-error', e.detail);
+
+            if (this.captureError)
+            {
+              this.popUpToast(e.detail.response);
+            }
+            else
+            {
+              this.popUpToast(this.errorMessage);
+            }
+          }
+
+        , coreComplete:
+          function (e)
+          {
+            "use strict";
+            this.fire('core-complete', e.detail);
+
+            if (this.captureComplete)
+            {
+              this.popUpToast(e.detail.response);
+            }
+            else
+            {
+              this.popUpToast(this.completeMessage);
+            }
+          }
+      });
+  </script>
+</polymer-element>

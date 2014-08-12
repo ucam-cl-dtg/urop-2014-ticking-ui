@@ -50,12 +50,7 @@
             submitError: function(e, detail) {
                 this.testRunning = false;
 
-                if (detail.xhr.responseText.lastIndexOf("NoCommitsToRepoException") > -1) {
-                    this.$.toastSubmitError.text = "Error submitting. Your repository is empty.";
-                } else {
-                    this.$.toastSubmitError.text = "Error submitting. Have you recently submitted this tick in another tab?";
-                }
-
+                this.$.toastSubmitError.text = detail.xhr.responseText;
                 this.$.toastSubmitError.show();
             },
 
@@ -69,7 +64,16 @@
             pollError: function(e, detail) {
                 console.log("poll error");
 
-                if (detail.xhr.responseText.indexOf("NoSuchTestException") > -1) {
+                this.$.toastPollError.text = detail.xhr.responseText;
+                this.$.toastPollError.show();
+
+                this.job('delay-poll', function() {
+                    this.startPolling();
+                }, 4000);
+
+                //TODO: sometimes poll fails because there is nothing to poll, so this should be handled somehow
+                //TODO: (similar to below, which was how it was done previously)
+                /*if (detail.xhr.responseText.indexOf("NoSuchTestException") > -1) {
                     //assume last test finished
                     this.testRunning = false;
                 } else {
@@ -79,7 +83,7 @@
                     this.job('polymer-is-forcing-me-to-name-this-job', function() {
                         this.startPolling();
                     }, 4000);
-                }
+                }*/
             },
 
             /**
