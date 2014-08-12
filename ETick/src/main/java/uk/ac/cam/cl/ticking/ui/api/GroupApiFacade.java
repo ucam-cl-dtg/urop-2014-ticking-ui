@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
 import uk.ac.cam.cl.ticking.signups.TickSignups;
@@ -31,6 +33,8 @@ import uk.ac.cam.cl.ticking.ui.util.Strings;
 import com.google.inject.Inject;
 
 public class GroupApiFacade implements IGroupApiFacade {
+	
+	private static final Logger log = LoggerFactory.getLogger(GroupApiFacade.class.getName());
 
 	private IDataManager db;
 	@SuppressWarnings("unused")
@@ -52,12 +56,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		this.tickSignupService = tickSignupService;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#getGroup
-	 * (java.lang.String, boolean)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response getGroup(String groupId) {
@@ -65,12 +65,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.ok(group).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#deleteGroup
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response deleteGroup(HttpServletRequest request, String groupId) {
@@ -85,12 +81,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.ok().build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#getUsers
-	 * (java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response getUsers(String groupId) {
@@ -99,11 +91,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.ok(users).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#getGroups()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response getGroups() {
@@ -112,13 +101,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.ok(groups).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#addGroup
-	 * (javax.servlet.http.HttpServletRequest, java.util.List,
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response addGroup(HttpServletRequest request, List<String> roles,
@@ -134,7 +118,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		
 		try {
 			tickSignupService.createGroup(group.getGroupId());
-		} catch (DuplicateNameException e1) {
+		} catch (DuplicateNameException e) {
+			log.warn("GroupId clash with signups database, recursing to generate new Id",e);
 			return addGroup(request, roles, groupBean);
 			//The groupId clashed with the signups groups ids, try again
 		}
@@ -147,12 +132,14 @@ public class GroupApiFacade implements IGroupApiFacade {
 			group.setInfo(URLDecoder.decode(groupBean.getInfo(),
 					StandardCharsets.UTF_8.name()));
 		} catch (UnsupportedEncodingException e) {
+			log.error("UTF_8 URL decoding failed", e);
 			// Hardcoded: known to be supported @see
 			// http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#iana
 		}
 		try {
 			db.insertGroup(group);
-		} catch (DuplicateDataEntryException de) {
+		} catch (DuplicateDataEntryException e) {
+			log.error("Tried to insert group into database",e);
 			return Response.status(Status.CONFLICT).build();
 		}
 		for (String role : roles) {
@@ -163,13 +150,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		return Response.status(Status.CREATED).entity(group).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade#updateGroup
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response updateGroup(HttpServletRequest request, String groupId,
@@ -196,6 +178,9 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Response cloneGroup(HttpServletRequest request, String groupId,
 			boolean members, boolean ticks, GroupBean groupBean) {
 		String crsid = (String) request.getSession().getAttribute(
@@ -211,6 +196,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 			group.setInfo(URLDecoder.decode(groupBean.getInfo(),
 					StandardCharsets.UTF_8.name()));
 		} catch (UnsupportedEncodingException e) {
+			log.error("UTF_8 URL decoding failed", e);
 			// Hardcoded: known to be supported @see
 			// http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#iana
 		}
@@ -230,7 +216,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 		try {
 			db.insertGroup(group);
-		} catch (DuplicateDataEntryException de) {
+		} catch (DuplicateDataEntryException e) {
+			log.error("Tried to insert group into database",e);
 			return Response.status(Status.CONFLICT).build();
 		}
 		return Response.status(Status.CREATED).entity(group).build();
