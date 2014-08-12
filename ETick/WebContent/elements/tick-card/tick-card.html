@@ -26,10 +26,10 @@
 
         <div id="mainContainer">
             <h1>{{tickName}}</h1>
-            <div layout horizontal>
+            <core-collapse layout horizontal opened?="{{repo != null}}">
                 <div class="spacer"></div>
                 <div>{{repo}}</div>
-            </div>
+            </core-collapse>
 
             <br>
 
