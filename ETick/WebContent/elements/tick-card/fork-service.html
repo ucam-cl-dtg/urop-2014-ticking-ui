@@ -23,11 +23,6 @@
                 method="POST"
                 on-core-response="{{forkPostSuccess}}"
 
-
-
-                waitMessage="Forking..."
-                waitBeforeToast="1000"
-                responseMessage="Forked successfully."
                 captureError>
         </toast-ajax>
 
@@ -58,13 +53,6 @@
                 if (this.testRunning) {
                     this.fire('test-running')
                 }
-
-                /*this.unitPass = true;
-                this.humanPass = false;
-                this.signedUp = true;
-                this.testRunning = false;
-                this.reportAvailable = true;
-                this.repo = "http://stuff";*/
             },
 
             createFork: function() {
