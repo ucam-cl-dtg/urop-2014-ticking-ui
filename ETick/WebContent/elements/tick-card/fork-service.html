@@ -1,28 +1,28 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 
-<polymer-element name="fork-service" attributes="unitPass humanPass signedUp testRunning reportAvailable repo tickId">
+<polymer-element name="fork-service" attributes="unitPass humanPass signedUp testRunning reportAvailable repo tickId forked">
     <template>
-        <style>
-            :host {
-                display: none;
-            }
-        </style>
-
         <!-- Load fork object for this tick -->
         <core-ajax
                 id="ajaxLoad"
                 auto
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/' + tickId + '/'}}"
                 handleAs="json"
-                method="POST"
-                on-core-response="{{forkObjectLoaded}}">
+                method="GET"
+                on-core-response="{{forkObjectLoaded}}"
+                on-core-error="{{forkLoadError}}">
         </core-ajax>
+
+        <paper-dialog id="toastLoadError"></paper-dialog>
     </template>
     <script>
         Polymer('fork-service', {
             forkObjectLoaded: function() {
                 console.log("fork loaded");
+
+                this.forked = true;
 
                 var forkObj = this.$.ajaxLoad.response;
                 console.log(forkObj);
@@ -44,6 +44,17 @@
                 this.testRunning = false;
                 this.reportAvailable = true;
                 this.repo = "http://stuff";*/
+            },
+
+            forkLoadError: function(e, detail) {
+                if (detail.xhr.status == 404) {
+                    //not been forked yet
+                    this.forked = false;
+                } else {
+                    //something else went wrong
+                    this.$.toastLoadError.text = detail.xhr.responseText;
+                    this.$.toastLoadError.toggle();
+                }
             }
 
             //TODO: handle ajaxLoad on-core-error
