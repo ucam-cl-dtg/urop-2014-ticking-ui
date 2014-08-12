@@ -16,11 +16,6 @@ paper-tabs::shadow #selectionBar {
 	background-color: #a7ffeb;
 }
 
-polyfill-next-selector {content: 'paper-tabs .tab-content';}
-paper-tabs::content .tab-content {
-    font-size: 100px;
-}
-
 #frame {
 	display: block;
 	width: 100%;
