@@ -241,20 +241,16 @@ public class Tick implements Comparable<Tick> {
         return tickId.split(",")[1];
     }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+    /**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public int compareTo(Tick o) {
 		return this.name.compareToIgnoreCase(o.name);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean equals(Object o) {
@@ -266,10 +262,8 @@ public class Tick implements Comparable<Tick> {
 		return this.tickId == ((Tick) o).tickId;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public int hashCode() {

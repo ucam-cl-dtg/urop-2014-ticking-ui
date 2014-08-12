@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
@@ -24,6 +27,8 @@ import uk.ac.cam.cl.ticking.ui.util.Strings;
 import com.google.inject.Inject;
 
 public class GroupingApiFacade implements IGroupingApiFacade {
+	
+	private static final Logger log = LoggerFactory.getLogger(GroupingApiFacade.class.getName());
 
 	private IDataManager db;
 
@@ -41,13 +46,8 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		this.raven = raven;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade#addGrouping
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
-	 * java.lang.String, java.util.List)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response addGroupings(HttpServletRequest request, String groupId,
@@ -81,6 +81,9 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		return Response.status(Status.CREATED).entity(users).build();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Response deleteGroupings(HttpServletRequest request, String groupId,
 			GroupingBean groupingBean) {

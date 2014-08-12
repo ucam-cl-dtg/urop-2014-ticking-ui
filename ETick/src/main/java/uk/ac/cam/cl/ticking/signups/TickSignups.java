@@ -73,6 +73,7 @@ public class TickSignups {
             @PathParam("sheetID") String sheetID) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         try {
+            log.debug("Listing available times using the following parameters...");
             String groupID = getGroupID(sheetID);
             log.info("crsid: " + crsid);
             log.info("tickID: " + tickID);
@@ -80,6 +81,7 @@ public class TickSignups {
             log.info("sheetID: " + sheetID);
             return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
         } catch (ItemNotFoundException e) {
+            log.debug("Either the sheet was not found or something has gone very wrong", e);
             return Response.status(Status.NOT_FOUND).entity("Not Found Error: " + e.getMessage()).build();
         }
     }
@@ -103,6 +105,8 @@ public class TickSignups {
         try {
             groupID = getGroupID(sheetID);
         } catch (ItemNotFoundException e1) {
+            log.debug("User " + crsid + " tried to book a slot but the sheet given was " +
+                    "not found in the signups database");
             return Response.status(Status.NOT_FOUND)
                     .entity("The sheet was not found in the signups database").build();
         }
@@ -110,16 +114,19 @@ public class TickSignups {
                 " at time " + new Date(bean.getStartTime()) + " on sheet " + sheetID + " in group " + groupID);
         for (Slot slot : service.listUserSlots(crsid)) {
             if (slot.getStartTime().equals(bean.getStartTime())) {
+                log.debug("The user already had a slot booked at the given time");
                 return Response.status(Status.FORBIDDEN)
                         .entity(Strings.EXISTINGTIMEBOOKING).build();
             }
             if (slot.getComment().equals(bean.getTickID())) {
+                log.debug("The user already had a slot booked for the given tick");
                 return Response.status(Status.FORBIDDEN)
                         .entity(Strings.EXISTINGTICKBOOKING).build();
             }
         }
         try {
             if (service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime()).size() == 0) {
+                log.debug("No free slots were found at the given time");
                 return Response.status(Status.NOT_FOUND)
                         .entity(Strings.NOFREESLOTS).build();
             }
@@ -132,19 +139,22 @@ public class TickSignups {
                 Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
                 f.setSignedUp(true);
                 db.saveFork(f);
+                log.debug("The booking was successfully made");
                 return Response.ok().entity(ticker).build();
+            } else {
+                return Response.status(Status.FORBIDDEN)
+                        .entity("Error: you do not have permission to book this slot - perhaps you have not " +
+                                "passed the unit tests").build();
             }
         } catch (ItemNotFoundException e) {
-            e.printStackTrace();
+            log.debug("Something was not found the in database", e);
             return Response.status(Status.NOT_FOUND)
                     .entity("Not found error: " + e.getMessage()).build();
         } catch (NotAllowedException e) {
-            e.printStackTrace();
+            log.debug("Permission to book the slot was denied", e);
             return Response.status(Status.FORBIDDEN)
                     .entity("Not allowed: " + e.getMessage()).build();
         }
-        return Response.status(Status.FORBIDDEN)
-                .entity("You do not have permission to book this slot").build();
     }
        
     /**
@@ -154,6 +164,7 @@ public class TickSignups {
     @Path("/bookings/{tickID}")
     public Response unbookSlot(@Context HttpServletRequest request, @PathParam("tickID") String tickID) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        log.debug("The user " + crsid + " is trying to unbook their slot for tick " + tickID);
         Slot booking = null;
         for (Slot slot : service.listUserSlots(crsid)) {
             if (slot.getComment().equals(tickID)) {
@@ -161,7 +172,8 @@ public class TickSignups {
             }
         }
         if (booking == null) {
-            return Response.status(Status.NOT_FOUND).entity("No booking was found for this tick").build();
+            log.debug("No booking was found for the specified tick");
+            return Response.status(Status.NOT_FOUND).entity("Error: no booking was found for this tick").build();
         }
         try {
             service.book(booking.getSheetID(), booking.getColumnName(),
@@ -169,15 +181,16 @@ public class TickSignups {
             Fork f = db.getFork(Fork.generateForkId(crsid, tickID));
             f.setSignedUp(false);
             db.saveFork(f);
+            log.debug("The slot was successfully unbooked");
             return Response.ok().build();
         } catch (ItemNotFoundException e) {
-            e.printStackTrace();
+            log.error("The booking for the tick was found to simultaneously exist and not exist", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity("The booking for this tick was found to exist and "
                             + "then not found to exist. See following exception:\n"
                             + e).build();
         } catch (NotAllowedException e) {
-            e.printStackTrace();
+            log.error("The unbooking should have been allowed but was not", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity("The removal of the booking should have been allowed but "
                             + "for some reason was not. See following exception:\n"
@@ -193,6 +206,7 @@ public class TickSignups {
             }
         }
         if (booking == null) {
+            log.debug("No booking was found for the specified tick");
             return Response.status(Status.NOT_FOUND).entity("No booking was found for this tick").build();
         }
         try {
@@ -203,13 +217,13 @@ public class TickSignups {
             db.saveFork(f);
             return Response.ok().build();
         } catch (ItemNotFoundException e) {
-            e.printStackTrace();
+            log.error("The booking for the tick was found to simultaneously exist and not exist", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity("The booking for this tick was found to exist and "
                             + "then not found to exist. See following exception:\n"
                             + e).build();
         } catch (NotAllowedException e) {
-            e.printStackTrace();
+            log.error("The unbooking should have been allowed but was not", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity("The removal of the booking should have been allowed but "
                             + "for some reason was not. See following exception:\n"
@@ -225,6 +239,7 @@ public class TickSignups {
     @Produces("application/json")
     public Response listStudentBookings(@Context HttpServletRequest request) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        log.debug("Listing the future bookings for user" + crsid);
         List<BookingInfo> toReturn = new ArrayList<BookingInfo>();
         for (Slot s :service.listUserSlots(crsid)) {
             Date endTime = new Date(s.getStartTime().getTime() + s.getDuration());
@@ -233,6 +248,7 @@ public class TickSignups {
                 try {
                     groupName = db.getGroup(getGroupID(s.getSheetID())).getName();
                 } catch (ItemNotFoundException e) {
+                    log.error("A booking appears to exist in a sheet that doesn't", e);
                     return Response.status(Status.INTERNAL_SERVER_ERROR)
                             .entity("You appear to have a booking in a sheet that doesn't"
                                     + " exist").build();
@@ -314,19 +330,18 @@ public class TickSignups {
             @PathParam("sheetID") String sheetID,
             @PathParam("crsid") String crsid) {
         String callingCRSID = (String) request.getSession().getAttribute("RavenRemoteUser");
-        List<String> groupIDs;
+        log.debug("The user " + callingCRSID + " has requested the removal of all future " +
+                "bookings of the submitter " + crsid + " for the sheet of ID " + sheetID);
+        String groupID;
         try {
-            groupIDs = service.getGroupIDs(sheetID);
-        } catch (ItemNotFoundException e) {
-            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
+            groupID = getGroupID(sheetID);
+        } catch (ItemNotFoundException e1) {
+            log.debug("The sheet of ID " + sheetID + " was not found", e1);
+            return Response.status(Status.NOT_FOUND)
+                    .entity("Not found error: the sheet " + sheetID + "was not found").build();
         }
-        if (groupIDs.size() != 1) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("There should be precisely one group associated "
-                            + "with this sheet, but there seems to be " + groupIDs.size()).build();
-        }
-        String groupID = groupIDs.get(0);
         if (!db.getRoles(groupID, callingCRSID).contains(Role.MARKER)) {
+            log.debug("The user " + callingCRSID + " does not have permission to remove these bookings");
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
         try {
@@ -336,10 +351,13 @@ public class TickSignups {
                 db.saveFork(f);
             }
             service.removeAllUserBookings(sheetID, crsid, db.getAuthCode(sheetID));
+            log.debug("All future bookings of submitter " + crsid + " for sheet " + sheetID + " have been removed");
             return Response.ok().build();
         } catch (NotAllowedException e) {
+            log.debug("Action was not allowed", e);
             return Response.status(Status.FORBIDDEN).entity("Error: " + e.getMessage()).build();
         } catch (ItemNotFoundException e) {
+            log.debug("Something was not found", e);
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
     }
@@ -347,13 +365,18 @@ public class TickSignups {
   
     
     public Response allowSignup(String crsid, String groupID, String tickID) {
+        log.debug("Attempting to allow submitter " + crsid +
+                " to sign up for the tick " + tickID + " in group " + groupID);
         try {
             service.listSheets(groupID); // to see if group exists
         } catch (ItemNotFoundException e) { // if it doesn't, create it
+            log.debug("The group for some reason does not exist in the signups database - " + 
+                    "attempting to create it");
             try {
                 createGroup(groupID);
             } catch (DuplicateNameException e1) {
-                e1.printStackTrace();
+                log.error("When creating the group because it doesn't exist, it was " +
+                        "found to exist", e1);
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
                         .entity("The group was found to both exist and not exist "
                                 + "in the signups database, sorry.\n"+e1).build();
@@ -364,32 +387,36 @@ public class TickSignups {
             Map<String, String> map = new HashMap<String, String>();
             map.put(tickID, null);
             service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            log.debug(crsid + " is now allowed to sign up for " + tickID + " in group " + groupID);
             return Response.ok().build();
         } catch (NotAllowedException e) {
-            e.printStackTrace();
+            log.debug("Permission was denied", e);
             return Response.status(Status.FORBIDDEN)
                     .entity("Not allowed error: " + e.getMessage()).build();
         } catch (ItemNotFoundException e) {
-            e.printStackTrace();
+            log.debug("Something was not found", e);
             return Response.status(Status.NOT_FOUND)
                     .entity("Not found error: " + e.getMessage()).build();
         }
     }
     
     public Response disallowSignup(String crsid, String groupID, String tickID) {
+        log.debug("Removing submitter " + crsid + "'s permission to sign up for tick" +
+                tickID + " in group " + groupID);
         Map<String, String> map = new HashMap<String, String>();
         map.put(tickID, null);
         try {
             service.removePermissions(groupID, crsid, new PermissionsBean(map, db.getAuthCode(groupID)));
         } catch (NotAllowedException e) {
-            e.printStackTrace();
+            log.error("Permission was denied - it shouldn't be", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity("Permission was denied - it shouldn't be.\n" + e).build();
         } catch (ItemNotFoundException e) {
-            e.printStackTrace();
+            log.error("Something was not found that should have been", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity("Internal server error: " + e.getMessage()).build();
         }
+        log.debug("Permission removed");
         return Response.ok().build();
     }
     
@@ -405,7 +432,11 @@ public class TickSignups {
             @PathParam("tickID") String tickID,
             @PathParam("ticker") String ticker) { // TODO: maybe put ticker in body to allow it to have spaces?
         String callerCRSID = (String) request.getSession().getAttribute("RavenRemoteUser");
+        log.debug("User " + callerCRSID + " is requesting for submitter " + crsid + " to be allowed " +
+                "to sign up for tick " + tickID + " in group " + groupID + " using " +
+                (ticker == null ? "any ticker" : "ticker " + ticker + " only"));
         if (!db.getRoles(groupID, callerCRSID).contains(Role.MARKER)) {
+            log.debug("User " + callerCRSID + " does not have permission to do this");
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
         String groupAuthCode = db.getAuthCode(groupID);
@@ -413,31 +444,36 @@ public class TickSignups {
             Map<String, String> map = new HashMap<String, String>();
             map.put(tickID, ticker);
             service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            log.debug("Permissions updated");
             return Response.ok().build();
         } catch (NotAllowedException e) {
-            e.printStackTrace();
+            log.debug("Permission denied", e);
             return Response.status(Status.FORBIDDEN)
                     .entity("Not allowed: " + e.getMessage()).build();
         } catch (ItemNotFoundException e) {
-            e.printStackTrace();
+            log.debug("Something was not found", e);
             return Response.status(Status.NOT_FOUND)
                     .entity("Not found error: " + e.getMessage()).build();
         }
     }
     
     public Response assignTickerForTickForUser(String crsid, String groupID, String tickID, String ticker) {
+        log.debug("Attempting to allow submitter " + crsid +
+                " to sign up for tick " + tickID + " in group " + groupID + " using " +
+                (ticker == null ? "any ticker" : "ticker " + ticker + " only"));
         String groupAuthCode = db.getAuthCode(groupID);
         try {
             Map<String, String> map = new HashMap<String, String>();
             map.put(tickID, ticker);
             service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            log.debug("Permissions updated");
             return Response.ok().build();
         } catch (NotAllowedException e) {
-            e.printStackTrace();
+            log.debug("Permission denied", e);
             return Response.status(Status.FORBIDDEN)
                     .entity("Not allowed: " + e.getMessage()).build();
         } catch (ItemNotFoundException e) {
-            e.printStackTrace();
+            log.debug("Something was not found", e);
             return Response.status(Status.NOT_FOUND)
                     .entity("Not found error: " + e.getMessage()).build();
         }

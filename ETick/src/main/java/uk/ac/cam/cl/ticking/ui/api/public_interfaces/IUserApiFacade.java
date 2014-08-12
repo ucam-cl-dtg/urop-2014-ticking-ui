@@ -92,11 +92,19 @@ public interface IUserApiFacade {
 	@Path("/ticks")
 	@Produces("application/json")
 	public abstract Response getMyTicks(@Context HttpServletRequest request);
-	
+
+	/**
+	 * Registers the given shh key with the git service for the invoking user
+	 * 
+	 * @param request
+	 * @param key
+	 * @return
+	 */
 	@PUT
 	@Path("/ssh")
 	@Produces("application/json")
 	@Consumes("text/plain")
-	public abstract Response addSSHKey(@Context HttpServletRequest request, String key);
+	public abstract Response addSSHKey(@Context HttpServletRequest request,
+			String key);
 
 }

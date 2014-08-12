@@ -4,15 +4,12 @@
 <link rel="import" href="report-component.html">
 <link rel="import" href="signup-component.html">
 <link rel="import" href="fork-service.html">
+<link rel="import" href="fork-component.html">
 
 <polymer-element name="tick-card" attributes="tickName tickId sheets repoName">
     <template>
         <link rel="stylesheet" href="../../css/elements/group-members.css">
-        <style>
-            .spacer {
-                width: 10px;
-            }
-        </style>
+        <link rel="stylesheet" href="tick-components.css">
 
         <!-- for managing fork object data -->
         <fork-service
@@ -23,47 +20,61 @@
                 signedUp="{{signedUp}}"
                 testRunning="{{testRunning}}"
                 reportAvailable="{{reportAvailable}}"
-                repo="{{repo}}">
+                repo="{{repo}}"
+                forked="{{forked}}">
         </fork-service>
 
         <div id="mainContainer">
+
             <h1>{{tickName}}</h1>
+
+            <core-collapse opened?="{{repo != null}}">
             <div layout horizontal>
                 <div class="spacer"></div>
                 <div>{{repo}}</div>
             </div>
+            </core-collapse>
+
 
             <br>
 
-            <div layout horizontal>
-                <div class="spacer"></div>
-                <submit-component flex
-                        id="submitComponent"
-                        tickId="{{tickId}}"
-                        signedUp="{{signedUp}}"
-                        testRunning="{{testRunning}}"
-                        reportAvailable="{{reportAvailable}}"
-                        unitPass="{{unitPass}}"
-                        humanPass="{{humanPass}}">
-                </submit-component>
-                <div class="spacer"></div>
-                <report-component flex
-                        reportAvailable="{{reportAvailable}}"
-                        repoName="{{repoName}}"
-                        repo="{{repo}}"
-                        testRunning="{{testRunning}}"
-                        unitPass="{{unitPass}}"></report-component>
-                <div class="spacer"></div>
-                <signup-component flex
-                        sheets="{{sheets}}"
-                        signedUp="{{signedUp}}"
-                        unitPass="{{unitPass}}"
-                        testRunning="{{testRunning}}"
-                        tickId="{{tickId}}"
-                        humanPass="{{humanPass}}">
-                </signup-component>
-                <div class="spacer"></div>
-            </div>
+            <core-collapse opened?="{{!forked}}">
+                <fork-component
+                        on-create-fork="{{createFork}}">
+                </fork-component>
+            </core-collapse>
+
+            <core-collapse opened?="{{forked}}">
+                <div layout horizontal>
+                    <div class="spacer"></div>
+                    <submit-component flex
+                                      id="submitComponent"
+                                      tickId="{{tickId}}"
+                                      signedUp="{{signedUp}}"
+                                      testRunning="{{testRunning}}"
+                                      reportAvailable="{{reportAvailable}}"
+                                      unitPass="{{unitPass}}"
+                                      humanPass="{{humanPass}}">
+                    </submit-component>
+                    <div class="spacer"></div>
+                    <report-component flex
+                                      reportAvailable="{{reportAvailable}}"
+                                      repoName="{{repoName}}"
+                                      repo="{{repo}}"
+                                      testRunning="{{testRunning}}"
+                                      unitPass="{{unitPass}}"></report-component>
+                    <div class="spacer"></div>
+                    <signup-component flex
+                                      sheets="{{sheets}}"
+                                      signedUp="{{signedUp}}"
+                                      unitPass="{{unitPass}}"
+                                      testRunning="{{testRunning}}"
+                                      tickId="{{tickId}}"
+                                      humanPass="{{humanPass}}">
+                    </signup-component>
+                    <div class="spacer"></div>
+                </div>
+            </core-collapse>
         </div>
         <br><br>
     </template>
@@ -85,7 +96,12 @@
                 this.$.forkService.addEventListener('test-running', function(e) {
                     that.submitComponent.continuePolling();
                 });
+            },
+
+            createFork: function() {
+               this.$.forkService.createFork();
             }
+
 
 
 

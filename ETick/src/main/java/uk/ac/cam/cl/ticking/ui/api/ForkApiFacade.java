@@ -1,7 +1,6 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,8 +8,9 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import publicinterfaces.ITestService;
 import publicinterfaces.ReportNotFoundException;
@@ -40,7 +40,9 @@ import com.google.inject.Inject;
 
 public class ForkApiFacade implements IForkApiFacade {
 
-	Logger log = Logger.getLogger(ConfigurationLoader.class.getName());
+	private static final Logger log = LoggerFactory
+			.getLogger(ForkApiFacade.class.getName());
+
 	private IDataManager db;
 	// not currently used but could quite possibly be needed in the future, will
 	// remove if not
@@ -67,24 +69,23 @@ public class ForkApiFacade implements IForkApiFacade {
 		this.tickSignupService = tickSignupService;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Response getFork(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
-		if (fork ==  null) {
+		if (fork == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 		return Response.ok(fork).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#forkTick
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response forkTick(HttpServletRequest request, String tickId) {
@@ -107,8 +108,10 @@ public class ForkApiFacade implements IForkApiFacade {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 			repo = s.getMessage();
+			log.warn("Tried to fork repository for " + tickId, s.getCause());
 
 		} catch (IOException | DuplicateRepoNameException e) {
+			log.error("Tried to fork repository for " + tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 			// Due to exception chaining this shouldn't happen
@@ -118,6 +121,9 @@ public class ForkApiFacade implements IForkApiFacade {
 			fork = new Fork(crsid, tickId, repo);
 			db.insertFork(fork);
 		} catch (DuplicateDataEntryException e) {
+			log.error(
+					"Tried to insert fork into database with id "
+							+ fork.getForkId(), e);
 			throw new RuntimeException("Schrodinger's fork");
 			// The fork simultaneously does and doesn't exist
 		}
@@ -127,6 +133,9 @@ public class ForkApiFacade implements IForkApiFacade {
 		return Response.status(Status.CREATED).entity(fork).build();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Response markFork(HttpServletRequest request, String crsid,
 			String tickId, ForkBean forkBean) {
@@ -153,19 +162,29 @@ public class ForkApiFacade implements IForkApiFacade {
 
 				ReportResult result = forkBean.getHumanPass() ? ReportResult.PASS
 						: ReportResult.FAIL;
-				log.info(result);
 				try {
 					testServiceProxy.setTickerResult(crsid, tickId, result,
-							forkBean.getTickerComments(),
-							forkBean.getCommitId(), forkBean.getReportDate().getMillis());
+							forkBean.getTickerComments(), forkBean
+									.getCommitId(), forkBean.getReportDate()
+									.getMillis());
+				} catch (InternalServerErrorException e) {
+					RemoteFailureHandler h = new RemoteFailureHandler();
+					SerializableException s = h.readException(e);
+					log.warn(
+							"Tried to set ticker result for "
+									+ Fork.generateForkId(crsid, tickId),
+							s.getCause());
+					return Response.status(Status.NOT_FOUND).entity(e).build();
 				} catch (UserNotInDBException | TickNotInDBException
 						| ReportNotFoundException e) {
+					log.error(
+							"Tried to set ticker result for "
+									+ Fork.generateForkId(crsid, tickId), e);
 					return Response.status(Status.NOT_FOUND).entity(e).build();
 				}
 				fork.setLastTickedBy(crsid);
 				fork.setLastTickedOn(DateTime.now());
 				if (!forkBean.getHumanPass()) {
-					tickSignupService.unbookSlot(crsid, tickId);
 					fork.setUnitPass(false);
 					fork.setSignedUp(false);
 					for (String groupId : groupIds) {
@@ -182,6 +201,9 @@ public class ForkApiFacade implements IForkApiFacade {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Response getAllFiles(HttpServletRequest request, String crsid,
 			String tickId, String commitId) {
@@ -198,15 +220,29 @@ public class ForkApiFacade implements IForkApiFacade {
 				marker = true;
 			}
 		}
-		if (!(marker||myCrsid.equals(db.getFork(Fork.generateForkId(crsid, tickId)).getAuthor()))) {
+		if (!(marker || myCrsid.equals(db.getFork(
+				Fork.generateForkId(crsid, tickId)).getAuthor()))) {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
 		List<FileBean> files;
 		try {
-			files = gitServiceProxy.getAllFiles(crsid+"/"+Tick.replaceDelimeter(tickId), commitId);
+			files = gitServiceProxy.getAllFiles(
+					crsid + "/" + Tick.replaceDelimeter(tickId), commitId);
+		} catch (InternalServerErrorException e) {
+			RemoteFailureHandler h = new RemoteFailureHandler();
+			SerializableException s = h.readException(e);
+			log.error(
+					"Tried to get repository files for "
+							+ Fork.generateForkId(crsid, tickId), s.getCause());
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		} catch (IOException | RepositoryNotFoundException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+			log.error(
+					"Tried to get repository files for "
+							+ Fork.generateForkId(crsid, tickId), e);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		}
 		return Response.ok(files).build();
 	}

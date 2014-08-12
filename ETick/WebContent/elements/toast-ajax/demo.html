@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<html>
+  <head>
+    <title>Toast-Ajax Test Page</title>
+    <script src="../../bower_components/platform/platform.js"></script>
+    <link rel="import" href="../../bower_components/font-roboto/roboto.html"/>
+    <link rel="import" href="toast-ajax.html">
+
+    <style>
+html,body {
+  height: 100%;
+  margin: 0;
+  background-color: #E5E5E5;
+  font-family: 'RobotoDraft', sans-serif;
+}
+    </style>
+  </head>
+  <body unresolved touch-action="auto">
+    <div class="container">
+      <toast-ajax responseMessage="Successfully done transaction."
+                  captureError
+                  waitMessage="Performing transaction...."
+                  waitBeforeToast="1000"
+
+                  url="http://localhost:8080/hello-world.html"
+                  method="GET"
+                  >
+      </toast-ajax>
+      <script>
+        document.addEventListener('polymer-ready',
+            function ()
+            {
+              var ajax = document.querySelector("toast-ajax");
+
+              ajax.go();
+            }
+        );
+      </script>
+    </div>
+  </body>
+</html>

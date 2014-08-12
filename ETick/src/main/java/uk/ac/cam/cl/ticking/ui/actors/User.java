@@ -248,10 +248,8 @@ public class User implements Comparable<User> {
 		this.hasLogged = hasLogged;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public int compareTo(User o) {
@@ -260,10 +258,8 @@ public class User implements Comparable<User> {
 		return compareMe.compareToIgnoreCase(compareThem);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean equals(Object o) {
@@ -275,10 +271,8 @@ public class User implements Comparable<User> {
 		return this.crsid == ((User) o).crsid;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public int hashCode() {

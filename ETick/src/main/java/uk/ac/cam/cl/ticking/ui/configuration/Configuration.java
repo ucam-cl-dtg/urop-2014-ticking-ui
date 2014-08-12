@@ -84,10 +84,18 @@ public class Configuration implements ConfigurationFile {
 		this.testApiLocation = testApiLocation;
 	}
 
+	/**
+	 * 
+	 * @return signupsApiLocation
+	 */
     public String getSignupsApiLocation() {
         return signupsApiLocation;
     }
 
+    /**
+     * 
+     * @param signupsApiLocation
+     */
     public void setSignupsApiLocation(String signupsApiLocation) {
         this.signupsApiLocation = signupsApiLocation;
     }

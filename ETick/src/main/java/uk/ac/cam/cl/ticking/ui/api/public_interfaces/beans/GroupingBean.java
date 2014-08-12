@@ -16,18 +16,34 @@ public class GroupingBean {
 		
 	}
 
+	/**
+	 * 
+	 * @return crsids
+	 */
 	public List<String> getCrsids() {
 		return crsids;
 	}
 
+	/**
+	 * 
+	 * @param crsids
+	 */
 	public void setCrsids(List<String> crsids) {
 		this.crsids = crsids;
 	}
 
+	/**
+	 * 
+	 * @return roles
+	 */
 	public List<Role> getRoles() {
 		return roles;
 	}
 
+	/**
+	 * 
+	 * @param roles
+	 */
 	public void setRoles(List<Role> roles) {
 		this.roles = roles;
 	}

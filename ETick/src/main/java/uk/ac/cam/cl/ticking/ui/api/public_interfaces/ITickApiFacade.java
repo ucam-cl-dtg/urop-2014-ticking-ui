@@ -136,6 +136,13 @@ public interface ITickApiFacade {
 	public abstract Response setDeadline(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId, DateTime date);
 	
+	/**
+	 * 
+	 * @param request
+	 * @param tickId
+	 * @param commitId
+	 * @return the files for the stub repo of the tick object
+	 */
 	@GET
 	@Path("/{tickId}/{commitId}/files")
 	@Produces("application/json")
