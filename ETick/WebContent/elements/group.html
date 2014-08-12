@@ -36,8 +36,7 @@
 					<h1 class="groupName">{{name}}</h1>
 					<span layout horizontal end end-justified flex>
 						<template if="{{isAuthor}}">
-							<delete-group gid="{{gid}}"
-								on-group-deleted="{{groupDeletedHandler}}"></delete-group>
+							<delete-group gid="{{gid}}"></delete-group>
 							<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
 							<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
 						</template>
