@@ -10,20 +10,23 @@
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="static-list.html">
 <link rel="import" href="static-list-labels.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../date-entry.html">
 
 <polymer-element name="tick-creator-card" attributes="tickId">
 <template>
     <link rel="stylesheet" type="text/css" href="tick-creator-card.css">
-    
+
     <!-- Get groups for this author -->
-    <core-ajax
+    <toast-ajax
         id="ajaxLoadGroups"
         url="{{pathLoadGroups}}"
         handleAs="json"
         on-core-response="{{groupsDataLoaded}}"
-        on-core-error="{{showErrorToast}}">
-    </core-ajax>
+
+        captureError
+        errorMessage="Error loading your groups.">
+    </toast-ajax>
 
     <!-- get and update all other existing tick data -->
     <core-ajax
