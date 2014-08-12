@@ -18,12 +18,12 @@ html,body {
   </head>
   <body unresolved touch-action="auto">
     <div class="container">
-      <toast-ajax successMessage="Successfully done transaction."
-                  errorMessage="Unsuccessful transaction."
-                  waitMessage="Performing transaction."
+      <toast-ajax responseMessage="Successfully done transaction."
+                  captureError
+                  waitMessage="Performing transaction...."
                   waitBeforeToast="1000"
 
-                  url="http://localhost:8000/card-tester.html"
+                  url="http://localhost:8080/hello-world.html"
                   method="GET"
                   auto>
       </toast-ajax>
@@ -33,13 +33,6 @@ html,body {
             {
               var ajax = document.querySelector("toast-ajax");
 
-              ajax.addEventListener('core-response',
-                  function (e)
-                  {
-                    console.log(e);
-                  }
-              );
-
               ajax.addEventListener('core-error',
                   function (e)
                   {
@@ -47,10 +40,10 @@ html,body {
                   }
               );
 
-              ajax.addEventListener('core-complete',
+              ajax.addEventListener('core-response',
                   function (e)
                   {
-                    console.log("Complete", e);
+                    console.log("Response", e);
                   }
               );
             }

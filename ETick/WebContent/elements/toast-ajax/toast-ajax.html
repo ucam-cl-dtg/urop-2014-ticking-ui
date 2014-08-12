@@ -6,6 +6,7 @@
 <polymer-element name="toast-ajax"
                  attributes="completeMessage errorMessage
                  waitMessage responseMessage waitBeforeToast
+                 captureResponse captureError captureComplete
                  
                  url handleAs auto params
                  response method headers
@@ -15,7 +16,6 @@
     <core-ajax id="ajax"
                url="{{url}}"
                handleAs="{{handleAs}}"
-               auto="{{auto}}"
                params="{{params}}"
                response="{{response}}"
                method="{{method}}"
@@ -42,6 +42,10 @@
 
         , timeOut: undefined
         , poppedUp: false
+        , captureResponse: false
+        , captureError: false
+        , captureComplete: false
+
         , go:
           function ()
           {
@@ -50,10 +54,10 @@
             if (this.waitBeforeToast != 0
               &&this.timeOut == null)
             {
-              window.setTimeout(
+              this.timeOut = window.setTimeout(
                 function ()
                 {
-                  if (this.waitMessage != null)
+                  if (true || this.waitMessage != null)
                   {
                     this.poppedUp = true;
                     this.$.toastElement.text = this.waitMessage;
@@ -64,6 +68,41 @@
             }
 
             this.$.ajax.go();
+          }
+
+        , urlChanged:
+          function ()
+          {
+            if (!this.handleAs) {
+              var ext = String(this.url).split('.').pop();
+              switch (ext) {
+              case 'json':
+                this.handleAs = 'json';
+                break;
+              }
+            }
+            this.autoGo();
+          }
+
+        , paramsChanged:
+          function ()
+          {
+            this.autoGo();
+          }
+
+        , autoChanged:
+          function ()
+          {
+            this.autoGo();
+          }
+
+        , autoGo:
+          function ()
+          {
+            if (this.auto)
+            {
+              this.goJob = this.job(this.goJob, this.go, 0);
+            }
           }
 
         , popUpToast:
@@ -78,7 +117,7 @@
 
             if (this.poppedUp)
             {
-              if (text != null)
+              if (true || text != null)
               {
                 this.$.toastElement.dismiss();
                 this.$.toastElement.text = text;
@@ -93,24 +132,48 @@
           function (e)
           {
             "use strict";
-            this.popUpToast(this.responseMessage);
             this.fire('core-response', e.detail);
+
+            if (this.captureResponse)
+            {
+              this.popUpToast(e.detail.response);
+            }
+            else
+            {
+              this.popUpToast(this.responseMessage);
+            }
           }
 
         , coreError:
           function (e)
           {
             "use strict";
-            this.popUpToast(this.errorMessage);
             this.fire('core-error', e.detail);
+
+            if (this.captureError)
+            {
+              this.popUpToast(e.detail.response);
+            }
+            else
+            {
+              this.popUpToast(this.errorMessage);
+            }
           }
 
         , coreComplete:
           function (e)
           {
             "use strict";
-            this.popUpToast(this.completeMessage);
             this.fire('core-complete', e.detail);
+
+            if (this.captureComplete)
+            {
+              this.popUpToast(e.detail.response);
+            }
+            else
+            {
+              this.popUpToast(this.completeMessage);
+            }
           }
       });
   </script>
