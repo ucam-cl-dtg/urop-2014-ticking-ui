@@ -33,22 +33,6 @@ html,body {
             {
               var ajax = document.querySelector("toast-ajax");
 
-              console.log(ajax);
-
-              ajax.addEventListener('core-error',
-                  function (e)
-                  {
-                    console.log("Error", e);
-                  }
-              );
-
-              ajax.addEventListener('core-response',
-                  function (e)
-                  {
-                    console.log("Response", e);
-                  }
-              );
-
               ajax.go();
             }
         );
