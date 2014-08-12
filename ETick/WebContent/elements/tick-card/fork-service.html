@@ -11,7 +11,16 @@
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/' + tickId + '/'}}"
                 handleAs="json"
                 method="GET"
-                on-core-response="{{forkObjectLoaded}}"
+                on-core-response="{{forkGetSuccess}}"
+                on-core-error="{{forkLoadError}}">
+        </core-ajax>
+
+        <core-ajax
+                id="ajaxCreate"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/' + tickId + '/'}}"
+                handleAs="json"
+                method="POST"
+                on-core-response="{{forkPostSuccess}}"
                 on-core-error="{{forkLoadError}}">
         </core-ajax>
 
@@ -19,13 +28,18 @@
     </template>
     <script>
         Polymer('fork-service', {
-            forkObjectLoaded: function() {
+            forkGetSuccess: function() {
+                this.forkObjectLoaded(this.$.ajaxLoad.response);
+            },
+
+            forkPostSuccess: function() {
+                this.forkObjectLoaded(this.$.ajaxCreate.response);
+            },
+
+            forkObjectLoaded: function(forkObj) {
                 console.log("fork loaded");
 
                 this.forked = true;
-
-                var forkObj = this.$.ajaxLoad.response;
-                console.log(forkObj);
 
                 this.unitPass = forkObj.unitPass;
                 this.humanPass = forkObj.humanPass;
@@ -44,6 +58,11 @@
                 this.testRunning = false;
                 this.reportAvailable = true;
                 this.repo = "http://stuff";*/
+            },
+
+            createFork: function() {
+                console.log("creating fork...");
+                this.$.ajaxCreate.go();
             },
 
             forkLoadError: function(e, detail) {
