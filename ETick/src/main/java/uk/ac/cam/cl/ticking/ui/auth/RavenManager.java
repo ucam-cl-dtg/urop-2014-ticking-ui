@@ -141,7 +141,7 @@ public class RavenManager {
 	}
 
 	/**
-	 * Queries LDAP for user information, if a connection to LDAp is not
+	 * Queries LDAP for user information, if a connection to LDAP is not
 	 * available, returns a user object with only a crsid and the ldap flag set
 	 * to false.
 	 * 

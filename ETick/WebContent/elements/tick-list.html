@@ -48,10 +48,8 @@
 
 		<!-- Tick list card header. -->
 		<div id="headerBar" layout horizontal center>
-			<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>
-			<template if="{{canFork}}">
-				<paper-icon-button icon="communication:call-split" on-click="{{forkClicked}}"></paper-icon-button>
-			</template>
+			<!--<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>-->
+            <span flex></span>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
@@ -87,6 +85,10 @@
 				var sel = this.$.selector.selected;
 				this.selectedTickId = sel._id;
 				this.selectedTickIdName = sel.name;
+
+                if (this.canFork) {
+                    this.forkClicked();
+                }
 			},
 
 			forkClicked: function () {

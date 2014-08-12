@@ -5,9 +5,15 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
+import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
@@ -16,11 +22,15 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 import com.google.inject.Inject;
 
 public class UserApiFacade implements IUserApiFacade {
+
+	private static final Logger log = LoggerFactory
+			.getLogger(UserApiFacade.class.getName());
 
 	private IDataManager db;
 
@@ -28,7 +38,7 @@ public class UserApiFacade implements IUserApiFacade {
 	// Currently not needed but these classes are still not final and it is
 	// quite likely to be required in future
 	private ConfigurationLoader<Configuration> config;
-	
+
 	private WebInterface gitServiceProxy;
 
 	/**
@@ -37,18 +47,15 @@ public class UserApiFacade implements IUserApiFacade {
 	 */
 	@Inject
 	public UserApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config, WebInterface gitServiceProxy) {
+			ConfigurationLoader<Configuration> config,
+			WebInterface gitServiceProxy) {
 		this.db = db;
 		this.config = config;
 		this.gitServiceProxy = gitServiceProxy;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#getUser(
-	 * javax.servlet.http.HttpServletRequest)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response getUser(HttpServletRequest request) {
@@ -58,12 +65,8 @@ public class UserApiFacade implements IUserApiFacade {
 		return Response.ok(user).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#deleteUser
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String, boolean)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response deleteUser(HttpServletRequest request, String crsid,
@@ -73,12 +76,8 @@ public class UserApiFacade implements IUserApiFacade {
 		return Response.ok().build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#getGroups
-	 * (javax.servlet.http.HttpServletRequest)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response getGroups(HttpServletRequest request) {
@@ -89,12 +88,8 @@ public class UserApiFacade implements IUserApiFacade {
 		return Response.ok(groups).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#getGroupRoles
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response getGroupRoles(HttpServletRequest request, String groupId) {
@@ -104,12 +99,8 @@ public class UserApiFacade implements IUserApiFacade {
 		return Response.ok(roles).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#getRoleGroups
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response getRoleGroups(HttpServletRequest request, String stringRole) {
@@ -121,12 +112,8 @@ public class UserApiFacade implements IUserApiFacade {
 		return Response.ok(groups).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade#getMyTicks
-	 * (javax.servlet.http.HttpServletRequest)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response getMyTicks(HttpServletRequest request) {
@@ -135,15 +122,26 @@ public class UserApiFacade implements IUserApiFacade {
 		List<Tick> ticks = db.getAuthorTicks(crsid);
 		return Response.ok(ticks).build();
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Response addSSHKey(HttpServletRequest request, String key) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		try {
 			gitServiceProxy.addSSHKey(key, crsid);
+		} catch (InternalServerErrorException e) {
+			RemoteFailureHandler h = new RemoteFailureHandler();
+			SerializableException s = h.readException(e);
+			log.error("Tried adding ssh key for " + crsid, s.getCause());
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		} catch (IOException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+			log.error("Tried adding ssh key for " + crsid, e);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		}
 		User user = db.getUser(crsid);
 		user.setSsh(key);

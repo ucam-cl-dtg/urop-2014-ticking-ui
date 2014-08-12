@@ -25,7 +25,7 @@
 		</core-ajax>
 
 		<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
-		<paper-dialog id="addDialog" heading="Create Ticking Session"
+		<paper-dialog id="addDialog" heading="Create Ticking Session:"
 			backdrop transition="core-transition-top">
 			<h2 class="subtitle">Session Information</h2>
 			<div layout vertical center>
@@ -92,8 +92,8 @@
 			</template>
 		</paper-dialog>
 
-		<paper-toast id="addSessionSuccess" duration="3000"></paper-toast>
-		<paper-toast id="addSessionError" duration="3000"></paper-toast>
+		<paper-toast id="addSessionSuccess" duration="8000"></paper-toast>
+		<paper-toast id="addSessionError" duration="8000"></paper-toast>
 
 	</template>
 	<script>
@@ -126,8 +126,6 @@
 				this.startTime = Date.parse(this.$.startTime.value);
 				this.endTime = Date.parse(this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
-				this.tickers = ["Ticker Foo", "Ticker SuperFoo"];
-
 
 				var call = this.$.addSessionAPI;
 				call.body = '{"title" : "' + this.title + '", "description" : "' + this.description + '", "location" : "' + this.location + '", "startTime" : "' + this.startTime + '", "endTime" : "' + this.endTime + '", "slotLengthInMinutes" : "' + this.slotLength + '", "tickerNames" : ' + JSON.stringify(this.tickers) + ', "groupID" : "' + this.gid + '" }';
@@ -151,7 +149,6 @@
 				var s = this.$.addTickerInput.inputValue;
 				if (s) {
 					this.tickers.push(s);
-					console.log(this.tickers);
 				}
 				this.validate();
 			},

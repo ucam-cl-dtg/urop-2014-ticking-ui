@@ -9,23 +9,15 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.log4j.Logger;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import publicinterfaces.ITestService;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.FileBean;
-import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.RepoUserRequestBean;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
@@ -36,7 +28,6 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
-import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
@@ -45,7 +36,9 @@ import com.google.inject.Inject;
 
 public class TickApiFacade implements ITickApiFacade {
 
-	Logger log = Logger.getLogger(ConfigurationLoader.class.getName());
+	private static final Logger log = LoggerFactory
+			.getLogger(TickApiFacade.class.getName());
+
 	private IDataManager db;
 	// not currently used but could quite possibly be needed in the future, will
 	// remove if not
@@ -69,12 +62,8 @@ public class TickApiFacade implements ITickApiFacade {
 		this.gitServiceProxy = gitServiceProxy;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#getTick(
-	 * java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response getTick(String tickId) {
@@ -82,18 +71,13 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.ok().entity(tick).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#deleteTick
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response deleteTick(HttpServletRequest request, String tickId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		// TODO remove checkstyles?
 		Tick tick = db.getTick(tickId);
 		if (!crsid.equals(tick.getAuthor())) {
 			return Response.status(Status.UNAUTHORIZED)
@@ -105,10 +89,18 @@ public class TickApiFacade implements ITickApiFacade {
 																				// the
 			// exceptions
 			db.removeTick(tickId);
+		} catch (InternalServerErrorException e) {
+			RemoteFailureHandler h = new RemoteFailureHandler();
+			SerializableException s = h.readException(e);
+			log.error("Tried deleting repository for " + tickId, s.getCause());
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		} catch (IOException e) {
+			log.error("Tried deleting repository for " + tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		} catch (RepositoryNotFoundException e) {
+			log.error("Tried deleting repository for " + tickId, e);
 			db.removeTick(tickId);
 			// Not finding the repo still indicates we want to delete the tick
 			return Response.status(Status.NOT_FOUND).entity(e).build();
@@ -117,12 +109,8 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.ok().build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#getTicks
-	 * (java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response getTicks(HttpServletRequest request, String groupId) {
@@ -139,13 +127,8 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.ok().entity(ticks).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#newTick(
-	 * javax.servlet.http.HttpServletRequest, java.lang.String,
-	 * uk.ac.cam.cl.ticking.ui.ticks.Tick)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response newTick(HttpServletRequest request, TickBean tickBean) {
@@ -176,10 +159,14 @@ public class TickApiFacade implements ITickApiFacade {
 			} catch (InternalServerErrorException e) {
 				RemoteFailureHandler h = new RemoteFailureHandler();
 				SerializableException s = h.readException(e);
+				log.error(s.getMessage(), e.getCause());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 
 			} catch (IOException | DuplicateRepoNameException e) {
+				log.error(
+						"Tried to create stub repository for "
+								+ tick.getTickId(), e.getCause());
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 						.build();
 				// Due to exception chaining this shouldn't happen
@@ -198,10 +185,14 @@ public class TickApiFacade implements ITickApiFacade {
 			} catch (InternalServerErrorException e) {
 				RemoteFailureHandler h = new RemoteFailureHandler();
 				SerializableException s = h.readException(e);
+				log.error(s.getMessage(), e.getCause());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 
 			} catch (IOException | DuplicateRepoNameException e) {
+				log.error(
+						"Tried to create correctness repository for "
+								+ tick.getTickId(), e.getCause());
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 						.build();
 				// Due to exception chaining this shouldn't happen
@@ -228,13 +219,8 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.status(Status.CREATED).entity(tick).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#updateTick
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response updateTick(HttpServletRequest request, String tickId,
@@ -297,13 +283,8 @@ public class TickApiFacade implements ITickApiFacade {
 		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#addTick(
-	 * javax.servlet.http.HttpServletRequest, java.lang.String,
-	 * java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response addTick(HttpServletRequest request, String tickId,
@@ -324,13 +305,8 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.status(Status.CREATED).entity(g).build();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade#setDeadline
-	 * (javax.servlet.http.HttpServletRequest, java.lang.String,
-	 * org.joda.time.DateTime)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Response setDeadline(HttpServletRequest request, String tickId,
@@ -346,10 +322,13 @@ public class TickApiFacade implements ITickApiFacade {
 		db.saveTick(tick);
 		return Response.status(Status.CREATED).entity(tick).build();
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public Response getAllFiles(HttpServletRequest request,
-			String tickId, String commitId) {
+	public Response getAllFiles(HttpServletRequest request, String tickId,
+			String commitId) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		if (!myCrsid.equals(db.getTick(tickId).getAuthor())) {
@@ -358,9 +337,19 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 		List<FileBean> files;
 		try {
-			files = gitServiceProxy.getAllFiles(Tick.replaceDelimeter(tickId), commitId);
+			files = gitServiceProxy.getAllFiles(Tick.replaceDelimeter(tickId),
+					commitId);
+		} catch (InternalServerErrorException e) {
+			RemoteFailureHandler h = new RemoteFailureHandler();
+			SerializableException s = h.readException(e);
+			log.error("Tried to get repository files for " + tickId,
+					s.getCause());
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		} catch (IOException | RepositoryNotFoundException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+			log.error("Tried to get repository files for " + tickId, e);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		}
 		return Response.ok(files).build();
 	}

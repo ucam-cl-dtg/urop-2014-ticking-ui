@@ -154,20 +154,16 @@ public class Group implements Comparable<Group> {
 		this.editedBy = editedBy;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public int compareTo(Group o) {
 		return this.name.compareToIgnoreCase(o.name);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean equals(Object o) {
@@ -179,10 +175,8 @@ public class Group implements Comparable<Group> {
 		return this.groupId == ((Group) o).groupId;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public int hashCode() {

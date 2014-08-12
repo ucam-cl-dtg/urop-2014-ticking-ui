@@ -29,7 +29,7 @@ public class Fork {
 	private boolean signedUp = false;
 	private boolean testing = false;
 	private boolean reportAvailable = false;
-	
+
 	private String lastTickedBy;
 	private DateTime lastTickedOn;
 
@@ -60,6 +60,14 @@ public class Fork {
 	 */
 	public Fork() {
 
+	}
+	
+	/**
+	 * 
+	 * @return forkId
+	 */
+	public String getForkId() {
+		return forkId;
 	}
 
 	/**
@@ -210,6 +218,13 @@ public class Fork {
 		this.lastTickedOn = lastTickedOn;
 	}
 
+	/**
+	 * 
+	 * @param crsid
+	 * @param tickId
+	 * @return the fork id a fork object with the given crsid and tickId will
+	 *         have been given
+	 */
 	public static String generateForkId(String crsid, String tickId) {
 		return crsid + "," + tickId;
 	}
