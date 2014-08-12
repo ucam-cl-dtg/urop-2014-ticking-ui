@@ -36,10 +36,36 @@
  *    comment starts or ends here (this just peeks at the top of the
  *    inactive (comments not yet started) and active (comments that have
  *    already started) queues).
+ *
+ * @param data What you want to mark with comments.
+ * @param comments The comments to mark the data.
+ * @param conversion The function that marks the data. It takes
+ * arguments of:
+ *   1. List of comments currently active
+ *   2. The text to mark.
+ * and outputs the modified data. In the case of the above illustration,
+ * the function could be
+ * function (comments, text)
+ * {
+ *   rtn = new String();
+ *   if (comments.length > 0)
+ *   {
+ *     rtn += "<span class=\"";
+ *     rtn += comments.map(function (x) { return x.class; })
+ *             .join(" ");
+ *     rtn += "\">";
+ *   }
+ *   else
+ *   {
+ *     rtn += "<span>";
+ *   }
+ *   rtn += text;
+ *   rtn += "</span>;
+ * }
  */
 
 /* TODO: https://developers.google.com/closure/ */
-function mixin_comments_with_data(data, comments)
+function mixin_comments_with_data(data, comments, conversion)
 {
   /* Strict mode function */
   "use strict";
@@ -50,11 +76,10 @@ function mixin_comments_with_data(data, comments)
   }
   else if (typeof comments == typeof undefined)
   {
-    comments = new Array();
+    return data;
   }
 
-  var activeComments   = new Array();
-  var rtn = "<ol><li><span>"; /* So that we can always have a closing tag */
+  var rtn = "";
 
   /* Stage 1 – Sort */
   comments.sort(function (a, b)
@@ -65,13 +90,14 @@ function mixin_comments_with_data(data, comments)
   /* Stage 2 – Process */
   var i;
   var len = data.length;
+  var activeComments = [];
+  var currentData = ""; /* To pass to conversion */
   for (i = 0; i < len; i++)
   {
     if (comments.length > 0
       &&comments[comments.length-1].start == i)
     {
       /* TODO: Heap data structure */
-
       while (comments.length > 0
            &&comments[comments.length-1].start == i)
       {
@@ -83,14 +109,8 @@ function mixin_comments_with_data(data, comments)
                             return b.end - a.end;
                           });
 
-      rtn += "</span>";
-
-      rtn += "<span class=\"";
-      /* Assuming class does not contain " */
-      rtn += activeComments
-              .map(function (x) { return x.class; })
-              .join(" ");
-      rtn += "\">";
+      rtn += conversion(activeComments, currentData);
+      currentData = "";
     }
 
     if (activeComments.length > 0
@@ -102,60 +122,29 @@ function mixin_comments_with_data(data, comments)
         activeComments.pop();
       }
 
-      rtn += "</span>";
-
-      if (activeComments.length > 0)
-      {
-        rtn += "<span class=\"";
-        /* Assuming class does not contain " */
-        rtn += activeComments
-                .map(function (x) { return x.class; })
-                .join(" ");
-        rtn += "\">";
-      }
-      else
-      {
-        rtn += "<span>";
-      }
+      rtn += conversion(activeComments, currentData);
+      currentData = "";
     }
 
     switch(data[i])
     {
       case '<':
-        rtn += "&lt;";
+        currentData += "&lt;";
         break;
 
       case '>':
-        rtn += "&gt;";
+        currentData += "&gt;";
         break;
 
       case '&':
-        rtn += "&amp;";
-        break;
-
-      case '\n':
-        rtn += "</span>";
-        rtn += "</li><li>";
-        if (activeComments.length > 0)
-        {
-          rtn += "<span class=\"";
-          /* Assuming class does not contain " */
-          rtn += activeComments
-                  .map(function (x) { return x.class; })
-                  .join(" ");
-          rtn += "\">";
-        }
-        else
-        {
-          rtn += "<span>";
-        }
+        currentData += "&amp;";
         break;
 
       default:
-        rtn += data[i];
+        currentData += data[i];
     }
   }
-  rtn += "</span></li></ol>";
+  rtn += conversion(activeComments, currentData);
 
   return rtn;
 }
@@ -308,4 +297,38 @@ function spans_to_comments(data)
   }
 
   return rtn;
+}
+
+/**
+ * Our conversion function that surrounds lines with list item markers
+ * and uses tooltips.
+ */
+function default_convert(comments, text)
+{
+  rtn = new String();
+  if (comments.length > 0)
+  {
+    rtn += "<core-tooltip label=\"";
+    rtn += comments.reduce(function (num, comment)
+                           {
+                             return ++num + ". " + x.message;
+                           }, 0);
+    rtn += "\">";
+    rtn += "<span class=\"";
+    rtn += comments.map(function (x) { return x.class; })
+    .join(" ");
+    rtn += "\">";
+  }
+  else
+  {
+    rtn += "<span>";
+  }
+
+  rtn += text.replace(/\n/g, "</li><li>");
+  rtn += "</span>";
+
+  if (comments.length > 0)
+  {
+    rtn += "</core-tooltip>";
+  }
 }
