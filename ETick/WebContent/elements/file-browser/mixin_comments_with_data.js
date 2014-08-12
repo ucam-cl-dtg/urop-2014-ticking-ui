@@ -83,8 +83,8 @@ function mixin_comments_with_data(data, comments, conversion)
 
   /* Stage 1 – Sort */
   comments.sort(function (a, b)
-                {
-                  return b.start - a.start;
+                { /* Ascending sort */
+                  return a.start - b.start;
                 });
 
   /* Stage 2 – Process */
@@ -95,35 +95,35 @@ function mixin_comments_with_data(data, comments, conversion)
   for (i = 0; i < len; i++)
   {
     if (comments.length > 0
-      &&comments[comments.length-1].start == i)
+      &&comments[0].start == i)
     {
+      rtn += conversion(activeComments, currentData);
+      currentData = "";
+
       /* TODO: Heap data structure */
       while (comments.length > 0
-           &&comments[comments.length-1].start == i)
+           &&comments[0].start == i)
       {
-        activeComments.push(comments.pop());
+        activeComments.push(comments.shift());
       }
 
       activeComments.sort(function (a, b)
-                          { /* Descending sort */
-                            return b.end - a.end;
+                          { /* Ascending sort */
+                            return a.end - b.end;
                           });
-
-      rtn += conversion(activeComments, currentData);
-      currentData = "";
     }
 
     if (activeComments.length > 0
-      &&activeComments[activeComments.length-1].end == i)
+      &&activeComments[0].end == i)
     {
-      while (activeComments.length > 0
-           &&activeComments[activeComments.length-1].end == i)
-      {
-        activeComments.pop();
-      }
-
       rtn += conversion(activeComments, currentData);
       currentData = "";
+
+      while (activeComments.length > 0
+           &&activeComments[0].end == i)
+      {
+        activeComments.shift();
+      }
     }
 
     switch(data[i])
@@ -168,7 +168,7 @@ function lines_to_chars(data, comments)
 {
   "use strict";
   if (typeof data     == typeof undefined
-    ||typeof comments == typeof undefined)
+      ||typeof comments == typeof undefined)
   {
     return [];
   }
@@ -188,21 +188,21 @@ function lines_to_chars(data, comments)
   lineStart.push(i+1);
 
   return comments.map(function (x)
-                      {
-                        /* Assumes x.line is valid for data */
-                        if (typeof x.linNumber != typeof undefined
-                          &&typeof x.line == typeof undefined)
-                        {
-                          x.start = lineStart[x.lineNumber-1];
-                          x.end   = lineStart[x.lineNumber]-1;
-                        }
-                        else if (typeof x.line != typeof undefined)
-                        {
-                          x.start = lineStart[x.line-1];
-                          x.end   = lineStart[x.line]-1;
-                        }
-                        return x;
-                      });
+      {
+        /* Assumes x.line is valid for data */
+        if (typeof x.linNumber != typeof undefined
+            &&typeof x.line == typeof undefined)
+        {
+          x.start = lineStart[x.lineNumber-1];
+          x.end   = lineStart[x.lineNumber]-1;
+        }
+        else if (typeof x.line != typeof undefined)
+        {
+          x.start = lineStart[x.line-1];
+          x.end   = lineStart[x.line]-1;
+        }
+        return x;
+      });
 
 }
 
@@ -242,8 +242,8 @@ function spans_to_comments(data)
         {
           /* We know data[j] is `<` */
           j++
-          /* Skips <...> including '>' due to `for` j++ */
-          tmp = "";
+            /* Skips <...> including '>' due to `for` j++ */
+            tmp = "";
           while (j < len && data[j] != '>') tmp += data[j++];
 
           if (tmp.substr(0, 5) == "/span")
