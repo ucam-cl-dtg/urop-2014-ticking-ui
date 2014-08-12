@@ -25,13 +25,15 @@ html,body {
 
                   url="http://localhost:8080/hello-world.html"
                   method="GET"
-                  auto>
+                  >
       </toast-ajax>
       <script>
         document.addEventListener('polymer-ready',
             function ()
             {
               var ajax = document.querySelector("toast-ajax");
+
+              console.log(ajax);
 
               ajax.addEventListener('core-error',
                   function (e)
@@ -46,6 +48,8 @@ html,body {
                     console.log("Response", e);
                   }
               );
+
+              ajax.go();
             }
         );
       </script>
