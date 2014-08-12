@@ -4,6 +4,7 @@
 <link rel="import" href="report-component.html">
 <link rel="import" href="signup-component.html">
 <link rel="import" href="fork-service.html">
+<link rel="import" href="fork-component.html">
 
 <polymer-element name="tick-card" attributes="tickName tickId sheets repoName">
     <template>
@@ -35,35 +36,42 @@
 
             <br>
 
-            <div layout horizontal>
-                <div class="spacer"></div>
-                <submit-component flex
-                        id="submitComponent"
-                        tickId="{{tickId}}"
-                        signedUp="{{signedUp}}"
-                        testRunning="{{testRunning}}"
-                        reportAvailable="{{reportAvailable}}"
-                        unitPass="{{unitPass}}"
-                        humanPass="{{humanPass}}">
-                </submit-component>
-                <div class="spacer"></div>
-                <report-component flex
-                        reportAvailable="{{reportAvailable}}"
-                        repoName="{{repoName}}"
-                        repo="{{repo}}"
-                        testRunning="{{testRunning}}"
-                        unitPass="{{unitPass}}"></report-component>
-                <div class="spacer"></div>
-                <signup-component flex
-                        sheets="{{sheets}}"
-                        signedUp="{{signedUp}}"
-                        unitPass="{{unitPass}}"
-                        testRunning="{{testRunning}}"
-                        tickId="{{tickId}}"
-                        humanPass="{{humanPass}}">
-                </signup-component>
-                <div class="spacer"></div>
-            </div>
+
+            <core-collapse opened>
+                <fork-component></fork-component>
+            </core-collapse>
+
+            <core-collapse>
+                <div layout horizontal>
+                    <div class="spacer"></div>
+                    <submit-component flex
+                                      id="submitComponent"
+                                      tickId="{{tickId}}"
+                                      signedUp="{{signedUp}}"
+                                      testRunning="{{testRunning}}"
+                                      reportAvailable="{{reportAvailable}}"
+                                      unitPass="{{unitPass}}"
+                                      humanPass="{{humanPass}}">
+                    </submit-component>
+                    <div class="spacer"></div>
+                    <report-component flex
+                                      reportAvailable="{{reportAvailable}}"
+                                      repoName="{{repoName}}"
+                                      repo="{{repo}}"
+                                      testRunning="{{testRunning}}"
+                                      unitPass="{{unitPass}}"></report-component>
+                    <div class="spacer"></div>
+                    <signup-component flex
+                                      sheets="{{sheets}}"
+                                      signedUp="{{signedUp}}"
+                                      unitPass="{{unitPass}}"
+                                      testRunning="{{testRunning}}"
+                                      tickId="{{tickId}}"
+                                      humanPass="{{humanPass}}">
+                    </signup-component>
+                    <div class="spacer"></div>
+                </div>
+            </core-collapse>
         </div>
         <br><br>
     </template>
