@@ -150,6 +150,7 @@ the waiting toast.
             "use strict";
             this.fire('core-response', e.detail);
 
+            console.log("captureResponse", this.captureResponse);
             if (this.captureResponse)
             {
               this.popUpToast(e.detail.response,
@@ -157,7 +158,7 @@ the waiting toast.
             }
             else
             {
-              this.popUpToast(e.detail.response,
+              this.popUpToast(this.responseMessage,
                 this.waitShown || this.popUpResponse);
             }
           }
