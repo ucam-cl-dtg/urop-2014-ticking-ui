@@ -1,0 +1,61 @@
+.checkboxContainer {
+    padding: 20px 20px 20px 0;
+    margin: 0;
+}
+h4 {
+    padding: 0;
+    margin-bottom: -10px;
+}
+#mainContainer {
+    margin-top: 0;
+    padding: 0 20px;
+}
+paper-checkbox::shadow #ink {
+    top: -16px;
+    left: -16px;
+    width: 50px;
+    height: 50px;
+}
+paper-checkbox {
+    /* Firefox/IE compatibility */
+    width: 15px;
+    height: 15px;
+}
+paper-button {
+    margin: 20px;
+    width: 10em;
+    height: 35px; /* Firefox/IE compatibility */
+}
+paper-button.colored {
+    background: #259b24;
+    color: #fff;
+}
+paper-toggle-button {
+    margin-top: 23px;
+    margin-left: 8px;
+}
+#cmdRestoreDefaults {
+    width: 165px;
+    margin: 0;
+    font-size: 15px;
+}
+
+/* Styles for add member dialog. */
+paper-dialog .subtitle {
+    font-weight: 200;
+    font-size: 1.2rem;
+}
+polyfill-next-selector {shadow: "paper-dialog h1"}
+paper-dialog::shadow h1 {
+    margin-bottom: 10px;
+}
+#dialogCancel {
+    margin: 5px;
+    background: #4285f4;
+    color: #fff;
+}
+#dialogSubmit {
+    margin: 5px;
+    background: #4285f4;
+    color: #fff;
+}
