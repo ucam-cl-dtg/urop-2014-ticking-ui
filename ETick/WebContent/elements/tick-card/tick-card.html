@@ -24,7 +24,8 @@
                 signedUp="{{signedUp}}"
                 testRunning="{{testRunning}}"
                 reportAvailable="{{reportAvailable}}"
-                repo="{{repo}}">
+                repo="{{repo}}"
+                forked="{{forked}}">
         </fork-service>
 
         <div id="mainContainer">
@@ -36,11 +37,11 @@
 
             <br>
 
-            <core-collapse>
+            <core-collapse opened?="{{!forked}}">
                 <fork-component></fork-component>
             </core-collapse>
 
-            <core-collapse opened>
+            <core-collapse opened?="{{forked}}">
                 <div layout horizontal>
                     <div class="spacer"></div>
                     <submit-component flex
