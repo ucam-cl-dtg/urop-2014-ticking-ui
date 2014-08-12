@@ -4,7 +4,6 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="main-card.html">
 <link rel="import" href="group-members.html">
-<link rel="import" href="delete-group.html">
 <link rel="import" href="tick-list.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="tick-card/tick-card.html">
@@ -48,7 +47,7 @@
 
 					<span layout horizontal end end-justified flex>
 						<template if="{{isAuthor}}">
-							<delete-group gid="{{gid}}"></delete-group>
+							<paper-icon-button id="groupDeleteButton"icon="delete" on-click="{{deleteButtonClicked}}"></paper-icon-button>
 							<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
 							<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
 						</template>
@@ -193,6 +192,10 @@
 			sheetCreated: function () {
 				this.$.sheetListAPI.go();
 			},
+
+			deleteButtonClicked: function () {
+				this.fire('delete-clicked');
+			}
 		});
 	</script>
 </polymer-element>
