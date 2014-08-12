@@ -58,7 +58,7 @@ public interface IForkApiFacade {
 	 * @param request
 	 * @param tickId
 	 * @param forkBean
-	 * @return
+	 * @return the marked fork object
 	 */
 	@PUT
 	@Path("/{crsid}/{tickId}")
@@ -68,6 +68,14 @@ public interface IForkApiFacade {
 			@PathParam("crsid") String crsid,
 			@PathParam("tickId") String tickId, ForkBean forkBean);
 
+	/**
+	 * 
+	 * @param request
+	 * @param crsid
+	 * @param tickId
+	 * @param commitId
+	 * @return the files for the repo of the fork object
+	 */
 	@GET
 	@Path("/{tickId}/{commitId}/files")
 	@Produces("application/json")

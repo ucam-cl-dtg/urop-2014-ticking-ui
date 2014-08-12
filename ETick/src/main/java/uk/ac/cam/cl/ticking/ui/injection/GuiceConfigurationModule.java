@@ -52,10 +52,8 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static TickSignups tickSignups = null;
 	private static RavenManager ravenManager = null;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.google.inject.AbstractModule#configure()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected void configure() {

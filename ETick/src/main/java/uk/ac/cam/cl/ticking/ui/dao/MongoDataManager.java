@@ -65,48 +65,32 @@ public class MongoDataManager implements IDataManager {
                 AuthCodeMap.class, String.class, objectMapper);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveUser(uk.ac.cam.cl.ticking
-	 * .ui.actors.User)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void saveUser(User u) {
 		userColl.save(u);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveTick(uk.ac.cam.cl.ticking
-	 * .ui.ticks.Tick)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void saveTick(Tick t) {
 		tickColl.save(t);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveFork(uk.ac.cam.cl.
-	 * ticking.ui.ticks.Fork)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void saveFork(Fork s) {
 		forkColl.save(s);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveGroup(uk.ac.cam.cl.ticking
-	 * .ui.actors.Group)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void saveGroup(Group g) {
@@ -114,24 +98,16 @@ public class MongoDataManager implements IDataManager {
 		groupColl.save(g);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#saveGrouping(uk.ac.cam.cl.ticking
-	 * .ui.actors.Grouping)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void saveGrouping(Grouping g) {
 		groupingColl.save(g);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertUser(uk.ac.cam.cl.ticking
-	 * .ui.actors.User)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void insertUser(User u) throws DuplicateDataEntryException {
@@ -142,12 +118,8 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertTick(uk.ac.cam.cl.ticking
-	 * .ui.ticks.Tick)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void insertTick(Tick t) throws DuplicateDataEntryException {
@@ -158,12 +130,8 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertFork(uk.ac.cam.cl
-	 * .ticking.ui.ticks.Fork)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void insertFork(Fork s)
@@ -175,12 +143,8 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertGroup(uk.ac.cam.cl.ticking
-	 * .ui.actors.Group)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void insertGroup(Group g) throws DuplicateDataEntryException {
@@ -191,12 +155,8 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#insertGrouping(uk.ac.cam.cl.
-	 * ticking.ui.actors.Grouping)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void insertGrouping(Grouping g) throws DuplicateDataEntryException {
@@ -209,12 +169,8 @@ public class MongoDataManager implements IDataManager {
 
 	// People
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#removeUser(java.lang.String,
-	 * boolean)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void removeUser(String crsid, boolean purge) {
@@ -226,10 +182,8 @@ public class MongoDataManager implements IDataManager {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getUser(java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public User getUser(String crsid) {
@@ -238,10 +192,8 @@ public class MongoDataManager implements IDataManager {
 		return u;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getUsers()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<User> getUsers() {
@@ -249,10 +201,8 @@ public class MongoDataManager implements IDataManager {
 		return getUsers(cursor);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getStudents()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<User> getStudents() {
@@ -274,10 +224,8 @@ public class MongoDataManager implements IDataManager {
 		return users;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getUsers(java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<User> getUsers(String groupId) {
@@ -294,11 +242,8 @@ public class MongoDataManager implements IDataManager {
 		return users;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getUsers(java.lang.String,
-	 * uk.ac.cam.cl.ticking.ui.actors.Role)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<User> getUsers(String groupId, Role role) {
@@ -314,11 +259,8 @@ public class MongoDataManager implements IDataManager {
 
 	// Group
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#removeGroup(java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void removeGroup(String groupId) {
@@ -333,12 +275,8 @@ public class MongoDataManager implements IDataManager {
 		groupingColl.remove(new BasicDBObject().append("group", groupId));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#removeUserGroup(java.lang.String
-	 * , java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void removeUserGroup(String crsid, String groupId) {
@@ -346,10 +284,8 @@ public class MongoDataManager implements IDataManager {
 				.append("user", crsid));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroup(java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Group getGroup(String groupId) {
@@ -358,10 +294,8 @@ public class MongoDataManager implements IDataManager {
 		return group;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroups()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Group> getGroups() {
@@ -383,10 +317,8 @@ public class MongoDataManager implements IDataManager {
 		return groups;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroups(java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Group> getGroups(String crsid) {
@@ -404,11 +336,8 @@ public class MongoDataManager implements IDataManager {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroups(java.lang.String,
-	 * uk.ac.cam.cl.ticking.ui.actors.Role)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Group> getGroups(String crsid, Role role) {
@@ -424,12 +353,8 @@ public class MongoDataManager implements IDataManager {
 
 	// Roles
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#removeUserGroupRole(java.lang
-	 * .String, java.lang.String, uk.ac.cam.cl.ticking.ui.actors.Role)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void removeUserGroupRole(String crsid, String groupId, Role role) {
@@ -437,11 +362,8 @@ public class MongoDataManager implements IDataManager {
 				.append("group", groupId).append("role", role));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getRoles(java.lang.String,
-	 * java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Role> getRoles(String groupId, String crsid) {
@@ -457,12 +379,8 @@ public class MongoDataManager implements IDataManager {
 
 	// Grouping getters
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroupings(java.lang.String,
-	 * boolean)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Grouping> getGroupings(String param, boolean field) {
@@ -471,12 +389,8 @@ public class MongoDataManager implements IDataManager {
 		return getGroupings(cursor);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroupings(uk.ac.cam.cl.ticking
-	 * .ui.actors.Role)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Grouping> getGroupings(Role role) {
@@ -500,11 +414,8 @@ public class MongoDataManager implements IDataManager {
 
 	// Tick
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#removeTick(java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void removeTick(String tickId) {
@@ -517,10 +428,8 @@ public class MongoDataManager implements IDataManager {
 		tickColl.remove(new BasicDBObject().append("_id", tickId));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getTick(java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Tick getTick(String tickId) {
@@ -529,11 +438,8 @@ public class MongoDataManager implements IDataManager {
 		return tick;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getAuthorTicks(java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Tick> getAuthorTicks(String crsid) {
@@ -541,11 +447,8 @@ public class MongoDataManager implements IDataManager {
 		return getTicks(cursor);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getGroupTicks(java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Tick> getGroupTicks(String groupId) {
@@ -557,10 +460,8 @@ public class MongoDataManager implements IDataManager {
 		return ticks;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getTicks()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Tick> getTicks() {
@@ -584,12 +485,8 @@ public class MongoDataManager implements IDataManager {
 
 	// Fork getters
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getFork(java.lang
-	 * .String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Fork getFork(String forkId) {
@@ -598,11 +495,8 @@ public class MongoDataManager implements IDataManager {
 		return fork;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.cam.cl.ticking.ui.dao.IDataManager#getForks(java.lang.String)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Fork> getForks(String author) {
@@ -616,17 +510,17 @@ public class MongoDataManager implements IDataManager {
 		return forks;
 	}
 
-    /* (non-Javadoc)
-     * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#addAuthCode(java.lang.String, java.lang.String)
-     */
+	/**
+	 * {@inheritDoc}
+	 */
     @Override
     public void addAuthCode(String id, String authCode) {
         authCodeColl.save(new AuthCodeMap(id, authCode));
     }
 
-    /* (non-Javadoc)
-     * @see uk.ac.cam.cl.ticking.ui.dao.IDataManager#getAuthCode(java.lang.String)
-     */
+    /**
+	 * {@inheritDoc}
+	 */
     @Override
     public String getAuthCode(String id) {
         try {
