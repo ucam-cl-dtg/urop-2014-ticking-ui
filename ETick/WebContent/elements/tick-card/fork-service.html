@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
-<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
 
 <polymer-element name="fork-service" attributes="unitPass humanPass signedUp testRunning reportAvailable repo tickId forked">
     <template>
@@ -15,16 +16,17 @@
                 on-core-error="{{forkLoadError}}">
         </core-ajax>
 
-        <core-ajax
+        <toast-ajax
                 id="ajaxCreate"
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/' + tickId + '/'}}"
                 handleAs="json"
                 method="POST"
                 on-core-response="{{forkPostSuccess}}"
-                on-core-error="{{forkLoadError}}">
-        </core-ajax>
 
-        <paper-dialog id="toastLoadError"></paper-dialog>
+                captureError>
+        </toast-ajax>
+
+        <paper-toast id="toastLoadError"></paper-toast>
     </template>
     <script>
         Polymer('fork-service', {
@@ -51,13 +53,6 @@
                 if (this.testRunning) {
                     this.fire('test-running')
                 }
-
-                /*this.unitPass = true;
-                this.humanPass = false;
-                this.signedUp = true;
-                this.testRunning = false;
-                this.reportAvailable = true;
-                this.repo = "http://stuff";*/
             },
 
             createFork: function() {

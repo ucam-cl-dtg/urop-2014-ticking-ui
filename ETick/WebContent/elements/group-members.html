@@ -48,7 +48,7 @@
             <span flex></span>
 			<template if="{{allowAdd}}">
 				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
-				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>
+				<paper-icon-button icon="add" on-click="{{addMemberClicked}}"></paper-icon-button>
 			</template>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
@@ -165,8 +165,9 @@
 			// Delete member(s) funcitonality:
 
 			deleteMemberClicked: function () {
-				if (this.selectedPeople) {
-					var jsonSelectedPeople = JSON.stringify(this.selectedPeople);
+				var p = this.selectedPeople
+				if (p && p.length) {
+					var jsonSelectedPeople = JSON.stringify(p);
 					console.log(jsonSelectedPeople);
 					this.$.deleteAjax.body = '{ "crsids" : ' + jsonSelectedPeople + ', "roles" : [] }';
 					this.$.deleteAjax.go();

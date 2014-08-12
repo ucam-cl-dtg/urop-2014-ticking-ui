@@ -30,7 +30,7 @@ paper-button, menu-button::shadow paper-button {
 	font-weight: 200;
 }
 
-menu-button.core-selected, paper-button.core-selected {
+#navMenu menu-button.core-selected, paper-button.core-selected {
 	background: #2a56c6;
 }
 

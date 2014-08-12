@@ -10,6 +10,7 @@
 <link rel="import" href="ticker-signup.html">
 <link rel="import" href="add-session.html">
 <link rel="import" href="file-browser/file-browser-card.html">
+<link rel="import" href="are-you-sure.html">
 
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
@@ -31,6 +32,10 @@
 			on-core-response="{{sheetListResponse}}">
 		</core-ajax>
 
+		<!-- Confirmation dialog. -->
+		<are-you-sure id="confirm"
+			on-yes="{{deleteConfirmed}}"></are-you-sure>
+
         <main-card animated>
             <paper-tabs id="tabs" selected="0">
                 <paper-tab>{{name}}</paper-tab>
@@ -47,10 +52,10 @@
 
 					<span layout horizontal end end-justified flex>
 						<template if="{{isAuthor}}">
-                            <paper-icon-button id="groupDeleteButton" icon="delete"></paper-icon-button>
-                            <paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
-                            <paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
-                        </template>
+							<paper-icon-button id="groupDeleteButton" icon="delete" on-click="{{deleteButtonClicked}}"></paper-icon-button>
+							<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
+							<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
+						</template>
 					</span>
 
                     </div>
@@ -125,22 +130,7 @@
                 <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}"></ticker-signup>
             </template>
         </core-collapse>
-		<!-- Group content card. -->
-		<!-- <main-card animated>
-			<paper-tabs selected=0 on-core-select="{{tabSelectedAction}}">
-				<template repeat="{{role in roles}}">
-					<paper-tab>{{role}}</paper-tab>
-				</template>
-			</paper-tabs>
-
-			<author-pane id="authorPane" gid="{{gid}}" class="hidden"></author-pane>
-
-
-			<div id="markerPane" class="hidden">Marker Pane</div>
-			<div id="overviewPane" class="hidden">Marker Pane</div>
-			<div id="submitterPane" class="hidden">Marker Pane</div>
-		</main-card> -->
-
+    }
 	</template>
 	<script>
 		Polymer('x-group', {  
@@ -206,6 +196,14 @@
 
 			sheetCreated: function () {
 				this.$.sheetListAPI.go();
+			},
+
+			deleteButtonClicked: function () {
+				this.$.confirm.toggle();
+			},
+
+			deleteConfirmed: function () {
+				this.fire('delete-group');
 			}
 		});
 	</script>
