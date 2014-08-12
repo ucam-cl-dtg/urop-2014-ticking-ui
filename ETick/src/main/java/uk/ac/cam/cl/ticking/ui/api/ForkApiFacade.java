@@ -78,9 +78,14 @@ public class ForkApiFacade implements IForkApiFacade {
 				"RavenRemoteUser");
 
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+
 		if (fork == null) {
-			return Response.status(Status.NOT_FOUND).build();
+			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+					+ " but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
 		}
+
 		return Response.ok(fork).build();
 	}
 
@@ -93,10 +98,32 @@ public class ForkApiFacade implements IForkApiFacade {
 				"RavenRemoteUser");
 
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+
+		/* Does it already exist? */
 		if (fork != null) {
 			return Response.ok(fork).build();
 		}
 
+		/* Check permissions */
+		boolean submitter = false;
+		List<String> groupIds = db.getTick(tickId).getGroups();
+
+		for (String groupId : groupIds) {
+			List<Role> roles = db.getRoles(groupId, crsid);
+			if (roles.contains(Role.SUBMITTER)) {
+				submitter = true;
+			}
+		}
+
+		if (!submitter) {
+			log.warn("User " + crsid + " tried to fork "
+					+ Fork.generateForkId(crsid, tickId)
+					+ " but was denied permission");
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
+		}
+
+		/* Call the git service */
 		String repo = null;
 		String repoName = Tick.replaceDelimeter(tickId);
 
@@ -107,8 +134,30 @@ public class ForkApiFacade implements IForkApiFacade {
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
-			repo = s.getMessage();
-			log.warn("Tried to fork repository for " + tickId, s.getCause());
+
+			if (s.getClassName().equals(IOException.class.getName())) {
+				log.error("Tried to fork repository for " + tickId,
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
+
+			if (s.getClassName().equals(
+					DuplicateRepoNameException.class.getName())) {
+				/*
+				 * The repo has been forked previously and the exception carries
+				 * the URI as it's message so just carry on with this
+				 */
+				log.warn("Tried to fork repository for " + tickId,
+						s.getCause(), s.getStackTrace());
+				repo = s.getMessage();
+
+			} else {
+				log.error("Tried to fork repository for " + tickId,
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
 
 		} catch (IOException | DuplicateRepoNameException e) {
 			log.error("Tried to fork repository for " + tickId, e);
@@ -117,9 +166,11 @@ public class ForkApiFacade implements IForkApiFacade {
 			// Due to exception chaining this shouldn't happen
 		}
 
+		/* Create and save fork object */
 		try {
 			fork = new Fork(crsid, tickId, repo);
 			db.insertFork(fork);
+
 		} catch (DuplicateDataEntryException e) {
 			log.error(
 					"Tried to insert fork into database with id "
@@ -128,8 +179,6 @@ public class ForkApiFacade implements IForkApiFacade {
 			// The fork simultaneously does and doesn't exist
 		}
 
-		// Execution will only reach this point if there are no git errors else
-		// IOException is thrown
 		return Response.status(Status.CREATED).entity(fork).build();
 	}
 
@@ -142,24 +191,31 @@ public class ForkApiFacade implements IForkApiFacade {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
+		/* Check permissions */
 		boolean marker = false;
 		List<String> groupIds = db.getTick(tickId).getGroups();
+
 		for (String groupId : groupIds) {
 			List<Role> roles = db.getRoles(groupId, myCrsid);
 			if (roles.contains(Role.MARKER)) {
 				marker = true;
 			}
 		}
+
 		if (!marker) {
+			log.warn("User " + crsid + " tried to mark "
+					+ Fork.generateForkId(crsid, tickId)
+					+ " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
+		/* Does the required fork object exist? */
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork != null) {
 			if (forkBean.getHumanPass() != null) {
-				fork.setHumanPass(forkBean.getHumanPass());
 
+				/* Call the test service */
 				ReportResult result = forkBean.getHumanPass() ? ReportResult.PASS
 						: ReportResult.FAIL;
 				try {
@@ -167,14 +223,18 @@ public class ForkApiFacade implements IForkApiFacade {
 							forkBean.getTickerComments(), forkBean
 									.getCommitId(), forkBean.getReportDate()
 									.getMillis());
+
 				} catch (InternalServerErrorException e) {
 					RemoteFailureHandler h = new RemoteFailureHandler();
 					SerializableException s = h.readException(e);
-					log.warn(
+
+					log.error(
 							"Tried to set ticker result for "
 									+ Fork.generateForkId(crsid, tickId),
 							s.getCause());
-					return Response.status(Status.NOT_FOUND).entity(e).build();
+					return Response.status(Status.NOT_FOUND)
+							.entity(Strings.IDEMPOTENTRETRY).build();
+
 				} catch (UserNotInDBException | TickNotInDBException
 						| ReportNotFoundException e) {
 					log.error(
@@ -182,11 +242,21 @@ public class ForkApiFacade implements IForkApiFacade {
 									+ Fork.generateForkId(crsid, tickId), e);
 					return Response.status(Status.NOT_FOUND).entity(e).build();
 				}
+
+				/* Merge the forkBean and fetched fork */
+				fork.setHumanPass(forkBean.getHumanPass());
 				fork.setLastTickedBy(crsid);
 				fork.setLastTickedOn(DateTime.now());
+
+				/*
+				 * If the ticker failed us, require us to resubmit to the unit
+				 * tester
+				 */
 				if (!forkBean.getHumanPass()) {
 					fork.setUnitPass(false);
 					fork.setSignedUp(false);
+
+					/* Call the tick signup service to set preferred ticker */
 					for (String groupId : groupIds) {
 						tickSignupService.assignTickerForTickForUser(crsid,
 								groupId, tickId, forkBean.getTicker());
@@ -194,9 +264,13 @@ public class ForkApiFacade implements IForkApiFacade {
 				}
 			}
 
+			/* Save and return the fork object */
 			db.saveFork(fork);
+
 			return Response.status(Status.CREATED).entity(fork).build();
 		}
+		log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+				+ " for ticking, but it couldn't be found");
 		return Response.status(Status.NOT_FOUND).build();
 
 	}
@@ -209,34 +283,71 @@ public class ForkApiFacade implements IForkApiFacade {
 			String tickId, String commitId) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+
+		/* The user operated on is the caller */
 		if (crsid.equals("")) {
 			crsid = myCrsid;
 		}
+
+		/* Check permissions */
 		boolean marker = false;
+
 		List<String> groupIds = db.getTick(tickId).getGroups();
+
 		for (String groupId : groupIds) {
 			List<Role> roles = db.getRoles(groupId, myCrsid);
 			if (roles.contains(Role.MARKER)) {
 				marker = true;
 			}
 		}
+
 		if (!(marker || myCrsid.equals(db.getFork(
 				Fork.generateForkId(crsid, tickId)).getAuthor()))) {
+			log.warn("User " + crsid + " tried to get files for "
+					+ Fork.generateForkId(crsid, tickId)
+					+ " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
+
+		/* Call the git service */
 		List<FileBean> files;
+
 		try {
 			files = gitServiceProxy.getAllFiles(
 					crsid + "/" + Tick.replaceDelimeter(tickId), commitId);
+
 		} catch (InternalServerErrorException e) {
+
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
-			log.error(
-					"Tried to get repository files for "
-							+ Fork.generateForkId(crsid, tickId), s.getCause());
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-					.build();
+
+			if (s.getClassName().equals(IOException.class.getName())) {
+				log.error(
+						"Tried to get repository files for "
+								+ Fork.generateForkId(crsid, tickId),
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+						.build();
+			}
+
+			if (s.getClassName().equals(
+					RepositoryNotFoundException.class.getName())) {
+				log.error(
+						"Tried to get repository files for "
+								+ Fork.generateForkId(crsid, tickId),
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.NOT_FOUND).entity(e).build();
+
+			} else {
+				log.error(
+						"Tried to get repository files for "
+								+ Fork.generateForkId(crsid, tickId),
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(s.getCause()).build();
+			}
+
 		} catch (IOException | RepositoryNotFoundException e) {
 			log.error(
 					"Tried to get repository files for "
@@ -244,6 +355,7 @@ public class ForkApiFacade implements IForkApiFacade {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
+
 		return Response.ok(files).build();
 	}
 

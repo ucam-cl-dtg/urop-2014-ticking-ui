@@ -14,6 +14,8 @@ public class Strings {
 	public static final String[] ACADEMICINSTITUTIONS = { "Computer Laboratory" };
 
 	public static final String INVALIDROLE = "You do not have the required role for that action.";
+	
+	public static final String INVALIDPERMISSION = "You do not have the required permissions for that action.";
 
 	public static final String ATLEASTONEROLE = "Error: You must choose at least one role to assign.";
 
@@ -32,6 +34,8 @@ public class Strings {
 	public static final String EXISTS = "Error: You have already created a tick with this name.";
 	
 	public static final String REMOVECREATOR = "Error: You may not remove the creator of the group.";
+	
+	public static final String MISSING = "Error: The resource you requested appears to be missing.";
 
 	/**
 	 * Private constructor to prevent this class being created
