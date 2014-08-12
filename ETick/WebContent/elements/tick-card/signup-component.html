@@ -95,7 +95,8 @@
                 this.$.toastDeleteSuccess.toggle();
             },
 
-            deleteError: function() {
+            deleteError: function(e, detail) {
+                this.$.toastDeleteError.text = detail.xhr.responseText;
                 this.$.toastDeleteError.toggle();
             }
         });

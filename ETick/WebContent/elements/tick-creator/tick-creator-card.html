@@ -543,7 +543,6 @@
             this.$.ajaxLoadDefaults.go();
         },
         showLoadErrorToast: function(e, detail) {
-            console.log("ERR: couldn't load");
             if (detail.xhr.responseText != null) {
                 this.$.toastLoadError.text = detail.xhr.responseText;
             } else {
