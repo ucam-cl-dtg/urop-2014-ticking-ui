@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html"/>
 
 <polymer-element name="toast-ajax"
-                 attributes="successMessage errorMessage
+                 attributes="completeMessage errorMessage
                  waitMessage responseMessage waitBeforeToast
                  
                  url handleAs auto params
@@ -109,7 +109,7 @@
           function (e)
           {
             "use strict";
-            this.popUpToast(this.successMessage);
+            this.popUpToast(this.completeMessage);
             this.fire('core-complete', e.detail);
           }
       });
