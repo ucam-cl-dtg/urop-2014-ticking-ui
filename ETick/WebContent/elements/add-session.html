@@ -2,9 +2,11 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="datetime-picker.html">
 
-<polymer-element name="add-session" attributes="">
+<polymer-element name="add-session" attributes="gid">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
 		<style>
@@ -12,40 +14,152 @@
 				width: 100%;
 			}
 		</style>
+
+		<!-- Add session API call. -->
+		<core-ajax id="addSessionAPI"
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets"
+			method="POST"
+			contentType="application/json"
+			on-core-response="{{addSessionResponse}}"
+			on-core-error="{{addSessionError}}">
+		</core-ajax>
+
 		<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
-		<paper-dialog id="addDialog" heading="Create Ticking Session"
+		<paper-dialog id="addDialog" heading="Create Ticking Session:"
 			backdrop transition="core-transition-top">
 			<h2 class="subtitle">Session Information</h2>
 			<div layout vertical center>
 				<paper-input id="titleInput" 
 					floatingInput 
 					required
-					placeholder="Session title..."></paper-input>
+					placeholder="Session title..."
+					error="Invalid session title."
+					on-input="{{validate}}"></paper-input>
+
 				<paper-input id="descInput"
 					multiline
 					placeholder="Description..."
 					maxRows="5"></paper-input>
+
 				<paper-input id="locInput"
 					floatingInput
 					placeholder="Location..."></paper-input>
 			</div>
+
 			<div layout horizontal center>
 				<div layout vertical>
 					<h2 class="subtitle">Start Date/Time</h2>
-					<datetime-picker></datetime-picker>
+					<datetime-picker id="startTime"
+						on-input="{{validate}}"></datetime-picker>
 				</div>
 				<div style="padding: 8px;"></div>
 				<div layout vertical>
 					<h2 class="subtitle">End Date/Time</h2>
-					<datetime-picker></datetime-picker>
+					<datetime-picker id="endTime"
+						on-input="{{validate}}"></datetime-picker>
 				</div>
 			</div>
+
+			<h2 class="subtitle">Ticking Slot Length:</h2>
+
+			<paper-input id="slotLengthInput"
+				placeholder="Slot length (minutes)..."
+				validate="^[0-9]+$"
+				error="Invalid slot length.">
+			</paper-input>
+
+			<h2 class="subtitle">Tickers:</h2>
+			<template repeat="{{ticker in tickers}}">
+				<div layout horizontal center>
+					<paper-input disabled value="{{ticker}}"></paper-input>
+					<paper-icon-button icon="delete" ticker="{{ticker}}" on-click="{{removeTicker}}">
+					</paper-icon-button>
+				</div>
+			</template>
+
+			<div layout horizontal center>
+				<paper-input id="addTickerInput"
+					required="{{!tickers || tickers.length < 1}}"
+					placeholder="New ticker name..."
+					error="At least one ticker required.">
+				</paper-input>
+				<paper-icon-button id="addTickerButton" icon="add"
+					on-click="{{addTicker}}"></paper-icon-button>
+			</div>
+
+			<template if="{{showSubmit}}">
+				<paper-button id="addSubmit" class="dialogSubmit" label="CREATE" on-click="{{createButtonClicked}}" affirmative></paper-button>
+			</template>
 		</paper-dialog>
+
+		<paper-toast id="addSessionSuccess" duration="8000"></paper-toast>
+		<paper-toast id="addSessionError" duration="8000"></paper-toast>
+
 	</template>
 	<script>
 		Polymer('add-session', {
+
+			domReady: function () {
+				this.tickers = [];
+			},
+
 			addClicked: function () {
 				this.$.addDialog.toggle();
+			},
+
+			validate: function () {
+				if (this.$.titleInput.inputValue &&
+					this.tickers && this.tickers.length >= 1 &&
+					this.$.startTime.value &&
+					this.$.endTime.value) {
+					this.showSubmit = true;
+				}
+				else {
+					this.showSubmit = false;
+				}
+			},
+
+			createButtonClicked: function () {
+				this.title = this.$.titleInput.inputValue;
+				this.description = this.$.descInput.inputValue;
+				this.location = this.$.locInput.inputValue;
+				this.startTime = Date.parse(this.$.startTime.value);
+				this.endTime = Date.parse(this.$.endTime.value);
+				this.slotLength = this.$.slotLengthInput.inputValue;
+
+				var call = this.$.addSessionAPI;
+				call.body = '{"title" : "' + this.title + '", "description" : "' + this.description + '", "location" : "' + this.location + '", "startTime" : "' + this.startTime + '", "endTime" : "' + this.endTime + '", "slotLengthInMinutes" : "' + this.slotLength + '", "tickerNames" : ' + JSON.stringify(this.tickers) + ', "groupID" : "' + this.gid + '" }';
+				call.go();
+			},
+
+			addSessionResponse: function () {
+				var toast = this.$.addSessionSuccess;
+				toast.text = "Successfully created new ticking session '" + this.title + "'.";
+				this.fire('sheet-created');
+				toast.show();
+			},
+
+			addSessionError: function(e, detail) {
+				var toast = this.$.addSessionError;
+				toast.text = detail.xhr.responseText;
+				toast.show();
+			},
+
+			addTicker: function () {
+				var s = this.$.addTickerInput.inputValue;
+				if (s) {
+					this.tickers.push(s);
+				}
+				this.validate();
+			},
+
+			removeTicker: function (e, detail, target) {
+				var name = target.getAttribute('ticker');
+				var i = this.tickers.indexOf(name);
+				if (i > -1) {
+					this.tickers.splice(i, 1);
+				}
+				this.validate();
 			}
 		});
 	</script>

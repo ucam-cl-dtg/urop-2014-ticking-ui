@@ -52,6 +52,7 @@
                             <paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
                         </template>
 					</span>
+
                     </div>
 
                     <div id="infoContainer">
@@ -117,6 +118,7 @@
                 </file-browser-card>
             </main-card>
         </template>
+
 
         <core-collapse id="tickingSessions">
             <template if="{{isMarker}}">
@@ -200,6 +202,10 @@
 			forkClickedHandler: function (e, detail) {
 				this.selectedTickId = detail.tickId;
 				this.selectedTickName = detail.tickName;
+			},
+
+			sheetCreated: function () {
+				this.$.sheetListAPI.go();
 			}
 		});
 	</script>
