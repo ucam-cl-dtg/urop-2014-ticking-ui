@@ -1,17 +1,23 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
 
 <polymer-element name="submit-service" attributes="tickId status testRunning unitPass reportAvailable">
     <template>
         <!-- submit this tick for testing -->
-        <core-ajax
+        <toast-ajax
                 id="ajaxSubmit"
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/'}}"
                 handleAs="json"
                 method="POST"
                 on-core-response="{{startPolling}}"
-                on-core-error="{{submitError}}">
-        </core-ajax>
+                on-core-error="{{submitError}}"
+
+                waitMessage="Submitting"
+                waitBeforeToast="500"
+                captureError
+                popUpError>
+        </toast-ajax>
 
         <!-- poll the tick's status -->
         <core-ajax
@@ -48,10 +54,10 @@
              * Fired when submitting the tick failed.
              */
             submitError: function(e, detail) {
-                this.testRunning = false;
-
-                this.$.toastSubmitError.text = detail.xhr.responseText;
-                this.$.toastSubmitError.show();
+                //smooth UX
+                this.job('unset-testRunning', function() {
+                    this.testRunning = false;
+                }, 500);
             },
 
             startPolling: function() {
