@@ -100,13 +100,17 @@
                 this.status = this.$.ajaxPoll.response;
 
                 if (this.status.progress == this.status.maxProgress) {
-                    console.log(this.status);
-                    this.testRunning = false;
-                    this.reportAvailable = true;
-                    console.log(this.status.info);
-                    if (this.status.info == "PASS") {
-                        this.unitPass = true;
-                    }
+                    this.status.info = "Done";
+                    this.job('show-button', function() {
+                        console.log(this.status);
+                        this.testRunning = false;
+                        this.reportAvailable = true;
+                        console.log(this.status.info);
+                        if (this.status.info == "PASS") {
+                            this.unitPass = true;
+                        }
+                    }, 750);
+
                 } else {
                     this.job('delayed-re-poll', function() {
                         this.$.ajaxPoll.go();
