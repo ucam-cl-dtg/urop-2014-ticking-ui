@@ -8,6 +8,11 @@ paper-progress {
     width: 100%;
 }
 
+polyfill-next-selector {shadow: 'paper-progress #activeProgress';}
+paper-progress::shadow #activeProgress {
+    background-color: #4285f4;
+}
+
 .error {
     text-align: center;
     color: #757575;
@@ -20,3 +25,4 @@ paper-progress {
 .spacer {
     width: 10px;
 }
+
