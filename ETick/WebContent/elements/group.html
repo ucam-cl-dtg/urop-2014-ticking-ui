@@ -11,6 +11,7 @@
 <link rel="import" href="add-session.html">
 <link rel="import" href="file-browser/file-browser-card.html">
 <link rel="import" href="are-you-sure.html">
+<link rel="import" href="delete-group.html">
 
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
@@ -32,10 +33,6 @@
 			on-core-response="{{sheetListResponse}}">
 		</core-ajax>
 
-		<!-- Confirmation dialog. -->
-		<are-you-sure id="confirm"
-			on-yes="{{deleteConfirmed}}"></are-you-sure>
-
         <main-card animated>
             <paper-tabs id="tabs" selected="0">
                 <paper-tab>{{name}}</paper-tab>
@@ -52,7 +49,7 @@
 
 					<span layout horizontal end end-justified flex>
 						<template if="{{isAuthor}}">
-							<paper-icon-button id="groupDeleteButton" icon="delete" on-click="{{deleteButtonClicked}}"></paper-icon-button>
+							<delete-group gid="{{gid}}"></delete-group>
 							<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
 							<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
 						</template>
@@ -103,9 +100,7 @@
 		</div>-->
 
 
-		<!-- Tick list card. -->
-
-
+		<!-- Tick list card. --> 
 		<template if="{{selectedTickId}}">
 			<main-card animated>
 			<tick-card id="tickCard"
@@ -166,20 +161,6 @@
                 }
             },
 
-			// tabSelectedAction: function(e, detail) {
-			// 	if (this.pane) {
-			// 		this.pane.classList.add('hidden');
-			// 	}
-			// 	var role = detail.item.innerHTML;
-			// 	switch(role) {
-			// 		case "AUTHOR": this.pane = this.$.authorPane; break;
-			// 		case "MARKER": this.pane = this.$.markerPane; break;
-			// 		case "OVERVIEW": this.pane = this.$.overviewPane; break;
-			// 		case "SUBMITTER": this.pane = this.$.submitterPane; break;
-			// 	}
-			// 	this.pane.classList.remove('hidden');
-			// },
-
 			cardSwiped: function (e, detail) {
 				// Code to get rid of the card. Consider other options.
 				detail.card.style.display = "none";
@@ -197,14 +178,6 @@
 			sheetCreated: function () {
 				this.$.sheetListAPI.go();
 			},
-
-			deleteButtonClicked: function () {
-				this.$.confirm.toggle();
-			},
-
-			deleteConfirmed: function () {
-				this.fire('delete-group');
-			}
 		});
 	</script>
 </polymer-element>

@@ -15,9 +15,9 @@
 			backdrop
 			heading="{{heading ? heading : 'Are You Sure?'}}"
 			transition="core-transition-top">
-			<paper-button class="dialogNo" dismissive label="No" on-click="{{noClicked}}">
+			<paper-button dismissive class="dialogNo" label="No" on-click="{{noClicked}}">
 			</paper-button>
-            <paper-button class="dialogYes" affirmative label="Yes" on-click="{{yesClicked}}">
+            <paper-button affirmative class="dialogYes" label="Yes" on-click="{{yesClicked}}">
         	</paper-button>
 		</paper-dialog>
 	</template>
@@ -31,7 +31,7 @@
 			},
 
 			yesClicked: function () {
-				this.$.dialog.toggle();
+				
 				this.fire('yes');
 			},
 
