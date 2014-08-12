@@ -16,3 +16,7 @@ paper-progress {
 #progressCaption {
     color: #757575;
 }
+
+.spacer {
+    width: 10px;
+}
