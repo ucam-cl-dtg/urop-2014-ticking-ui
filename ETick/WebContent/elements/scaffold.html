@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/core-item/core-item.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="menu-button.html">
 <link rel="import" href="dashboard.html">
 <link rel="import" href="onlogin.html">
@@ -67,8 +68,11 @@
 		</template>
 
 		<template id="groupTemp" if="{{gid}}">
-			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}"></x-group>
+			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}"
+				on-group-deleted="{{groupDeletedHandler}}"></x-group>
 		</template>
+		<paper-toast id="deleteSuccess" duration="8000" text="Successfully deleted group."></paper-toast>
+
 		
 		<template id="tickTemp" if="{{showTickCreator}}">
 			<main-card animated>
@@ -172,6 +176,14 @@
 
 				this.tickId = newValue.getAttribute('tickId');
 				this.$.tickTemp.model = { showTickCreator: true, tickId: this.tickId };
+			},
+
+			groupDeletedHandler: function () {
+				this.$.loginAPIs.$.sidebarAjax.go();
+				this.toSelect = "-1";
+				this.gid = null;
+				this.$.navMenu.selected = "dashButton";
+				this.$.deleteSuccess.show();
 			}
 		});
 	</script>
