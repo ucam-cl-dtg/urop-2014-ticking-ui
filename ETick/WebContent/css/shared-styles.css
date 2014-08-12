@@ -29,7 +29,7 @@ paper-checkbox {
 	color: #eaeaea;
 }
 
-paper-button.greenButton {
+.greenButton {
 	background: #259b24;
 	color: #fff;
 }
