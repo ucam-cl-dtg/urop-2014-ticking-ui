@@ -35,9 +35,7 @@
             <paper-tabs id="tabs" selected="0">
                 <paper-tab>{{name}}</paper-tab>
                 <paper-tab>TICKS</paper-tab>
-                <!-- Need to somehow dynamically hide this -->
-                    <paper-tab>TICKING SESSIONS</paper-tab>
-
+                <paper-tab>TICKING SESSIONS</paper-tab>
                 <paper-tab>MEMBERS</paper-tab>
             </paper-tabs>
 
@@ -156,8 +154,8 @@
 
                     that.overview.opened = this.tabIndex == 0;
                     that.ticks.opened = this.tabIndex == 1;
-                    that.groups.opened = this.tabIndex == 3;
                     that.tickingSessions.opened = this.tabIndex== 2;
+                    that.groups.opened = this.tabIndex == 3;
                 });
 			},
 
