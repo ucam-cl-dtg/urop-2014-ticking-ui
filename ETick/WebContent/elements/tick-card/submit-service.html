@@ -106,6 +106,7 @@
                     this.status.info = "Done";
                     var oldRepo = this.repo.valueOf();
                     this.repo = null;
+
                     this.job('show-button', function() {
                         this.testRunning = false;
                         this.reportAvailable = true;
@@ -115,6 +116,7 @@
                     }, 750);
 
                     this.job('show-report', function() {
+                        console.log("changing " + this.repo + " to " + oldRepo);
                         this.repo = oldRepo;
                     }, 420);
                 } else {
