@@ -18,6 +18,7 @@ import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupingBean;
 import uk.ac.cam.cl.ticking.ui.auth.LdapManager;
+import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -37,13 +38,18 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 	// not currently used but could quite possibly be needed in the future, will
 	// remove if not
 	private ConfigurationLoader<Configuration> config;
+
+	private ConfigurationLoader<Admins> adminConfig;
+
 	private LdapManager raven;
 
 	@Inject
 	public GroupingApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config, LdapManager raven) {
+			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig, LdapManager raven) {
 		this.db = db;
 		this.config = config;
+		this.adminConfig = adminConfig;
 		this.raven = raven;
 	}
 
@@ -77,7 +83,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 
 		/* Check permissions */
 		List<Role> myRoles = db.getRoles(groupId, myCrsid);
-		if (!myRoles.contains(Role.AUTHOR)) {
+		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(myCrsid)) {
 			log.warn("User " + myCrsid + " tried to add a member to group "
 					+ groupId + " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
@@ -131,7 +137,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 
 		/* Check permissions */
 		List<Role> myRoles = db.getRoles(groupId, myCrsid);
-		if (!myRoles.contains(Role.AUTHOR)) {
+		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(myCrsid)) {
 			log.warn("User " + myCrsid + " tried to remove a member to group "
 					+ groupId + " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)

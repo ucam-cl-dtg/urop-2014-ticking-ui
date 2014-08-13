@@ -19,6 +19,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
+import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -39,6 +40,8 @@ public class UserApiFacade implements IUserApiFacade {
 	// quite likely to be required in future
 	private ConfigurationLoader<Configuration> config;
 
+	private ConfigurationLoader<Admins> adminConfig;
+
 	private WebInterface gitServiceProxy;
 
 	/**
@@ -48,9 +51,11 @@ public class UserApiFacade implements IUserApiFacade {
 	@Inject
 	public UserApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
 			WebInterface gitServiceProxy) {
 		this.db = db;
 		this.config = config;
+		this.adminConfig = adminConfig;
 		this.gitServiceProxy = gitServiceProxy;
 	}
 
@@ -83,7 +88,14 @@ public class UserApiFacade implements IUserApiFacade {
 			boolean purge) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		// TODO admin check
+		
+		/*Check permissions*/
+		if (!adminConfig.getConfig().isAdmin(myCrsid)) {
+			log.warn("User " + myCrsid + " tried to delete user "
+					+ crsid + " but was denied permission");
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDPERMISSION).build();
+		}
 
 		/* Get the user object, returning if not found */
 		User user = db.getUser(crsid);
@@ -106,10 +118,10 @@ public class UserApiFacade implements IUserApiFacade {
 	public Response getGroups(HttpServletRequest request) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		
+
 		User user = db.getUser(crsid);
 		List<Group> groups = db.getGroups(crsid);
-		
+
 		if (user.isAdmin()) {
 			groups = db.getGroups();
 		}

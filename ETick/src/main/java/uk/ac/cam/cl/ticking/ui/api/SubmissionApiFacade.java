@@ -27,6 +27,7 @@ import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
+import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -47,6 +48,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
+	private ConfigurationLoader<Admins> adminConfig;
+
 	private ITestService testServiceProxy;
 	private TickSignups tickSignupService;
 
@@ -57,9 +60,11 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	@Inject
 	public SubmissionApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
 			ITestService testServiceProxy, TickSignups tickSignupService) {
 		this.db = db;
 		this.config = config;
+		this.adminConfig = adminConfig;
 		this.testServiceProxy = testServiceProxy;
 		this.tickSignupService = tickSignupService;
 	}
@@ -270,8 +275,9 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 				marker = true;
 			}
 		}
-		if (!(marker || myCrsid.equals(db.getFork(
-				Fork.generateForkId(crsid, tickId)).getAuthor()))) {
+		if ((!(marker || myCrsid.equals(db.getFork(
+				Fork.generateForkId(crsid, tickId)).getAuthor())))
+				&& !adminConfig.getConfig().isAdmin(myCrsid)) {
 			log.warn("User " + myCrsid + " tried to access fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
@@ -347,7 +353,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		}
 
 		if (!(marker || myCrsid.equals(db.getFork(Fork.generateForkId(crsid,
-				tickId))))) {
+				tickId)))) && !adminConfig.getConfig().isAdmin(myCrsid)) {
 			log.warn("User " + myCrsid + " tried to access fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
