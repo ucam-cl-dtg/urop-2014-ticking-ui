@@ -147,10 +147,38 @@
           , highlightChanged:
             function ()
             {
-              /* To use closures */
-              var highlightSpans =
-                this.$.codeContent.getElementsByClassName("highlight");
-              var toHighlight = this.highlight;
+              /* Remove old classes */
+              ["ERROR", "WARNING", "COMMENT"].forEach(
+                  function (severity)
+                  {
+                    this.$.codeContent
+                      .getElementsByClassName(severity)
+                      .array()
+                      .forEach(
+                          function (element)
+                          {
+                            element.classList.remove(severity)
+                          });
+                  }.bind(this));
+                  
+              this.highlight.forEach(
+                  function (className)
+                  {
+                    this.$.codeContent
+                      .getElementsByClassName(className)
+                      .array()
+                      .forEach(
+                          function (element)
+                          {
+                            var highlightType =
+                              className.match(/[a-zA-Z]*/);
+
+                            if (highlightType.length > 0)
+                            {
+                              element.classList.add(highlightType);
+                            }
+                          });
+                  }.bind(this));
             }
 
           , syntaxStyleSheetChanged:

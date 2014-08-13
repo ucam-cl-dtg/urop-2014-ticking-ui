@@ -111,12 +111,6 @@
             this.date         = new Date(this.$.report.response
                                                     .creationDate);
             this.testCount    = this.$.report.response.noOfTests;
-
-            var i;
-            for (i = 0; i < this.errors.length; i++)
-            {
-              this.errors[i].id = i;
-            }
           }
 
         , filesLoaded:
