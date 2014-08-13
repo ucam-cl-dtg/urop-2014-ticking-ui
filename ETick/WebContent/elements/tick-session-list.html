@@ -8,6 +8,10 @@
 				display: block;
 			}
 		</style>
+		<box-list id="list">
+			<template repeat="{{sheet in sheets}}">
+			</template>
+		</box-list>
 	</template>
 	<script>
 		Polymer('tick-session-list', {

@@ -2,6 +2,9 @@
 <polymer-element name="date-calendar" attributes="datetime hexColorPrimary hexColorSecondary">
 	<template>
 		<style shim-shadowdom>
+
+			/* Default calendar (primary) color is orange #FF8000 */
+			/* Default border (secondary) color is white #fff */
 			time.icon
 			{
 				font-size: 0.5em; /* change icon size */
@@ -31,16 +34,15 @@
 				top: 0;
 				padding: 0.4em 0;
 				color: #fff;
-				background-color: {{hexColorPrimary}};
-				border-bottom: 1px dashed {{hexColorSecondary}};
-				box-shadow: 0 2px 0 {{hexColorPrimary}};
+				border-bottom: 1px dashed #fff;
+				box-shadow: 0 2px 0 #FF8000;
 			}
 
 			time.icon em
 			{
 				position: absolute;
 				bottom: 0.3em;
-				color: {{hexColorPrimary}};
+				color: #FF8000;
 			}
 
 			time.icon span
@@ -52,10 +54,10 @@
 				color: #2f2f2f;
 			}
 		</style>
-		<time datetime="{{tick.deadline}}" class="icon">
-			  <em>{{day}}</em>
-			  <strong>{{month}}</strong>
-			  <span>{{date}}</span>
+		<time id="cal" datetime="{{tick.deadline}}" class="icon">
+			  <em id="day">{{day}}</em>
+			  <strong id="month">{{month}}</strong>
+			  <span id="date">{{date}}</span>
 		</time>
 	</template>
 	<script>
@@ -67,6 +69,13 @@
 				this.date = d.getDate();
 				this.day = weekdays[d.getDay()];
 				this.month = months[d.getMonth()];
+
+				// Apply primary and secondary colors to style:
+				this.$.day.style.color = this.hexColorPrimary;
+				var monthStyle = this.$.month.style;
+				monthStyle.background = this.hexColorPrimary;
+				monthStyle.boxShadow = '0 2px 0 ' + this.hexColorPrimary;
+				monthStyle.borderBottom = '1px dashed ' + this.hexColorSecondary;
 			}
 		});
 	</script>
