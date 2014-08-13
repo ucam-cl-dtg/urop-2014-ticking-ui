@@ -10,7 +10,7 @@
 				display: block;
 				width: 100%;
 			}
-
+			
 			polyfill-next-selector { content: '.itemBox'; }
 			::content .itemBox {
 				width: calc(100% / 3);
@@ -50,7 +50,9 @@
 			</core-selector>
 		</template>
 		<template if="{{!selector}}">
-			<content></content>
+			<div layout horizontal center wrap>
+				<content></content>
+			</div>
 		</template>
 	</template>
 	<script>
