@@ -80,8 +80,8 @@ public class ForkApiFacade implements IForkApiFacade {
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 
 		if (fork == null) {
-			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
-					+ " but it couldn't be found");
+			//log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+			//		+ " but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
