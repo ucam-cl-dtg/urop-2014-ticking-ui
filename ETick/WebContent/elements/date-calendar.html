@@ -71,10 +71,8 @@
 				this.month = months[d.getMonth()];
 
 				// Apply primary and secondary colors to style:
-				var dayStyle = this.$.day.style
+				this.$.day.style.color = this.hexColorPrimary;
 				var monthStyle = this.$.month.style;
-
-				dayStyle = this.hexColorPrimary;
 				monthStyle.background = this.hexColorPrimary;
 				monthStyle.boxShadow = '0 2px 0 ' + this.hexColorPrimary;
 				monthStyle.borderBottom = '1px dashed ' + this.hexColorSecondary;
