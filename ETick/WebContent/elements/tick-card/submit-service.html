@@ -15,7 +15,8 @@
                 waitMessage="Submitting"
                 waitBeforeToast="500"
                 captureError
-                popUpError>
+                popUpError
+                errorMessage="Error submitting tick">
         </toast-ajax>
 
         <!-- poll the tick's status -->
@@ -27,7 +28,8 @@
                 on-core-error="{{pollError}}"
 
                 captureError
-                popUpError>
+                popUpError
+                errorMessage="Error obtaining submission status.">
         </toast-ajax>
     </template>
     <script>
