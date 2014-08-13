@@ -16,11 +16,7 @@
                 reportResult
                 reportCreationDate">
   <template>
-    <style>
-    :host {
-      display: none;
-    }
-    </style>
+    <link rel="stylesheet" href="style.css"/>
     <toast-ajax id="report"
                 auto
                 on-core-response="{{reportLoaded}}"
