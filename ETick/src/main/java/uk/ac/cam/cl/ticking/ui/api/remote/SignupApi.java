@@ -8,7 +8,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 
-import publicinterfaces.ITestService;
 import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
@@ -20,17 +19,18 @@ public class SignupApi {
 	static {
 		Configuration config = (Configuration) ConfigurationRegister.getLoader(
 				Configuration.class).getConfig();
-		
+
 		PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
 		cm.setDefaultMaxPerRoute(200);
 		cm.setMaxTotal(200);
-		
+
 		HttpClient httpClient = new DefaultHttpClient(cm);
 		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
-		
-		ResteasyClient client = new ResteasyClientBuilder().maxPooledPerRoute(200).httpEngine(engine).build();
-		ResteasyWebTarget target = client.target(config.
-				getSignupsApiLocation());
+
+		ResteasyClient client = new ResteasyClientBuilder()
+				.maxPooledPerRoute(200).httpEngine(engine).build();
+		ResteasyWebTarget target = client
+				.target(config.getSignupsApiLocation());
 
 		signupService = target.proxy(SignupsWebInterface.class);
 	}

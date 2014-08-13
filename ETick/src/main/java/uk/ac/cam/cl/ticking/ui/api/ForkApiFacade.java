@@ -80,8 +80,8 @@ public class ForkApiFacade implements IForkApiFacade {
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 
 		if (fork == null) {
-			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
-					+ " but it couldn't be found");
+			//log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+			//		+ " but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
@@ -231,9 +231,9 @@ public class ForkApiFacade implements IForkApiFacade {
 					log.error(
 							"Tried to set ticker result for "
 									+ Fork.generateForkId(crsid, tickId),
-							s.getCause());
+							s.getCause(), s.getStackTrace());
 					return Response.status(Status.NOT_FOUND)
-							.entity(Strings.IDEMPOTENTRETRY).build();
+							.entity(Strings.MISSING).build();
 
 				} catch (UserNotInDBException | TickNotInDBException
 						| ReportNotFoundException e) {
@@ -271,7 +271,8 @@ public class ForkApiFacade implements IForkApiFacade {
 		}
 		log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
 				+ " for ticking, but it couldn't be found");
-		return Response.status(Status.NOT_FOUND).build();
+		return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+				.build();
 
 	}
 
@@ -327,8 +328,8 @@ public class ForkApiFacade implements IForkApiFacade {
 						"Tried to get repository files for "
 								+ Fork.generateForkId(crsid, tickId),
 						s.getCause(), s.getStackTrace());
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-						.build();
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 			if (s.getClassName().equals(
@@ -337,7 +338,8 @@ public class ForkApiFacade implements IForkApiFacade {
 						"Tried to get repository files for "
 								+ Fork.generateForkId(crsid, tickId),
 						s.getCause(), s.getStackTrace());
-				return Response.status(Status.NOT_FOUND).entity(e).build();
+				return Response.status(Status.NOT_FOUND)
+						.entity(Strings.MISSING).build();
 
 			} else {
 				log.error(
@@ -345,7 +347,7 @@ public class ForkApiFacade implements IForkApiFacade {
 								+ Fork.generateForkId(crsid, tickId),
 						s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(s.getCause()).build();
+						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | RepositoryNotFoundException e) {
@@ -356,6 +358,7 @@ public class ForkApiFacade implements IForkApiFacade {
 					.build();
 		}
 
+		/* Return the files */
 		return Response.ok(files).build();
 	}
 

@@ -2,7 +2,6 @@ package uk.ac.cam.cl.ticking.ui.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
@@ -49,8 +48,8 @@ public class MongoDataManager implements IDataManager {
 				database.getCollection(Strings.TICKSCOLLECTION), Tick.class,
 				String.class, objectMapper);
 		forkColl = JacksonDBCollection.wrap(
-				database.getCollection(Strings.FORKSCOLLECTION),
-				Fork.class, String.class, objectMapper);
+				database.getCollection(Strings.FORKSCOLLECTION), Fork.class,
+				String.class, objectMapper);
 		userColl = JacksonDBCollection.wrap(
 				database.getCollection(Strings.USERSCOLLECTION), User.class,
 				String.class, objectMapper);
@@ -61,8 +60,8 @@ public class MongoDataManager implements IDataManager {
 				database.getCollection(Strings.GROUPINGSCOLLECTION),
 				Grouping.class, String.class, objectMapper);
 		authCodeColl = JacksonDBCollection.wrap(
-                database.getCollection(Strings.AUTHCODESCOLLECTION),
-                AuthCodeMap.class, String.class, objectMapper);
+				database.getCollection(Strings.AUTHCODESCOLLECTION),
+				AuthCodeMap.class, String.class, objectMapper);
 	}
 
 	/**
@@ -134,8 +133,7 @@ public class MongoDataManager implements IDataManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void insertFork(Fork s)
-			throws DuplicateDataEntryException {
+	public void insertFork(Fork s) throws DuplicateDataEntryException {
 		try {
 			forkColl.insert(s);
 		} catch (MongoException duplicate) {
@@ -513,21 +511,21 @@ public class MongoDataManager implements IDataManager {
 	/**
 	 * {@inheritDoc}
 	 */
-    @Override
-    public void addAuthCode(String id, String authCode) {
-        authCodeColl.save(new AuthCodeMap(id, authCode));
-    }
+	@Override
+	public void addAuthCode(String id, String authCode) {
+		authCodeColl.save(new AuthCodeMap(id, authCode));
+	}
 
-    /**
+	/**
 	 * {@inheritDoc}
 	 */
-    @Override
-    public String getAuthCode(String id) {
-        try {
-            return authCodeColl.findOneById(id).getAuthCode();
-        } catch(MongoException e) {
-            return null; // as per javadoc
-        }
-    }
+	@Override
+	public String getAuthCode(String id) {
+		try {
+			return authCodeColl.findOneById(id).getAuthCode();
+		} catch (MongoException e) {
+			return null; // as per javadoc
+		}
+	}
 
 }

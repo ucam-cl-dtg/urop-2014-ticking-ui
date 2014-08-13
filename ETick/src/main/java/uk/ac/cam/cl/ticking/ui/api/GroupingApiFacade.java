@@ -160,8 +160,8 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 				}
 			}
 		}
-		
-		/*Return the output message*/
+
+		/* Return the output message */
 		return Response.ok().entity(output).build();
 	}
 

@@ -18,7 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * {@link uk.ac.cam.cl.git.configuration.ConfigurationFile} implementing class.
  *
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
- * @author tl364 - changed to allow multiple loaders, managed by register - java retrieved 21/7/2014
+ * @author tl364 - changed to allow multiple loaders, managed by register - java
+ *         retrieved 21/7/2014
  *
  * @param <T>
  */
@@ -30,14 +31,14 @@ public class ConfigurationLoader<T extends ConfigurationFile> {
 	private File file;
 	private ObjectMapper mapper = new ObjectMapper();
 	private long mTime;
-	
+
 	private Class<T> configClass;
 	private T loadedConfig;
 
 	public ConfigurationLoader(String fileName, Class<T> configClass) {
 		this.fileName = fileName;
 		file = new File(fileName);
-		
+
 		this.configClass = configClass;
 		try {
 			this.loadedConfig = configClass.newInstance();
@@ -46,7 +47,7 @@ public class ConfigurationLoader<T extends ConfigurationFile> {
 		}
 		load();
 	}
-	
+
 	public void load() {
 		/* ObjectMapper (JSON syntax) configuration */
 		mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);

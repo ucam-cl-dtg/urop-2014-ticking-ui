@@ -1,7 +1,6 @@
 package uk.ac.cam.cl.ticking.ui.api.remote;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -20,17 +19,17 @@ public class TestApi {
 	static {
 		Configuration config = (Configuration) ConfigurationRegister.getLoader(
 				Configuration.class).getConfig();
-		
+
 		PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
 		cm.setDefaultMaxPerRoute(200);
 		cm.setMaxTotal(200);
-		
+
 		HttpClient httpClient = new DefaultHttpClient(cm);
 		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
-		
-		ResteasyClient client = new ResteasyClientBuilder().maxPooledPerRoute(200).httpEngine(engine).build();
-		ResteasyWebTarget target = client.target(config.
-				getTestApiLocation());
+
+		ResteasyClient client = new ResteasyClientBuilder()
+				.maxPooledPerRoute(200).httpEngine(engine).build();
+		ResteasyWebTarget target = client.target(config.getTestApiLocation());
 
 		testService = target.proxy(ITestService.class);
 	}

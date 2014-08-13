@@ -22,8 +22,8 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
-import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
 
@@ -61,7 +61,16 @@ public class UserApiFacade implements IUserApiFacade {
 	public Response getUser(HttpServletRequest request) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+
+		/* Get the user object, returning if not found */
 		User user = db.getUser(crsid);
+
+		if (user == null) {
+			log.error("Requested user " + crsid + " but they couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
 		return Response.ok(user).build();
 	}
 
@@ -72,8 +81,19 @@ public class UserApiFacade implements IUserApiFacade {
 	public Response deleteUser(HttpServletRequest request, String crsid,
 			boolean purge) {
 		// TODO admin check
+
+		/* Get the user object, returning if not found */
+		User user = db.getUser(crsid);
+
+		if (user == null) {
+			log.error("Requested user " + crsid
+					+ " for deletion, but they couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
 		db.removeUser(crsid, purge);
-		return Response.ok().build();
+		return Response.ok().entity(Strings.DELETED).build();
 	}
 
 	/**
@@ -130,20 +150,35 @@ public class UserApiFacade implements IUserApiFacade {
 	public Response addSSHKey(HttpServletRequest request, String key) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+
+		/* Get the user object, returning if not found */
+		User user = db.getUser(crsid);
+
+		if (user == null) {
+			log.error("Requested user " + crsid
+					+ " to add a public ssh key, but they couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Call the git service */
 		try {
 			gitServiceProxy.addSSHKey(key, crsid);
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
-			log.error("Tried adding ssh key for " + crsid, s.getCause());
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-					.build();
+
+			log.error("Tried adding ssh key for " + crsid, s.getCause(),
+					s.getStackTrace());
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(Strings.IDEMPOTENTRETRY).build();
 		} catch (IOException e) {
 			log.error("Tried adding ssh key for " + crsid, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
-		User user = db.getUser(crsid);
+
+		/* Add the key to the user object, save and return */
 		user.setSsh(key);
 		db.saveUser(user);
 		return Response.status(Status.CREATED).entity(user).build();

@@ -2,7 +2,6 @@ package uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans;
 
 import org.joda.time.DateTime;
 
-
 /**
  * This class stores information regarding a submission for a tickId
  * 
@@ -18,11 +17,11 @@ public class ForkBean {
 	private Boolean signedUp = false;
 	private Boolean testing = false;
 	private Boolean reportAvailable = false;
-	
+
 	private String ticker;
 	private String tickerComments;
 	private String commitId;
-	
+
 	private DateTime reportDate;
 
 	/**
@@ -91,7 +90,7 @@ public class ForkBean {
 	public void setTesting(boolean testing) {
 		this.testing = testing;
 	}
-	
+
 	/**
 	 * @return reportAvailable
 	 */

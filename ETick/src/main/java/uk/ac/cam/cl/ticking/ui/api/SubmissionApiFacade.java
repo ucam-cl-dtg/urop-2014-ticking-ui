@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import publicinterfaces.NoCommitsToRepoException;
 import publicinterfaces.NoSuchTestException;
 import publicinterfaces.Report;
 import publicinterfaces.ReportResult;
-import publicinterfaces.Status;
 import publicinterfaces.TestIDNotFoundException;
 import publicinterfaces.TestStillRunningException;
 import publicinterfaces.TickNotInDBException;
@@ -73,49 +73,96 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
+		/* Get the fork object, returning if not found */
 		Tick tick = db.getTick(tickId);
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork == null) {
-			return Response.status(404).build();
+			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+					+ " to submission, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
 		}
 
+		/*
+		 * Check if the deadline has passed, replace the deadline if an
+		 * extension exists for this user
+		 */
 		DateTime extension = tick.getExtensions().get(crsid);
+
 		if (extension != null) {
 			tick.setDeadline(extension);
 		}
 
 		if (tick.getDeadline() != null && tick.getDeadline().isBeforeNow()) {
-			return Response.status(400).entity(Strings.DEADLINE).build();
+			return Response.status(Status.NOT_FOUND).entity(Strings.DEADLINE)
+					.build();
 		}
 
+		/* Parse id for the git service via the test service */
 		String repoName = Tick.replaceDelimeter(tickId);
 
 		String forkRepoName = crsid + "/" + repoName;
 
+		/* Call the git service */
 		try {
 			testServiceProxy.runNewTest(crsid, tickId, forkRepoName);
+
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
-			log.error("Tried to start new test on " + repoName, s.getCause());
-			return Response.status(500).entity(e).build();
-		} catch (IOException e) {
+
+			if (s.getClassName().equals(IOException.class.getName())) {
+				log.error("Tried to start new test on " + repoName,
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
+
+			if (s.getClassName().equals(
+					TestStillRunningException.class.getName())) {
+				log.error("Tried to start new test on " + repoName,
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.SERVICE_UNAVAILABLE)
+						.entity(Strings.TESTRUNNING).build();
+
+			}
+
+			if (s.getClassName()
+					.equals(TestIDNotFoundException.class.getName())) {
+				log.error("Tried to start new test on " + repoName,
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.NOT_FOUND)
+						.entity(Strings.MISSING).build();
+
+			}
+
+			if (s.getClassName().equals(
+					NoCommitsToRepoException.class.getName())) {
+				log.error("Tried to start new test on " + repoName,
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.BAD_REQUEST)
+						.entity(Strings.NOCOMMITS).build();
+
+			} else {
+				log.error("Tried to start new test on " + repoName,
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
+
+		} catch (IOException | TestStillRunningException
+				| TestIDNotFoundException | NoCommitsToRepoException e) {
 			log.error("Tried to start new test on " + repoName, e);
-			return Response.status(500).entity(e).build();
-		} catch (TestStillRunningException e) {
-			log.error("Tried to start new test on " + repoName, e);
-			return Response.status(503).entity(e).build();
-		} catch (TestIDNotFoundException e) {
-			log.error("Tried to start new test on " + repoName, e);
-			return Response.status(404).entity(e).build();
-		} catch (NoCommitsToRepoException e) {
-			log.error("Tried to start new test on " + repoName, e);
-			return Response.status(400).entity(e).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		}
 
+		/* The fork is not submitted for testing */
 		fork.setTesting(true);
+
+		/* Save and return the fork object */
 		db.saveFork(fork);
-		return Response.status(201).build();
+		return Response.status(Status.CREATED).build();
 	}
 
 	/**
@@ -126,26 +173,45 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
-		Status status;
+		/* Get the fork object, returning if not found */
+		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+		if (fork == null) {
+			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+					+ " to get testing status, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Call the test service */
+		publicinterfaces.Status status;
 		try {
 			status = testServiceProxy.pollStatus(crsid, tickId);
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
+
 			log.error("Tried getting the running status of " + crsid + " "
-					+ tickId, s.getCause());
-			return Response.status(404).entity(e).build();
+					+ tickId, s.getCause(), s.getStackTrace());
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
 		} catch (NoSuchTestException e) {
 			log.error("Tried getting the running status of " + crsid + " "
 					+ tickId, e);
-			return Response.status(404).entity(e).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		}
 
+		/* Check if the tests are complete */
 		if (status.getProgress() == status.getMaxProgress()) {
-			Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+
+			/* The fork has finished testing and the report is available */
 			fork.setTesting(false);
 			fork.setReportAvailable(true);
 
+			/*
+			 * Get all of the groups this tick is in and set whether the user
+			 * can sign up for ticking in them or not
+			 */
 			List<String> groupIds = db.getTick(tickId).getGroups();
 
 			boolean unitPass = status.getInfo().equals("PASS");
@@ -158,10 +224,13 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 					tickSignupService.disallowSignup(crsid, groupId, tickId);
 				}
 			}
+
+			/* Set whether the fork passed and save it */
 			fork.setUnitPass(unitPass);
 			db.saveFork(fork);
 		}
 
+		/* Return the status object */
 		return Response.ok(status).build();
 	}
 
@@ -173,9 +242,22 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			String crsid) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+
+		/* The user operated on is the caller */
 		if (crsid.equals("")) {
 			crsid = myCrsid;
 		}
+
+		/* Get the fork object, returning if not found */
+		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+		if (fork == null) {
+			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+					+ " to get testing status, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Check permissions */
 		boolean marker = false;
 		List<String> groupIds = db.getTick(tickId).getGroups();
 		for (String groupId : groupIds) {
@@ -186,27 +268,42 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		}
 		if (!(marker || myCrsid.equals(db.getFork(
 				Fork.generateForkId(crsid, tickId)).getAuthor()))) {
-			return Response.status(401).entity(Strings.INVALIDROLE).build();
+			log.warn("User " + crsid + " tried to access fork "
+					+ Fork.generateForkId(crsid, tickId)
+					+ " but was denied permission");
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
 		}
+
+		/* Call the test service */
 		Report status;
 		try {
 			status = testServiceProxy.getLastReport(crsid, tickId);
+
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
+
 			log.error("Tried getting last report for " + crsid + " " + tickId,
-					s.getCause());
-			return Response.status(404).entity(e).build();
+					s.getCause(), s.getStackTrace());
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+
 		} catch (UserNotInDBException | TickNotInDBException e) {
 			log.error("Tried getting last report for " + crsid + " " + tickId,
 					e);
-			return Response.status(404).entity(e).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		}
 
-		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+		/*
+		 * Set the fork's unit pass depending on the status of the report and
+		 * save it
+		 */
 		fork.setUnitPass(status.getTestResult().equals(ReportResult.PASS));
 		db.saveFork(fork);
 
+		/* Return the report */
 		return Response.ok(status).build();
 	}
 
@@ -219,10 +316,23 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
+		/* The user operated on is the caller */
 		if (crsid.equals("")) {
 			crsid = myCrsid;
 		}
+
+		/* Get the fork object, returning if not found */
+		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+		if (fork == null) {
+			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+					+ " to get testing status, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Check permissions */
 		boolean marker = false;
+
 		List<String> groupIds = db.getTick(tickId).getGroups();
 		for (String groupId : groupIds) {
 			List<Role> roles = db.getRoles(groupId, myCrsid);
@@ -230,26 +340,38 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 				marker = true;
 			}
 		}
+
 		if (!(marker || myCrsid.equals(db.getFork(Fork.generateForkId(crsid,
 				tickId))))) {
-			return Response.status(401).entity(Strings.INVALIDROLE).build();
+			log.warn("User " + crsid + " tried to access fork "
+					+ Fork.generateForkId(crsid, tickId)
+					+ " but was denied permission");
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(Strings.INVALIDROLE).build();
 		}
 
+		/* Call the test service */
 		List<Report> status;
 		try {
 			status = testServiceProxy.getAllReports(crsid, tickId);
+
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
+
 			log.error("Tried getting all reports for " + crsid + " " + tickId,
-					s.getCause());
-			return Response.status(404).entity(e).build();
+					s.getCause(), s.getStackTrace());
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+
 		} catch (UserNotInDBException | TickNotInDBException e) {
 			log.error("Tried getting all reports for " + crsid + " " + tickId,
 					e);
-			return Response.status(404).entity(e).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
 		}
 
+		/* Return all of the reports */
 		return Response.ok(status).build();
 	}
 
