@@ -1,5 +1,5 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
-<link rel="import" href="../../bower_components/platform/platform.js"/>
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html"/>
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html"/>
 
@@ -181,7 +181,7 @@ the waiting toast.
                 }
                 else
                 {
-                  this.popUpToast("Something went wrong."
+                  this.popUpToast("Something went wrong." +
                       " See log for further details",
                     this.waitShown || this.popUpError);
                 }
