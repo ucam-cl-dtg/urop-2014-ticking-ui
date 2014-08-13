@@ -21,7 +21,8 @@
                 testRunning="{{testRunning}}"
                 reportAvailable="{{reportAvailable}}"
                 repo="{{repo}}"
-                forked="{{forked}}">
+                forked="{{forked}}"
+                deadline="{{deadline}}">
         </fork-service>
 
         <div id="mainContainer">
@@ -54,7 +55,8 @@
                                       testRunning="{{testRunning}}"
                                       reportAvailable="{{reportAvailable}}"
                                       unitPass="{{unitPass}}"
-                                      humanPass="{{humanPass}}">
+                                      humanPass="{{humanPass}}"
+                                      deadline="{{deadline}}">
                     </submit-component>
                     <div class="spacer"></div>
                     <!--<report-component flex
@@ -87,6 +89,7 @@
                 this.testRunning = null;
                 this.reportAvailable  = null;
                 this.repo = null;
+                this.deadline = null;
 
                 this.repoName = null;
             },
