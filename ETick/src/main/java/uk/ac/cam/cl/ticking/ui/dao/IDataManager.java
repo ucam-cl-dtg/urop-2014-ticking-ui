@@ -120,6 +120,14 @@ public interface IDataManager {
 	 * @return List of all users who are students
 	 */
 	public List<User> getStudents();
+	
+	/**
+	 * Goes to the configured storage and attempts to find all users who are
+	 * admins
+	 * 
+	 * @return List of all users who are admins
+	 */
+	public List<User> getAdmins();
 
 	/**
 	 * Goes to the configured storage and attempts to find the users belonging

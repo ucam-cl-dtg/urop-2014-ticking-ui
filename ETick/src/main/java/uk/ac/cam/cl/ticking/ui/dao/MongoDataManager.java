@@ -207,6 +207,15 @@ public class MongoDataManager implements IDataManager {
 		DBCursor<User> cursor = userColl.find().is("isStudent", true);
 		return getUsers(cursor);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<User> getAdmins() {
+		DBCursor<User> cursor = userColl.find().is("admin", true);
+		return getUsers(cursor);
+	}
 
 	/**
 	 * @param cursor

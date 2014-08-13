@@ -20,7 +20,7 @@ public class ConfigurationRegister {
 				new ConfigurationLoader<AcademicTemplate>("academic.json",
 						AcademicTemplate.class));
 		loaders.put(Admins.class,
-				new ConfigurationLoader<Admins>("academic.json",
+				new ConfigurationLoader<Admins>("admins.json",
 						Admins.class));
 	}
 
