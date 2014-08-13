@@ -4,7 +4,7 @@
 <link rel="import" href="box-list.html">
 <link rel="import" href="add-session.html">
 
-<polymer-element name="tick-session-list" attributes="sheets">
+<polymer-element name="tick-session-list" attributes="sheets isAuthor">
 	<template>
 		<style>
 			:host {
@@ -20,7 +20,9 @@
 
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>Ticking Sessions ({{sheets ? sheets.length : 0}})</h1>
-			<add-session></add-session>
+			<template if="{{isAuthor}}">
+				<add-session></add-session>
+			</template>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 

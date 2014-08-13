@@ -8,7 +8,6 @@
 <link rel="import" href="person-list.html">
 <link rel="import" href="tick-card/tick-card.html">
 <link rel="import" href="ticker-signup.html">
-<link rel="import" href="add-session.html">
 <link rel="import" href="file-browser/file-browser-card.html">
 <link rel="import" href="are-you-sure.html">
 <link rel="import" href="delete-group.html">
@@ -64,18 +63,6 @@
                                 <h2>DESCRIPTION:</h2>
                                 <p>{{info}}</p>
                             </template>
-
-                            <template if="{{sheets}}">
-                                <div layout horizontal center style="margin: 0; padding: 0;">
-                                    <h2>TICKING SESSIONS:</h2>
-                                    <template if="{{isAuthor}}">
-                                        <add-session></add-session>
-                                    </template>
-                                </div>
-                                <template repeat="{{sheet in sheets}}">
-                                    <p>{{sheet.title}}, <i style="color: #7C7C7C; font-size: 0.9rem;">{{sheet.location}}</i></p>
-                                </template>
-                            </template>
                         </div>
                     </div>
                 </div>
@@ -123,7 +110,8 @@
 
         <core-collapse id="tickingSessions">
         	<main-card animated>
-        		<tick-session-list sheets="{{sheets}}"></tick-session-list>
+        		<tick-session-list sheets="{{sheets}}"
+        			isAuthor="{{isAuthor}}"></tick-session-list>
         	</main-card>
             <template if="{{isMarker}}">
                 <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
