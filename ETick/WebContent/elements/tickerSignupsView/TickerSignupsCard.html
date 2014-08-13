@@ -9,7 +9,7 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="TickerSignupsViewport.html">
 
-<polymer-element name="ticker-signups-card" attributes="crsId tickId repoName ticker groupId sessionId">
+<polymer-element name="ticker-signups-card" attributes="crsId tickId repoName ticker groupId sessionId slotId">
     <template>
         <style>
             :host {
@@ -63,7 +63,7 @@
                 </core-collapse>
             </div>
             <div flex class="viewer-panel">
-                <ticker-signups-viewport crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
+                <ticker-signups-viewport on-show-report={{showReport}} slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
             </div>
         </div>
 
@@ -116,6 +116,9 @@
             },
             alertError: function() {
                 alert("Sorry, something went wrong");
+            },
+			updateTickerViewer: function(detail) {
+                this.$.view.updateViewConsole(detail.result);
             },
             crsIdChanged: function() {
                 console.log("Switching report to: crsid: " + this.crsId + ", tickId: " + this.tickId + ", repoName: " + this.repoName + ", ticker: " + this.ticker);

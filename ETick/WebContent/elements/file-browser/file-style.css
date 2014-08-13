@@ -43,17 +43,17 @@ code ol li
   font-weight: 500;
 }
 
-.comment
+.COMMENT
 {
   background-color: #ccc;
 }
 
-.warning
+.WARNING
 {
   background-color: #ffb;
 }
 
-.error
+.ERROR
 {
   background-color: #faa;
 }
