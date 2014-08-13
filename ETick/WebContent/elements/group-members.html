@@ -111,7 +111,7 @@
 			},
 
 			personSelectionChanged: function () {
-				this.selectedPeople = this.$.members.$.memberSelector.selected;
+				this.selectedPeople = this.$.members.$.list.$.selector.selected;
 			},
 
 			listResponse: function() {
@@ -177,7 +177,7 @@
 			deleteResponse: function (e, detail) {
 				this.$.deleteSuccessToast.text = detail.xhr.responseText;
 				this.$.deleteSuccessToast.show();
-				this.$.members.$.memberSelector.selected = undefined;
+				this.$.members.$.list.$.selector.selected = undefined;
 				this.$.listAjax.go();
 			},
 
