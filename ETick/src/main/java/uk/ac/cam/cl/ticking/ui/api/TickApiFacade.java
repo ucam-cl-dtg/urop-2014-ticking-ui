@@ -82,7 +82,7 @@ public class TickApiFacade implements ITickApiFacade {
 		Tick tick = db.getTick(tickId);
 
 		if (tick == null) {
-			log.error("Requested tick " + crsid
+			log.error("User " + crsid + " requested tick " + crsid
 					+ " for deletion, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -106,8 +106,8 @@ public class TickApiFacade implements ITickApiFacade {
 			SerializableException s = h.readException(e);
 
 			if (s.getClassName().equals(IOException.class.getName())) {
-				log.error("Tried deleting repository for " + tickId,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " tried deleting repository for "
+						+ tickId, s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -117,18 +117,19 @@ public class TickApiFacade implements ITickApiFacade {
 				/* We still want to remove the tick */
 				db.removeTick(tickId);
 
-				log.warn("Tried deleting repository for " + tickId,
-						s.getCause(), s.getStackTrace());
+				log.warn("User " + crsid + " tried deleting repository for "
+						+ tickId, s.getCause(), s.getStackTrace());
 
 			} else {
-				log.error("Tried deleting repository for " + tickId,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " tried deleting repository for "
+						+ tickId, s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | RepositoryNotFoundException e) {
-			log.error("Tried deleting repository for " + tickId, e);
+			log.error("User " + crsid + " tried deleting repository for "
+					+ tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
@@ -183,7 +184,8 @@ public class TickApiFacade implements ITickApiFacade {
 		Tick failed = db.getTick(tick.getTickId());
 		if (failed != null && failed.getStubRepo() != null
 				&& failed.getCorrectnessRepo() != null) {
-			log.error("Tried creating tick with id " + tick.getTickId());
+			log.error("User " + crsid + " tried creating tick with id "
+					+ tick.getTickId());
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(Strings.EXISTS).build();
 		}
@@ -205,7 +207,8 @@ public class TickApiFacade implements ITickApiFacade {
 				if (s.getClassName().equals(IOException.class.getName())) {
 
 					log.error(
-							"Tried creating stub repository for "
+							"User " + crsid
+									+ " tried creating stub repository for "
 									+ tick.getTickId(), s.getCause(),
 							s.getStackTrace());
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -215,7 +218,8 @@ public class TickApiFacade implements ITickApiFacade {
 				if (s.getClassName().equals(
 						DuplicateRepoNameException.class.getName())) {
 					log.error(
-							"Tried creating stub repository for "
+							"User " + crsid
+									+ " tried creating stub repository for "
 									+ tick.getTickId(), s.getCause(),
 							s.getStackTrace());
 					return Response.status(Status.NOT_FOUND)
@@ -223,7 +227,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 				} else {
 					log.error(
-							"Tried creating stub repository for "
+							"User " + crsid
+									+ " tried creating stub repository for "
 									+ tick.getTickId(), s.getCause(),
 							s.getStackTrace());
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -232,7 +237,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 			} catch (IOException | DuplicateRepoNameException e) {
 				log.error(
-						"Tried to create stub repository for "
+						"User " + crsid
+								+ " tried to create stub repository for "
 								+ tick.getTickId(), e.getCause());
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 						.build();
@@ -261,7 +267,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 				if (s.getClassName().equals(IOException.class.getName())) {
 
-					log.error("Tried creating correctness repository for "
+					log.error("User " + crsid
+							+ " tied creating correctness repository for "
 							+ tick.getTickId(), s.getCause(), s.getStackTrace());
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
 							.entity(Strings.IDEMPOTENTRETRY).build();
@@ -269,13 +276,15 @@ public class TickApiFacade implements ITickApiFacade {
 
 				if (s.getClassName().equals(
 						DuplicateRepoNameException.class.getName())) {
-					log.error("Tried creating correctness repository for "
+					log.error("User " + crsid
+							+ " tried creating correctness repository for "
 							+ tick.getTickId(), s.getCause(), s.getStackTrace());
 					return Response.status(Status.NOT_FOUND)
 							.entity(Strings.IDEMPOTENTRETRY).build();
 
 				} else {
-					log.error("Tried creating correctness repository for "
+					log.error("User " + crsid
+							+ " tried creating correctness repository for "
 							+ tick.getTickId(), s.getCause(), s.getStackTrace());
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
 							.entity(Strings.IDEMPOTENTRETRY).build();
@@ -283,7 +292,9 @@ public class TickApiFacade implements ITickApiFacade {
 
 			} catch (IOException | DuplicateRepoNameException e) {
 				log.error(
-						"Tried to create correctness repository for "
+						"User "
+								+ crsid
+								+ " tried to create correctness repository for "
 								+ tick.getTickId(), e.getCause());
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 						.build();
@@ -380,7 +391,9 @@ public class TickApiFacade implements ITickApiFacade {
 			 * There was no original tick object, so create a new one from the
 			 * same bean
 			 */
-			log.warn("Requested tick "
+			log.warn("User "
+					+ crsid
+					+ " requested tick "
 					+ tickId
 					+ " for updating, but it couldn't be found, creating a new group instead");
 			return newTick(request, tickBean);
@@ -417,7 +430,7 @@ public class TickApiFacade implements ITickApiFacade {
 		Group group = db.getGroup(groupId);
 
 		if (group == null) {
-			log.error("Requested group " + groupId
+			log.error("User " + crsid + " requested group " + groupId
 					+ " to add a tick, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -427,7 +440,7 @@ public class TickApiFacade implements ITickApiFacade {
 		Tick tick = db.getTick(tickId);
 
 		if (tick == null) {
-			log.error("Requested tick " + tickId
+			log.error("User " + crsid + " requested tick " + tickId
 					+ " to add to a group, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -464,7 +477,7 @@ public class TickApiFacade implements ITickApiFacade {
 		Tick tick = db.getTick(tickId);
 
 		if (tick == null) {
-			log.error("Requested tick " + tickId
+			log.error("User " + crsid + " requested tick " + tickId
 					+ " to update deadline, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -497,7 +510,7 @@ public class TickApiFacade implements ITickApiFacade {
 		Tick tick = db.getTick(tickId);
 
 		if (tick == null) {
-			log.error("Requested tick " + tickId
+			log.error("User " + myCrsid + " requested tick " + tickId
 					+ " to get files, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -522,7 +535,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 			if (s.getClassName().equals(IOException.class.getName())) {
 
-				log.error("Tried to get repository files for " + tickId,
+				log.error("User " + myCrsid
+						+ " tried to get repository files for " + tickId,
 						s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
@@ -530,20 +544,23 @@ public class TickApiFacade implements ITickApiFacade {
 
 			if (s.getClassName().equals(
 					RepositoryNotFoundException.class.getName())) {
-				log.error("Tried to get repository files for " + tickId,
+				log.error("User " + myCrsid
+						+ " tried to get repository files for " + tickId,
 						s.getCause(), s.getStackTrace());
 				return Response.status(Status.NOT_FOUND)
 						.entity(Strings.MISSING).build();
 
 			} else {
-				log.error("Tried to get repository files for " + tickId,
+				log.error("User " + myCrsid
+						+ " tried to get repository files for " + tickId,
 						s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | RepositoryNotFoundException e) {
-			log.error("Tried to get repository files for " + tickId, e);
+			log.error("User " + myCrsid + " tried to get repository files for "
+					+ tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}

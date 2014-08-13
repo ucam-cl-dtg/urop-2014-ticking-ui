@@ -25,7 +25,7 @@ import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import com.google.inject.Inject;
 
 @Path("/raven")
-public class RavenManager {
+public class LdapManager {
 
 	private IDataManager db;
 	private ConfigurationLoader<AcademicTemplate> academicConfig;
@@ -34,7 +34,7 @@ public class RavenManager {
 	 * @param db
 	 */
 	@Inject
-	public RavenManager(IDataManager db,
+	public LdapManager(IDataManager db,
 			ConfigurationLoader<AcademicTemplate> academicConfig) {
 		this.db = db;
 		this.academicConfig = academicConfig;
@@ -115,7 +115,7 @@ public class RavenManager {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		User user = db.getUser(crsid);
-		if (user == null || !user.isLdap()) {
+		if (user == null || user.getLdap()==null || user.getLdap().plusDays(1).isBeforeNow()) {
 			user = ldapProduceUser(crsid);
 			db.saveUser(user);
 			return Response.status(Status.CREATED).entity(user).build();

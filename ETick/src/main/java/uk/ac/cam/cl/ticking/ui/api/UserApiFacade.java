@@ -66,7 +66,8 @@ public class UserApiFacade implements IUserApiFacade {
 		User user = db.getUser(crsid);
 
 		if (user == null) {
-			log.error("Requested user " + crsid + " but they couldn't be found");
+			log.error("User " + crsid + " requested user " + crsid
+					+ " but they couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
@@ -80,13 +81,15 @@ public class UserApiFacade implements IUserApiFacade {
 	@Override
 	public Response deleteUser(HttpServletRequest request, String crsid,
 			boolean purge) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
 		// TODO admin check
 
 		/* Get the user object, returning if not found */
 		User user = db.getUser(crsid);
 
 		if (user == null) {
-			log.error("Requested user " + crsid
+			log.error("User " + myCrsid + " requested user " + crsid
 					+ " for deletion, but they couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -155,7 +158,7 @@ public class UserApiFacade implements IUserApiFacade {
 		User user = db.getUser(crsid);
 
 		if (user == null) {
-			log.error("Requested user " + crsid
+			log.error("User " + crsid + " requested user " + crsid
 					+ " to add a public ssh key, but they couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -168,12 +171,12 @@ public class UserApiFacade implements IUserApiFacade {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
-			log.error("Tried adding ssh key for " + crsid, s.getCause(),
-					s.getStackTrace());
+			log.error("User " + crsid + " tried adding ssh key for " + crsid,
+					s.getCause(), s.getStackTrace());
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(Strings.IDEMPOTENTRETRY).build();
 		} catch (IOException e) {
-			log.error("Tried adding ssh key for " + crsid, e);
+			log.error("User " + crsid + " tried adding ssh key for " + crsid, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}

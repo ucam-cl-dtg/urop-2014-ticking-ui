@@ -17,7 +17,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupingBean;
-import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
+import uk.ac.cam.cl.ticking.ui.auth.LdapManager;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -37,11 +37,11 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 	// not currently used but could quite possibly be needed in the future, will
 	// remove if not
 	private ConfigurationLoader<Configuration> config;
-	private RavenManager raven;
+	private LdapManager raven;
 
 	@Inject
 	public GroupingApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config, RavenManager raven) {
+			ConfigurationLoader<Configuration> config, LdapManager raven) {
 		this.db = db;
 		this.config = config;
 		this.raven = raven;
@@ -58,7 +58,9 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 
 		/* Return if we have not given any roles */
 		if (groupingBean.getRoles().isEmpty()) {
-			log.error("Tried to add users to a group but neglected to supply desired roles");
+			log.error("User "
+					+ myCrsid
+					+ " tried to add users to a group but neglected to supply desired roles");
 			return Response.status(Status.BAD_REQUEST)
 					.entity(Strings.ATLEASTONEROLE).build();
 		}
@@ -67,7 +69,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		Group group = db.getGroup(groupId);
 
 		if (group == null) {
-			log.error("Requested group " + groupId
+			log.error("User " + myCrsid + " requested group " + groupId
 					+ " to add members, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -121,7 +123,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		Group group = db.getGroup(groupId);
 
 		if (group == null) {
-			log.error("Requested group " + groupId
+			log.error("User " + myCrsid + " requested group " + groupId
 					+ " to remove members, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();

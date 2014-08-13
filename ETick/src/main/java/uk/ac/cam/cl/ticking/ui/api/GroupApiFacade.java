@@ -88,7 +88,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		Group group = db.getGroup(groupId);
 
 		if (group == null) {
-			log.error("Requested group " + groupId
+			log.error("User " + crsid + " requested group " + groupId
 					+ " for deletion, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -152,7 +152,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		User user = db.getUser(crsid);
 
 		if (user == null) {
-			log.error("Requested user " + crsid
+			log.error("User " + crsid + " requested user " + crsid
 					+ " to add group, but they couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -201,7 +201,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException e) {
-			log.error("Tried to insert group into database with groupId "
+			log.error("User " + crsid
+					+ " tried to insert group into database with groupId "
 					+ group.getGroupId(), e);
 			return Response.status(Status.CONFLICT)
 					.entity(Strings.IDEMPOTENTRETRY).build();
@@ -256,7 +257,9 @@ public class GroupApiFacade implements IGroupApiFacade {
 			 * There was no original group object, so create a new one from the
 			 * same bean
 			 */
-			log.warn("Requested group "
+			log.warn("User "
+					+ crsid
+					+ " requested group "
 					+ groupId
 					+ " for updating, but it couldn't be found, creating a new group instead");
 			return addGroup(request, new ArrayList<String>(), groupBean);
@@ -276,7 +279,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		Group prevGroup = db.getGroup(groupId);
 
 		if (prevGroup == null) {
-			log.error("Requested group " + groupId
+			log.error("User " + crsid + " requested group " + groupId
 					+ " for cloning, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -301,7 +304,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException e) {
-			log.error("Tried to insert group into database with groupId "
+			log.error("User " + crsid
+					+ " tried to insert group into database with groupId "
 					+ group.getGroupId(), e);
 			return Response.status(Status.CONFLICT)
 					.entity(Strings.IDEMPOTENTRETRY).build();
