@@ -69,6 +69,7 @@
                 if (detail.xhr.status == 404) {
                     //not been forked yet
                     this.forked = false;
+                    this.reportAvailable = false;
                 } else {
                     //something else went wrong
                     this.$.toastLoadError.text = detail.xhr.responseText;
