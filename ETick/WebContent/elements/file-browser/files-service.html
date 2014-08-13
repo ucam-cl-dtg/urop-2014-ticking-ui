@@ -100,7 +100,13 @@
             this.tickerResult = this.$.report.response.tickerResult;
             this.reportResult = this.$.report.response.reportResult;
             this.comments     = this.$.report.response.tickerComments;
-            this.errors       = this.$.report.response.items;
+            this.errors       =
+              this.$.report.response.items.reduce(
+                  function (prev, curr)
+                  {
+                    curr.className = curr.outcome + prev.length;
+                    return prev.concat(curr);
+                  }, []);
             this.commitId     = this.$.report.response.commitId;
             this.date         = new Date(this.$.report.response
                                                     .creationDate);

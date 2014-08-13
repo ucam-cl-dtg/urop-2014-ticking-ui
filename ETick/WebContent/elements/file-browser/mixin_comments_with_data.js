@@ -12,15 +12,15 @@
  * [/CODE]
  *
  * [DATA]
- * [ {   "start"   : 3
- *     , "end"     : 8
- *     , "message" : "Hello is a greeting"
- *     , "class"   : "message1"
+ * [ {   "start"     : 3
+ *     , "end"       : 8
+ *     , "message"   : "Hello is a greeting"
+ *     , "className" : "message1"
  *   }
- * , {   "start"   : 3
- *     , "end"     : 15
- *     , "message" : "This is a standard result."
- *     , "class"   : "helloWorld"
+ * , {   "start"     : 3
+ *     , "end"       : 15
+ *     , "message"   : "This is a standard result."
+ *     , "className" : "helloWorld"
  * } ]
  * [/DATA]
  *
@@ -51,7 +51,7 @@
  *   if (comments.length > 0)
  *   {
  *     rtn += "<span class=\"";
- *     rtn += comments.map(function (x) { return x.class; })
+ *     rtn += comments.map(function (x) { return x.className; })
  *             .join(" ");
  *     rtn += "\">";
  *   }
@@ -210,9 +210,9 @@ function lines_to_chars(data, comments)
  * Due to the way mixin_comments_with_data works, we can not have other
  * spans in the data, so this extracts spans from data and converts them
  * into comments of the following form.
- * [ {   "start" : ? Where span starts
- *     , "end"   : ? Where span ends
- *     , "class" : ? Class(es) of the span
+ * [ {   "start"     : ? Where span starts
+ *     , "end"       : ? Where span ends
+ *     , "className" : ? Class(es) of the span
  * } ]
  *
  */
@@ -254,18 +254,18 @@ function spans_to_comments(data)
           }
           else
           {
-            stack.push({"start":i, "class" : []});
+            stack.push({"start":i, "className" : []});
             tmp = tmp.replace(/class="([^"]*)"/,
                       function (match, capture)
                       {
-                        stack[stack.length-1].class =
-                          stack[stack.length-1].class
+                        stack[stack.length-1].className =
+                          stack[stack.length-1].className
                             .concat(capture);
                       });
-            if (stack[stack.length-1].class.length > 0)
+            if (stack[stack.length-1].className.length > 0)
             {
-              stack[stack.length-1].class =
-                stack[stack.length-1].class.join(" ");
+              stack[stack.length-1].className =
+                stack[stack.length-1].className.join(" ");
             }
             else
             {
@@ -315,7 +315,7 @@ function default_convert(comments, text)
                            }, 0);
     rtn += "\">";
     rtn += "<span class=\"";
-    rtn += comments.map(function (x) { return x.class; })
+    rtn += comments.map(function (x) { return x.className; })
     .join(" ");
     rtn += "\">";
   }
