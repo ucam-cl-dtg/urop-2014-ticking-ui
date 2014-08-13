@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -125,6 +126,13 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Get the users in the group, sort and return them */
 		List<User> users = db.getUsers(groupId);
+		Iterator<User> i = users.iterator();
+		while (i.hasNext()) {
+			User user = i.next();
+			if (user.isAdmin()) {
+				i.remove();
+			}
+		}
 		Collections.sort(users);
 		return Response.ok(users).build();
 	}
@@ -213,6 +221,15 @@ public class GroupApiFacade implements IGroupApiFacade {
 			Grouping grouping = new Grouping(group.getGroupId(), crsid,
 					Role.valueOf(role));
 			db.saveGrouping(grouping);
+		}
+		
+		/* Give admins all roles for the group */
+		for (User admin : db.getAdmins()) {
+			for (Role role : Role.values()) {
+				Grouping grouping = new Grouping(group.getGroupId(), admin.getCrsid(),
+						role);
+				db.saveGrouping(grouping);
+			}
 		}
 
 		/* return the created group object */
