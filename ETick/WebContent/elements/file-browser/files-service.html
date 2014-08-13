@@ -18,9 +18,10 @@
   <template>
     <link rel="stylesheet" href="style.css"/>
     <toast-ajax id="report"
-                auto
                 on-core-response="{{reportLoaded}}"
                 handleAs="json"
+                method="GET"
+                auto
                 
                 popUpError
                 captureError
@@ -28,9 +29,9 @@
                 responseMessage="Report successfully loaded.">
     </toast-ajax>
     <toast-ajax id="fileContent"
-                auto
                 on-core-response="{{filesLoaded}}"
                 handleAs="json"
+                method="GET"
                 
                 popUpError
                 captureError
@@ -100,6 +101,7 @@
                 + "/files?crsid="
                 + this.crsid;
             }
+            this.$.fileContent.go();
 
             /* Make a copy of the loaded data */
             this.testResult   = this.$.report.response.testResult;
