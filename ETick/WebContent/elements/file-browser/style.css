@@ -12,6 +12,10 @@ paper-checkbox {
   height: 15px;
 }
 
+/*
+  paper-button styles removed.
+*/
+
 paper-button.green {
   background: #009933;
   color: #fff;
