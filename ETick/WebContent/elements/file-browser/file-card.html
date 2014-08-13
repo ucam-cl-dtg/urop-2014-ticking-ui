@@ -133,60 +133,16 @@
               var syntax   = spans_to_comments(hljs
                                .highlightAuto(this.content || '').value)
 
-              this.$.codeContent.innerHTML = "<ol><li>" +
+              this.$.codeContent.innerHTML =
+                "<ol><li>" +
                   mixin_comments_with_data(this.content
                     , comments.concat(syntax)
-                    , function (comments, text)
-                      {
-                        rtn = new String();
-
-                        var open = "";
-                        if (comments.length > 0)
-                        {
-                          open += "<span class=\"";
-                          open += comments.map(function (comment)
-                                              {
-                                                return comment
-                                                        .className;
-                                              }).join(" ");
-                          open += "\" title=\""
-                          open += comments.reduce(function (prev, comment)
-                                                  {
-                                                    if (typeof comment.message
-                                                        != typeof undefined)
-                                                    {
-                                                      prev.push(
-                                                        prev.length+1
-                                                        + ". " +
-                                                        comment.message
-                                                      );
-                                                    }
-                                                    return prev;
-                                                  }, [])
-                                              .join("\n");
-                          open += "\">";
-                        }
-                        else
-                        {
-                          open += "<span>";
-                        }
-
-                        var close = "</span>";
-
-                        rtn += open;
-                        rtn += text.replace(/\n/g,
-                                  close + "</li><li>" + open);
-                        rtn += close;
-
-                        return rtn;
-                      }
-                  ) + "</li></ol>";
+                    , default_convert
+                  ) +
+                "</li></ol>";
             }
-          , commentsChanged:
-            function (oldValue, newValue)
-            {
-              this.contentChanged();
-            }
+
+          , commentsChanged: this.contentChanged
 
           , highlightChanged:
             function ()

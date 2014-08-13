@@ -167,6 +167,7 @@ function mixin_comments_with_data(data, comments, conversion)
 function lines_to_chars(data, comments)
 {
   "use strict";
+
   if (typeof data     == typeof undefined
       ||typeof comments == typeof undefined)
   {
@@ -218,6 +219,8 @@ function lines_to_chars(data, comments)
  */
 function spans_to_comments(data)
 {
+  "use strict";
+
   var i, j;
   var stack = new Array(); /* For class tags */
   var rtn = new Array();
@@ -305,15 +308,28 @@ function spans_to_comments(data)
  */
 function default_convert(comments, text)
 {
-  rtn = new String();
+  "use strict";
+
+  var rtn = "";
+  var tooltip = "";
+
   if (comments.length > 0)
   {
-    rtn += "<core-tooltip label=\"";
-    rtn += comments.reduce(function (num, comment)
-                           {
-                             return ++num + ". " + x.message;
-                           }, 0);
-    rtn += "\">";
+    tooltip = comments.reduce(
+        function (prev, curr)
+        {
+          if (typeof curr.message != typeof undefined)
+          {
+            prev.push((prev.length + 1) + ". " + curr.message);
+          }
+          return prev;
+        }, []);
+
+    if (tooltip != "")
+    {
+      rtn += "<span title=\"" + tooltip.join("\n") + "\">";
+    }
+
     rtn += "<span class=\"";
     rtn += comments.map(function (x) { return x.className; })
     .join(" ");
@@ -326,9 +342,9 @@ function default_convert(comments, text)
 
   rtn += text.replace(/\n/g, "</li><li>");
   rtn += "</span>";
-
-  if (comments.length > 0)
+  if (tooltip != "")
   {
-    rtn += "</core-tooltip>";
+    rtn += "</span>";
   }
+  return rtn;
 }
