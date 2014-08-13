@@ -106,7 +106,13 @@ public class UserApiFacade implements IUserApiFacade {
 	public Response getGroups(HttpServletRequest request) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+		
+		User user = db.getUser(crsid);
 		List<Group> groups = db.getGroups(crsid);
+		
+		if (user.isAdmin()) {
+			groups = db.getGroups();
+		}
 		Collections.sort(groups);
 		return Response.ok(groups).build();
 	}
