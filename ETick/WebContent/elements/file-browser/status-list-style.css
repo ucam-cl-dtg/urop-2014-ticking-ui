@@ -1,14 +1,14 @@
-.error
+.ERROR
 {
     color: #b0120a;
 }
 
-.warning
+.WARNING
 {
     color: #ff6f00;
 }
 
-.pass
+.PASS
 {
     color: #33691e;
 }
