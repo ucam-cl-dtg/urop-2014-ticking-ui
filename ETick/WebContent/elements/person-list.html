@@ -4,47 +4,27 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
 <link rel="import" href="person-box.html">
+<link rel="import" href="box-list.html">
 
-<polymer-element name="person-list" attributes="people boxWidth query">
+<polymer-element name="person-list" attributes="people query">
 	<template>
 		<style>
 			:host {
 				display: block;
 				width: 100%;
 			}
-			person-box {
-				width: calc(100% / 3);
-			}
-			person-box:nth-child(odd) {
-				background: #f6f6f6;
-			}
-			person-box:nth-child(even) {
-				background: #e9e9e9;
-			}
-
-			/* Styles of selected box. */
-			person-box.core-selected{
-				background: linear-gradient(#E1BEE7, #D697EE);
-				color: #6300CE;
-			}
-			person-box.core-selected::shadow h2 {
-				color: #000;
-			}
-			person-box::shadow paper-ripple {
-				color: #3C00FF;
-			}
 		</style>
-		<core-selector multi layout horizontal center wrap 
-			id="memberSelector" valueattr="crsid">
+		<box-list id="list" multi selector valueattr="crsid">
 			<template repeat="{{person in people | filter(query) }}">
 					<person-box
+						class="itemBox"
 						name="{{person.displayName}}"
 						crsid="{{person._id}}"
 						college="{{person.college == 'Unknown' ? '' : person.college}}"
 						isStudent="{{person.isStudent}}">
 					</person-box>	
 			</template>	
-		</core-selector>
+		</box-list>
 	</template>
 	<script>
 		Polymer('person-list', {

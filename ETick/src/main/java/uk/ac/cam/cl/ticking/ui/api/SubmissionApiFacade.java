@@ -77,7 +77,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		Tick tick = db.getTick(tickId);
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork == null) {
-			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+			log.error("User " + crsid + " requested fork "
+					+ Fork.generateForkId(crsid, tickId)
 					+ " to submission, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -112,16 +113,16 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			SerializableException s = h.readException(e);
 
 			if (s.getClassName().equals(IOException.class.getName())) {
-				log.error("Tried to start new test on " + repoName,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " tried to start new test on "
+						+ repoName, s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 			if (s.getClassName().equals(
 					TestStillRunningException.class.getName())) {
-				log.error("Tried to start new test on " + repoName,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " tried to start new test on "
+						+ repoName, s.getCause(), s.getStackTrace());
 				return Response.status(Status.SERVICE_UNAVAILABLE)
 						.entity(Strings.TESTRUNNING).build();
 
@@ -129,8 +130,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 			if (s.getClassName()
 					.equals(TestIDNotFoundException.class.getName())) {
-				log.error("Tried to start new test on " + repoName,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " tried to start new test on "
+						+ repoName, s.getCause(), s.getStackTrace());
 				return Response.status(Status.NOT_FOUND)
 						.entity(Strings.MISSING).build();
 
@@ -138,21 +139,22 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 			if (s.getClassName().equals(
 					NoCommitsToRepoException.class.getName())) {
-				log.error("Tried to start new test on " + repoName,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " tried to start new test on "
+						+ repoName, s.getCause(), s.getStackTrace());
 				return Response.status(Status.BAD_REQUEST)
 						.entity(Strings.NOCOMMITS).build();
 
 			} else {
-				log.error("Tried to start new test on " + repoName,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " tried to start new test on "
+						+ repoName, s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | TestStillRunningException
 				| TestIDNotFoundException | NoCommitsToRepoException e) {
-			log.error("Tried to start new test on " + repoName, e);
+			log.error("User " + crsid + " tried to start new test on "
+					+ repoName, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
@@ -176,7 +178,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Get the fork object, returning if not found */
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork == null) {
-			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+			log.error("User " + crsid + " requested fork "
+					+ Fork.generateForkId(crsid, tickId)
 					+ " to get testing status, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -190,13 +193,13 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
-			log.error("Tried getting the running status of " + crsid + " "
-					+ tickId, s.getCause(), s.getStackTrace());
+			log.error("User " + crsid + " tried getting the running status of "
+					+ crsid + " " + tickId, s.getCause(), s.getStackTrace());
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		} catch (NoSuchTestException e) {
-			log.error("Tried getting the running status of " + crsid + " "
-					+ tickId, e);
+			log.error("User " + crsid + " tried getting the running status of "
+					+ crsid + " " + tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
@@ -251,7 +254,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Get the fork object, returning if not found */
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork == null) {
-			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+			log.error("User " + myCrsid + " requested fork "
+					+ Fork.generateForkId(crsid, tickId)
 					+ " to get testing status, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -268,7 +272,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		}
 		if (!(marker || myCrsid.equals(db.getFork(
 				Fork.generateForkId(crsid, tickId)).getAuthor()))) {
-			log.warn("User " + crsid + " tried to access fork "
+			log.warn("User " + myCrsid + " tried to access fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
@@ -284,14 +288,14 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
-			log.error("Tried getting last report for " + crsid + " " + tickId,
-					s.getCause(), s.getStackTrace());
+			log.error("User " + myCrsid + " tried getting last report for "
+					+ crsid + " " + tickId, s.getCause(), s.getStackTrace());
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 
 		} catch (UserNotInDBException | TickNotInDBException e) {
-			log.error("Tried getting last report for " + crsid + " " + tickId,
-					e);
+			log.error("User " + myCrsid + " tried getting last report for "
+					+ crsid + " " + tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
@@ -324,7 +328,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Get the fork object, returning if not found */
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork == null) {
-			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+			log.error("User " + myCrsid + " requested fork "
+					+ Fork.generateForkId(crsid, tickId)
 					+ " to get testing status, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -343,7 +348,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 		if (!(marker || myCrsid.equals(db.getFork(Fork.generateForkId(crsid,
 				tickId))))) {
-			log.warn("User " + crsid + " tried to access fork "
+			log.warn("User " + myCrsid + " tried to access fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
@@ -359,14 +364,14 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
-			log.error("Tried getting all reports for " + crsid + " " + tickId,
-					s.getCause(), s.getStackTrace());
+			log.error("User " + myCrsid + " tried getting all reports for "
+					+ crsid + " " + tickId, s.getCause(), s.getStackTrace());
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 
 		} catch (UserNotInDBException | TickNotInDBException e) {
-			log.error("Tried getting all reports for " + crsid + " " + tickId,
-					e);
+			log.error("User " + myCrsid + " tried getting all reports for "
+					+ crsid + " " + tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}

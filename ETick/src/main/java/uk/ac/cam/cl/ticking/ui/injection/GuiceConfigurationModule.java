@@ -19,8 +19,9 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.remote.GitApi;
 import uk.ac.cam.cl.ticking.ui.api.remote.SignupApi;
 import uk.ac.cam.cl.ticking.ui.api.remote.TestApi;
-import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
+import uk.ac.cam.cl.ticking.ui.auth.LdapManager;
 import uk.ac.cam.cl.ticking.ui.configuration.AcademicTemplate;
+import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
@@ -50,7 +51,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static SubmissionApiFacade submissionApiFacade = null;
 	private static ForkApiFacade forkApiFacade = null;
 	private static TickSignups tickSignups = null;
-	private static RavenManager ravenManager = null;
+	private static LdapManager ldapManager = null;
 
 	/**
 	 * {@inheritDoc}
@@ -103,6 +104,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 		}).toInstance(
 				(ConfigurationLoader<AcademicTemplate>) ConfigurationRegister
 						.getLoader(AcademicTemplate.class));
+		bind(new TypeLiteral<ConfigurationLoader<Admins>>() {
+		}).toInstance(
+				(ConfigurationLoader<Admins>) ConfigurationRegister
+						.getLoader(Admins.class));
 	}
 
 	/**
@@ -140,7 +145,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static GroupingApiFacade getGroupingApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config, RavenManager raven) {
+			ConfigurationLoader<Configuration> config, LdapManager raven) {
 		if (groupingApiFacade == null) {
 			groupingApiFacade = new GroupingApiFacade(db, config, raven);
 		}
@@ -195,12 +200,13 @@ public class GuiceConfigurationModule extends AbstractModule {
 
 	@Inject
 	@Provides
-	private static RavenManager getRavenManager(IDataManager db,
-			ConfigurationLoader<AcademicTemplate> academicConfig) {
-		if (ravenManager == null) {
-			ravenManager = new RavenManager(db, academicConfig);
+	private static LdapManager getLdapManager(IDataManager db,
+			ConfigurationLoader<AcademicTemplate> academicConfig,
+			ConfigurationLoader<Admins> adminConfig) {
+		if (ldapManager == null) {
+			ldapManager = new LdapManager(db, academicConfig, adminConfig);
 		}
-		return ravenManager;
+		return ldapManager;
 	}
 
 }
