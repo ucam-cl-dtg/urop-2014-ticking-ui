@@ -2,43 +2,62 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
 
-<polymer-element name="box-list" attributes="valueattr multi">
+<polymer-element name="box-list" attributes="selector valueattr multi">
 	<template>
-		<style>
+		<style shim-shadowdom>
+
 			:host {
 				display: block;
 				width: 100%;
 			}
-			.itemBox {
+
+			polyfill-next-selector { content: '.itemBox'; }
+			::content .itemBox {
 				width: calc(100% / 3);
 			}
-			.itemBox:nth-child(odd) {
+
+			polyfill-next-selector { content: '.itemBox:nth-child(odd)'; }
+			::content .itemBox:nth-child(odd) {
 				background: #f6f6f6;
 			}
-			.itemBox:nth-child(even) {
+
+			polyfill-next-selector { content: '.itemBox:nth-child(odd)'; }
+			::content .itemBox:nth-child(even) {
 				background: #e9e9e9;
 			}
 
 			/* Styles of selected box. */
-			.itemBox.core-selected{
+			polyfill-next-selector { content: '#selector .core-selected'; }
+			#selector ::content .core-selected{
 				background: linear-gradient(#E1BEE7, #D697EE);
 				color: #6300CE;
 			}
-			.itemBox.core-selected::shadow h2 {
+
+			polyfill-next-selector { content: '#selector .core-selected::shadow h2'; }
+			#selector ::content .core-selected::shadow h2 {
 				color: #000;
 			}
-			.itemBox::shadow paper-ripple {
+
+			polyfill-next-selector { content: '#selector .itemBox::shadow paper-ripple'; }
+			#selector ::content .itemBox::shadow paper-ripple {
 				color: #3C00FF;
 			}
 		</style>
-		<core-selector multi="{{multi}}" layout horizontal center wrap 
-			id="selector" valueattr="{{valueattr}}">
+		<template if="{{selector}}">
+			<core-selector multi="{{multi}}" layout horizontal center wrap 
+				id="selector" valueattr="{{valueattr}}">
+				<content></content>
+			</core-selector>
+		</template>
+		<template if="{{!selector}}">
 			<content></content>
-		</core-selector>
+		</template>
 	</template>
 	<script>
 		Polymer('box-list', {
 			multi: false,
+
+			selector: false,
 
 		});
 	</script>
