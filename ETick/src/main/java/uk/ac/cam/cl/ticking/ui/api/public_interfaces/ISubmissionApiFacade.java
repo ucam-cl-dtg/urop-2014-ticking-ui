@@ -34,7 +34,8 @@ public interface ISubmissionApiFacade {
 	@Path("/{tickId}/")
 	@Produces("application/json")
 	public abstract Response submit(@Context HttpServletRequest request,
-			@PathParam("tickId") String tickId) throws RepositoryNotFoundException;
+			@PathParam("tickId") String tickId)
+			throws RepositoryNotFoundException;
 
 	/**
 	 * @param request
@@ -57,7 +58,8 @@ public interface ISubmissionApiFacade {
 	@Path("/{tickId}/last")
 	@Produces("application/json")
 	public abstract Response getLast(@Context HttpServletRequest request,
-			@PathParam("tickId") String tickId, @DefaultValue("") @QueryParam("crsid") String crsid);
+			@PathParam("tickId") String tickId,
+			@DefaultValue("") @QueryParam("crsid") String crsid);
 
 	/**
 	 * @param request
@@ -68,6 +70,7 @@ public interface ISubmissionApiFacade {
 	@Path("/{tickId}")
 	@Produces("application/json")
 	public abstract Response getAll(@Context HttpServletRequest request,
-			@PathParam("tickId") String tickId, @DefaultValue("") @QueryParam("crsid") String crsid);
+			@PathParam("tickId") String tickId,
+			@DefaultValue("") @QueryParam("crsid") String crsid);
 
 }

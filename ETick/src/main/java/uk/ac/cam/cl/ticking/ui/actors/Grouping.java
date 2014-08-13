@@ -1,6 +1,5 @@
 package uk.ac.cam.cl.ticking.ui.actors;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**

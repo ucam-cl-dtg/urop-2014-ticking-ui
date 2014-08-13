@@ -50,8 +50,8 @@ public class DatabasePopulator {
 
 	public static void addEntry(User u, String g, Role r) {
 		Group group = null;
-		//group = db.getGroupByName(g);
-		//Method getGroupByName no longer exists
+		// group = db.getGroupByName(g);
+		// Method getGroupByName no longer exists
 		if (group == null) {
 			group = new Group(g, "tl364");
 			db.saveGroup(group);

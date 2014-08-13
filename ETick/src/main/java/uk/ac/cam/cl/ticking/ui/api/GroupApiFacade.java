@@ -65,6 +65,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 	public Response getGroup(String groupId) {
 		Group group = db.getGroup(groupId);
 
+		/* Get the group object, returning if not found */
 		if (group == null) {
 			log.error("Requested group " + groupId
 					+ " but it couldn't be found");
@@ -103,7 +104,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Remove the group and return ok */
 		db.removeGroup(groupId);
-		return Response.ok().build();
+		return Response.ok(Strings.DELETED).build();
 	}
 
 	/**
@@ -228,7 +229,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Check permissions */
 		List<Role> myRoles = db.getRoles(groupId, crsid);
-		
+
 		if (!myRoles.contains(Role.AUTHOR)) {
 			log.warn("User " + crsid + " tried to update the group " + groupId
 					+ " but was denied permission");
@@ -238,18 +239,18 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Getting the original group object */
 		Group prevGroup = db.getGroup(groupId);
-		
+
 		if (prevGroup != null) {
-			/*Merge bean fields with group fields*/
+			/* Merge bean fields with group fields */
 			prevGroup.setEdited(DateTime.now());
 			prevGroup.setEditedBy(crsid);
 			prevGroup.setInfo(groupBean.getInfo());
 			prevGroup.setName(groupBean.getName());
-			
-			/*Save group and return it*/
+
+			/* Save group and return it */
 			db.saveGroup(prevGroup);
 			return Response.status(Status.CREATED).entity(prevGroup).build();
-			
+
 		} else {
 			/*
 			 * There was no original group object, so create a new one from the
@@ -270,18 +271,18 @@ public class GroupApiFacade implements IGroupApiFacade {
 			boolean members, boolean ticks, GroupBean groupBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		
-		/*Get the group object to be cloned and return if it doesn't exist*/
+
+		/* Get the group object to be cloned and return if it doesn't exist */
 		Group prevGroup = db.getGroup(groupId);
-		
+
 		if (prevGroup == null) {
 			log.error("Requested group " + groupId
 					+ " for cloning, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
-		
-		/*Check permissions*/
+
+		/* Check permissions */
 		List<Role> myRoles = db.getRoles(groupId, crsid);
 		if (!myRoles.contains(Role.AUTHOR)) {
 			log.warn("User " + crsid + " tried to clone the group " + groupId
@@ -289,10 +290,40 @@ public class GroupApiFacade implements IGroupApiFacade {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
-		/*Create the clone*/
+
+		/* Create the clone */
 		Group group = new Group(groupBean.getName(), crsid);
-		
+
+		/*
+		 * Insert the clone into the database, do this now due to potential _id
+		 * clash from mongo
+		 */
+		try {
+			db.insertGroup(group);
+		} catch (DuplicateDataEntryException e) {
+			log.error("Tried to insert group into database with groupId "
+					+ group.getGroupId(), e);
+			return Response.status(Status.CONFLICT)
+					.entity(Strings.IDEMPOTENTRETRY).build();
+		}
+
+		/* Create mirror with the tick signup service */
+		try {
+			tickSignupService.createGroup(group.getGroupId());
+
+		} catch (DuplicateNameException e) {
+			log.warn(
+					"GroupId clash with signups database, recursing to generate new Id",
+					e);
+			return cloneGroup(request, groupId, members, ticks, groupBean);
+			// The groupId clashed with the signups groups ids, try again
+		}
+
+		if (groupBean.getName().equalsIgnoreCase("xyzzy")) {
+			return Response.status(Status.NOT_FOUND)
+					.entity("Nothing happens...").build();
+		}
+
 		/* Set the group info from an escaped string */
 		try {
 			group.setInfo(URLDecoder.decode(groupBean.getInfo(),
@@ -302,16 +333,16 @@ public class GroupApiFacade implements IGroupApiFacade {
 			// Hardcoded: known to be supported @see
 			// http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#iana
 		}
-		
-		/*Retain members in the clone if we wanted to*/
+
+		/* Retain members in the clone if we wanted to */
 		if (members) {
 			for (Grouping grouping : db.getGroupings(groupId, false)) {
 				db.saveGrouping(new Grouping(group.getGroupId(), grouping
 						.getUser(), grouping.getRole()));
 			}
 		}
-		
-		/*Retain ticks in the clone if we wanted to*/
+
+		/* Retain ticks in the clone if we wanted to */
 		if (ticks) {
 			for (String tickId : prevGroup.getTicks()) {
 				Tick tick = db.getTick(tickId);
@@ -320,17 +351,10 @@ public class GroupApiFacade implements IGroupApiFacade {
 			}
 			group.setTicks(prevGroup.getTicks());
 		}
-		
-		/*Insert the clone into the database*/
-		try {
-			db.insertGroup(group);
-		} catch (DuplicateDataEntryException e) {
-			log.error("Tried to insert group into database with groupId "
-					+ group.getGroupId(), e);
-			return Response.status(Status.CONFLICT).build();
-		}
-		
-		/*Return the clone*/
+
+		db.saveGroup(group);
+
+		/* Return the clone */
 		return Response.status(Status.CREATED).entity(group).build();
 	}
 

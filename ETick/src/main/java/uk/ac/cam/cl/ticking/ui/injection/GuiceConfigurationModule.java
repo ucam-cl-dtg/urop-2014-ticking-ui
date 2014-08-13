@@ -129,7 +129,8 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static UserApiFacade getUserApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config, WebInterface gitServiceProxy) {
+			ConfigurationLoader<Configuration> config,
+			WebInterface gitServiceProxy) {
 		if (userApiFacade == null) {
 			userApiFacade = new UserApiFacade(db, config, gitServiceProxy);
 		}
@@ -149,7 +150,8 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static GroupApiFacade getGroupApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config, TickSignups tickSignupService) {
+			ConfigurationLoader<Configuration> config,
+			TickSignups tickSignupService) {
 		if (groupApiFacade == null) {
 			groupApiFacade = new GroupApiFacade(db, config, tickSignupService);
 		}
@@ -160,7 +162,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static SubmissionApiFacade getSubmissionApiSingleton(
 			IDataManager db, ConfigurationLoader<Configuration> config,
-			ITestService testServiceProxy, TickSignups tickSignupService ) {
+			ITestService testServiceProxy, TickSignups tickSignupService) {
 		if (submissionApiFacade == null) {
 			submissionApiFacade = new SubmissionApiFacade(db, config,
 					testServiceProxy, tickSignupService);
@@ -172,7 +174,8 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static ForkApiFacade getForkApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ITestService testService, WebInterface gitService, TickSignups tickSignupService) {
+			ITestService testService, WebInterface gitService,
+			TickSignups tickSignupService) {
 		if (forkApiFacade == null) {
 			forkApiFacade = new ForkApiFacade(db, config, testService,
 					gitService, tickSignupService);
@@ -182,8 +185,8 @@ public class GuiceConfigurationModule extends AbstractModule {
 
 	@Inject
 	@Provides
-	private static TickSignups getTickSignupsSingleton(IDataManager db, 
-	        SignupsWebInterface signupServiceProxy) {
+	private static TickSignups getTickSignupsSingleton(IDataManager db,
+			SignupsWebInterface signupServiceProxy) {
 		if (tickSignups == null) {
 			tickSignups = new TickSignups(db, signupServiceProxy);
 		}

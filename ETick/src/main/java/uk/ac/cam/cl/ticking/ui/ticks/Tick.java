@@ -9,7 +9,6 @@ import org.joda.time.DateTime;
 
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -233,15 +232,15 @@ public class Tick implements Comparable<Tick> {
 		return tickId.replace(',', '/');
 	}
 
-    /**
-     * @param tickId
-     * @return The name of the tick extracted from the tick ID.
-     */
-    public static String getNameFromID(String tickId) {
-        return tickId.split(",")[1];
-    }
+	/**
+	 * @param tickId
+	 * @return The name of the tick extracted from the tick ID.
+	 */
+	public static String getNameFromID(String tickId) {
+		return tickId.split(",")[1];
+	}
 
-    /**
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override

@@ -6,7 +6,6 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**

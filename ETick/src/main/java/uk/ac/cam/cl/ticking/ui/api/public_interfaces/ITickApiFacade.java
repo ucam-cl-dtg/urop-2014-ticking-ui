@@ -18,7 +18,6 @@ import org.joda.time.DateTime;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
-import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 /**
  * A RESTful interface for requests regarding ticks. Many methods act as
@@ -135,7 +134,7 @@ public interface ITickApiFacade {
 	@Produces("application/json")
 	public abstract Response setDeadline(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId, DateTime date);
-	
+
 	/**
 	 * 
 	 * @param request
@@ -147,6 +146,7 @@ public interface ITickApiFacade {
 	@Path("/{tickId}/{commitId}/files")
 	@Produces("application/json")
 	public abstract Response getAllFiles(@Context HttpServletRequest request,
-			@PathParam("tickId") String tickId, @PathParam("commitId") String commitId);
+			@PathParam("tickId") String tickId,
+			@PathParam("commitId") String commitId);
 
 }

@@ -2,7 +2,6 @@ package uk.ac.cam.cl.ticking.ui.actors;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -66,12 +65,12 @@ public class User implements Comparable<User> {
 		this.setIsStudent(isStudent);
 		this.setLdap(true);
 	}
-	
+
 	/**
 	 * Empty default constructor for Jackson
 	 */
 	public User() {
-		
+
 	}
 
 	/**

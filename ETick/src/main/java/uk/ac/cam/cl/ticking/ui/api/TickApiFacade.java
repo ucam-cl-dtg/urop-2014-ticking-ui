@@ -23,13 +23,11 @@ import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
-import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
-import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -110,8 +108,8 @@ public class TickApiFacade implements ITickApiFacade {
 			if (s.getClassName().equals(IOException.class.getName())) {
 				log.error("Tried deleting repository for " + tickId,
 						s.getCause(), s.getStackTrace());
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-						.build();
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 			if (s.getClassName().equals(
@@ -119,15 +117,14 @@ public class TickApiFacade implements ITickApiFacade {
 				/* We still want to remove the tick */
 				db.removeTick(tickId);
 
-				log.error("Tried deleting repository for " + tickId,
+				log.warn("Tried deleting repository for " + tickId,
 						s.getCause(), s.getStackTrace());
-				return Response.status(Status.NOT_FOUND).entity(e).build();
 
 			} else {
 				log.error("Tried deleting repository for " + tickId,
 						s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(s.getCause()).build();
+						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | RepositoryNotFoundException e) {
@@ -136,7 +133,7 @@ public class TickApiFacade implements ITickApiFacade {
 					.build();
 		}
 
-		return Response.ok().build();
+		return Response.ok().entity(Strings.DELETED).build();
 	}
 
 	/**
@@ -182,7 +179,7 @@ public class TickApiFacade implements ITickApiFacade {
 		tick.setAuthor(crsid);
 		tick.initTickId();
 
-		/* Has the tick been unsuccessfully created previosuly? */
+		/* Has the tick been unsuccessfully created previously? */
 		Tick failed = db.getTick(tick.getTickId());
 		if (failed != null && failed.getStubRepo() != null
 				&& failed.getCorrectnessRepo() != null) {
@@ -230,7 +227,7 @@ public class TickApiFacade implements ITickApiFacade {
 									+ tick.getTickId(), s.getCause(),
 							s.getStackTrace());
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(s.getCause()).build();
+							.entity(Strings.IDEMPOTENTRETRY).build();
 				}
 
 			} catch (IOException | DuplicateRepoNameException e) {
@@ -281,7 +278,7 @@ public class TickApiFacade implements ITickApiFacade {
 					log.error("Tried creating correctness repository for "
 							+ tick.getTickId(), s.getCause(), s.getStackTrace());
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(s.getCause()).build();
+							.entity(Strings.IDEMPOTENTRETRY).build();
 				}
 
 			} catch (IOException | DuplicateRepoNameException e) {
@@ -383,6 +380,9 @@ public class TickApiFacade implements ITickApiFacade {
 			 * There was no original tick object, so create a new one from the
 			 * same bean
 			 */
+			log.warn("Requested tick "
+					+ tickId
+					+ " for updating, but it couldn't be found, creating a new group instead");
 			return newTick(request, tickBean);
 		}
 	}
@@ -492,7 +492,7 @@ public class TickApiFacade implements ITickApiFacade {
 			String commitId) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
-		
+
 		/* Get the tick object and return if it doesn't exist */
 		Tick tick = db.getTick(tickId);
 
@@ -502,16 +502,16 @@ public class TickApiFacade implements ITickApiFacade {
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
-		
-		/*Check permissions*/
+
+		/* Check permissions */
 		if (!myCrsid.equals(tick.getAuthor())) {
 			log.warn("User " + myCrsid + " tried to get the files of tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
-		/*Call the git service to get the files*/
+
+		/* Call the git service to get the files */
 		List<FileBean> files;
 		try {
 			files = gitServiceProxy.getAllFiles(Tick.replaceDelimeter(tickId),
@@ -519,32 +519,35 @@ public class TickApiFacade implements ITickApiFacade {
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
-			
+
 			if (s.getClassName().equals(IOException.class.getName())) {
 
-				log.error("Tried to get repository files for " + tickId, s.getCause(), s.getStackTrace());
+				log.error("Tried to get repository files for " + tickId,
+						s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 			if (s.getClassName().equals(
 					RepositoryNotFoundException.class.getName())) {
-				log.error("Tried to get repository files for " + tickId, s.getCause(), s.getStackTrace());
+				log.error("Tried to get repository files for " + tickId,
+						s.getCause(), s.getStackTrace());
 				return Response.status(Status.NOT_FOUND)
 						.entity(Strings.MISSING).build();
 
 			} else {
-				log.error("Tried to get repository files for " + tickId, s.getCause(), s.getStackTrace());
+				log.error("Tried to get repository files for " + tickId,
+						s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(s.getCause()).build();
+						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
-			
+
 		} catch (IOException | RepositoryNotFoundException e) {
 			log.error("Tried to get repository files for " + tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
-		
+
 		return Response.ok(files).build();
 	}
 }
