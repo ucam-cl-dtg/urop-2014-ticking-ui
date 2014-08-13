@@ -12,15 +12,15 @@
  * [/CODE]
  *
  * [DATA]
- * [ {   "start"   : 3
- *     , "end"     : 8
- *     , "message" : "Hello is a greeting"
- *     , "class"   : "message1"
+ * [ {   "start"     : 3
+ *     , "end"       : 8
+ *     , "message"   : "Hello is a greeting"
+ *     , "className" : "message1"
  *   }
- * , {   "start"   : 3
- *     , "end"     : 15
- *     , "message" : "This is a standard result."
- *     , "class"   : "helloWorld"
+ * , {   "start"     : 3
+ *     , "end"       : 15
+ *     , "message"   : "This is a standard result."
+ *     , "className" : "helloWorld"
  * } ]
  * [/DATA]
  *
@@ -51,7 +51,7 @@
  *   if (comments.length > 0)
  *   {
  *     rtn += "<span class=\"";
- *     rtn += comments.map(function (x) { return x.class; })
+ *     rtn += comments.map(function (x) { return x.className; })
  *             .join(" ");
  *     rtn += "\">";
  *   }
@@ -83,8 +83,8 @@ function mixin_comments_with_data(data, comments, conversion)
 
   /* Stage 1 – Sort */
   comments.sort(function (a, b)
-                {
-                  return b.start - a.start;
+                { /* Ascending sort */
+                  return a.start - b.start;
                 });
 
   /* Stage 2 – Process */
@@ -95,35 +95,35 @@ function mixin_comments_with_data(data, comments, conversion)
   for (i = 0; i < len; i++)
   {
     if (comments.length > 0
-      &&comments[comments.length-1].start == i)
+      &&comments[0].start == i)
     {
+      rtn += conversion(activeComments, currentData);
+      currentData = "";
+
       /* TODO: Heap data structure */
       while (comments.length > 0
-           &&comments[comments.length-1].start == i)
+           &&comments[0].start == i)
       {
-        activeComments.push(comments.pop());
+        activeComments.push(comments.shift());
       }
 
       activeComments.sort(function (a, b)
-                          { /* Descending sort */
-                            return b.end - a.end;
+                          { /* Ascending sort */
+                            return a.end - b.end;
                           });
-
-      rtn += conversion(activeComments, currentData);
-      currentData = "";
     }
 
     if (activeComments.length > 0
-      &&activeComments[activeComments.length-1].end == i)
+      &&activeComments[0].end == i)
     {
-      while (activeComments.length > 0
-           &&activeComments[activeComments.length-1].end == i)
-      {
-        activeComments.pop();
-      }
-
       rtn += conversion(activeComments, currentData);
       currentData = "";
+
+      while (activeComments.length > 0
+           &&activeComments[0].end == i)
+      {
+        activeComments.shift();
+      }
     }
 
     switch(data[i])
@@ -167,8 +167,9 @@ function mixin_comments_with_data(data, comments, conversion)
 function lines_to_chars(data, comments)
 {
   "use strict";
+
   if (typeof data     == typeof undefined
-    ||typeof comments == typeof undefined)
+      ||typeof comments == typeof undefined)
   {
     return [];
   }
@@ -188,21 +189,21 @@ function lines_to_chars(data, comments)
   lineStart.push(i+1);
 
   return comments.map(function (x)
-                      {
-                        /* Assumes x.line is valid for data */
-                        if (typeof x.linNumber != typeof undefined
-                          &&typeof x.line == typeof undefined)
-                        {
-                          x.start = lineStart[x.lineNumber-1];
-                          x.end   = lineStart[x.lineNumber]-1;
-                        }
-                        else if (typeof x.line != typeof undefined)
-                        {
-                          x.start = lineStart[x.line-1];
-                          x.end   = lineStart[x.line]-1;
-                        }
-                        return x;
-                      });
+      {
+        /* Assumes x.line is valid for data */
+        if (typeof x.linNumber != typeof undefined
+            &&typeof x.line == typeof undefined)
+        {
+          x.start = lineStart[x.lineNumber-1];
+          x.end   = lineStart[x.lineNumber]-1;
+        }
+        else if (typeof x.line != typeof undefined)
+        {
+          x.start = lineStart[x.line-1];
+          x.end   = lineStart[x.line]-1;
+        }
+        return x;
+      });
 
 }
 
@@ -210,14 +211,16 @@ function lines_to_chars(data, comments)
  * Due to the way mixin_comments_with_data works, we can not have other
  * spans in the data, so this extracts spans from data and converts them
  * into comments of the following form.
- * [ {   "start" : ? Where span starts
- *     , "end"   : ? Where span ends
- *     , "class" : ? Class(es) of the span
+ * [ {   "start"     : ? Where span starts
+ *     , "end"       : ? Where span ends
+ *     , "className" : ? Class(es) of the span
  * } ]
  *
  */
 function spans_to_comments(data)
 {
+  "use strict";
+
   var i, j;
   var stack = new Array(); /* For class tags */
   var rtn = new Array();
@@ -242,8 +245,8 @@ function spans_to_comments(data)
         {
           /* We know data[j] is `<` */
           j++
-          /* Skips <...> including '>' due to `for` j++ */
-          tmp = "";
+            /* Skips <...> including '>' due to `for` j++ */
+            tmp = "";
           while (j < len && data[j] != '>') tmp += data[j++];
 
           if (tmp.substr(0, 5) == "/span")
@@ -254,18 +257,18 @@ function spans_to_comments(data)
           }
           else
           {
-            stack.push({"start":i, "class" : []});
+            stack.push({"start":i, "className" : []});
             tmp = tmp.replace(/class="([^"]*)"/,
                       function (match, capture)
                       {
-                        stack[stack.length-1].class =
-                          stack[stack.length-1].class
+                        stack[stack.length-1].className =
+                          stack[stack.length-1].className
                             .concat(capture);
                       });
-            if (stack[stack.length-1].class.length > 0)
+            if (stack[stack.length-1].className.length > 0)
             {
-              stack[stack.length-1].class =
-                stack[stack.length-1].class.join(" ");
+              stack[stack.length-1].className =
+                stack[stack.length-1].className.join(" ");
             }
             else
             {
@@ -305,17 +308,30 @@ function spans_to_comments(data)
  */
 function default_convert(comments, text)
 {
-  rtn = new String();
+  "use strict";
+
+  var rtn = "";
+  var tooltip = "";
+
   if (comments.length > 0)
   {
-    rtn += "<core-tooltip label=\"";
-    rtn += comments.reduce(function (num, comment)
-                           {
-                             return ++num + ". " + x.message;
-                           }, 0);
-    rtn += "\">";
+    tooltip = comments.reduce(
+        function (prev, curr)
+        {
+          if (typeof curr.message != typeof undefined)
+          {
+            prev.push((prev.length + 1) + ". " + curr.message);
+          }
+          return prev;
+        }, []);
+
+    if (tooltip != "")
+    {
+      rtn += "<span title=\"" + tooltip.join("\n") + "\">";
+    }
+
     rtn += "<span class=\"";
-    rtn += comments.map(function (x) { return x.class; })
+    rtn += comments.map(function (x) { return x.className; })
     .join(" ");
     rtn += "\">";
   }
@@ -326,9 +342,9 @@ function default_convert(comments, text)
 
   rtn += text.replace(/\n/g, "</li><li>");
   rtn += "</span>";
-
-  if (comments.length > 0)
+  if (tooltip != "")
   {
-    rtn += "</core-tooltip>";
+    rtn += "</span>";
   }
+  return rtn;
 }
