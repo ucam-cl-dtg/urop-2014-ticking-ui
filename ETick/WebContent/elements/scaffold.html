@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="menu-button.html">
 <link rel="import" href="dashboard.html">
 <link rel="import" href="onlogin.html">
@@ -71,6 +72,7 @@
 			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}"
 				on-group-deleted="{{groupDeletedHandler}}"></x-group>
 		</template>
+		<paper-toast id="groupDeletedToast" duration="3000" text="Successfully deleted group."></paper-toast>
 		
 		<template id="tickTemp" if="{{showTickCreator}}">
 			<main-card animated>
@@ -153,7 +155,10 @@
 
 			groupDeletedHandler: function () {
 				this.$.loginAPIs.$.sidebarAjax.go();
+				var groupName = this.$.groupTemp.model.name;
+				this.$.groupDeletedToast.text = 'Successfully deleted group "' + groupName + '".';
 				this.$.navMenu.selected = "dashButton";
+				this.$.groupDeletedToast.show();
 			},
 
 			// Tick menu handlers:

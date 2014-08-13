@@ -4,7 +4,7 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="are-you-sure.html">
 
-<polymer-element name="delete-group" attributes="gid">
+<polymer-element name="delete-group" attributes="gid name">
 	<template>
 		<style>
 			:host {
@@ -30,8 +30,7 @@
 			on-yes="{{deleteConfirmed}}"></are-you-sure>
 
 		<!-- Response toasts. -->
-		<paper-toast id="deleteSuccess" duration="8000" text="Successfully deleted group."></paper-toast>
-		<paper-toast id="deleteError" duration="8000" text="Error deleting group."></paper-toast>
+		<paper-toast id="deleteError" duration="3000" text="Error deleting group."></paper-toast>
 
 	</template>
 	<script>
@@ -46,8 +45,11 @@
 			},
 
 			deleteResponse: function () {
-				this.$.deleteSuccess.show();
-				this.fire('group-deleted');
+				// QUICK FIX (BAD): This hack fixes the persistant overlay bug.
+				// TODO: Find better fix. 
+				this.async(function () {
+					this.fire('group-deleted');
+					}, null, 500);
 			},
 
 			deleteError: function (e, detail) {
