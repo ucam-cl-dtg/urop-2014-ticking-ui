@@ -98,14 +98,14 @@
             function ()
             {
               this.sendTick(true,  this.$.tickerComment.value);
-              this.fire("main-card-swipe-away", {"card":this});
+              this.fire("tick-passed",{});
             }
 
           , failTick:
             function ()
             {
               this.sendTick(false, this.$.tickerComment.value);
-              this.fire("main-card-swipe-away", {"card":this});
+              this.fire("tick-failed",{});
             }
 
           , noShow:
@@ -117,7 +117,7 @@
                 + this.crsid
                 + "/bookings/" + this.sheetId;
               this.$.setNoShow.go();
-              this.fire("main-card-swipe-away", {"card":this});
+              this.fire("tick-no-show",{});
             }
         });
   </script>

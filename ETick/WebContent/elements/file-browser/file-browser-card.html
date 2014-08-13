@@ -130,7 +130,10 @@
                              tickId="{{tickId}}"
                              sheetId="{{sheetId}}"
                              reportCreationDate="{{date}}"
-                             on-main-card-swipe-away="{{swipeAway}}">
+                             on-main-card-swipe-away="{{swipeAway}}"
+                             on-tick-passed="{{tickPassed}}"
+							 on-tick-failed="{{tickFailed}}" 
+							 on-tick-no-show="{{tickNoShow}}">
           </ticker-set-result>
         </template>
 
@@ -149,12 +152,35 @@
                   .getElementById(this.selectedFileId);
               window.scroll(element.offsetLeft, element.offsetTop);
             }
-
-          , swipeAway:
+          , swipeBack:
             function ()
             {
-              this.fire("main-card-swipe-away", {"card":this});
+              this.fire("main-card-swipe-back", {"card":this});
             }
+  		  , updateTickerView:
+  		    function()
+  			{
+  			  this.fire("main-card-swipe-away", {"card":this});
+  			  this.fire("update-ticker-viewer", {"result": this.result});
+  			}
+  		  , tickPassed:
+  		    function()
+  			{
+  			  this.result = "pass";
+  			  this.updateTickerView();
+  			}
+  		  , tickFailed:
+  		    function()
+  			{
+  			  this.result = "fail";
+  			  this.updateTickerView();
+  			}
+  		  , tickNoShow:
+  		    function()
+  			{
+  			  this.result = "noShow";
+  			  this.updateTickerView();
+  			}
         });
   </script>
 </polymer-element>
