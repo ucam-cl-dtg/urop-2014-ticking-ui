@@ -14,15 +14,6 @@
 				font-weight: 100;
 				padding: 0 0 0 10px;
 			}
-			slot-box {
-				width: calc(100% / 3);
-			}
-			slot-box:nth-child(odd) {
-				background: #f6f6f6;
-			}
-			slot-box:nth-child(even) {
-				background: #e9e9e9;
-			}
 		</style>
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>Upcoming Events ({{slots ? slots.length : 0}})</h1>
@@ -30,14 +21,14 @@
 		</div>
 
 		<!-- Tick list. -->
-		<div layout horizontal center wrap>
+		<box-list>
 			<template repeat="{{slot in slots | slotListFilter($.searchBox.query)}}">
-				<slot-box 	datetime="{{slot.startTime}}" 
+				<slot-box class="itemBox"	datetime="{{slot.startTime}}" 
 							tickName="{{slot.tickName}}" 
 							ticker="{{slot.ticker}}">
 				</slot-box>
 			</template>
-		</div>
+		</box-list>
 	</template>
 	<script>
 		Polymer('upcoming-slots', {
