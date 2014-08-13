@@ -24,6 +24,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean;
+import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -44,6 +45,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 	// remove if not
 	private ConfigurationLoader<Configuration> config;
 
+	private ConfigurationLoader<Admins> adminConfig;
+
 	private TickSignups tickSignupService;
 
 	/**
@@ -53,9 +56,11 @@ public class GroupApiFacade implements IGroupApiFacade {
 	@Inject
 	public GroupApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
 			TickSignups tickSignupService) {
 		this.db = db;
 		this.config = config;
+		this.adminConfig = adminConfig;
 		this.tickSignupService = tickSignupService;
 	}
 
@@ -96,7 +101,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		/* Check permissions */
-		if (!crsid.equals(group.getCreator())) {
+		if (!crsid.equals(group.getCreator())&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid + " tried to delete " + groupId
 					+ " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
@@ -167,7 +172,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		/* Check permissions */
-		if (user.getIsStudent()) {
+		if (user.getIsStudent()&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid
 					+ " tried to create a group but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
@@ -222,12 +227,12 @@ public class GroupApiFacade implements IGroupApiFacade {
 					Role.valueOf(role));
 			db.saveGrouping(grouping);
 		}
-		
+
 		/* Give admins all roles for the group */
 		for (User admin : db.getAdmins()) {
 			for (Role role : Role.values()) {
-				Grouping grouping = new Grouping(group.getGroupId(), admin.getCrsid(),
-						role);
+				Grouping grouping = new Grouping(group.getGroupId(),
+						admin.getCrsid(), role);
 				db.saveGrouping(grouping);
 			}
 		}
@@ -248,7 +253,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		/* Check permissions */
 		List<Role> myRoles = db.getRoles(groupId, crsid);
 
-		if (!myRoles.contains(Role.AUTHOR)) {
+		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid + " tried to update the group " + groupId
 					+ " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
@@ -304,7 +309,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Check permissions */
 		List<Role> myRoles = db.getRoles(groupId, crsid);
-		if (!myRoles.contains(Role.AUTHOR)) {
+		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid + " tried to clone the group " + groupId
 					+ " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)

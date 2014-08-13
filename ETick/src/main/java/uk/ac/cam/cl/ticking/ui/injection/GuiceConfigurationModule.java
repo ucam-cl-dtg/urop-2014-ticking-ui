@@ -123,10 +123,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static TickApiFacade getTickApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
 			ITestService testServiceProxy, WebInterface gitServiceProxy) {
 		if (tickApiFacade == null) {
-			tickApiFacade = new TickApiFacade(db, config, testServiceProxy,
-					gitServiceProxy);
+			tickApiFacade = new TickApiFacade(db, config, adminConfig,
+					testServiceProxy, gitServiceProxy);
 		}
 		return tickApiFacade;
 	}
@@ -135,9 +136,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static UserApiFacade getUserApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
 			WebInterface gitServiceProxy) {
 		if (userApiFacade == null) {
-			userApiFacade = new UserApiFacade(db, config, gitServiceProxy);
+			userApiFacade = new UserApiFacade(db, config, adminConfig,
+					gitServiceProxy);
 		}
 		return userApiFacade;
 	}
@@ -145,9 +148,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static GroupingApiFacade getGroupingApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config, LdapManager raven) {
+			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig, LdapManager raven) {
 		if (groupingApiFacade == null) {
-			groupingApiFacade = new GroupingApiFacade(db, config, raven);
+			groupingApiFacade = new GroupingApiFacade(db, config, adminConfig,
+					raven);
 		}
 		return groupingApiFacade;
 	}
@@ -156,9 +161,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static GroupApiFacade getGroupApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
 			TickSignups tickSignupService) {
 		if (groupApiFacade == null) {
-			groupApiFacade = new GroupApiFacade(db, config, tickSignupService);
+			groupApiFacade = new GroupApiFacade(db, config, adminConfig,
+					tickSignupService);
 		}
 		return groupApiFacade;
 	}
@@ -167,10 +174,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static SubmissionApiFacade getSubmissionApiSingleton(
 			IDataManager db, ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
 			ITestService testServiceProxy, TickSignups tickSignupService) {
 		if (submissionApiFacade == null) {
 			submissionApiFacade = new SubmissionApiFacade(db, config,
-					testServiceProxy, tickSignupService);
+					adminConfig, testServiceProxy, tickSignupService);
 		}
 		return submissionApiFacade;
 	}
@@ -179,11 +187,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static ForkApiFacade getForkApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ITestService testService, WebInterface gitService,
-			TickSignups tickSignupService) {
+			ConfigurationLoader<Admins> adminConfig, ITestService testService,
+			WebInterface gitService, TickSignups tickSignupService) {
 		if (forkApiFacade == null) {
-			forkApiFacade = new ForkApiFacade(db, config, testService,
-					gitService, tickSignupService);
+			forkApiFacade = new ForkApiFacade(db, config, adminConfig,
+					testService, gitService, tickSignupService);
 		}
 		return forkApiFacade;
 	}
