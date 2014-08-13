@@ -70,26 +70,28 @@ the waiting toast.
 
             this.waitShown = false;
 
-            if (this.waitBeforeToast > 0
-              &&this.timeOut == null)
+            if (this.timeOut == null)
             {
-              this.timeOut = window.setTimeout(
-                function ()
-                {
-                  if (this.waitMessage != null)
+              if (this.waitBeforeToast > 0)
+              {
+                this.timeOut = window.setTimeout(
+                  function ()
                   {
-                    this.waitShown = true;
-                    this.$.toastElement.text = this.waitMessage;
-                    this.$.toastElement.show();
-                  }
-                }.bind(this)
-                , this.waitBeforeToast);
-            }
-            else
-            {
-              this.waitShown = true;
-              this.$.toastElement.text = this.waitMessage;
-              this.$.toastElement.show();
+                    if (this.waitMessage != null)
+                    {
+                      this.waitShown = true;
+                      this.$.toastElement.text = this.waitMessage;
+                      this.$.toastElement.show();
+                    }
+                  }.bind(this)
+                  , this.waitBeforeToast);
+              }
+              else
+              {
+                this.waitShown = true;
+                this.$.toastElement.text = this.waitMessage;
+                this.$.toastElement.show();
+              }
             }
 
             this.$.ajax.go();

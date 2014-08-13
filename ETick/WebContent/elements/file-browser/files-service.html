@@ -1,6 +1,6 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
 <polymer-element name="files-service"
     attributes="date
                 files
@@ -16,21 +16,27 @@
                 reportResult
                 reportCreationDate">
   <template>
-    <style>
-    :host {
-      display: none;
-    }
-    </style>
-    <core-ajax id="report"
-               auto
-               on-core-response="{{reportLoaded}}"
-               handleAs="json">
-    </core-ajax>
-    <core-ajax id="fileContent"
-               auto
-               on-core-response="{{filesLoaded}}"
-               handleAs="json">
-    </core-ajax>
+    <link rel="stylesheet" href="style.css"/>
+    <toast-ajax id="report"
+                auto
+                on-core-response="{{reportLoaded}}"
+                handleAs="json"
+                
+                popUpError
+                captureError
+                waitMessage="Loading report...."
+                responseMessage="Report successfully loaded.">
+    </toast-ajax>
+    <toast-ajax id="fileContent"
+                auto
+                on-core-response="{{filesLoaded}}"
+                handleAs="json"
+                
+                popUpError
+                captureError
+                waitMessage="Loading files...."
+                responseMessage="Files successfully loaded.">
+    </toast-ajax>
   </template>
   <script src="../../hardcoded.js"></script>
   <script>
