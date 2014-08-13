@@ -42,11 +42,14 @@
 			},
 
 			deleteConfirmed: function () {
-				this.$.deleteAPI.go();
+				// this.$.deleteAPI.go();
+				this.deleteResponse();
 			},
 
 			deleteResponse: function () {
 				this.$.deleteSuccess.show();
+
+				//FIX: Async fixes the persistant overlay bug.
 				this.fire('group-deleted');
 			},
 
