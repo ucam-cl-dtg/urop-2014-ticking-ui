@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
 <link rel="import" href="person-box.html">
+<link rel="import" href="box-list.html">
 
 <polymer-element name="person-list" attributes="people boxWidth query">
 	<template>
@@ -34,17 +35,17 @@
 				color: #3C00FF;
 			}
 		</style>
-		<core-selector multi layout horizontal center wrap 
-			id="memberSelector" valueattr="crsid">
+		<box-list id="list" multi selector valueattr="crsid">
 			<template repeat="{{person in people | filter(query) }}">
 					<person-box
+						class="itemBox"
 						name="{{person.displayName}}"
 						crsid="{{person._id}}"
 						college="{{person.college == 'Unknown' ? '' : person.college}}"
 						isStudent="{{person.isStudent}}">
 					</person-box>	
 			</template>	
-		</core-selector>
+		</box-list>
 	</template>
 	<script>
 		Polymer('person-list', {
