@@ -12,6 +12,7 @@
 <link rel="import" href="file-browser/file-browser-card.html">
 <link rel="import" href="are-you-sure.html">
 <link rel="import" href="delete-group.html">
+<link rel="import" href="tick-session-list.html">
 
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
@@ -121,6 +122,9 @@
 
 
         <core-collapse id="tickingSessions">
+        	<main-card animated>
+        		<tick-session-list sheets="{{sheets}}"></tick-session-list>
+        	</main-card>
             <template if="{{isMarker}}">
                 <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
             </template>
