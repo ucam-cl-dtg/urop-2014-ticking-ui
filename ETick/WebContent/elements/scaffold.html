@@ -27,8 +27,8 @@
 
 			<div id="title">Tickl</div>
 
-			<div flex layout horizontal end-justified>
-			<core-selector id="navMenu" valueattr="id" selected="dashButton" class="fix" selectedAttribute="">
+			<core-selector id="navMenu" valueattr="id" selected="dashButton" selectedAttribute=""
+				flex layout horizontal end-justified>
 
 				<template if="{{!$.loginAPIs.ldap.isStudent}}">
 	                <menu-button id="ticksMenu" label="Ticks" valueattr="label">
@@ -51,7 +51,6 @@
 				<paper-button id="dashButton" label="DASHBOARD"></paper-button>
 
 			</core-selector>
-			</div>
 
 			<div layout horizontal end-justified>
 				<div>
