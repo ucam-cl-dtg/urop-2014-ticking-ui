@@ -53,6 +53,10 @@
                 this.targetProgress = 0;
             },
 
+            tickIdChanged: function() {
+                this.hardChange = true;
+            },
+
             progressUpdated: function() {
                 //this.displayProgress = this.status.progress;
                 this.targetProgress = this.status.progress / this.status.maxProgress * 100;
@@ -66,7 +70,12 @@
 
             stepProgressAnimation: function() {
                 if (this.displayProgress < this.targetProgress) {
-                    this.displayProgress+= Math.ceil(.001 * (this.targetProgress - this.displayProgress));
+                    if (this.hardChange) {
+                        this.hardChange = false;
+                        this.displayProgress = this.targetProgress;
+                    } else {
+                        this.displayProgress += Math.ceil(.001 * (this.targetProgress - this.displayProgress));
+                    }
                     var that = this;
                     this.job('animate', function() {
                         that.stepProgressAnimation();
