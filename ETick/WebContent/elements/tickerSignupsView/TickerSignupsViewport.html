@@ -3,7 +3,7 @@
 <link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
 
-<polymer-element name="ticker-signups-viewport" attributes="sessionId description location crsId tickId repoName ticker">
+<polymer-element name="ticker-signups-viewport" attributes="sessionId description location crsId tickId repoName ticker slotId">
   <template>
     <style>
     :host {
@@ -58,7 +58,12 @@
 				<template repeat="{{slot in slots}}">
 					<span layout horizontal center style="border:black solid 1px" flex>
 						<div align="left" flex three>
-							<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
+								<div hidden?="{{slot.outcome != 'null'}}">
+									<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
+								</div>
+								<div hidden?="{{slot.outcome == 'null'}}">
+									<core-item label="{{slot.timeStamp}}  crsid : {{slot.student}}  ,  tick :  {{slot.comment}} , outcome : {{slot.outcome}}" style="min-height:20px" span></core-item>
+								</div>
 						</div>
 						<div hidden?="{{slot.hidden}}" flex>
 							<span>View Report</span>
@@ -75,14 +80,12 @@
 			ready: function() {
 			},
 			refresh: function() {
-				this.crsId = "";
-				this.tickId = "";
-				this.repoName = "";
+				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
-				if (this.location === "Location : undefined") {
+				if (this.location === "Location : ") {
 					this.location = "Location : No location is available";
 				}
-				if (this.description === "Description : undefined") {
+				if (this.description === "Description : ") {
 					this.description = "Description : No description is available";
 				}
 				this.$.ajaxLoadTickers.go();
@@ -126,7 +129,7 @@
 					}
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
 					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
-									 time : timeSlot, timeStamp: timeStamp, hidden : hidden});
+									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null"});
 				}
 				this.date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
 			},
@@ -138,9 +141,15 @@
 					this.ticker = event.target.label;
 					this.pathLoadSlots = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId + "/tickers/" + this.ticker;
 					this.$.ajaxLoadSlots.go();
+					this.fire("hide-report");
 				}
 			},
+			updateViewConsole: function(newResult) {
+				//Wait for signups API to allow update
+				console.log(newResult + " " + this.slotId);
+			},
 			getReport : function(event) {
+				this.slotId = event.target.id;
 				var slotId = event.target.id;
 				for(i=0;i<this.slots.length;i++) {
 					if(this.slots[i]._id === slotId) {
@@ -150,6 +159,7 @@
 						break;
 					}
 				}
+				this.fire("show-report");
 			}
 		})
   </script>

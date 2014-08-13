@@ -122,10 +122,9 @@
 
         <core-collapse id="tickingSessions">
             <template if="{{isMarker}}">
-                <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}"></ticker-signup>
+                <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
             </template>
         </core-collapse>
-    }
 	</template>
 	<script>
 		Polymer('x-group', {  
@@ -160,12 +159,14 @@
                     this.name = this.name.toUpperCase();
                 }
             },
-
 			cardSwiped: function (e, detail) {
 				// Code to get rid of the card. Consider other options.
 				detail.card.style.display = "none";
 			},
-
+			cardUnswiped: function (e, detail) {
+				//Code to return a card. Consider other options.
+				detail.card.style.display = "block";
+			},
 			sheetListResponse: function () {
 				this.sheets = this.$.sheetListAPI.response;
 			},

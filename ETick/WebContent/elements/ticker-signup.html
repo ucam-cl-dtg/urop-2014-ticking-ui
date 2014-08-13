@@ -4,17 +4,30 @@
 <link rel="import" href="tickerSignupsView/TickerSignupsViewport.html">
 <link rel="import" href="file-browser/file-browser-card.html">
 
-<polymer-element name="ticker-signup" attributes="groupId" noscript>
-<template>
-	<style>
-	</style>
-        <main-card animated swipeable>
-            <ticker-signups-card sessionId="{{sessionId}}" crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="card"></ticker-signups-card>
-        </main-card>
-        <template if="{{crsId}}">
-            <main-card animated swipeable>
-                <file-browser-card sheetId="{{sessionId}}" crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
-            </main-card>
-        </template>
-</template>
+<polymer-element name="ticker-signup" attributes="groupId">
+	<template>
+		<div class="container">
+			<main-card animated>
+				<ticker-signups-card on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="card"></ticker-signups-card>
+			</main-card>
+			<main-card animated hidden?="{{!viewReport}}">
+				<file-browser-card id="filebrowser" on-update-ticker-viewer="{{updateTickerViewer}}" slotId="{{slotId}}" sheetId="{{sessionId}}" crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
+			</main-card>	
+		</div>
+	</template>
+	<script>
+	Polymer('ticker-signup', {
+            hideReport: function(e, detail) {
+				this.viewReport = false;
+            },
+            updateTickerViewer: function(e, detail) {
+				this.$.card.updateTickerViewer(detail);
+            },
+			showReport: function () {
+				// Code to show report again.
+				this.viewReport = true;
+				this.$.filebrowser.swipeBack();
+			}
+		});
+    </script>
 </polymer-element>

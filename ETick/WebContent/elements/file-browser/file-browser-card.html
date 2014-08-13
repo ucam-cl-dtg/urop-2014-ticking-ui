@@ -8,9 +8,14 @@
 <link rel="import" href="status-list.html"/>
 <link rel="import" href="ticker-set-result.html"/>
 
+<!-- This is the main card for file-browsing.
+  The mandatory attributes are repoName, tickId.
+  The optional attributes are sheetId, crsid, ticker.
+  These must be supplied together, if they are supplied.
+  If they are supplied, this card also becomes a pass/fail card.
+-->
 <polymer-element name="file-browser-card"
                  attributes="repoName
-                             highlight
                              sheetId
                              tickId
                              crsid
@@ -42,9 +47,8 @@
                     selectedFileId="{{selectedFileId}}">
         </files-list>
         <hr/>
-        <!-- TODO: The following element -->
         <status-list errors="{{errors}}" highlight="{{highlight}}">
-        </errors-list>
+        </status-list>
       </div>
       <core-splitter direction="left"></core-splitter>
       <div class="main">
@@ -116,8 +120,7 @@
                      id="{{file.id}}"
                      comments="{{errors}}"
                      highlight="{{highlight}}"
-                     syntaxStyleSheet="{{syntaxStyleSheet}}"
-                     on-scroll="console.log(this)">
+                     syntaxStyleSheet="{{syntaxStyleSheet}}">
           </file-card>
           </section>
         </template>
@@ -130,7 +133,10 @@
                              tickId="{{tickId}}"
                              sheetId="{{sheetId}}"
                              reportCreationDate="{{date}}"
-                             on-main-card-swipe-away="{{swipeAway}}">
+                             on-main-card-swipe-away="{{swipeAway}}"
+                             on-tick-passed="{{tickPassed}}"
+							 on-tick-failed="{{tickFailed}}" 
+							 on-tick-no-show="{{tickNoShow}}">
           </ticker-set-result>
         </template>
 
@@ -140,7 +146,7 @@
   </template>
   <script>
     Polymer('file-browser-card'
-      , {   syntaxStyleSheet: "solarized_light"
+      , {   syntaxStyleSheet: "default"
           , selectedFileIdChanged:
             function ()
             {
@@ -149,12 +155,35 @@
                   .getElementById(this.selectedFileId);
               window.scroll(element.offsetLeft, element.offsetTop);
             }
-
-          , swipeAway:
+          , swipeBack:
             function ()
             {
-              this.fire("main-card-swipe-away", {"card":this});
+              this.fire("main-card-swipe-back", {"card":this});
             }
+  		  , updateTickerView:
+  		    function()
+  			{
+  			  this.fire("main-card-swipe-away", {"card":this});
+  			  this.fire("update-ticker-viewer", {"result": this.result});
+  			}
+  		  , tickPassed:
+  		    function()
+  			{
+  			  this.result = "pass";
+  			  this.updateTickerView();
+  			}
+  		  , tickFailed:
+  		    function()
+  			{
+  			  this.result = "fail";
+  			  this.updateTickerView();
+  			}
+  		  , tickNoShow:
+  		    function()
+  			{
+  			  this.result = "noShow";
+  			  this.updateTickerView();
+  			}
         });
   </script>
 </polymer-element>
