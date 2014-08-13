@@ -57,3 +57,29 @@ code ol li
 {
   background-color: #faa;
 }
+
+.tooltip
+{
+  position: absolute;
+  visibility: hidden;
+  background-color: rgba(0,0,0,0.8);
+  color: white;
+  border-radius: 3px;
+  z-index: 1002;
+  padding: 8px;
+}
+
+span.tooltip-container:hover .tooltip
+{
+  visibility: visible !important;
+}
+
+span.tooltip-container:active .tooltip
+{
+  visibility: visible !important;
+}
+
+span.tooltip-container:focus .tooltip
+{
+  visibility: visible !important;
+}
