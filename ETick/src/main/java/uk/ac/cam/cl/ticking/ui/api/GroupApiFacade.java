@@ -15,7 +15,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
 import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Grouping;
@@ -27,7 +26,6 @@ import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
-import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -158,21 +156,21 @@ public class GroupApiFacade implements IGroupApiFacade {
 					.build();
 		}
 
-		/*Check permissions*/
+		/* Check permissions */
 		if (user.getIsStudent()) {
 			log.warn("User " + crsid
 					+ " tried to create a group but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
-		/*Create the group from the given bean*/
+
+		/* Create the group from the given bean */
 		Group group = new Group(groupBean.getName(), crsid);
 
-		/*Create mirror with the tick signup service*/
+		/* Create mirror with the tick signup service */
 		try {
 			tickSignupService.createGroup(group.getGroupId());
-			
+
 		} catch (DuplicateNameException e) {
 			log.warn(
 					"GroupId clash with signups database, recursing to generate new Id",
@@ -185,34 +183,36 @@ public class GroupApiFacade implements IGroupApiFacade {
 			return Response.status(Status.NOT_FOUND)
 					.entity("Nothing happens...").build();
 		}
-		
-		/*Set the group info from an escaped string*/
+
+		/* Set the group info from an escaped string */
 		try {
 			group.setInfo(URLDecoder.decode(groupBean.getInfo(),
 					StandardCharsets.UTF_8.name()));
-			
+
 		} catch (UnsupportedEncodingException e) {
 			log.error("UTF_8 URL decoding failed", e);
 			// Hardcoded: known to be supported @see
 			// http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#iana
 		}
-		
-		/*Insert the group into the database*/
+
+		/* Insert the group into the database */
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException e) {
-			log.error("Tried to insert group into database with groupId "+group.getGroupId(), e);
-			return Response.status(Status.CONFLICT).entity(Strings.IDEMPOTENTRETRY).build();
+			log.error("Tried to insert group into database with groupId "
+					+ group.getGroupId(), e);
+			return Response.status(Status.CONFLICT)
+					.entity(Strings.IDEMPOTENTRETRY).build();
 		}
-		
-		/*Set requested roles for yourself in the new group*/
+
+		/* Set requested roles for yourself in the new group */
 		for (String role : roles) {
 			Grouping grouping = new Grouping(group.getGroupId(), crsid,
 					Role.valueOf(role));
 			db.saveGrouping(grouping);
 		}
-		
-		/*return the created group object*/
+
+		/* return the created group object */
 		return Response.status(Status.CREATED).entity(group).build();
 	}
 
@@ -224,20 +224,39 @@ public class GroupApiFacade implements IGroupApiFacade {
 			GroupBean groupBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+
+		/* Check permissions */
 		List<Role> myRoles = db.getRoles(groupId, crsid);
+		
 		if (!myRoles.contains(Role.AUTHOR)) {
+			log.warn("User " + crsid + " tried to update the group " + groupId
+					+ " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
+
+		/* Getting the original group object */
 		Group prevGroup = db.getGroup(groupId);
+		
 		if (prevGroup != null) {
+			/*Merge bean fields with group fields*/
 			prevGroup.setEdited(DateTime.now());
 			prevGroup.setEditedBy(crsid);
 			prevGroup.setInfo(groupBean.getInfo());
 			prevGroup.setName(groupBean.getName());
+			
+			/*Save group and return it*/
 			db.saveGroup(prevGroup);
 			return Response.status(Status.CREATED).entity(prevGroup).build();
+			
 		} else {
+			/*
+			 * There was no original group object, so create a new one from the
+			 * same bean
+			 */
+			log.warn("Requested group "
+					+ groupId
+					+ " for updating, but it couldn't be found, creating a new group instead");
 			return addGroup(request, new ArrayList<String>(), groupBean);
 		}
 
@@ -250,13 +269,30 @@ public class GroupApiFacade implements IGroupApiFacade {
 			boolean members, boolean ticks, GroupBean groupBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+		
+		/*Get the group object to be cloned and return if it doesn't exist*/
 		Group prevGroup = db.getGroup(groupId);
+		
+		if (prevGroup == null) {
+			log.error("Requested group " + groupId
+					+ " for cloning, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+		
+		/*Check permissions*/
 		List<Role> myRoles = db.getRoles(groupId, crsid);
 		if (!myRoles.contains(Role.AUTHOR)) {
+			log.warn("User " + crsid + " tried to clone the group " + groupId
+					+ " but was denied permission");
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(Strings.INVALIDROLE).build();
 		}
+		
+		/*Create the clone*/
 		Group group = new Group(groupBean.getName(), crsid);
+		
+		/* Set the group info from an escaped string */
 		try {
 			group.setInfo(URLDecoder.decode(groupBean.getInfo(),
 					StandardCharsets.UTF_8.name()));
@@ -265,12 +301,16 @@ public class GroupApiFacade implements IGroupApiFacade {
 			// Hardcoded: known to be supported @see
 			// http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#iana
 		}
+		
+		/*Retain members in the clone if we wanted to*/
 		if (members) {
 			for (Grouping grouping : db.getGroupings(groupId, false)) {
 				db.saveGrouping(new Grouping(group.getGroupId(), grouping
 						.getUser(), grouping.getRole()));
 			}
 		}
+		
+		/*Retain ticks in the clone if we wanted to*/
 		if (ticks) {
 			for (String tickId : prevGroup.getTicks()) {
 				Tick tick = db.getTick(tickId);
@@ -279,12 +319,17 @@ public class GroupApiFacade implements IGroupApiFacade {
 			}
 			group.setTicks(prevGroup.getTicks());
 		}
+		
+		/*Insert the clone into the database*/
 		try {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException e) {
-			log.error("Tried to insert group into database", e);
+			log.error("Tried to insert group into database with groupId "
+					+ group.getGroupId(), e);
 			return Response.status(Status.CONFLICT).build();
 		}
+		
+		/*Return the clone*/
 		return Response.status(Status.CREATED).entity(group).build();
 	}
 
