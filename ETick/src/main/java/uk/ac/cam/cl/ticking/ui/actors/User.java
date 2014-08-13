@@ -33,6 +33,8 @@ public class User implements Comparable<User> {
 	private boolean hasLogged;
 
 	private boolean isStudent;
+	
+	private boolean admin;
 
 	public User(String crsid) {
 		this.setCrsid(crsid);
@@ -56,7 +58,7 @@ public class User implements Comparable<User> {
 	 */
 	public User(String crsid, String surname, String regName,
 			String displayName, String email, List<String> institutions,
-			String college, boolean isStudent) {
+			String college, boolean isStudent, boolean admin) {
 		this.setCrsid(crsid);
 		this.setSurname(surname);
 		this.setRegName(regName);
@@ -65,6 +67,7 @@ public class User implements Comparable<User> {
 		this.setInstitutions(institutions);
 		this.setCollege(college);
 		this.setIsStudent(isStudent);
+		this.setAdmin(admin);
 		this.setLdap(DateTime.now());
 	}
 
@@ -219,6 +222,14 @@ public class User implements Comparable<User> {
 	 */
 	public void setIsStudent(boolean isStudent) {
 		this.isStudent = isStudent;
+	}
+
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 
 	/**
