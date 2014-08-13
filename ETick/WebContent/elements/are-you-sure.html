@@ -1,0 +1,43 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<polymer-element name="are-you-sure" attributes="heading opened">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+		<style>
+			paper-button {
+				width: 100%;
+			}
+		</style>
+		<paper-dialog id="dialog"
+			opened="{{opened}}" 
+			backdrop
+			heading="{{heading ? heading : 'Are You Sure?'}}"
+			transition="core-transition-top">
+			<paper-button dismissive class="dialogNo" label="No" on-click="{{noClicked}}">
+			</paper-button>
+            <paper-button affirmative class="dialogYes" label="Yes" on-click="{{yesClicked}}">
+        	</paper-button>
+		</paper-dialog>
+	</template>
+	<script>
+		Polymer('are-you-sure', {
+
+			opened: false,
+
+			toggle: function () {
+				this.$.dialog.toggle();
+			},
+
+			yesClicked: function () {
+				
+				this.fire('yes');
+			},
+
+			noClicked: function () {
+				this.fire('no');
+			}
+		});
+	</script>
+</polymer-element>

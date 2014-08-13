@@ -20,9 +20,10 @@
 		<paper-dialog id="createGroupDialog" heading="New Group:" backdrop	
 				transition="core-transition-top">
 			<paper-input id="newGroupName"
+				required
 				floatingLabel
 				label="Group name..."
-				error="Invalid group name."
+				error="Required."
 				on-input="{{handleNameInput}}">
 			</paper-input>
 			<h2 class="subtitle">Group Info:</h2>

@@ -75,10 +75,10 @@ public class TickSignups {
         try {
             log.debug("Listing available times using the following parameters...");
             String groupID = getGroupID(sheetID);
-            log.info("crsid: " + crsid);
-            log.info("tickID: " + tickID);
-            log.info("groupID: " + groupID);
-            log.info("sheetID: " + sheetID);
+            log.debug("crsid: " + crsid);
+            log.debug("tickID: " + tickID);
+            log.debug("groupID: " + groupID);
+            log.debug("sheetID: " + sheetID);
             return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
         } catch (ItemNotFoundException e) {
             log.debug("Either the sheet was not found or something has gone very wrong", e);
@@ -110,7 +110,7 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND)
                     .entity("The sheet was not found in the signups database").build();
         }
-        log.info("Attempting to book slot for user " + crsid + " for tickID " + bean.getTickID() +
+        log.debug("Attempting to book slot for user " + crsid + " for tickID " + bean.getTickID() +
                 " at time " + new Date(bean.getStartTime()) + " on sheet " + sheetID + " in group " + groupID);
         for (Slot slot : service.listUserSlots(crsid)) {
             if (slot.getStartTime().equals(bean.getStartTime())) {
@@ -490,21 +490,27 @@ public class TickSignups {
     @Produces("application/json")
     public Response createSheet(@Context HttpServletRequest request, CreateSheetBean bean) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        log.debug("User " + crsid + " has requested the creation of a sheet for " +
+                "the group of ID " + bean.getGroupID());
         if (!db.getRoles(bean.getGroupID(), crsid).contains(Role.AUTHOR)) {
+            log.debug("The user " + crsid + " in not an author in the group");
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
         long sheetLengthInMinutes = (bean.getEndTime() - bean.getStartTime())/60000;
         if (bean.getEndTime() <= bean.getStartTime()) {
+            log.debug("The end time must be after the start time");
             return Response.status(Status.BAD_REQUEST).entity("The end time must be after "
                     + "the start time").build();
         }
         if (sheetLengthInMinutes % bean.getSlotLengthInMinutes() != 0) {
+            log.debug("There must be an integer number of slots in the sheet");
             return Response.status(Status.BAD_REQUEST).entity("The difference in minutes "
                     + "between the start and end times should be an integer multiple of "
                     + "the length of the slots").build();
         }
         if (sheetLengthInMinutes/bean.getSlotLengthInMinutes() > 500) {
-            return Response.status(Status.BAD_REQUEST).entity("This sheet would have a silly "
+            log.debug("Too many slots would have been created");
+            return Response.status(Status.FORBIDDEN).entity("This sheet would have a silly "
                     + "number of slots if created.").build();
         }
         Sheet newSheet = new Sheet(bean.getTitle(), bean.getDescription(), bean.getLocation());
@@ -516,59 +522,64 @@ public class TickSignups {
             auth = info.getAuthCode();
             db.addAuthCode(id, auth);
         } catch (DuplicateNameException e) {
+            log.debug("The sheet seems to already exist");
             return Response.serverError().entity("This sheet already seems to exist").build();
         }
+        log.debug("The empty sheet was created");
         for (String ticker : bean.getTickerNames()) {
             try {
                 service.createColumn(id, new CreateColumnBean(ticker, auth, new Date(bean.getStartTime()),
                         new Date(bean.getEndTime()), bean.getSlotLengthInMinutes()*60000));
             } catch (ItemNotFoundException e) {
-                e.printStackTrace();
-                throw new RuntimeException("This should only happen if the sheet or column is not found "
-                        + "but we are creating them");
+                log.error("The sheet or column was not found, but we are creating them", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: The sheet or column was not found, but we are creating them").build();
             } catch (NotAllowedException e) {
-                e.printStackTrace();
-                throw new RuntimeException("We should have permission to access the sheet we have just created");
+                log.error("Permission was denied, it should not have been", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Permission to the sheet was denied, it should not have been").build();
             } catch (DuplicateNameException e) {
-                /*
-                 * Actually, this isn't the end of the world, we can just ignore it.
-                 * e.printStackTrace();
-                 * return Response.status(Status.BAD_REQUEST).entity("You must have specified two "
-                 *      + "identical columns (or slots)").build();
-                 */
+                log.warn("A duplicate name exception was encountered when creating a sheet" +
+                        "and ignored because " +
+                        "two identical columns were probably entered. If it was a duplicate " +
+                        "slot, there's some problem.", e);
             }
         }
+        log.debug("The sheet was populated with tickers and slots");
         try {
             service.addSheetToGroup(bean.getGroupID(),
                     new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
         } catch (ItemNotFoundException e) { // group doesn't yet exist: create and retry
+            log.debug("The given group was not found in the signups database - attempting to create it");
             try {
                 createGroup(bean.getGroupID());
                 service.addSheetToGroup(bean.getGroupID(),
                         new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
             } catch (DuplicateNameException e1) {
-                e1.printStackTrace();
+                log.error("The group was found to not exist and then immediately exist " +
+                        "in the signups database", e1);
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("The group was found to both exist and not exist "
-                                + "in the signups database, sorry.\n"+e1).build();
+                        .entity("Server Error: The group was found to both exist and not exist "
+                                + "in the signups database").build();
             } catch (ItemNotFoundException e1) {
-                e1.printStackTrace();
+                log.error("Group still not found, even after attempted creation", e1);
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("The group was not found in the signups database, we "
+                        .entity("Server Error: The group was not found in the signups database, we "
                                 + "attempted to create it, but it still wasn't found."
                                 + "\n"+e1).build();
             } catch (NotAllowedException e1) {
-                e1.printStackTrace();
+                log.error("The auth codes were found to be incorrect", e1);
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("The group was not found in the signups database, "
+                        .entity("Server Error: The group was not found in the signups database, "
                                 + "we attempted to create it, but permission was not "
                                 + "given - it should have been").build();
             }
         } catch (NotAllowedException e) {
-            e.printStackTrace();
+            log.error("The auth codes stored in the " +
+                    "database were not found to match those in the signups database", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("The auth codes stored by the database were for some "
-                            + "reason found to be incorrect./n" + e).build();
+                    .entity("Server Error: The authorisation codes stored in the " +
+                            "database were not found to match those in the signups database").build();
         }
         return Response.ok().build();
     }
@@ -578,17 +589,22 @@ public class TickSignups {
     public Response deleteSheet(@Context HttpServletRequest request,
             @PathParam("sheetID") String sheetID) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        log.debug("User " + crsid + " has requested the deletion of sheet of ID " + sheetID);
         try {
             if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.AUTHOR)) {
+                log.debug("The user " + crsid + " is not an author in the group " + getGroupID(sheetID));
                 return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
             }
             service.deleteSheet(sheetID, db.getAuthCode(sheetID));
+            log.debug("Sheet deleetd");
             return Response.ok().build();
         } catch (ItemNotFoundException e) {
+            log.debug("The sheet of ID " + sheetID + " was not found", e);
             return Response.status(Status.NOT_FOUND).entity("The given sheet was not found.").build();
         } catch (NotAllowedException e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("There was a problem - "
-                    + "the authCode is allegedly wrong, but it never should be. Exactpion:\n" + e).build();
+            log.error("The auth code for the sheet was found to be incorrect", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Server Error: "
+                    + "the authCode seems to be wrong, but it never should be.").build();
         }
     }
     
@@ -610,25 +626,31 @@ public class TickSignups {
             @PathParam("sheetID") String sheetID,
             AddColumnBean bean) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        log.debug("The user " + crsid + " wants to add a ticker to the sheet " + sheetID);
         try {
             if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.MARKER)) {
+                log.debug("The user " + crsid + " does not have permission to do this (is not a marker)");
                 return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
             }
         } catch (ItemNotFoundException e1) {
+            log.debug("The sheet was not found", e1);
             return Response.status(Status.NOT_FOUND).entity("The given signup "
                     + "sheet was not found").build();
         }
         long sheetLengthInMinutes = (bean.getEndTime() - bean.getStartTime())/60000;
         if (bean.getEndTime() <= bean.getStartTime()) {
+            log.debug("The end time was not after the start time");
             return Response.status(Status.BAD_REQUEST).entity("The end time must be after "
                     + "the start time").build();
         }
         if (sheetLengthInMinutes % bean.getSlotLengthInMinutes() != 0) {
+            log.debug("An integer number of slots is required");
             return Response.status(Status.BAD_REQUEST).entity("The difference in minutes "
                     + "between the start and end times should be an integer multiple of "
                     + "the length of the slots").build();
         }
         if (sheetLengthInMinutes/bean.getSlotLengthInMinutes() > 500) {
+            log.debug("Too many slots");
             return Response.status(Status.BAD_REQUEST).entity("This sheet would have a silly "
                     + "number of slots if created.").build();
         }
@@ -636,18 +658,19 @@ public class TickSignups {
             service.createColumn(sheetID, new CreateColumnBean(bean.getName(),
                     db.getAuthCode(sheetID), new Date(bean.getStartTime()), new Date(bean.getEndTime()),
                     bean.getSlotLengthInMinutes()*60000));
+            log.debug("Ticker added");
+            return Response.ok().build();
         } catch (ItemNotFoundException e) {
-            e.printStackTrace();
+            log.debug("Something was not found", e);
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         } catch (NotAllowedException e) {
-            e.printStackTrace();
+            log.debug("Permission was denied for some reason", e);
             return Response.status(Status.FORBIDDEN).entity("Not allowed: " + e.getMessage()).build();
         } catch (DuplicateNameException e) {
-            e.printStackTrace();
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Internal server error: "
+            log.debug("Duplicate column or slot", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Server Error: "
                     + e.getMessage()).build();
         }
-        return Response.ok().build();
     }
     
     /**
@@ -659,31 +682,39 @@ public class TickSignups {
     public Response deleteColumn(@Context HttpServletRequest request,
             @PathParam("sheetID") String sheetID,
             @PathParam("ticker") String ticker) {
-    String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
-    try {
-        if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.MARKER)) {
-            return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        log.debug("The user " + crsid + " has requested deletion of the ticker " + ticker +
+                "from the sheet of ID " + sheetID);
+        try {
+            if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.MARKER)) {
+                log.debug("The user " + crsid + " is not a marker and so permission was denied");
+                return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+            }
+        } catch (ItemNotFoundException e1) {
+            log.debug("The sheet was not found", e1);
+            return Response.status(Status.NOT_FOUND).entity("Error: The given signup "
+                    + "sheet was not found").build();
         }
-    } catch (ItemNotFoundException e1) {
-        return Response.status(Status.NOT_FOUND).entity("The given signup "
-                + "sheet was not found").build();
-    }
         try {
             service.deleteColumn(sheetID, ticker, db.getAuthCode(sheetID));
+            log.debug("Ticker deleted");
+            return Response.ok().build();
         } catch (NotAllowedException e) {
-            e.printStackTrace();
+            log.debug("Permission denied", e);
             return Response.status(Status.FORBIDDEN).entity("Not allowed: " + e.getMessage()).build();
         } catch (ItemNotFoundException e) {
-            e.printStackTrace();
+            log.debug("Something was not found", e);
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
-        return Response.ok().build();
     }
+    
     
     
     /**
      * Modifies bookings no matter what.
+     * Commented out for now because not currently used and needs attention if it is to be used.
      */
+    /*
     @POST
     @Path("/sheets/{sheetID}/bookings/{startTime}")
     @Consumes("application/json")
@@ -713,10 +744,13 @@ public class TickSignups {
         }
         return Response.ok().build();
     }
+    */
     
     public void createGroup(String groupID) throws DuplicateNameException {
+        log.debug("Creating new group in signups database with ID " + groupID);
         String groupAuthCode = service.addGroup(new Group(groupID));
         db.addAuthCode(groupID, groupAuthCode);
+        log.debug("Group created");
     }
     
     public String getGroupID(String sheetID) throws ItemNotFoundException {

@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/core-item/core-item.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="menu-button.html">
 <link rel="import" href="dashboard.html">
 <link rel="import" href="onlogin.html">
@@ -67,7 +68,8 @@
 		</template>
 
 		<template id="groupTemp" if="{{gid}}">
-			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}"></x-group>
+			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}"
+				on-group-deleted="{{groupDeletedHandler}}"></x-group>
 		</template>
 		
 		<template id="tickTemp" if="{{showTickCreator}}">
@@ -114,10 +116,6 @@
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
-                console.log();
-                console.log(oldValue);
-                console.log(newValue);
-
 				if (!newValue || (oldValue && oldValue.id === "createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
@@ -153,6 +151,11 @@
 				}.bind(this), 0);
 			},
 
+			groupDeletedHandler: function () {
+				this.$.loginAPIs.$.sidebarAjax.go();
+				this.$.navMenu.selected = "dashButton";
+			},
+
 			// Tick menu handlers:
 
 			noTickCreator: function () {
@@ -172,7 +175,7 @@
 
 				this.tickId = newValue.getAttribute('tickId');
 				this.$.tickTemp.model = { showTickCreator: true, tickId: this.tickId };
-			}
+			},
 		});
 	</script>
 </polymer-element>

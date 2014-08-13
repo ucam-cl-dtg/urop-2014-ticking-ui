@@ -1,0 +1,60 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="are-you-sure.html">
+
+<polymer-element name="delete-group" attributes="gid">
+	<template>
+		<style>
+			:host {
+				display: inherit;
+			}
+		</style>
+		<!-- Delete group API. -->
+		<core-ajax id="deleteAPI"
+			method="DELETE"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid }}"
+			on-core-response="{{deleteResponse}}"
+			on-core-error="{{deleteError}}">
+		</core-ajax>
+
+		<!-- Delete button. -->
+		<paper-icon-button id="deleteButton"
+			icon="delete"
+			on-click="{{deleteClicked}}">
+		</paper-icon-button>
+
+		<!-- Confirmation dialog. -->
+		<are-you-sure id="confirm"
+			on-yes="{{deleteConfirmed}}"></are-you-sure>
+
+		<!-- Response toasts. -->
+		<paper-toast id="deleteSuccess" duration="8000" text="Successfully deleted group."></paper-toast>
+		<paper-toast id="deleteError" duration="8000" text="Error deleting group."></paper-toast>
+
+	</template>
+	<script>
+		Polymer('delete-group', {
+
+			deleteClicked: function () {
+				// this.$.deleteAPI.go();
+				this.$.confirm.toggle();
+			},
+
+			deleteConfirmed: function () {
+				this.$.deleteAPI.go();
+			},
+
+			deleteResponse: function () {
+				this.$.deleteSuccess.show();
+				this.fire('group-deleted');
+			},
+
+			deleteError: function (e, detail) {
+				this.$.deleteError.text = detail.xhr.responseText;
+				this.$.deleteError.show();
+			},
+		});
+	</script>
+</polymer-element>
