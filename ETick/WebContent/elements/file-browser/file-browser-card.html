@@ -8,9 +8,14 @@
 <link rel="import" href="status-list.html"/>
 <link rel="import" href="ticker-set-result.html"/>
 
+<!-- This is the main card for file-browsing.
+  The mandatory attributes are repoName, tickId.
+  The optional attributes are sheetId, crsid, ticker.
+  These must be supplied together, if they are supplied.
+  If they are supplied, this card also becomes a pass/fail card.
+-->
 <polymer-element name="file-browser-card"
                  attributes="repoName
-                             highlight
                              sheetId
                              tickId
                              crsid
