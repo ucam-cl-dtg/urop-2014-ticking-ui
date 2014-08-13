@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="status-list-style.css"/>
 
-    <core-icon-button icon="backspace"
-                      onclick="{{clearHighlighting}}"
-                      label="Clear highlighting">
-    </core-icon-button>
+    <core-item icon="backspace"
+               on-tap="{{clearHighlighting}}"
+               label="Clear highlighting">
+    </core-item>
     <core-selector multi
                    id="selector"
                    selected="{{highlight}}"
@@ -31,7 +31,7 @@
   </template>
   <script>
     Polymer('status-list'
-      , {   highligh: []
+      , {   highlight: []
           , errorsChanged:
             function ()
             {
