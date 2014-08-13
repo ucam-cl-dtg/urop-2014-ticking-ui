@@ -102,6 +102,10 @@
                this.$.forkService.createFork();
             },
 
+            repoChanged: function() {
+                this.reportAvailableChanged();
+            },
+
             reportAvailableChanged: function() {
                 if (this.reportAvailable) {
                     this.showReport();
