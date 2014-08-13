@@ -12,7 +12,7 @@ above attribute (...Message).
 
 popUp...: To pop up even when the wait toast did not do so.
 
-waitBeforeToast: Wait the given amount of microseconds before showing up
+waitBeforeToast: Wait the given amount of milliseconds before popping up
 the waiting toast.
 -->
 <polymer-element name="toast-ajax"
@@ -53,8 +53,9 @@ the waiting toast.
         , contentType: 'application/x-www-form-urlencoded'
         , withCredentials: false
 
-        , timeOut: undefined
+        , timeOut: null
         , waitShown: false
+        , waitBeforeToast: 1000
         , captureResponse: false
         , captureError: false
         , captureComplete: false
@@ -67,7 +68,9 @@ the waiting toast.
           {
             "use strict";
 
-            if (this.waitBeforeToast != 0
+            this.waitShown = false;
+
+            if (this.waitBeforeToast > 0
               &&this.timeOut == null)
             {
               this.timeOut = window.setTimeout(
@@ -81,6 +84,12 @@ the waiting toast.
                   }
                 }.bind(this)
                 , this.waitBeforeToast);
+            }
+            else
+            {
+              this.waitShown = true;
+              this.$.toastElement.text = this.waitMessage;
+              this.$.toastElement.show();
             }
 
             this.$.ajax.go();
@@ -129,6 +138,7 @@ the waiting toast.
             if (this.timeOut != null)
             {
               clearTimeout(this.timeOut);
+              this.timeOut = null;
             }
 
             if (show)
