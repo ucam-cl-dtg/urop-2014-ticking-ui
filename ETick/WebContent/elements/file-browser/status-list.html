@@ -2,12 +2,17 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/core-item/core-item.html"/>
 <link rel="import" href="../../bower_components/core-selector/core-selector.html"/>
+<link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html"/>
 
 <polymer-element name="status-list" attributes="errors highlight">
   <template>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="status-list-style.css"/>
 
+    <core-item icon="backspace"
+               on-tap="{{clearHighlighting}}"
+               label="Clear highlighting">
+    </core-item>
     <core-selector multi
                    id="selector"
                    selected="{{highlight}}"
@@ -26,7 +31,7 @@
   </template>
   <script>
     Polymer('status-list'
-      , {   highligh: []
+      , {   highlight: []
           , errorsChanged:
             function ()
             {
@@ -62,6 +67,12 @@
                     {
                       return error.className;
                     });
+            }
+
+          , clearHighlighting:
+            function ()
+            {
+              this.highlight = [];
             }
         });
   </script>

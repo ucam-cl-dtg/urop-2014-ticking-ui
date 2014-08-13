@@ -20,7 +20,7 @@ core-toolbar {
 	font-weight: 100;
 }
 
-paper-button, menu-button::shadow paper-button {
+#navMenu paper-button, menu-button::shadow paper-button {
 	font-size: 1rem;
 	font-weight: 200;
 }
