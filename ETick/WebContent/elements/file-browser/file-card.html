@@ -1,6 +1,7 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/highlightjs-element/highlightjs-element.html"/>
+<link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html"/>
 <link rel="import" href="../../elements/main-card.html"/>
 
 <link rel="stylesheet" href="style.css"/>
@@ -70,19 +71,20 @@
                  *
                  * Current:
                  * [ {   fileDetails:
-                 *       [ {   detail: (Description)
-                 *           , file:   (File name)
+                 *       [ {   detail:     (Description)
+                 *           , file:       (File name)
                  *           , lineNumber: (Starting from 1)
                  *       } ]
-                 *     , outcome: (ERROR/WARNING/PASS)
+                 *     , outcome:            (ERROR/WARNING/PASS)
+                 *     , className:          (outcome + number)
                  *     , problemDescription: (Short, human readable.)
                  * } ]
                  *
                  * However, it is a lot easier for us to use the
                  * following format:
-                 * [ {   message: (Description)
-                 *     , line:    (Starting from 1)
-                 *     , class:   (For enclosing span tags)
+                 * [ {   message:   (Description)
+                 *     , line:      (Starting from 1)
+                 *     , className: (For enclosing span tags)
                  *      (^ Generated using error.id)
                  * } ]
                  *
@@ -100,44 +102,26 @@
                  * looping over arrays, so I use native array functions
                  */
                 var comments =
-                  this.comments.reduce(/* Same as foldl */
-                    function(previousValue, currentValue)
+                  this.comments.map(/* Same as foldl */
+                    function(comment)
                     {
-                      /* Re-format errors; isCurrentFile and
-                       * refactorData declared after the return */
-                      var errors =
-                        currentValue.fileDetails
-                          .filter(isCurrentFile)
-                          .map(refactorData);
-
-                      return previousValue.concat(errors);
-
-                      /* Does the refactoring of data, as outlined in
-                       * the above comment.
-                       */
-                      function refactorData (error)
+                        return comment.fileDetails
+                          .filter(function (detail)
+                                  {
+                                    return detail.file == filename;
+                                  })
+                          .map(function (detail)
+                               {
+                                 return {   line      : detail.lineNumber
+                                          , message   : detail.detail
+                                          , className : comment.className
+                                        };
+                               });
+                    }).reduce(
+                      function (prev, curr)
                       {
-                        var rtn = new Object();
-                        rtn.line = error.lineNumber;
-                        rtn.message = error.detail;
-
-                        /* Generate CSS classes for error */
-                        rtn.class = [ currentValue.outcome
-                                      , "highlight"
-                                        + currentValue.id
-                                      , "highlight"
-                                    ].join(" ");
-
-                        return rtn;
-                      }
-
-                      /* Filter for this file */
-                      function isCurrentFile (error)
-                      {
-                        return error.file == filename;
-                      }
-                    }
-                    , /* initial value of */ new Array());
+                        return prev.concat(curr);
+                      }, []);
 
                 /* mixin_comments_with_data works with start and end
                  * characters, so we use this to convert line numbers */
@@ -150,22 +134,51 @@
                                .highlightAuto(this.content || '').value)
 
               this.$.codeContent.innerHTML =
+                "<ol><li>" +
                   mixin_comments_with_data(this.content
-                    , comments.concat(syntax));
+                    , comments.concat(syntax)
+                    , default_convert
+                  ) +
+                "</li></ol>";
             }
-          , commentsChanged:
-            function (oldValue, newValue)
-            {
-              this.contentChanged();
-            }
+
+          , commentsChanged: this.contentChanged
 
           , highlightChanged:
             function ()
             {
-              /* To use closures */
-              var highlightSpans =
-                this.$.codeContent.getElementsByClassName("highlight");
-              var toHighlight = this.highlight;
+              /* Remove old classes */
+              ["ERROR", "WARNING", "COMMENT"].forEach(
+                  function (severity)
+                  {
+                    this.$.codeContent
+                      .getElementsByClassName(severity)
+                      .array()
+                      .forEach(
+                          function (element)
+                          {
+                            element.classList.remove(severity)
+                          });
+                  }.bind(this));
+                  
+              this.highlight.forEach(
+                  function (className)
+                  {
+                    this.$.codeContent
+                      .getElementsByClassName(className)
+                      .array()
+                      .forEach(
+                          function (element)
+                          {
+                            var highlightType =
+                              className.match(/[a-zA-Z]*/);
+
+                            if (highlightType.length > 0)
+                            {
+                              element.classList.add(highlightType);
+                            }
+                          });
+                  }.bind(this));
             }
 
           , syntaxStyleSheetChanged:
