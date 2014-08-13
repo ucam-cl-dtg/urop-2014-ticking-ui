@@ -6,7 +6,7 @@
 <polymer-element name="fork-service" attributes="unitPass humanPass signedUp testRunning reportAvailable repo tickId forked">
     <template>
         <!-- Load fork object for this tick -->
-        <core-ajax
+        <toast-ajax
                 id="ajaxLoad"
                 auto
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/' + tickId + '/'}}"
@@ -14,7 +14,7 @@
                 method="GET"
                 on-core-response="{{forkGetSuccess}}"
                 on-core-error="{{forkLoadError}}">
-        </core-ajax>
+        </toast-ajax>
 
         <toast-ajax
                 id="ajaxCreate"
@@ -23,7 +23,9 @@
                 method="POST"
                 on-core-response="{{forkPostSuccess}}"
 
-                captureError>
+                captureError
+                popUpError
+                errorMessage="Error initialising tick.">
         </toast-ajax>
 
         <paper-toast id="toastLoadError"></paper-toast>

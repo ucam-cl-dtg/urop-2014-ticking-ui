@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 
 <polymer-element name="submit-service" attributes="tickId status testRunning unitPass reportAvailable">
@@ -16,20 +15,22 @@
                 waitMessage="Submitting"
                 waitBeforeToast="500"
                 captureError
-                popUpError>
+                popUpError
+                errorMessage="Error submitting tick">
         </toast-ajax>
 
         <!-- poll the tick's status -->
-        <core-ajax
+        <toast-ajax
                 id="ajaxPoll"
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/running'}}"
                 handleAs="json"
                 on-core-response="{{pollNext}}"
-                on-core-error="{{pollError}}">
-        </core-ajax>
+                on-core-error="{{pollError}}"
 
-        <paper-toast id="toastSubmitError" text="Error submitting. Have you recently submitted this tick in another tab?"></paper-toast>
-        <paper-toast id="toastPollError" text="Error obtaining submission status. Try refreshing the page."></paper-toast>
+                captureError
+                popUpError
+                errorMessage="Error obtaining submission status.">
+        </toast-ajax>
     </template>
     <script>
         Polymer('submit-service', {
@@ -53,7 +54,7 @@
             /**
              * Fired when submitting the tick failed.
              */
-            submitError: function(e, detail) {
+            submitError: function() {
                 //smooth UX
                 this.job('unset-testRunning', function() {
                     this.testRunning = false;
@@ -69,9 +70,6 @@
 
             pollError: function(e, detail) {
                 console.log("poll error");
-
-                this.$.toastPollError.text = detail.xhr.responseText;
-                this.$.toastPollError.show();
 
                 this.job('delay-poll', function() {
                     this.startPolling();
@@ -100,13 +98,17 @@
                 this.status = this.$.ajaxPoll.response;
 
                 if (this.status.progress == this.status.maxProgress) {
-                    console.log(this.status);
-                    this.testRunning = false;
-                    this.reportAvailable = true;
-                    console.log(this.status.info);
-                    if (this.status.info == "PASS") {
-                        this.unitPass = true;
-                    }
+                    this.status.info = "Done";
+                    this.job('show-button', function() {
+                        console.log(this.status);
+                        this.testRunning = false;
+                        this.reportAvailable = true;
+                        console.log(this.status.info);
+                        if (this.status.info == "PASS") {
+                            this.unitPass = true;
+                        }
+                    }, 750);
+
                 } else {
                     this.job('delayed-re-poll', function() {
                         this.$.ajaxPoll.go();

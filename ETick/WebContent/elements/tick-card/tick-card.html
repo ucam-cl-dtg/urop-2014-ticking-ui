@@ -57,13 +57,13 @@
                                       humanPass="{{humanPass}}">
                     </submit-component>
                     <div class="spacer"></div>
-                    <report-component flex
+                    <!--<report-component flex
                                       reportAvailable="{{reportAvailable}}"
                                       repoName="{{repoName}}"
                                       repo="{{repo}}"
                                       testRunning="{{testRunning}}"
                                       unitPass="{{unitPass}}"></report-component>
-                    <div class="spacer"></div>
+                    <div class="spacer"></div>-->
                     <signup-component flex
                                       sheets="{{sheets}}"
                                       signedUp="{{signedUp}}"
@@ -100,12 +100,28 @@
 
             createFork: function() {
                this.$.forkService.createFork();
+            },
+
+            repoChanged: function() {
+                this.reportAvailableChanged();
+            },
+
+            reportAvailableChanged: function() {
+                if (this.reportAvailable) {
+                    this.showReport();
+                } else {
+                    this.repoName = null;
+                }
+            },
+
+            showReport: function() {
+                this.job('show-report', function(){
+                    var regex = /urop2014\.dtg\.cl\.cam\.ac\.uk\/(.*)\.git/;
+                    this.repoName = this.repo.match(regex)[1];
+                }, 500);
             }
 
-
-
-
-           /* testRunningChanged: function() {
+            /* testRunningChanged: function() {
                 console.log(this.testRunning);
 
                 if (this.testRunning == true) {
