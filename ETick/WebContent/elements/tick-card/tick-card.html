@@ -31,7 +31,7 @@
             <core-collapse opened?="{{repo != null}}">
             <div layout horizontal>
                 <div class="spacer"></div>
-                <div>{{repo}}</div>
+                <div>{{displayRepo}}</div>
             </div>
             </core-collapse>
 
@@ -55,7 +55,8 @@
                                       testRunning="{{testRunning}}"
                                       reportAvailable="{{reportAvailable}}"
                                       unitPass="{{unitPass}}"
-                                      humanPass="{{humanPass}}">
+                                      humanPass="{{humanPass}}"
+                                      repo="{{repo}}">
                     </submit-component>
                     <div class="spacer"></div>
                     <!--<report-component flex
@@ -88,7 +89,7 @@
                 this.testRunning = null;
                 this.reportAvailable  = null;
                 this.repo = null;
-
+                this.displayRepo = null;
                 this.repoName = null;
             },
 
@@ -104,11 +105,19 @@
             },
 
             repoChanged: function() {
+                console.log("repo is now " + this.repo);
+
+                if (this.repo != null) {
+                    this.displayRepo = this.repo;
+                }
+
+                console.log("so display repo is now " + this.displayRepo);
+
                 this.reportAvailableChanged();
             },
 
             reportAvailableChanged: function() {
-                if (this.reportAvailable) {
+                if (this.reportAvailable && this.repo != null) {
                     this.showReport();
                 } else {
                     this.repoName = null;

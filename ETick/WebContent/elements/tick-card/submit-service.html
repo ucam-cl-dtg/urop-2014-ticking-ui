@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 
-<polymer-element name="submit-service" attributes="tickId status testRunning unitPass reportAvailable">
+<polymer-element name="submit-service" attributes="tickId status testRunning unitPass reportAvailable repo">
     <template>
         <!-- submit this tick for testing -->
         <toast-ajax
@@ -90,6 +90,10 @@
                 }*/
             },
 
+            repoChanged: function() {
+                console.log("repo changed to " + this.repo);
+            },
+
             /**
              * Sets the published status attribute to the response of a pollStatus request, and starts another poll
              * if the test is incomplete
@@ -98,17 +102,21 @@
                 this.status = this.$.ajaxPoll.response;
 
                 if (this.status.progress == this.status.maxProgress) {
+                    var statusString = this.status.info;
                     this.status.info = "Done";
+                    var oldRepo = this.repo.valueOf();
+                    this.repo = null;
                     this.job('show-button', function() {
-                        console.log(this.status);
                         this.testRunning = false;
                         this.reportAvailable = true;
-                        console.log(this.status.info);
-                        if (this.status.info == "PASS") {
-                            this.unitPass = true;
-                        }
+                        this.unitPass = statusString == "PASS";
+                        //this.repo = oldRepo; //regenerate report
+                        console.log(this.repo);
                     }, 750);
 
+                    this.job('show-report', function() {
+                        this.repo = oldRepo;
+                    }, 420);
                 } else {
                     this.job('delayed-re-poll', function() {
                         this.$.ajaxPoll.go();
