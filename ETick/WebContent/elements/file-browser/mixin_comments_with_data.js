@@ -310,7 +310,7 @@ function default_convert(comments, text)
 {
   "use strict";
 
-  var rtn = "";
+  var rtn = "<span class=\"tooltip-container\">";
   var tooltip = "";
 
   if (comments.length > 0)
@@ -327,7 +327,8 @@ function default_convert(comments, text)
 
     if (tooltip != "")
     {
-      rtn += "<span title=\"" + tooltip.join("\n") + "\">";
+      rtn += "<div class=\"tooltip\">" +
+        tooltip.join("<br/>") + "\"></div>";
     }
 
     rtn += "<span class=\"";
@@ -341,10 +342,6 @@ function default_convert(comments, text)
   }
 
   rtn += text.replace(/\n/g, "</li><li>");
-  rtn += "</span>";
-  if (tooltip != "")
-  {
-    rtn += "</span>";
-  }
+  rtn += "</span></span>";
   return rtn;
 }

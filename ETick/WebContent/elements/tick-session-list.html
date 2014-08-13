@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="tick-session-box.html">
 <link rel="import" href="box-list.html">
 
 <polymer-element name="tick-session-list" attributes="sheets">
@@ -10,6 +11,7 @@
 		</style>
 		<box-list id="list">
 			<template repeat="{{sheet in sheets}}">
+				<tick-session-box class="itemBox" sheet="{{sheet}}"></tick-session-box>
 			</template>
 		</box-list>
 	</template>
