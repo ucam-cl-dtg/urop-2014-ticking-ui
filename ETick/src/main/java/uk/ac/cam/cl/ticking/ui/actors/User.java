@@ -2,6 +2,8 @@ package uk.ac.cam.cl.ticking.ui.actors;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -26,7 +28,7 @@ public class User implements Comparable<User> {
 
 	private String ssh;
 
-	private boolean ldap;
+	private DateTime ldap;
 
 	private boolean hasLogged;
 
@@ -34,7 +36,7 @@ public class User implements Comparable<User> {
 
 	public User(String crsid) {
 		this.setCrsid(crsid);
-		this.setLdap(false);
+		this.setLdap(null);
 	}
 
 	/**
@@ -63,7 +65,7 @@ public class User implements Comparable<User> {
 		this.setInstitutions(institutions);
 		this.setCollege(college);
 		this.setIsStudent(isStudent);
-		this.setLdap(true);
+		this.setLdap(DateTime.now());
 	}
 
 	/**
@@ -222,14 +224,14 @@ public class User implements Comparable<User> {
 	/**
 	 * @return ldap
 	 */
-	public boolean isLdap() {
+	public DateTime getLdap() {
 		return ldap;
 	}
 
 	/**
 	 * @param ldap
 	 */
-	public void setLdap(boolean ldap) {
+	public void setLdap(DateTime ldap) {
 		this.ldap = ldap;
 	}
 
