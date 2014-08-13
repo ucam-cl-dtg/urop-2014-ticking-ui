@@ -328,7 +328,7 @@ function default_convert(comments, text)
     if (tooltip != "")
     {
       rtn += "<div class=\"tooltip\">" +
-        tooltip.join("<br/>") + "\"></div>";
+        tooltip.join("<br/>") + "</div>";
     }
 
     rtn += "<span class=\"";
