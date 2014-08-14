@@ -135,8 +135,9 @@
             else if (this.tickerResult == "FAIL")
             {
               this.resultString =
-                "You have been failed by ticker " + lastTickedBy +
-                " at " + new Date(lastTickedOn).toLocaleString() + ".";
+                "You have been failed by ticker " + this.lastTickedBy +
+                " at " + new Date(this.lastTickedOn).toLocaleString() +
+                ".";
             }
             else if (this.reportResult == "FAIL")
             {
