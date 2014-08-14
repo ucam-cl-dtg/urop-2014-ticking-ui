@@ -85,16 +85,17 @@
 
 		</main-card>
 
-		<!-- Tick list card. --> 
-		<template if="{{selectedTickId}}">
-			<main-card animated>
-				<tick-card id="tickCard"
-					tickName="{{selectedTickName}}"
-					tickId="{{selectedTickId}}"
-					sheets="{{sheets}}"
-					repoName="{{repoName}}"></tick-card>
-			</main-card>
-		</template>
+		<!-- Tick list card. -->
+        <template if="{{selectedTickId}}">
+            <main-card animated>
+                <tick-card id="tickCard"
+                           tickName="{{selectedTickName}}"
+                           tickId="{{selectedTickId}}"
+                           sheets="{{sheets}}"
+                           repoName="{{repoName}}"
+                           tickObj="{{selectedTickObj}}"></tick-card>
+            </main-card>
+        </template>
 
 		<!-- File broweser card for ticks. -->
         <template if="{{repoName}}">
@@ -161,11 +162,14 @@
 			forkClickedHandler: function (e, detail) {
 				this.selectedTickId = detail.tickId;
 				this.selectedTickName = detail.tickName;
+                this.selectedTickObj = detail.tickObj;
+
+                console.log(detail);
 			},
 
 			sheetCreated: function () {
 				this.$.sheetListAPI.go();
-			},
+			}
 		});
 	</script>
 </polymer-element>

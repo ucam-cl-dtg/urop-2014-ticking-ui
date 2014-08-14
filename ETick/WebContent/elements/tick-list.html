@@ -66,6 +66,7 @@
 				var sel = this.$.list.$.selector.selected;
 				this.selectedTickId = sel._id;
 				this.selectedTickIdName = sel.name;
+                this.selectedTickObj = sel;
 
                 if (this.canFork) {
                     this.forkClicked();
@@ -76,7 +77,8 @@
 				if (this.selectedTickId)
 					this.fire('fork-clicked', {
 						tickId: this.selectedTickId,
-						tickName: this.selectedTickIdName
+						tickName: this.selectedTickIdName,
+                        tickObj: this.selectedTickObj
 					});
 			}
 		});

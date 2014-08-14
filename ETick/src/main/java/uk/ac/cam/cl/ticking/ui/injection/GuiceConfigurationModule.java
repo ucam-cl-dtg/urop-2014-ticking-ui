@@ -28,6 +28,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
 import uk.ac.cam.cl.ticking.ui.database.Mongo;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
@@ -123,11 +124,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static TickApiFacade getTickApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig,
-			ITestService testServiceProxy, WebInterface gitServiceProxy) {
+			ITestService testServiceProxy, WebInterface gitServiceProxy,
+			PermissionsChecker permissions) {
 		if (tickApiFacade == null) {
-			tickApiFacade = new TickApiFacade(db, config, adminConfig,
-					testServiceProxy, gitServiceProxy);
+			tickApiFacade = new TickApiFacade(db, config, testServiceProxy,
+					gitServiceProxy, permissions);
 		}
 		return tickApiFacade;
 	}
@@ -136,11 +137,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static UserApiFacade getUserApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig,
-			WebInterface gitServiceProxy) {
+			WebInterface gitServiceProxy, PermissionsChecker permissions) {
 		if (userApiFacade == null) {
-			userApiFacade = new UserApiFacade(db, config, adminConfig,
-					gitServiceProxy);
+			userApiFacade = new UserApiFacade(db, config, gitServiceProxy,
+					permissions);
 		}
 		return userApiFacade;
 	}
@@ -148,11 +148,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static GroupingApiFacade getGroupingApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig, LdapManager raven) {
+			ConfigurationLoader<Configuration> config, LdapManager raven,
+			PermissionsChecker permissions) {
 		if (groupingApiFacade == null) {
-			groupingApiFacade = new GroupingApiFacade(db, config, adminConfig,
-					raven);
+			groupingApiFacade = new GroupingApiFacade(db, config, raven,
+					permissions);
 		}
 		return groupingApiFacade;
 	}
@@ -161,11 +161,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static GroupApiFacade getGroupApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig,
-			TickSignups tickSignupService) {
+			TickSignups tickSignupService, PermissionsChecker permissions) {
 		if (groupApiFacade == null) {
-			groupApiFacade = new GroupApiFacade(db, config, adminConfig,
-					tickSignupService);
+			groupApiFacade = new GroupApiFacade(db, config, tickSignupService,
+					permissions);
 		}
 		return groupApiFacade;
 	}
@@ -174,11 +173,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static SubmissionApiFacade getSubmissionApiSingleton(
 			IDataManager db, ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig,
-			ITestService testServiceProxy, TickSignups tickSignupService) {
+			ITestService testServiceProxy, TickSignups tickSignupService,
+			PermissionsChecker permissions) {
 		if (submissionApiFacade == null) {
 			submissionApiFacade = new SubmissionApiFacade(db, config,
-					adminConfig, testServiceProxy, tickSignupService);
+					testServiceProxy, tickSignupService, permissions);
 		}
 		return submissionApiFacade;
 	}
@@ -187,11 +186,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static ForkApiFacade getForkApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig, ITestService testService,
-			WebInterface gitService, TickSignups tickSignupService) {
+			ITestService testService, WebInterface gitService,
+			TickSignups tickSignupService, PermissionsChecker permissions) {
 		if (forkApiFacade == null) {
-			forkApiFacade = new ForkApiFacade(db, config, adminConfig,
-					testService, gitService, tickSignupService);
+			forkApiFacade = new ForkApiFacade(db, config, testService,
+					gitService, tickSignupService, permissions);
 		}
 		return forkApiFacade;
 	}

@@ -30,6 +30,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -45,9 +46,9 @@ public class GroupApiFacade implements IGroupApiFacade {
 	// remove if not
 	private ConfigurationLoader<Configuration> config;
 
-	private ConfigurationLoader<Admins> adminConfig;
-
 	private TickSignups tickSignupService;
+	
+	private PermissionsChecker permissions;
 
 	/**
 	 * @param db
@@ -56,12 +57,11 @@ public class GroupApiFacade implements IGroupApiFacade {
 	@Inject
 	public GroupApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig,
-			TickSignups tickSignupService) {
+			TickSignups tickSignupService, PermissionsChecker permissions) {
 		this.db = db;
 		this.config = config;
-		this.adminConfig = adminConfig;
 		this.tickSignupService = tickSignupService;
+		this.permissions = permissions;
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		/* Check permissions */
-		if (!crsid.equals(group.getCreator())&&!adminConfig.getConfig().isAdmin(crsid)) {
+		if (!permissions.groupCreator(crsid, group)) {
 			log.warn("User " + crsid + " tried to delete " + groupId
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -176,7 +176,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		/* Check permissions */
-		if (user.getIsStudent()&&!adminConfig.getConfig().isAdmin(crsid)) {
+		if (permissions.isStudent(user)) {
 			log.warn("User " + crsid
 					+ " tried to create a group but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -253,9 +253,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 				"RavenRemoteUser");
 
 		/* Check permissions */
-		List<Role> myRoles = db.getRoles(groupId, crsid);
-
-		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(crsid)) {
+		if (!permissions.hasRole(crsid, groupId, Role.AUTHOR)) {
 			log.warn("User " + crsid + " tried to update the group " + groupId
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -310,8 +308,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		/* Check permissions */
-		List<Role> myRoles = db.getRoles(groupId, crsid);
-		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(crsid)) {
+		if (!permissions.hasRole(crsid, groupId, Role.AUTHOR)) {
 			log.warn("User " + crsid + " tried to clone the group " + groupId
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -367,6 +364,13 @@ public class GroupApiFacade implements IGroupApiFacade {
 			for (Grouping grouping : db.getGroupings(groupId, false)) {
 				db.saveGrouping(new Grouping(group.getGroupId(), grouping
 						.getUser(), grouping.getRole()));
+			}
+		} else {
+			/*Add the user as an author and all admins to the clone*/		
+			db.saveGrouping(new Grouping(group.getGroupId(), crsid, Role.AUTHOR));
+			
+			for (User user : db.getAdmins()){
+				db.saveGrouping(new Grouping(group.getGroupId(), user.getCrsid(), Role.ADMIN));
 			}
 		}
 

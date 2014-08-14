@@ -23,6 +23,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -39,18 +40,17 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 	// remove if not
 	private ConfigurationLoader<Configuration> config;
 
-	private ConfigurationLoader<Admins> adminConfig;
-
 	private LdapManager raven;
+	
+	private PermissionsChecker permissions;
 
 	@Inject
 	public GroupingApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig, LdapManager raven) {
+			ConfigurationLoader<Configuration> config, LdapManager raven, PermissionsChecker permissions) {
 		this.db = db;
 		this.config = config;
-		this.adminConfig = adminConfig;
 		this.raven = raven;
+		this.permissions = permissions;
 	}
 
 	/**
@@ -82,8 +82,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		}
 
 		/* Check permissions */
-		List<Role> myRoles = db.getRoles(groupId, myCrsid);
-		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(myCrsid)) {
+		if (!permissions.hasRole(myCrsid, groupId, Role.AUTHOR)) {
 			log.warn("User " + myCrsid + " tried to add a member to group "
 					+ groupId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -136,8 +135,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		}
 
 		/* Check permissions */
-		List<Role> myRoles = db.getRoles(groupId, myCrsid);
-		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(myCrsid)) {
+		if (!permissions.hasRole(myCrsid, groupId, Role.AUTHOR)) {
 			log.warn("User " + myCrsid + " tried to remove a member to group "
 					+ groupId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -152,7 +150,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 			 * Do not delete the group creator and alert the user that they
 			 * tried to do this. However still continue with all other members
 			 */
-			if (crsid.equals(group.getCreator())&&!adminConfig.getConfig().isAdmin(myCrsid)) {
+			if (crsid.equals(group.getCreator())&&!permissions.isAdmin(crsid)) {
 				output = Strings.REMOVECREATOR;
 			} else {
 				/*
