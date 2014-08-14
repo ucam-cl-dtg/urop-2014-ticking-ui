@@ -310,6 +310,7 @@ function default_convert(comments, text)
 {
   "use strict";
 
+  var rtn   = "";
   var open  = "<span class=\"tooltip-container\">";
   var close = "</span>";
   var tooltip = "";
@@ -343,6 +344,8 @@ function default_convert(comments, text)
   }
 
   close += "</span></span>";
-  rtn += text.replace(/\n/g, close + "</li><li>" + open);
+  rtn += open +
+    text.replace(/\n/g, close + "</li><li>" + open) +
+    close;
   return rtn;
 }
