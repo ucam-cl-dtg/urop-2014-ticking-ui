@@ -105,27 +105,24 @@
             }
 
   		  , updateTickerView:
-  		    function()
+  		    function(reason)
   			{
-  			  this.fire("update-ticker-viewer", {"result": this.result});
+  			  this.fire("update-ticker-viewer", {"result": reason});
   			}
   		  , tickPassed:
   		    function()
   			{
-  			  this.result = "pass";
-  			  this.updateTickerView();
+  			  this.updateTickerView("pass");
   			}
   		  , tickFailed:
   		    function()
   			{
-  			  this.result = "fail";
-  			  this.updateTickerView();
+  			  this.updateTickerView("fail");
   			}
   		  , tickNoShow:
   		    function()
   			{
-  			  this.result = "noShow";
-  			  this.updateTickerView();
+  			  this.updateTickerView("noShow");
   			}
         });
   </script>
