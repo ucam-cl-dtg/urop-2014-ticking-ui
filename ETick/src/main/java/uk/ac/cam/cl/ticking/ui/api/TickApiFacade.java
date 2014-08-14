@@ -97,7 +97,7 @@ public class TickApiFacade implements ITickApiFacade {
 		if (!crsid.equals(tick.getAuthor())&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid
 					+ " tried to delete a tick but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -176,7 +176,7 @@ public class TickApiFacade implements ITickApiFacade {
 			log.warn("User " + crsid + " tried to create a tick in groups "
 					+ tickBean.getGroups().toString()
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -346,7 +346,7 @@ public class TickApiFacade implements ITickApiFacade {
 			log.warn("User " + crsid + " tried to update tick " + tickId
 					+ " in groups " + tickBean.getGroups().toString()
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -360,7 +360,7 @@ public class TickApiFacade implements ITickApiFacade {
 			if (!crsid.equals(prevTick.getAuthor())) {
 				log.warn("User " + crsid + " tried to update tick " + tickId
 						+ " but was denied permission");
-				return Response.status(Status.UNAUTHORIZED)
+				return Response.status(Status.FORBIDDEN)
 						.entity(Strings.INVALIDROLE).build();
 			}
 
@@ -456,7 +456,7 @@ public class TickApiFacade implements ITickApiFacade {
 		if ((!roles.contains(Role.AUTHOR) || !(tick.getAuthor().equals(crsid)))&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid + " tried to add tick " + tickId
 					+ " to group " + groupId + " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -492,7 +492,7 @@ public class TickApiFacade implements ITickApiFacade {
 		if (!tick.getAuthor().equals(crsid)&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid + " tried to change the deadline of tick "
 					+ tickId + " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -525,7 +525,7 @@ public class TickApiFacade implements ITickApiFacade {
 		if (!myCrsid.equals(tick.getAuthor())&&!adminConfig.getConfig().isAdmin(myCrsid)) {
 			log.warn("User " + myCrsid + " tried to get the files of tick "
 					+ tickId + " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 

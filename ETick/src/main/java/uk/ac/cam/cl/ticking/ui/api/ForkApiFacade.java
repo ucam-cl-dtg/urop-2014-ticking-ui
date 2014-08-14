@@ -126,7 +126,7 @@ public class ForkApiFacade implements IForkApiFacade {
 			log.warn("User " + crsid + " tried to fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -215,7 +215,7 @@ public class ForkApiFacade implements IForkApiFacade {
 			log.warn("User " + myCrsid + " tried to mark "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -320,7 +320,7 @@ public class ForkApiFacade implements IForkApiFacade {
 			log.warn("User " + crsid + " tried to get files for "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
