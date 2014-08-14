@@ -7,7 +7,7 @@ package uk.ac.cam.cl.ticking.ui.configuration;
  */
 public class Configuration implements ConfigurationFile {
 
-	private String uiApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_UI/api/";
+	private String uiApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_UI_DEMO/api/";
 	private String gitApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_GIT/rest/";
 	private String testApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/";
 	private String signupsApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP_SIGNUPS/rest/";
