@@ -41,7 +41,7 @@
                 <paper-tab>MEMBERS</paper-tab>
             </paper-tabs>
 
-
+            <!-- Group Information Tab -->
             <core-collapse id="overview" opened>
                 <div id="details" layout vertical start>
                     <div layout horizontal end style="width: 100%;">
@@ -66,33 +66,38 @@
                 </div>
             </core-collapse>
 
+            <!-- Ticks Tab -->
             <core-collapse id="ticks">
                 <tick-list gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"
                            canFork="{{isSubmitter||isAdmin}}"></tick-list>
             </core-collapse>
 
-            <core-collapse id="groups">
+            <!-- Group Members Tab -->
+            <core-collapse id="members">
                 <group-members gid="{{gid}}" allowAdd="{{isAuthor||isAdmin}}" rows="4"></group-members>
             </core-collapse>
 
+            <!-- Ticking Sessions Tab -->
             <core-collapse id="tickingSessions">
-	        	<tick-session-list sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"></tick-session-list>
+	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
+	        		on-sheet-created="{{sheetCreated}}"></tick-session-list>
 	        </core-collapse>
 
 		</main-card>
 
-		<!-- Tick list card. --> 
-		<template if="{{selectedTickId}}">
-			<main-card animated>
-				<tick-card id="tickCard"
-					tickName="{{selectedTickName}}"
-					tickId="{{selectedTickId}}"
-					sheets="{{sheets}}"
-					repoName="{{repoName}}"></tick-card>
-			</main-card>
-		</template>
+		<!-- Tick list card. -->
+        <template if="{{selectedTickId}}">
+            <main-card animated>
+                <tick-card id="tickCard"
+                           tickName="{{selectedTickName}}"
+                           tickId="{{selectedTickId}}"
+                           sheets="{{sheets}}"
+                           repoName="{{repoName}}"
+                           tickObj="{{selectedTickObj}}"></tick-card>
+            </main-card>
+        </template>
 
-		<!-- File broweser card. -->
+		<!-- File broweser card for ticks. -->
         <template if="{{repoName}}">
             <main-card animated>
                 <file-browser-card tickId="{{selectedTickId}}"
@@ -103,7 +108,6 @@
 
 
         <!-- Marker card for ticking sessions. -->
-
 	    <template if="{{(isMarker||isAdmin) && $.tickingSessions.opened}}">
 	        <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
 	    </template>
@@ -124,7 +128,7 @@
                     that.overview.opened = this.tabIndex == 0;
                     that.ticks.opened = this.tabIndex == 1;
                     that.tickingSessions.opened = this.tabIndex == 2;
-                    that.groups.opened = this.tabIndex == 3;
+                    that.members.opened = this.tabIndex == 3;
                 });
 			},
 
@@ -158,11 +162,14 @@
 			forkClickedHandler: function (e, detail) {
 				this.selectedTickId = detail.tickId;
 				this.selectedTickName = detail.tickName;
+                this.selectedTickObj = detail.tickObj;
+
+                console.log(detail);
 			},
 
 			sheetCreated: function () {
 				this.$.sheetListAPI.go();
-			},
+			}
 		});
 	</script>
 </polymer-element>

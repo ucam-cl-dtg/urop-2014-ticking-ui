@@ -1,21 +1,4 @@
 /* vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 spell spelllang=en_gb : */
-paper-checkbox::shadow #ink {
-  top: -16px;
-  left: -16px;
-  width: 50px;
-  height: 50px;
-}
-
-paper-checkbox {
-  /* Firefox/IE compatibility */
-  width: 15px;
-  height: 15px;
-}
-
-/*
-  paper-button styles removed.
-*/
-
 paper-button.green {
   background: #009933;
   color: #fff;
@@ -29,9 +12,4 @@ paper-button.red {
 paper-button.bluegrey {
   background: #607d8b;
   color: #fff;
-}
-
-paper-toggle-button {
-  margin-top: 23px;
-  margin-left: 8px;
 }

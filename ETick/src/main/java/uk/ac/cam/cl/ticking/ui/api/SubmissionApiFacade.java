@@ -33,6 +33,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -48,10 +49,10 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
-	private ConfigurationLoader<Admins> adminConfig;
-
 	private ITestService testServiceProxy;
 	private TickSignups tickSignupService;
+
+	private PermissionsManager permissions;
 
 	/**
 	 * @param db
@@ -60,13 +61,13 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	@Inject
 	public SubmissionApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig,
-			ITestService testServiceProxy, TickSignups tickSignupService) {
+			ITestService testServiceProxy, TickSignups tickSignupService,
+			PermissionsManager permissions) {
 		this.db = db;
 		this.config = config;
-		this.adminConfig = adminConfig;
 		this.testServiceProxy = testServiceProxy;
 		this.tickSignupService = tickSignupService;
+		this.permissions = permissions;
 	}
 
 	/**
@@ -267,17 +268,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		}
 
 		/* Check permissions */
-		boolean marker = false;
-		List<String> groupIds = db.getTick(tickId).getGroups();
-		for (String groupId : groupIds) {
-			List<Role> roles = db.getRoles(groupId, myCrsid);
-			if (roles.contains(Role.MARKER)) {
-				marker = true;
-			}
-		}
-		if ((!(marker || myCrsid.equals(db.getFork(
-				Fork.generateForkId(crsid, tickId)).getAuthor())))
-				&& !adminConfig.getConfig().isAdmin(myCrsid)) {
+		if (!(permissions.forkCreator(myCrsid, crsid, tickId) || permissions
+				.tickRole(myCrsid, tickId, Role.MARKER))) {
 			log.warn("User " + myCrsid + " tried to access fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
@@ -342,18 +334,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		}
 
 		/* Check permissions */
-		boolean marker = false;
-
-		List<String> groupIds = db.getTick(tickId).getGroups();
-		for (String groupId : groupIds) {
-			List<Role> roles = db.getRoles(groupId, myCrsid);
-			if (roles.contains(Role.MARKER)) {
-				marker = true;
-			}
-		}
-
-		if (!(marker || myCrsid.equals(db.getFork(Fork.generateForkId(crsid,
-				tickId)))) && !adminConfig.getConfig().isAdmin(myCrsid)) {
+		if (!(permissions.forkCreator(myCrsid, crsid, tickId) || permissions
+				.tickRole(myCrsid, tickId, Role.MARKER))) {
 			log.warn("User " + myCrsid + " tried to access fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");

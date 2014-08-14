@@ -112,7 +112,7 @@ public class MongoDataManager implements IDataManager {
 	public void insertUser(User u) throws DuplicateDataEntryException {
 		try {
 			userColl.insert(u);
-		} catch (MongoException duplicate) {
+		} catch (MongoException.DuplicateKey duplicate) {
 			throw new DuplicateDataEntryException("User");
 		}
 	}
@@ -124,7 +124,7 @@ public class MongoDataManager implements IDataManager {
 	public void insertTick(Tick t) throws DuplicateDataEntryException {
 		try {
 			tickColl.insert(t);
-		} catch (MongoException duplicate) {
+		} catch (MongoException.DuplicateKey duplicate) {
 			throw new DuplicateDataEntryException("Tick");
 		}
 	}
@@ -136,7 +136,7 @@ public class MongoDataManager implements IDataManager {
 	public void insertFork(Fork s) throws DuplicateDataEntryException {
 		try {
 			forkColl.insert(s);
-		} catch (MongoException duplicate) {
+		} catch (MongoException.DuplicateKey duplicate) {
 			throw new DuplicateDataEntryException("Fork");
 		}
 	}
@@ -148,7 +148,7 @@ public class MongoDataManager implements IDataManager {
 	public void insertGroup(Group g) throws DuplicateDataEntryException {
 		try {
 			groupColl.insert(g);
-		} catch (MongoException duplicate) {
+		} catch (MongoException.DuplicateKey duplicate) {
 			throw new DuplicateDataEntryException("Group");
 		}
 	}
@@ -160,7 +160,7 @@ public class MongoDataManager implements IDataManager {
 	public void insertGrouping(Grouping g) throws DuplicateDataEntryException {
 		try {
 			groupingColl.insert(g);
-		} catch (MongoException duplicate) {
+		} catch (MongoException.DuplicateKey duplicate) {
 			throw new DuplicateDataEntryException("Grouping");
 		}
 	}

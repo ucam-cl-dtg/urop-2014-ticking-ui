@@ -24,6 +24,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -40,9 +41,9 @@ public class UserApiFacade implements IUserApiFacade {
 	// quite likely to be required in future
 	private ConfigurationLoader<Configuration> config;
 
-	private ConfigurationLoader<Admins> adminConfig;
-
 	private WebInterface gitServiceProxy;
+	
+	private PermissionsManager permissions;
 
 	/**
 	 * @param db
@@ -51,12 +52,11 @@ public class UserApiFacade implements IUserApiFacade {
 	@Inject
 	public UserApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig,
-			WebInterface gitServiceProxy) {
+			WebInterface gitServiceProxy, PermissionsManager permissions) {
 		this.db = db;
 		this.config = config;
-		this.adminConfig = adminConfig;
 		this.gitServiceProxy = gitServiceProxy;
+		this.permissions = permissions;
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class UserApiFacade implements IUserApiFacade {
 				"RavenRemoteUser");
 		
 		/*Check permissions*/
-		if (!adminConfig.getConfig().isAdmin(myCrsid)) {
+		if (!permissions.isAdmin(myCrsid)) {
 			log.warn("User " + myCrsid + " tried to delete user "
 					+ crsid + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
