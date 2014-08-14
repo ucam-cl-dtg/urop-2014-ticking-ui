@@ -199,10 +199,13 @@
         <!-- SAVE button -->
         <span layout horizontal>
             <span flex></span>
-            <paper-button raisedButton class="colored-tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
+            <paper-button raisedButton id="save" class="tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
                           disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
             </paper-button>
-           
+            <div style="width: 20px"></div>
+            <paper-button raisedButton id="delete" class="tick-creator" label="{{deleting ? 'DELETING...' : 'DELETE'}}" on-tap="{{deleteTick}}"
+                          disabled?="{{newTick}}">
+            </paper-button>
             <span flex></span>
         </span>
     </div>
@@ -500,6 +503,10 @@
 
         errorSaving: function() {
             this.saving = false;
+        },
+
+        deleteTick: function() {
+            this.$.ajaxDeleteTick.go();
         }
     });
 </script>
