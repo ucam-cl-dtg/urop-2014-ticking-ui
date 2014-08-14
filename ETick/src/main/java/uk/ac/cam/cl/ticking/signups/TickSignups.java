@@ -486,7 +486,9 @@ public class TickSignups {
     /* Below are the methods for the author workflow */
     
     /**
-     * Creates a new sheet for the given group.
+     * Creates a new sheet for the given group. All columns are filled
+     * with regularly spaced empty slots between the start and end times,
+     * of the specified length.
      */
     @POST
     @Path("/sheets")
@@ -588,6 +590,17 @@ public class TickSignups {
         return Response.ok().build();
     }
     
+    
+    /**
+     * Edits the given sheet. Title, location and description are updated. Any tickers
+     * added to the list are created; any tickers removed from the list are deleted, along
+     * with any bookings made to their column. A "rename" is treated as a deletion and an
+     * insertion. The slot length cannot be edited. The start and end times can be changed,
+     * but must remain consistent with the previous start/end times and the slot length. If
+     * the sheet is extended, slots are added at the appropriate intervals; if the sheet is
+     * made shorter, the slots outside the new start and end times are deleted (along with
+     * any bookings made at those times). TODO: update fork objects when deletions are made
+     */
     @POST
     @Path("/sheets/{sheetID}")
     @Consumes("application/json")
@@ -702,6 +715,13 @@ public class TickSignups {
         return Response.ok().build();
     }
     
+    /**
+     * Removes the given sheet from the database, and irreversibly loses
+     * all information associated with it, including bookings. TODO: update fork objects
+     * @param request
+     * @param sheetID
+     * @return
+     */
     @DELETE
     @Path("/sheets/{sheetID}")
     public Response deleteSheet(@Context HttpServletRequest request,
@@ -714,7 +734,7 @@ public class TickSignups {
                 return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
             }
             service.deleteSheet(sheetID, db.getAuthCode(sheetID));
-            log.debug("Sheet deleetd");
+            log.debug("Sheet deleted");
             return Response.ok().build();
         } catch (ItemNotFoundException e) {
             log.debug("The sheet of ID " + sheetID + " was not found", e);
@@ -728,7 +748,7 @@ public class TickSignups {
     
     /**
      * Adds a new column to the sheet, filled with regularly spaced
-     * empty slots.
+     * empty slots. TODO: change bean - we want this column to conform to the others
      * @param sheetID
      * @param authCode
      * @param name
@@ -793,7 +813,7 @@ public class TickSignups {
     
     /**
      * Deletes the specified column from the sheet. This also deletes
-     * all the bookings made for that column.
+     * all the bookings made for that column. TODO: update fork objects
      */
     @DELETE
     @Path("/sheets/{sheetID}/tickers/{ticker}")
