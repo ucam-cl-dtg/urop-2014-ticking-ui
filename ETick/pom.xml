@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.cam.cl.dtg.urop</groupId>
-	<artifactId>UROP_UI</artifactId>
+	<artifactId>UROP_UI_DEMO</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	
@@ -157,7 +157,7 @@
                 <configuration>
                     <url>http://urop2014.dtg.cl.cam.ac.uk/manager/text</url>
                     <server>urop2014-dtg</server>
-                    <path>/UROP_UI</path>
+                    <path>/UROP_UI_DEMO</path>
                 </configuration>
             </plugin>
             <plugin>

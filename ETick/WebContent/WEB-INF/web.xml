@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
-  <display-name>UROP_UI</display-name>
+  <display-name>UROP_UI_DEMO</display-name>
   <filter>
-    <filter-name>ravenFilter</filter-name>
-    <filter-class>uk.ac.cam.ucs.webauth.RavenFilter</filter-class>
+    <filter-name>demoRavenFilter</filter-name>
+    <filter-class>uk.ac.cam.cl.ticking.ui.auth.DemoRavenFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>ravenFilter</filter-name>

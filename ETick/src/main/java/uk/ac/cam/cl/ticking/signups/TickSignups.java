@@ -581,6 +581,7 @@ public class TickSignups {
                     .entity("Server Error: The authorisation codes stored in the " +
                             "database were not found to match those in the signups database").build();
         }
+        log.debug("Sheet created");
         return Response.ok().build();
     }
     
@@ -756,6 +757,8 @@ public class TickSignups {
     public String getGroupID(String sheetID) throws ItemNotFoundException {
         List<String> groupIDs = service.getGroupIDs(sheetID);
         if (groupIDs.size() != 1) {
+            log.error("There should be precisely one group associated with the sheet " +
+                    sheetID + ", but there are " + groupIDs.size() + ": " + groupIDs.toString());
             throw new RuntimeException("There should be precisely one group associated "
                             + "with this sheet, but there seems to be " + groupIDs.size());
         }
