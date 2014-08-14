@@ -13,6 +13,11 @@ paper-progress::shadow #activeProgress {
     background-color: #4285f4;
 }
 
+polyfill-next-selector {shadow: 'paper-progress #secondaryProgress';}
+paper-progress::shadow #secondaryProgress {
+    background-color: #afbfff;
+}
+
 .error {
     text-align: center;
     color: #757575;
