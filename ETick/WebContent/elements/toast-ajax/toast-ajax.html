@@ -191,7 +191,7 @@ this to happen.
               /* If stack-traces happen */
               if (e.detail.response.length > this.maximumErrorCharacters)
               {
-                if (errorMessage != null)
+                if (this.errorMessage != null)
                 {
                   this.popUpToast(this.errorMessage +
                       " See log for further details",
