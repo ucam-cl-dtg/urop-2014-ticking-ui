@@ -95,15 +95,15 @@
 		<div layout horizontal start>
 			<core-icon class="big" icon="event"></core-icon>
 			<paper-input id="date" type="date" class="datetime"
-				required error="Session date."></paper-input>
+				required error="Session date." on-change="{{validate}}"></paper-input>
 
 			<core-icon class="big" icon="device:access-time"></core-icon>
 			<paper-input id="startTime" type="time" class="datetime"
-				required error="Start time."></paper-input>
+				required error="Start time." on-change="{{validate}}"></paper-input>
 
 			<core-icon class="big" icon="device:access-time"></core-icon>
 			<paper-input id="endTime" type="time" class="datetime"
-				required error="End time."></paper-input>
+				required error="End time." on-change="{{validate}}"></paper-input>
 		</div>
 
 		<h2>Tickers</h2>
@@ -147,17 +147,23 @@
 					this.sheet.columns.map(function(item) {
 						return item._id;
 					}) : [];
+
+				this.validate();
 			},
 
 			validate: function () {
 				if (this.$.titleInput.inputValue &&
-					this.tickers && this.tickers.length >= 1) {
+					this.tickers && this.tickers.length >= 1 &&
+					this.$.date.value &&
+					this.$.startTime.value && this.$.endTime.value) {
+					console.log(this.$.date.value);
+					console.log(this.$.startTime.value);
+					console.log(this.$.endTime.value);
 					this.disableSubmit = false;
 				}
 				else {
 					this.disableSubmit = true;
 				}
-				console.log(this.disableSubmit);
 			},
 
 			addTicker: function () {
