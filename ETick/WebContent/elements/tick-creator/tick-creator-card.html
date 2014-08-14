@@ -167,6 +167,7 @@
             <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Analyse .java files</span>
             <paper-button
                     id="cmdRestoreDefaults"
+                    class="tick-creator"
                     label="RESTORE DEFAULTS"
                     raisedButton
                     end-justified
@@ -182,7 +183,7 @@
         <!-- SAVE button -->
         <span layout horizontal>
             <span flex></span>
-            <paper-button raisedButton class="colored" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
+            <paper-button raisedButton class="colored-tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
                           disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
             </paper-button>
             <span flex></span>

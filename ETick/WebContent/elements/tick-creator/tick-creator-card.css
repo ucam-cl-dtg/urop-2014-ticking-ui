@@ -21,14 +21,18 @@ paper-checkbox {
     width: 15px;
     height: 15px;
 }
-paper-button {
+paper-button.tick-creator {
     margin: 20px;
     width: 10em;
     height: 35px; /* Firefox/IE compatibility */
 }
-paper-button.colored {
+paper-button.colored-tick-creator {
     background: #259b24;
     color: #fff;
+
+    margin: 20px;
+    width: 10em;
+    height: 35px; /* Firefox/IE compatibility */
 }
 paper-toggle-button {
     margin-top: 23px;

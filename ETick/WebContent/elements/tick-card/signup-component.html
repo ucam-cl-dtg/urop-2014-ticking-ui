@@ -28,22 +28,22 @@
 
         <!-- Sign up button -->
         <core-collapse opened?="{{!signedUp && !testRunning && unitPass && !humanPass}}">
-            <paper-button label="BOOK TICKING SESSION" on-tap="{{openSignupDialog}}"></paper-button>
+            <paper-button class="tick-component" label="BOOK TICKING SESSION" on-tap="{{openSignupDialog}}"></paper-button>
         </core-collapse>
 
         <!-- Cancel sign up button -->
         <core-collapse opened?="{{signedUp && !humanPass}}">
-            <paper-button label="CANCEL TICKING SESSION" on-tap="{{showCancelDialog}}"></paper-button>
+            <paper-button class="tick-component" label="CANCEL TICKING SESSION" on-tap="{{showCancelDialog}}"></paper-button>
         </core-collapse>
 
         <!-- Error message: sign up unavailable because the unit tester has not been passed -->
         <core-collapse opened?="{{!testRunning && !unitPass && !humanPass}}">
-            <div class="error">Sign up unavailable (automated tests not passed)</div>
+            <div class="error">Bookings unavailable (automated tests not passed)</div>
         </core-collapse>
 
         <!-- Error message: sign up unavailable because a test is running -->
         <core-collapse opened?="{{testRunning && !humanPass}}">
-            <div class="error">Sign up unavailable (test running)</div>
+            <div class="error">Bookings unavailable (test running)</div>
         </core-collapse>
 
         <!-- Error message: tick has been passed -->
