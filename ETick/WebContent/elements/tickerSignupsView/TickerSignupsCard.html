@@ -72,7 +72,7 @@
     <script>
         Polymer( 'ticker-signups-card', {
             domReady: function() {
-                this.pathLoadGroupSessions = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/" + this.groupId;
+                this.pathLoadGroupSessions = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/groups/" + this.groupId;
                 this.$.title.innerHTML ="Please Select a Session to View";
                 this.$.ajaxLoadSessions.go();
                 this.$.view.hidden = true;

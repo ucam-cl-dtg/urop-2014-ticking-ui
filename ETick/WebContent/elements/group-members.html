@@ -17,7 +17,7 @@
 		<!-- Add Member Ajax call. -->
 		<core-ajax id="addMemberAjax"
 			method="POST"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping/' + gid}}"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/grouping/' + gid}}"
 			contentType="application/json"
 			handleAs="json"
 			on-core-response="{{addMemberResponse}}"
@@ -27,7 +27,7 @@
 		<!-- Member list Ajax call. -->
 		<core-ajax id="listAjax"
 			auto
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + gid + '/users'}}"
 			handleAs="json"
 			on-core-response="{{listResponse}}">
 		</core-ajax>
@@ -36,7 +36,7 @@
 		<core-ajax id="deleteAjax"
 			method="DELETE"
 			contentType="application/json"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping/' + gid}}"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/grouping/' + gid}}"
 			on-core-response="{{deleteResponse}}"
 			on-core-error="{{deleteError}}">
 		</core-ajax>

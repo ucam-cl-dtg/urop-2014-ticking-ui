@@ -6,7 +6,7 @@
         <!-- submit this tick for testing -->
         <toast-ajax
                 id="ajaxSubmit"
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/'}}"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/submission/' + tickId + '/'}}"
                 handleAs="json"
                 method="POST"
                 on-core-response="{{startPolling}}"
@@ -22,7 +22,7 @@
         <!-- poll the tick's status -->
         <toast-ajax
                 id="ajaxPoll"
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/running'}}"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/submission/' + tickId + '/running'}}"
                 handleAs="json"
                 on-core-response="{{pollNext}}"
                 on-core-error="{{pollError}}"

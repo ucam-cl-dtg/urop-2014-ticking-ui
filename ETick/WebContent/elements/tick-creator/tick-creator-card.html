@@ -32,7 +32,7 @@
     <!-- get and update all other existing tick data -->
     <toast-ajax
             id="ajaxLoadTickData"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/' + tickId + '/'}}"
             handleAs="json"
             on-core-response="{{tickDataLoaded}}"
 
@@ -198,9 +198,9 @@
             console.log("1: ready");
             this.styleLabel = "";
 
-            this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/";
-           // this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
-            this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
+            this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/AUTHOR/";
+           // this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/tester/";
+            this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick";
             //"http://localhost:8000/testTickData.json";
 
             this.checkJava = false; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
@@ -411,7 +411,7 @@
             if (!this.newTick) {
                 console.log("not a new tick");
                 this.$.ajaxPutTickData.body = JSON.stringify(masterObject);
-                this.$.ajaxPutTickData.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + this.tickId;
+                this.$.ajaxPutTickData.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/" + this.tickId;
                 this.$.ajaxPutTickData.go();
             } else {
                 console.log("new tick");

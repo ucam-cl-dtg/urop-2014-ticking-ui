@@ -68,13 +68,13 @@
 			sheetSelectionChanged: function () {
 				var sel = this.$.selector;
 				this.sheetSelection = sel.options[sel.selectedIndex].getAttribute('sheetid');
-				this.$.slotsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
+				this.$.slotsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" +
 					 this.sheetSelection + "/times/" + this.tickId;
 				this.$.slotsAPI.go();
 			},
 
 			signUpClicked: function () {
-				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
+				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" +
 					this.sheetSelection + "/bookings";
 				var parseDate = Date.parse(this.slotSelection);
 				this.$.bookingsAPI.body = '{ "tickID" : "' + this.tickId + '", "startTime" : "' + parseDate + '" }';

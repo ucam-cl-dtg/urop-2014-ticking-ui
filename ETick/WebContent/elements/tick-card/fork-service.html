@@ -10,7 +10,7 @@
         <toast-ajax
                 id="ajaxLoad"
                 auto
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/' + tickId + '/'}}"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/fork/' + tickId + '/'}}"
                 handleAs="json"
                 method="GET"
                 on-core-response="{{forkGetSuccess}}"
@@ -19,7 +19,7 @@
 
         <toast-ajax
                 id="ajaxCreate"
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/' + tickId + '/'}}"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/fork/' + tickId + '/'}}"
                 handleAs="json"
                 method="POST"
                 on-core-response="{{forkPostSuccess}}"

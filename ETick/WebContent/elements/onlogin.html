@@ -7,21 +7,21 @@
 	<template>
 			<!-- API call: adds user if not already registered. -->
 			<core-ajax id="loginAjax"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/raven/login"
 				handleAs="json"
 				on-core-response="{{loginResponse}}">
 			</core-ajax>
 
 			<!-- API call to populate sidebar menu. -->
 			<core-ajax id="sidebarAjax"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/groups"
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/groups"
 				handleAs="json"
 				on-core-response="{{sidebarResponse}}">
 			</core-ajax>
 			
 			<!-- API call to populate sidebar tick menu. -->
 			<core-ajax id="sidebarTickAjax"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ticks"
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/ticks"
 				handleAs="json"
 				on-core-response="{{sidebarTickResponse}}">
 			</core-ajax>
@@ -29,7 +29,7 @@
 			<!-- API call to logout. -->
 			<core-ajax id="logoutAjax"
 				method="delete"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/logout">
+				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/raven/logout">
 			</core-ajax>
 
 

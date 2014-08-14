@@ -81,7 +81,7 @@
 			},
 			refresh: function() {
 				this.fire("hide-report");
-				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
+				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.sessionId;
 				if (this.location === "Location : ") {
 					this.location = "Location : No location is available";
 				}
@@ -139,7 +139,7 @@
 			tickerChange: function(event) {
 				if(event.target.checked) {
 					this.ticker = event.target.label;
-					this.pathLoadSlots = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId + "/tickers/" + this.ticker;
+					this.pathLoadSlots = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.sessionId + "/tickers/" + this.ticker;
 					this.$.ajaxLoadSlots.go();
 					this.fire("hide-report");
 				}
