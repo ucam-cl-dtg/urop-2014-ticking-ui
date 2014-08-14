@@ -8,7 +8,7 @@
 	<template>
 		<div class="container">
 			<main-card animated>
-				<ticker-signups-card on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="card"></ticker-signups-card>
+				<ticker-signups-card on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
 			</main-card>
 			<main-card animated hidden?="{{!viewReport}}">
 				<file-browser-card id="filebrowser" on-update-ticker-viewer="{{updateTickerViewer}}" slotId="{{slotId}}" sheetId="{{sessionId}}" crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
@@ -21,7 +21,7 @@
 				this.viewReport = false;
             },
             updateTickerViewer: function(e, detail) {
-				this.$.card.updateTickerViewer(detail);
+				this.$.tickerSignupsCard.updateTickerViewer(detail);
             },
 			showReport: function () {
 				// Code to show report again.
