@@ -98,6 +98,22 @@
             errorMessage="Error loading stylistic checks.">
     </toast-ajax>
 
+    <!-- Delete this tick -->
+    <toast-ajax
+            id="ajaxDeleteTick"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/'}}"
+            method="DELETE"
+            handleAs="json"
+
+            waitMessage="Deleting tick..."
+            waitBeforeToats="500"
+            completeMessage="Tick deleted."
+            popUpComplete
+            captureError
+            popUpError
+            errorMessage="Error deleting tick.">
+    </toast-ajax>
+
     <div id="mainContainer">
         <h4>DISPLAY NAME</h4>
         <br>
@@ -186,6 +202,7 @@
             <paper-button raisedButton class="colored-tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
                           disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
             </paper-button>
+           
             <span flex></span>
         </span>
     </div>
