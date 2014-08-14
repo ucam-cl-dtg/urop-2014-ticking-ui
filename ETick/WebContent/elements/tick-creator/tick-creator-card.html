@@ -167,6 +167,7 @@
             <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Analyse .java files</span>
             <paper-button
                     id="cmdRestoreDefaults"
+                    class="tick-creator"
                     label="RESTORE DEFAULTS"
                     raisedButton
                     end-justified
@@ -182,18 +183,14 @@
         <!-- SAVE button -->
         <span layout horizontal>
             <span flex></span>
-            <paper-button raisedButton class="colored" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
+            <paper-button raisedButton class="colored-tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
                           disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
             </paper-button>
             <span flex></span>
         </span>
     </div>
 
-    <paper-dialog id="alertRestoreDefaults" heading="Restore Defaults?" backdrop="true" transition="paper-transition-bottom">
-        <p>This will clear your existing settings!</p>
-        <paper-button id="dialogCancel" label="Cancel" dismissive autofocus></paper-button>
-        <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}"></paper-button>
-    </paper-dialog>
+    <are-you-sure id="alertRestoreDefaults" heading="Restore Defaults?" on-yes="{{restoreDefaults}}"></are-you-sure>
 </template>
 <script>
     Polymer('tick-creator-card', {
