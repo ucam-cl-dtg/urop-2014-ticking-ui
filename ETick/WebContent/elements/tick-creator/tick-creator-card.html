@@ -104,6 +104,8 @@
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/'}}"
             method="DELETE"
             handleAs="json"
+            on-core-response="{{deleteTickSuccess}}"
+            on-core-error="{{deleteTickError}}"
 
             waitMessage="Deleting tick..."
             waitBeforeToats="500"
@@ -204,7 +206,7 @@
             </paper-button>
             <div style="width: 20px"></div>
             <paper-button raisedButton id="delete" class="tick-creator" label="{{deleting ? 'DELETING...' : 'DELETE'}}" on-tap="{{deleteTick}}"
-                          disabled?="{{newTick}}">
+                          disabled?="{{newTick || deleting}}">
             </paper-button>
             <span flex></span>
         </span>
@@ -309,14 +311,16 @@
              so this artificial day smooths the UX */
             this.job('complete-saving', function() {
                 this.saving = false;
-                this.$.toastUpdated.show();
+                this.newTick = false;
             }, 500);
 
-            this.newTick = false;
+
             this.tickData = this.$.ajaxPostTickData.response;
 
             this.tickId = this.tickData._id;
             this.processLoadedTickData();
+
+            //TODO: fire some event
         },
         tickDataUpdated: function() {
             /* when a user clicks save, they shouldn't be able to click again until the update is complete, so the SAVE
@@ -324,9 +328,9 @@
             so this artificial day smooths the UX */
             this.job('complete-saving', function() {
                 this.saving = false;
+                this.newTick = false;
             }, 500);
 
-            this.newTick = false;
             this.tickData = this.$.ajaxPutTickData.response;
             this.processLoadedTickData();
         },
@@ -506,7 +510,18 @@
         },
 
         deleteTick: function() {
+            this.deleting = true;
             this.$.ajaxDeleteTick.go();
+        },
+
+        deleteTickSuccess: function() {
+            //TODO: fire some event
+        },
+
+        deleteTickError: function() {
+            this.job('reset-deleting', function() {
+                this.deleting = false;
+            }, 500);
         }
     });
 </script>
