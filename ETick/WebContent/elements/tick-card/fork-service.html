@@ -3,8 +3,10 @@
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 
-<polymer-element name="fork-service" attributes="unitPass humanPass signedUp testRunning reportAvailable repo tickId
-                                                 forked deadline">
+<polymer-element name="fork-service" attributes="unitPass humanPass signedUp
+                                                 testRunning reportAvailable
+                                                 repo tickId lastTickedBy
+                                                 lastTickedOn forked deadline">
     <template>
         <!-- Load fork object for this tick -->
         <toast-ajax
@@ -52,6 +54,8 @@
                 this.testRunning = forkObj.testing;
                 this.reportAvailable = forkObj.reportAvailable;
                 this.repo = forkObj.repo;
+                this.lastTickedBy = forkObj.lastTickedBy;
+                this.lastTickedOn = forkObj.lastTickedOn;
 
                 //this.deadline = new Date(2014, 7, 13);
 
