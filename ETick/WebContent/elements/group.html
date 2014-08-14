@@ -45,7 +45,7 @@
             </paper-tabs>
 
             <!-- Group Information Tab -->
-            <core-collapse id="overview" opened>
+            <span id="overview">
                 <div id="details" layout vertical start>
                     <div layout horizontal end style="width: 100%;">
                         <p class="creator">Created by: {{creator}}</p>
@@ -68,54 +68,58 @@
                         </div>
                     </div>
                 </div>
-            </core-collapse>
+            </span>
 
             <!-- Ticks Tab -->
-            <core-collapse id="ticks">
+            <span id="ticks" hidden>
                 <tick-list gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"
                            canFork="{{isSubmitter||isAdmin}}"></tick-list>
-            </core-collapse>
+            </span>
 
             <!-- Group Members Tab -->
-            <core-collapse id="members">
+            <span id="members" hidden>
                 <group-members gid="{{gid}}" allowAdd="{{isAuthor||isAdmin}}" rows="4"></group-members>
-            </core-collapse>
+            </span>
 
             <!-- Ticking Sessions Tab -->
-            <core-collapse id="tickingSessions">
+            <span id="tickingSessions" hidden>
 	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
 	        		on-sheet-created="{{sheetCreated}}"
 	        		on-edit-add-session="{{editAddSession}}"></tick-session-list>
-	        </core-collapse>
+	        </span>
 
 		</main-card>
 
-		<!-- Tick list card. -->
-        <template if="{{selectedTickId}}">
-            <main-card animated>
-                <tick-card id="tickCard"
-                           tickName="{{selectedTickName}}"
-                           tickId="{{selectedTickId}}"
-                           sheets="{{sheets}}"
-                           repoName="{{repoName}}"
-                           tickObj="{{selectedTickObj}}"></tick-card>
-            </main-card>
-        </template>
+        <span id="deepTicks" hidden>
+		    <!-- Tick list card. -->
+            <template if="{{selectedTickId}}">
+                <main-card animated>
+                    <tick-card id="tickCard"
+                               tickName="{{selectedTickName}}"
+                               tickId="{{selectedTickId}}"
+                               sheets="{{sheets}}"
+                               repoName="{{repoName}}"
+                               tickObj="{{selectedTickObj}}"></tick-card>
+                </main-card>
+            </template>
 
-		<!-- File broweser card for ticks. -->
-        <template if="{{repoName}}">
-            <main-card animated>
-                <file-browser-card tickId="{{selectedTickId}}"
-                                   repoName="{{repoName}}">
-                </file-browser-card>
-            </main-card>
-        </template>
+		    <!-- File browser card for ticks. -->
+            <template if="{{repoName}}">
+                <main-card animated>
+                    <file-browser-card tickId="{{selectedTickId}}"
+                                       repoName="{{repoName}}">
+                    </file-browser-card>
+                </main-card>
+            </template>
+        </span>
 
 
         <!-- Marker card for ticking sessions. -->
-	    <template if="{{(isMarker||isAdmin) && $.tickingSessions.opened}}">
-	        <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
-	    </template>
+        <span id="deepTickingSessions" hidden>
+	        <template if="{{(isMarker||isAdmin)}}">
+                <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
+            </template>
+        </span>
 
 	    <!-- Ticking session create/edit card. -->
 
@@ -135,12 +139,13 @@
                 var that = this.$;
                 this.$.tabs.addEventListener('core-select', function() {
                     this.tabIndex = that.tabs.selected;
-                    console.log(this.tabIndex);
 
-                    that.overview.opened = this.tabIndex == 0;
-                    that.ticks.opened = this.tabIndex == 1;
-                    that.tickingSessions.opened = this.tabIndex == 2;
-                    that.members.opened = this.tabIndex == 3;
+                    that.overview.hidden = this.tabIndex != 0;
+                    that.ticks.hidden = this.tabIndex != 1;
+                    that.deepTicks.hidden = that.ticks.hidden;
+                    that.tickingSessions.hidden = this.tabIndex != 2;
+                    that.deepTickingSessions.hidden = that.tickingSessions.hidden;
+                    that.members.hidden = this.tabIndex != 3;
                 });
 			},
 
@@ -181,7 +186,7 @@
 			
 			exportGroup: function () {
 				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid )
-		        .done(function () { alert('File download a success!'); })
+		        .done(function () {})
 		        .fail(function () { alert('File download failed!'); });
 			},
 
