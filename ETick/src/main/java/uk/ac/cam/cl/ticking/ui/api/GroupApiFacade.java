@@ -131,13 +131,17 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Get the users in the group, sort and return them */
 		List<User> users = db.getUsers(groupId);
-		/*Iterator<User> i = users.iterator();
+		
+		/*Remove users who are only admins for the group*/
+		Iterator<User> i = users.iterator();
 		while (i.hasNext()) {
 			User user = i.next();
-			if (user.isAdmin()) {
+			List<Role> roles = db.getRoles(groupId, user.getCrsid());
+			roles.remove(Role.ADMIN);
+			if (roles.size()==0) {
 				i.remove();
 			}
-		}*/
+		}
 		Collections.sort(users);
 		return Response.ok(users).build();
 	}
