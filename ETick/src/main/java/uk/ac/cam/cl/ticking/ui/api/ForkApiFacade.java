@@ -35,6 +35,7 @@ import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -50,11 +51,11 @@ public class ForkApiFacade implements IForkApiFacade {
 	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
-	private ConfigurationLoader<Admins> adminConfig;
-
 	private WebInterface gitServiceProxy;
 	private ITestService testServiceProxy;
 	private TickSignups tickSignupService;
+
+	private PermissionsChecker permissions;
 
 	/**
 	 * @param db
@@ -63,15 +64,14 @@ public class ForkApiFacade implements IForkApiFacade {
 	@Inject
 	public ForkApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig,
 			ITestService testServiceProxy, WebInterface gitServiceProxy,
-			TickSignups tickSignupService) {
+			TickSignups tickSignupService, PermissionsChecker permissions) {
 		this.db = db;
 		this.config = config;
-		this.adminConfig = adminConfig;
 		this.testServiceProxy = testServiceProxy;
 		this.gitServiceProxy = gitServiceProxy;
 		this.tickSignupService = tickSignupService;
+		this.permissions = permissions;
 	}
 
 	/**
@@ -112,17 +112,8 @@ public class ForkApiFacade implements IForkApiFacade {
 		}
 
 		/* Check permissions */
-		boolean submitter = false;
-		List<String> groupIds = db.getTick(tickId).getGroups();
 
-		for (String groupId : groupIds) {
-			List<Role> roles = db.getRoles(groupId, crsid);
-			if (roles.contains(Role.SUBMITTER)) {
-				submitter = true;
-			}
-		}
-
-		if (!submitter && !adminConfig.getConfig().isAdmin(crsid)) {
+		if (!permissions.tickRole(crsid, tickId, Role.SUBMITTER)) {
 			log.warn("User " + crsid + " tried to fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
@@ -201,17 +192,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				"RavenRemoteUser");
 
 		/* Check permissions */
-		boolean marker = false;
-		List<String> groupIds = db.getTick(tickId).getGroups();
-
-		for (String groupId : groupIds) {
-			List<Role> roles = db.getRoles(groupId, myCrsid);
-			if (roles.contains(Role.MARKER)) {
-				marker = true;
-			}
-		}
-
-		if (!marker && !adminConfig.getConfig().isAdmin(myCrsid)) {
+		if (!permissions.tickRole(myCrsid, tickId, Role.MARKER)) {
 			log.warn("User " + myCrsid + " tried to mark "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
@@ -268,6 +249,7 @@ public class ForkApiFacade implements IForkApiFacade {
 					fork.setSignedUp(false);
 
 					/* Call the tick signup service to set preferred ticker */
+					List<String> groupIds = db.getTick(tickId).getGroups();
 					for (String groupId : groupIds) {
 						tickSignupService.assignTickerForTickForUser(crsid,
 								groupId, tickId, forkBean.getTicker());
@@ -303,20 +285,9 @@ public class ForkApiFacade implements IForkApiFacade {
 		}
 
 		/* Check permissions */
-		boolean marker = false;
 
-		List<String> groupIds = db.getTick(tickId).getGroups();
-
-		for (String groupId : groupIds) {
-			List<Role> roles = db.getRoles(groupId, myCrsid);
-			if (roles.contains(Role.MARKER)) {
-				marker = true;
-			}
-		}
-
-		if ((!(marker || myCrsid.equals(db.getFork(
-				Fork.generateForkId(crsid, tickId)).getAuthor())))
-				&& !adminConfig.getConfig().isAdmin(myCrsid)) {
+		if (!(permissions.tickRole(myCrsid, tickId, Role.MARKER)
+				|| permissions.forkCreator(myCrsid, myCrsid, tickId))) {
 			log.warn("User " + crsid + " tried to get files for "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");

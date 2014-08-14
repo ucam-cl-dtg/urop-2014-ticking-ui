@@ -30,6 +30,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -45,10 +46,10 @@ public class TickApiFacade implements ITickApiFacade {
 	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
-	private ConfigurationLoader<Admins> adminConfig;
-
 	private ITestService testServiceProxy;
 	private WebInterface gitServiceProxy;
+	
+	private PermissionsChecker permissions;
 
 	/**
 	 * @param db
@@ -57,13 +58,12 @@ public class TickApiFacade implements ITickApiFacade {
 	@Inject
 	public TickApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ConfigurationLoader<Admins> adminConfig,
-			ITestService testServiceProxy, WebInterface gitServiceProxy) {
+			ITestService testServiceProxy, WebInterface gitServiceProxy, PermissionsChecker permissions) {
 		this.db = db;
 		this.config = config;
-		this.adminConfig = adminConfig;
 		this.testServiceProxy = testServiceProxy;
 		this.gitServiceProxy = gitServiceProxy;
+		this.permissions = permissions;
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 
 		/* Check permissions */
-		if (!crsid.equals(tick.getAuthor())&&!adminConfig.getConfig().isAdmin(crsid)) {
+		if (!permissions.tickCreator(crsid, tick)) {
 			log.warn("User " + crsid
 					+ " tried to delete a tick but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -172,7 +172,7 @@ public class TickApiFacade implements ITickApiFacade {
 				"RavenRemoteUser");
 
 		/* Check permissions */
-		if (!validatePermissions(tickBean.getGroups(), crsid)&&!adminConfig.getConfig().isAdmin(crsid)) {
+		if (!permissions.tickBeanGroupPermissions(crsid, tickBean)) {
 			log.warn("User " + crsid + " tried to create a tick in groups "
 					+ tickBean.getGroups().toString()
 					+ " but was denied permission");
@@ -342,7 +342,7 @@ public class TickApiFacade implements ITickApiFacade {
 				"RavenRemoteUser");
 
 		/* Check permissions */
-		if (!validatePermissions(tickBean.getGroups(), crsid)&&!adminConfig.getConfig().isAdmin(crsid)) {
+		if (!permissions.tickBeanGroupPermissions(crsid, tickBean)) {
 			log.warn("User " + crsid + " tried to update tick " + tickId
 					+ " in groups " + tickBean.getGroups().toString()
 					+ " but was denied permission");
@@ -406,23 +406,6 @@ public class TickApiFacade implements ITickApiFacade {
 	}
 
 	/**
-	 * 
-	 * @param groupIds
-	 * @param crsid
-	 * @return whether the user has author permissions for all of the supplied
-	 *         groups
-	 */
-	private boolean validatePermissions(List<String> groupIds, String crsid) {
-		for (String groupId : groupIds) {
-			List<Role> roles = db.getRoles(groupId, crsid);
-			if (!roles.contains(Role.AUTHOR)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -452,8 +435,7 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 
 		/* Check permissions */
-		List<Role> roles = db.getRoles(groupId, crsid);
-		if ((!roles.contains(Role.AUTHOR) || !(tick.getAuthor().equals(crsid)))&&!adminConfig.getConfig().isAdmin(crsid)) {
+		if (!(permissions.hasRole(crsid, groupId, Role.AUTHOR)||(permissions.tickCreator(crsid, tick)))) {
 			log.warn("User " + crsid + " tried to add tick " + tickId
 					+ " to group " + groupId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -489,7 +471,7 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 
 		/* Check permissions */
-		if (!tick.getAuthor().equals(crsid)&&!adminConfig.getConfig().isAdmin(crsid)) {
+		if (!permissions.tickCreator(crsid, tick)) {
 			log.warn("User " + crsid + " tried to change the deadline of tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -522,7 +504,7 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 
 		/* Check permissions */
-		if (!myCrsid.equals(tick.getAuthor())&&!adminConfig.getConfig().isAdmin(myCrsid)) {
+		if (!permissions.tickCreator(myCrsid, tick)) {
 			log.warn("User " + myCrsid + " tried to get the files of tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
