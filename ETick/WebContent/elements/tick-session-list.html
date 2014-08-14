@@ -35,7 +35,6 @@
 	<script>
 		Polymer('tick-session-list', {
 			sheetListFilter: function(items, q) {
-				console.log(items);
 				if (items && q) {
 					return items.filter(this.sheetFilter.bind(this));
 				}
