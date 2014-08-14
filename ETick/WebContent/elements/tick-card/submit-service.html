@@ -108,7 +108,7 @@
                     return;
                 }
 
-                if (this.status.progress == this.status.maxProgress && this.status.positionInQueue == 0) {
+                if (this.status.progress == this.status.maxProgress && this.status.currentPositionInQueue == 0) {
                     var statusString = this.status.info;
                     this.status.info = "Done";
                     var oldRepo = this.repo.valueOf();

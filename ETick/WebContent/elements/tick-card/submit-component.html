@@ -94,7 +94,8 @@
                     if (this.hardChange) {
                         this.displayProgress = this.targetProgress;
                     } else {
-                        this.displayProgress += Math.ceil(.001 * (this.targetProgress - this.displayProgress));
+                        this.displayProgress +=
+                                Math.ceil(.001 * (this.targetProgress - this.displayProgress));
                     }
                 }
 
@@ -122,8 +123,6 @@
                 if (this.status == null) {
                     return;
                 }
-
-                console.log("status changed: ", this.status);
 
                 if (this.status.progress == 0) {
                     this.displayProgress = 0;
