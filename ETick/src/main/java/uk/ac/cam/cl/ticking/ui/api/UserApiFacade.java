@@ -93,7 +93,7 @@ public class UserApiFacade implements IUserApiFacade {
 		if (!adminConfig.getConfig().isAdmin(myCrsid)) {
 			log.warn("User " + myCrsid + " tried to delete user "
 					+ crsid + " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDPERMISSION).build();
 		}
 

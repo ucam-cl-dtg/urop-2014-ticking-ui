@@ -104,7 +104,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		if (!crsid.equals(group.getCreator())&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid + " tried to delete " + groupId
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -179,7 +179,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		if (user.getIsStudent()&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid
 					+ " tried to create a group but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -258,7 +258,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid + " tried to update the group " + groupId
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -314,7 +314,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid + " tried to clone the group " + groupId
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 

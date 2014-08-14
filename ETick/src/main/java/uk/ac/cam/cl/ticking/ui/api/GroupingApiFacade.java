@@ -86,7 +86,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(myCrsid)) {
 			log.warn("User " + myCrsid + " tried to add a member to group "
 					+ groupId + " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -140,7 +140,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		if (!myRoles.contains(Role.AUTHOR)&&!adminConfig.getConfig().isAdmin(myCrsid)) {
 			log.warn("User " + myCrsid + " tried to remove a member to group "
 					+ groupId + " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
