@@ -205,7 +205,7 @@
                           disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
             </paper-button>
             <div style="width: 20px"></div>
-            <paper-button raisedButton id="delete" class="tick-creator" label="{{deleting ? 'DELETING...' : 'DELETE'}}" on-tap="{{deleteTick}}"
+            <paper-button raisedButton id="delete" class="tick-creator" label="{{deleting ? 'DELETING...' : 'DELETE'}}" on-tap="{{alertDeleteTick}}"
                           disabled?="{{newTick || deleting}}">
             </paper-button>
             <span flex></span>
@@ -213,6 +213,7 @@
     </div>
 
     <are-you-sure id="alertRestoreDefaults" heading="Restore Defaults?" on-yes="{{restoreDefaults}}"></are-you-sure>
+    <are-you-sure id="alertDelete" heading="Delete this tick?" on-yes="{{deleteTick}}"></are-you-sure>
 </template>
 <script>
     Polymer('tick-creator-card', {
@@ -507,6 +508,10 @@
 
         errorSaving: function() {
             this.saving = false;
+        },
+
+        alertDeleteTick: function() {
+            this.$.alertDelete.toggle();
         },
 
         deleteTick: function() {
