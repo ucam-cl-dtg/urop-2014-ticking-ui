@@ -46,15 +46,13 @@
                 <div id="details" layout vertical start>
                     <div layout horizontal end style="width: 100%;">
                         <p class="creator">Created by: {{creator}}</p>
-
-					<span layout horizontal end end-justified flex>
-						<template if="{{isAuthor}}">
-							<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
-							<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
-							<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
-						</template>
-					</span>
-
+						<span layout horizontal end end-justified flex>
+							<template if="{{isAuthor}}">
+								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
+								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
+								<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
+							</template>
+						</span>
                     </div>
 
                     <div id="infoContainer">
@@ -76,29 +74,25 @@
             <core-collapse id="groups">
                 <group-members gid="{{gid}}" allowAdd="{{isAuthor}}" rows="4"></group-members>
             </core-collapse>
-		</main-card>
-		
-		<!-- <div id="headerBar" layout horizontal center>
-			<h1 flex>Members ({{number}})</h1>
-			<template if="{{allowAdd}}">
-				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
-				<paper-icon-button icon="add" on-click="{{addMemberClicked}}" core-overlay-toggle></paper-icon-button>
-			</template>
-			<search-box id="searchBox" placeholder="Search..."></search-box>
-		</div>-->
 
+            <core-collapse id="tickingSessions">
+	        	<tick-session-list sheets="{{sheets}}" isAuthor="{{isAuthor}}"></tick-session-list>
+	        </core-collapse>
+
+		</main-card>
 
 		<!-- Tick list card. --> 
 		<template if="{{selectedTickId}}">
 			<main-card animated>
-			<tick-card id="tickCard"
-				tickName="{{selectedTickName}}"
-				tickId="{{selectedTickId}}"
-				sheets="{{sheets}}"
-				repoName="{{repoName}}"></tick-card>
-		</main-card>
+				<tick-card id="tickCard"
+					tickName="{{selectedTickName}}"
+					tickId="{{selectedTickId}}"
+					sheets="{{sheets}}"
+					repoName="{{repoName}}"></tick-card>
+			</main-card>
 		</template>
 
+		<!-- File broweser card. -->
         <template if="{{repoName}}">
             <main-card animated>
                 <file-browser-card tickId="{{selectedTickId}}"
@@ -108,15 +102,12 @@
         </template>
 
 
-        <core-collapse id="tickingSessions">
-        	<main-card animated>
-        		<tick-session-list sheets="{{sheets}}"
-        			isAuthor="{{isAuthor}}"></tick-session-list>
-        	</main-card>
-            <template if="{{isMarker}}">
-                <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
-            </template>
-        </core-collapse>
+        <!-- Marker card for ticking sessions. -->
+
+	    <template if="{{isMarker && $.tickingSessions.opened}}">
+	        <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
+	    </template>
+
 	</template>
 	<script>
 		Polymer('x-group', {  
@@ -132,7 +123,7 @@
 
                     that.overview.opened = this.tabIndex == 0;
                     that.ticks.opened = this.tabIndex == 1;
-                    that.tickingSessions.opened = this.tabIndex== 2;
+                    that.tickingSessions.opened = this.tabIndex == 2;
                     that.groups.opened = this.tabIndex == 3;
                 });
 			},
@@ -161,7 +152,6 @@
 			},
 			sheetListResponse: function () {
 				this.sheets = this.$.sheetListAPI.response;
-				console.log(this.sheets);
 			},
 
 			forkClickedHandler: function (e, detail) {
