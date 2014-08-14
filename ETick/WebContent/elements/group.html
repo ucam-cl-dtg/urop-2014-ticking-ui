@@ -87,7 +87,8 @@
             <!-- Ticking Sessions Tab -->
             <core-collapse id="tickingSessions">
 	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
-	        		on-sheet-created="{{sheetCreated}}"></tick-session-list>
+	        		on-sheet-created="{{sheetCreated}}"
+	        		on-edit-add-session="{{editAddSession}}"></tick-session-list>
 	        </core-collapse>
 
 		</main-card>
@@ -118,6 +119,13 @@
 	    <template if="{{(isMarker||isAdmin) && $.tickingSessions.opened}}">
 	        <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
 	    </template>
+
+	    <!-- Ticking session create/edit card. -->
+
+	    <!-- <template if="{{showEditAddSession}}"> -->
+	    	<main-card id="editAddSessionCard">
+		    </main-card>
+		<!-- </template> -->
 
 	</template>
 	<script>
@@ -180,6 +188,10 @@
 
 			sheetCreated: function () {
 				this.$.sheetListAPI.go();
+			},
+
+			editAddSession: function (e, detail) {
+				this.$.editAddSessionCard.appendChild(detail);
 			}
 		});
 	</script>

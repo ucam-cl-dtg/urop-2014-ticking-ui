@@ -1,0 +1,104 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/core-icons/communication-icons.html">
+<link rel="import" href="../bower_components/core-icons/device-icons.html">
+<link rel="import" href="date-entry.html">
+
+
+<polymer-element name="add-edit-session" attributes="sheet">
+	<template>
+		<style>
+			:host {
+				display: block;
+				margin: 10px;
+			}
+			h1 {
+				font-size: 1.8rem;
+				font-weight: lighter;
+			}
+			h2 {
+				font-weight: normal;
+				font-size: 1.2rem;
+			}
+			paper-input {
+				width: 100%;
+			}
+			core-icon.big {
+				height: 27px;
+       			width: 27px;
+       			margin-right: 10px;
+				margin-top: 8px;
+			}
+		</style>
+
+		<h1>{{sheet ? sheet.title : 'New Ticking Session:'}}</h1>
+		<h2>Session Information</h2>
+		<div layout vertical>
+			<div layout horizontal start>
+				<core-icon class="big" icon="keep"></core-icon>
+				<paper-input id="titleInput" 
+					floatingInput
+					required
+					value="{{sheet.title}}"
+					placeholder="Ticking session title..."
+					error="Invalid session title."
+					on-input=""></paper-input>
+			</div>
+
+			<div layout horizontal start>
+				<core-icon class="big" icon="info-outline"></core-icon>
+				<paper-input id="descInput"
+					value="{{sheet.description}}"
+					multiline
+					placeholder="Description..."
+					maxRows="5"></paper-input>
+			</div>
+
+			<div layout horizontal start>
+				<core-icon class="big" icon="communication:location-on">
+				</core-icon>
+				<paper-input id="locInput"
+					value="{{sheet.location}}"
+					floatingInput
+					placeholder="Location..."></paper-input>
+			</div>
+		</div>
+
+		<h2>Ticking Slot Length:</h2>
+		<div layout horizontal start>
+			<core-icon class="big" icon="device:timer"></core-icon>
+			<paper-input id="slotLengthInput"
+				disabled="{{sheet}}"
+				value="{{sheet.slotLength}}"
+				placeholder="In minutes..."
+				validate="^[0-9]+$"
+				error="Invalid slot length.">
+			</paper-input>
+		</div>
+
+		<h2>Date and Time</h2>
+		<date-entry></date-entry>
+
+
+
+
+	</template>
+	<script>
+		Polymer('add-edit-session', {
+
+			created: function  () {
+				this.sheet =  {
+					title: "Foo",
+					location: "Foosville",
+					description: "For Foo's Sake.",
+					slotLength: 10
+				};
+			},
+
+			domReady: function () {
+				console.log(this.sheet);
+			}
+			
+		});
+	</script>
+</polymer-element>
