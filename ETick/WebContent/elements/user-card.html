@@ -57,7 +57,12 @@
 		</core-ajax>
 		
 		<div class="card-header" layout horizontal center end-justified>
-				<div flex><h3>Welcome</h3></div>
+				<template if="{{ldap.admin}}">
+					<div flex><h3>Esteemed Greetings</h3></div>
+				</template>
+				<template if="{{!ldap.admin}}">
+					<div flex><h3>Welcome</h3></div>
+				</template>
 				<template if="{{ldap.photo==='undefined'}}">
 					<template if="{{ldap.isStudent}}">
 						<img src="../images/temp_student.svg"></img>

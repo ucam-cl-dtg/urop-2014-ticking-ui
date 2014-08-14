@@ -15,9 +15,8 @@ core-toolbar {
 	color: #fff;
 }
 
-core-selector.fix {
-	/* To remove space between inline-block elements. */
-	font-size: 0;
+#logoutButton {
+	display: block;
 }
 
 #title {
@@ -25,7 +24,7 @@ core-selector.fix {
 	font-weight: 100;
 }
 
-paper-button, menu-button::shadow paper-button {
+#navMenu paper-button, menu-button::shadow paper-button {
 	font-size: 1rem;
 	font-weight: 200;
 }

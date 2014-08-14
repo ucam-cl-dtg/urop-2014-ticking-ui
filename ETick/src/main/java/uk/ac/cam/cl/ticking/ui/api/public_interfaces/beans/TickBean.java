@@ -9,9 +9,6 @@ import org.joda.time.DateTime;
 
 import publicinterfaces.StaticOptions;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  *
  * This class stores the user defined aspects of a tick for use during creator.

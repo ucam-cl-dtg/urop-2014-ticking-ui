@@ -3,9 +3,6 @@ package uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * This class stores the user defined aspects of a group for use during creator.
  * 

@@ -1,5 +1,5 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
-<link rel="import" href="../../bower_components/platform/platform.js"/>
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html"/>
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html"/>
 
@@ -12,14 +12,19 @@ above attribute (...Message).
 
 popUp...: To pop up even when the wait toast did not do so.
 
-waitBeforeToast: Wait the given amount of microseconds before showing up
+waitBeforeToast: Wait the given amount of milliseconds before popping up
 the waiting toast.
+
+maximumErrorCharacters: The number of characters, after which errors go
+to console.log. Set this to Number.POSITIVE_INFINITY if you don't want
+this to happen.
 -->
 <polymer-element name="toast-ajax"
                  attributes="completeMessage errorMessage
                  waitMessage responseMessage waitBeforeToast
                  captureResponse captureError captureComplete
                  popUpResponse popUpError popUpComplete
+                 maximumErrorCharacters
                  
                  url handleAs auto params
                  response method headers
@@ -53,34 +58,46 @@ the waiting toast.
         , contentType: 'application/x-www-form-urlencoded'
         , withCredentials: false
 
-        , timeOut: undefined
+        , timeOut: null
         , waitShown: false
+        , waitBeforeToast: 1000
         , captureResponse: false
         , captureError: false
         , captureComplete: false
         , popUpResponse: false
         , popUpError: false
         , popUpComplete: false
+        , maximumErrorCharacters: 150
 
         , go:
           function ()
           {
             "use strict";
 
-            if (this.waitBeforeToast != 0
-              &&this.timeOut == null)
+            this.waitShown = false;
+
+            if (this.timeOut == null)
             {
-              this.timeOut = window.setTimeout(
-                function ()
-                {
-                  if (this.waitMessage != null)
+              if (this.waitBeforeToast > 0)
+              {
+                this.timeOut = window.setTimeout(
+                  function ()
                   {
-                    this.waitShown = true;
-                    this.$.toastElement.text = this.waitMessage;
-                    this.$.toastElement.show();
-                  }
-                }.bind(this)
-                , this.waitBeforeToast);
+                    if (this.waitMessage != null)
+                    {
+                      this.waitShown = true;
+                      this.$.toastElement.text = this.waitMessage;
+                      this.$.toastElement.show();
+                    }
+                  }.bind(this)
+                  , this.waitBeforeToast);
+              }
+              else
+              {
+                this.waitShown = true;
+                this.$.toastElement.text = this.waitMessage;
+                this.$.toastElement.show();
+              }
             }
 
             this.$.ajax.go();
@@ -129,6 +146,7 @@ the waiting toast.
             if (this.timeOut != null)
             {
               clearTimeout(this.timeOut);
+              this.timeOut = null;
             }
 
             if (show)
@@ -168,8 +186,25 @@ the waiting toast.
             "use strict";
             this.fire('core-error', e.detail);
 
-            if (this.captureError)
+            if (this.captureError && e.detail.response != null)
             {
+              /* If stack-traces happen */
+              if (e.detail.response.length > maximumErrorCharacters)
+              {
+                if (errorMessage != null)
+                {
+                  this.popUpToast(this.errorMessage +
+                      " See log for further details",
+                    this.waitShown || this.popUpError);
+                }
+                else
+                {
+                  this.popUpToast("Something went wrong." +
+                      " See log for further details",
+                    this.waitShown || this.popUpError);
+                }
+                console.log(e.detail.response);
+              }
               this.popUpToast(e.detail.response,
                 this.waitShown || this.popUpError);
             }

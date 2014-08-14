@@ -28,10 +28,10 @@
 
             <h1>{{tickName}}</h1>
 
-            <core-collapse opened?="{{repo != null}}">
+            <core-collapse opened?="{{displayRepo != null}}">
             <div layout horizontal>
                 <div class="spacer"></div>
-                <div>{{repo}}</div>
+                <div>{{displayRepo}}</div>
             </div>
             </core-collapse>
 
@@ -40,7 +40,8 @@
 
             <core-collapse opened?="{{!forked}}">
                 <fork-component
-                        on-create-fork="{{createFork}}">
+                        on-create-fork="{{createFork}}"
+                        repo="{{repo}}">
                 </fork-component>
             </core-collapse>
 
@@ -54,16 +55,17 @@
                                       testRunning="{{testRunning}}"
                                       reportAvailable="{{reportAvailable}}"
                                       unitPass="{{unitPass}}"
-                                      humanPass="{{humanPass}}">
+                                      humanPass="{{humanPass}}"
+                                      repo="{{repo}}">
                     </submit-component>
                     <div class="spacer"></div>
-                    <report-component flex
+                    <!--<report-component flex
                                       reportAvailable="{{reportAvailable}}"
                                       repoName="{{repoName}}"
                                       repo="{{repo}}"
                                       testRunning="{{testRunning}}"
                                       unitPass="{{unitPass}}"></report-component>
-                    <div class="spacer"></div>
+                    <div class="spacer"></div>-->
                     <signup-component flex
                                       sheets="{{sheets}}"
                                       signedUp="{{signedUp}}"
@@ -87,7 +89,7 @@
                 this.testRunning = null;
                 this.reportAvailable  = null;
                 this.repo = null;
-
+                this.displayRepo = null;
                 this.repoName = null;
             },
 
@@ -100,12 +102,36 @@
 
             createFork: function() {
                this.$.forkService.createFork();
+            },
+
+            repoChanged: function() {
+                console.log("repo is now " + this.repo);
+
+                if (this.repo != null) {
+                    this.displayRepo = this.repo;
+                }
+
+                console.log("so display repo is now " + this.displayRepo);
+
+                this.reportAvailableChanged();
+            },
+
+            reportAvailableChanged: function() {
+                if (this.reportAvailable && this.repo != null) {
+                    this.showReport();
+                } else {
+                    this.repoName = null;
+                }
+            },
+
+            showReport: function() {
+                this.job('show-report', function(){
+                    var regex = /urop2014\.dtg\.cl\.cam\.ac\.uk\/(.*)\.git/;
+                    this.repoName = this.repo.match(regex)[1];
+                }, 500);
             }
 
-
-
-
-           /* testRunningChanged: function() {
+            /* testRunningChanged: function() {
                 console.log(this.testRunning);
 
                 if (this.testRunning == true) {

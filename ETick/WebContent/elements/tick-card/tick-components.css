@@ -1,4 +1,4 @@
-paper-button {
+paper-button.tick-component {
     width: 100%;
     background: #4285f4;
     color: #fff;
@@ -6,6 +6,11 @@ paper-button {
 
 paper-progress {
     width: 100%;
+}
+
+polyfill-next-selector {shadow: 'paper-progress #activeProgress';}
+paper-progress::shadow #activeProgress {
+    background-color: #4285f4;
 }
 
 .error {
@@ -20,3 +25,4 @@ paper-progress {
 .spacer {
     width: 10px;
 }
+

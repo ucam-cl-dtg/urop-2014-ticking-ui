@@ -28,6 +28,7 @@ import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IForkApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ForkBean;
+import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -49,6 +50,8 @@ public class ForkApiFacade implements IForkApiFacade {
 	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
+	private ConfigurationLoader<Admins> adminConfig;
+
 	private WebInterface gitServiceProxy;
 	private ITestService testServiceProxy;
 	private TickSignups tickSignupService;
@@ -60,10 +63,12 @@ public class ForkApiFacade implements IForkApiFacade {
 	@Inject
 	public ForkApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
 			ITestService testServiceProxy, WebInterface gitServiceProxy,
 			TickSignups tickSignupService) {
 		this.db = db;
 		this.config = config;
+		this.adminConfig = adminConfig;
 		this.testServiceProxy = testServiceProxy;
 		this.gitServiceProxy = gitServiceProxy;
 		this.tickSignupService = tickSignupService;
@@ -80,8 +85,10 @@ public class ForkApiFacade implements IForkApiFacade {
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 
 		if (fork == null) {
-			log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
-					+ " but it couldn't be found");
+			// Currently happens every time a student clicks on an un-forked
+			// tick
+			// log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+			// + " but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
@@ -115,11 +122,11 @@ public class ForkApiFacade implements IForkApiFacade {
 			}
 		}
 
-		if (!submitter) {
+		if (!submitter && !adminConfig.getConfig().isAdmin(crsid)) {
 			log.warn("User " + crsid + " tried to fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -136,8 +143,8 @@ public class ForkApiFacade implements IForkApiFacade {
 			SerializableException s = h.readException(e);
 
 			if (s.getClassName().equals(IOException.class.getName())) {
-				log.error("Tried to fork repository for " + tickId,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " tried to fork repository for "
+						+ tickId, s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -148,19 +155,20 @@ public class ForkApiFacade implements IForkApiFacade {
 				 * The repo has been forked previously and the exception carries
 				 * the URI as it's message so just carry on with this
 				 */
-				log.warn("Tried to fork repository for " + tickId,
-						s.getCause(), s.getStackTrace());
+				log.warn("User " + crsid + " tried to fork repository for "
+						+ tickId, s.getCause(), s.getStackTrace());
 				repo = s.getMessage();
 
 			} else {
-				log.error("Tried to fork repository for " + tickId,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " tried to fork repository for "
+						+ tickId, s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | DuplicateRepoNameException e) {
-			log.error("Tried to fork repository for " + tickId, e);
+			log.error("User " + crsid + " tried to fork repository for "
+					+ tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 			// Due to exception chaining this shouldn't happen
@@ -173,7 +181,8 @@ public class ForkApiFacade implements IForkApiFacade {
 
 		} catch (DuplicateDataEntryException e) {
 			log.error(
-					"Tried to insert fork into database with id "
+					"User " + crsid
+							+ " tried to insert fork into database with id "
 							+ fork.getForkId(), e);
 			throw new RuntimeException("Schrodinger's fork");
 			// The fork simultaneously does and doesn't exist
@@ -202,11 +211,11 @@ public class ForkApiFacade implements IForkApiFacade {
 			}
 		}
 
-		if (!marker) {
-			log.warn("User " + crsid + " tried to mark "
+		if (!marker && !adminConfig.getConfig().isAdmin(myCrsid)) {
+			log.warn("User " + myCrsid + " tried to mark "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -229,16 +238,18 @@ public class ForkApiFacade implements IForkApiFacade {
 					SerializableException s = h.readException(e);
 
 					log.error(
-							"Tried to set ticker result for "
+							"User " + myCrsid
+									+ " tried to set ticker result for "
 									+ Fork.generateForkId(crsid, tickId),
-							s.getCause());
+							s.getCause(), s.getStackTrace());
 					return Response.status(Status.NOT_FOUND)
-							.entity(Strings.IDEMPOTENTRETRY).build();
+							.entity(Strings.MISSING).build();
 
 				} catch (UserNotInDBException | TickNotInDBException
 						| ReportNotFoundException e) {
 					log.error(
-							"Tried to set ticker result for "
+							"User " + myCrsid
+									+ " tried to set ticker result for "
 									+ Fork.generateForkId(crsid, tickId), e);
 					return Response.status(Status.NOT_FOUND).entity(e).build();
 				}
@@ -269,9 +280,11 @@ public class ForkApiFacade implements IForkApiFacade {
 
 			return Response.status(Status.CREATED).entity(fork).build();
 		}
-		log.error("Requested fork " + Fork.generateForkId(crsid, tickId)
+		log.error("User " + myCrsid + " requested fork "
+				+ Fork.generateForkId(crsid, tickId)
 				+ " for ticking, but it couldn't be found");
-		return Response.status(Status.NOT_FOUND).build();
+		return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+				.build();
 
 	}
 
@@ -301,12 +314,13 @@ public class ForkApiFacade implements IForkApiFacade {
 			}
 		}
 
-		if (!(marker || myCrsid.equals(db.getFork(
-				Fork.generateForkId(crsid, tickId)).getAuthor()))) {
+		if ((!(marker || myCrsid.equals(db.getFork(
+				Fork.generateForkId(crsid, tickId)).getAuthor())))
+				&& !adminConfig.getConfig().isAdmin(myCrsid)) {
 			log.warn("User " + crsid + " tried to get files for "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
-			return Response.status(Status.UNAUTHORIZED)
+			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
@@ -324,38 +338,42 @@ public class ForkApiFacade implements IForkApiFacade {
 
 			if (s.getClassName().equals(IOException.class.getName())) {
 				log.error(
-						"Tried to get repository files for "
+						"User " + myCrsid
+								+ " tried to get repository files for "
 								+ Fork.generateForkId(crsid, tickId),
 						s.getCause(), s.getStackTrace());
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-						.build();
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 			if (s.getClassName().equals(
 					RepositoryNotFoundException.class.getName())) {
 				log.error(
-						"Tried to get repository files for "
+						"User " + myCrsid
+								+ " tried to get repository files for "
 								+ Fork.generateForkId(crsid, tickId),
 						s.getCause(), s.getStackTrace());
-				return Response.status(Status.NOT_FOUND).entity(e).build();
+				return Response.status(Status.NOT_FOUND)
+						.entity(Strings.MISSING).build();
 
 			} else {
 				log.error(
-						"Tried to get repository files for "
+						"User " + myCrsid
+								+ " tried to get repository files for "
 								+ Fork.generateForkId(crsid, tickId),
 						s.getCause(), s.getStackTrace());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(s.getCause()).build();
+						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | RepositoryNotFoundException e) {
-			log.error(
-					"Tried to get repository files for "
-							+ Fork.generateForkId(crsid, tickId), e);
+			log.error("User " + myCrsid + " tried to get repository files for "
+					+ Fork.generateForkId(crsid, tickId), e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
 
+		/* Return the files */
 		return Response.ok(files).build();
 	}
 

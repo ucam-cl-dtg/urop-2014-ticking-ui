@@ -1,6 +1,6 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
 <polymer-element name="files-service"
     attributes="date
                 files
@@ -16,21 +16,28 @@
                 reportResult
                 reportCreationDate">
   <template>
-    <style>
-    :host {
-      display: none;
-    }
-    </style>
-    <core-ajax id="report"
-               auto
-               on-core-response="{{reportLoaded}}"
-               handleAs="json">
-    </core-ajax>
-    <core-ajax id="fileContent"
-               auto
-               on-core-response="{{filesLoaded}}"
-               handleAs="json">
-    </core-ajax>
+    <link rel="stylesheet" href="style.css"/>
+    <toast-ajax id="report"
+                on-core-response="{{reportLoaded}}"
+                handleAs="json"
+                method="GET"
+                auto
+                
+                popUpError
+                captureError
+                waitMessage="Loading report...."
+                responseMessage="Report successfully loaded.">
+    </toast-ajax>
+    <toast-ajax id="fileContent"
+                on-core-response="{{filesLoaded}}"
+                handleAs="json"
+                method="GET"
+                
+                popUpError
+                captureError
+                waitMessage="Loading files...."
+                responseMessage="Files successfully loaded.">
+    </toast-ajax>
   </template>
   <script src="../../hardcoded.js"></script>
   <script>
@@ -94,23 +101,24 @@
                 + "/files?crsid="
                 + this.crsid;
             }
+            this.$.fileContent.go();
 
             /* Make a copy of the loaded data */
             this.testResult   = this.$.report.response.testResult;
             this.tickerResult = this.$.report.response.tickerResult;
             this.reportResult = this.$.report.response.reportResult;
             this.comments     = this.$.report.response.tickerComments;
-            this.errors       = this.$.report.response.items;
+            this.errors       =
+              this.$.report.response.items.reduce(
+                  function (prev, curr)
+                  {
+                    curr.className = curr.outcome + prev.length;
+                    return prev.concat(curr);
+                  }, []);
             this.commitId     = this.$.report.response.commitId;
             this.date         = new Date(this.$.report.response
                                                     .creationDate);
             this.testCount    = this.$.report.response.noOfTests;
-
-            var i;
-            for (i = 0; i < this.errors.length; i++)
-            {
-              this.errors[i].id = i;
-            }
           }
 
         , filesLoaded:

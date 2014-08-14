@@ -2,7 +2,8 @@ package uk.ac.cam.cl.ticking.ui.actors;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import org.joda.time.DateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -27,15 +28,17 @@ public class User implements Comparable<User> {
 
 	private String ssh;
 
-	private boolean ldap;
+	private DateTime ldap;
 
 	private boolean hasLogged;
 
 	private boolean isStudent;
+	
+	private boolean admin;
 
 	public User(String crsid) {
 		this.setCrsid(crsid);
-		this.setLdap(false);
+		this.setLdap(null);
 	}
 
 	/**
@@ -55,7 +58,7 @@ public class User implements Comparable<User> {
 	 */
 	public User(String crsid, String surname, String regName,
 			String displayName, String email, List<String> institutions,
-			String college, boolean isStudent) {
+			String college, boolean isStudent, boolean admin) {
 		this.setCrsid(crsid);
 		this.setSurname(surname);
 		this.setRegName(regName);
@@ -64,14 +67,15 @@ public class User implements Comparable<User> {
 		this.setInstitutions(institutions);
 		this.setCollege(college);
 		this.setIsStudent(isStudent);
-		this.setLdap(true);
+		this.setAdmin(admin);
+		this.setLdap(DateTime.now());
 	}
-	
+
 	/**
 	 * Empty default constructor for Jackson
 	 */
 	public User() {
-		
+
 	}
 
 	/**
@@ -220,17 +224,25 @@ public class User implements Comparable<User> {
 		this.isStudent = isStudent;
 	}
 
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
+
 	/**
 	 * @return ldap
 	 */
-	public boolean isLdap() {
+	public DateTime getLdap() {
 		return ldap;
 	}
 
 	/**
 	 * @param ldap
 	 */
-	public void setLdap(boolean ldap) {
+	public void setLdap(DateTime ldap) {
 		this.ldap = ldap;
 	}
 

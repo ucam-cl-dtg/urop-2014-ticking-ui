@@ -30,66 +30,73 @@
     </toast-ajax>
 
     <!-- get and update all other existing tick data -->
-    <core-ajax
+    <toast-ajax
             id="ajaxLoadTickData"
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/'}}"
             handleAs="json"
             on-core-response="{{tickDataLoaded}}"
-            on-core-error="{{showLoadErrorToast}}">
-    </core-ajax>
-    <!---->
-    <core-ajax
+
+            waitMessage="Loading tick data..."
+            waitBeforeToast="1000"
+            captureError
+            popUpError
+            errorMessage="Error loading the tick.">
+    </toast-ajax>
+    <toast-ajax
             id="ajaxPutTickData"
             handleAs="json"
             contentType="application/json"
             method="PUT"
-            on-core-error="{{showSaveErrorToast}}"
-            on-core-response="{{tickDataUpdated}}">
-    </core-ajax>
-    <core-ajax
+            on-core-error="{{errorSaving}}"
+            on-core-response="{{tickDataUpdated}}"
+
+            waitMessage="Saving..."
+            waitBeforeToast="500"
+            captureError
+            popUpError
+            errorMessage="Error updating tick."
+            completeMessage="Tick updated."
+            popUpComplete>
+    </toast-ajax>
+    <toast-ajax
             id="ajaxPostTickData"
             handleAs="json"
             contentType="application/json"
             url="{{pathPutTickData}}"
             method="POST"
-            on-core-error="{{showSaveErrorToast}}"
-            on-core-response="{{tickDataSaved}}">
-    </core-ajax>
+            on-core-error="{{errorSaving}}"
+            on-core-response="{{tickDataSaved}}"
+
+            waitMessage="Saving..."
+            waitBeforeToast="500"
+            captureError
+            popUpError
+            errorMessage="Error saving tick."
+            completeMessage="Tick saved."
+            popUpComplete>
+    </toast-ajax>
 
     <!-- get and update stylistic data -->
-    <core-ajax
+    <toast-ajax
             id="ajaxLoadDefaults"
             url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles"
             handleAs="json"
             on-core-response="{{defaultsLoaded}}"
-            on-core-error="{{showLoadErrorToast}}">
-    </core-ajax>
-    <core-ajax
-            id="ajaxSaveLoadDefaults"
-            url="http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/testFiles"
-            handleAs="json"
-            auto
-            on-core-response="{{savingDefaultsLoaded}}"
-            on-core-error="{{showLoadErrorToast}}">
-    </core-ajax>
-    <core-ajax
+
+            captureError
+            popUpError
+            errorMessage="Error loading stylistic checks.">
+    </toast-ajax>
+    <toast-ajax
             id="ajaxLoadStatic"
             url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/testFiles'}}"
             handleAs="json"
             on-core-response="{{staticDataLoaded}}"
-            on-core-error="{{showLoadErrorToast}}">
-    </core-ajax>
-    <core-ajax
-            id="ajaxSendStatic"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/testerAPI/v2/' + tickId + '/create'}}"
-            handleAs="json"
-            contentType="application/json"
-            method="POST"
-            on-core-response="{{saveTickData}}"
-            on-core-error="{{showSaveErrorToast}}">
-    </core-ajax>
 
-
+            captureError
+            popUpError
+            errorMessage="Error loading stylistic checks.">
+    </toast-ajax>
 
     <div id="mainContainer">
         <h4>DISPLAY NAME</h4>
@@ -160,6 +167,7 @@
             <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Analyse .java files</span>
             <paper-button
                     id="cmdRestoreDefaults"
+                    class="tick-creator"
                     label="RESTORE DEFAULTS"
                     raisedButton
                     end-justified
@@ -175,23 +183,14 @@
         <!-- SAVE button -->
         <span layout horizontal>
             <span flex></span>
-            <paper-button raisedButton class="colored" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
+            <paper-button raisedButton class="colored-tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
                           disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
             </paper-button>
             <span flex></span>
         </span>
     </div>
 
-    <paper-dialog id="alertRestoreDefaults" heading="Restore Defaults?" backdrop="true" transition="paper-transition-bottom">
-        <p>This will clear your existing settings!</p>
-        <paper-button id="dialogCancel" label="Cancel" dismissive autofocus></paper-button>
-        <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}"></paper-button>
-    </paper-dialog>
-
-    <paper-toast id="toastLoadError" text="Error loading the tick."></paper-toast>
-    <paper-toast id="toastSaveError" text="Error saving the tick."></paper-toast>
-    <paper-toast id="toastSaved" text="Tick saved."></paper-toast>
-    <paper-toast id="toastUpdated" text="Tick updated."></paper-toast>
+    <are-you-sure id="alertRestoreDefaults" heading="Restore Defaults?" on-yes="{{restoreDefaults}}"></are-you-sure>
 </template>
 <script>
     Polymer('tick-creator-card', {
@@ -298,8 +297,6 @@
 
             this.tickId = this.tickData._id;
             this.processLoadedTickData();
-
-            this.$.toastSaved.show();
         },
         tickDataUpdated: function() {
             /* when a user clicks save, they shouldn't be able to click again until the update is complete, so the SAVE
@@ -307,7 +304,6 @@
             so this artificial day smooths the UX */
             this.job('complete-saving', function() {
                 this.saving = false;
-                this.$.toastUpdated.show();
             }, 500);
 
             this.newTick = false;
@@ -484,23 +480,9 @@
         restoreDefaults: function() {
             this.$.ajaxLoadDefaults.go();
         },
-        showLoadErrorToast: function(e, detail) {
-            if (detail.xhr.responseText != null) {
-                this.$.toastLoadError.text = detail.xhr.responseText;
-            } else {
-                this.$.toastLoadError.text = "Error loading tick.";
-            }
-            this.$.toastLoadError.show();
-        },
-        showSaveErrorToast: function(e, detail) {
-            this.saving = false;
 
-            if (detail.xhr.responseText != null) {
-                this.$.toastSaveError.text = detail.xhr.responseText;
-            } else {
-                this.$.toastSaveError.text = "Error saving tick.";
-            }
-            this.$.toastSaveError.show();
+        errorSaving: function() {
+            this.saving = false;
         }
     });
 </script>

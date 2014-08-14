@@ -19,6 +19,9 @@ public class ConfigurationRegister {
 		loaders.put(AcademicTemplate.class,
 				new ConfigurationLoader<AcademicTemplate>("academic.json",
 						AcademicTemplate.class));
+		loaders.put(Admins.class,
+				new ConfigurationLoader<Admins>("admins.json",
+						Admins.class));
 	}
 
 	public static ConfigurationLoader<? extends ConfigurationFile> getLoader(

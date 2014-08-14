@@ -19,27 +19,29 @@ import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.configuration.AcademicTemplate;
-import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
+import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
-import uk.ac.cam.cl.ticking.ui.dao.DatabasePopulator;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
-import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
 
 @Path("/raven")
-public class RavenManager {
+public class LdapManager {
 
 	private IDataManager db;
 	private ConfigurationLoader<AcademicTemplate> academicConfig;
+	private ConfigurationLoader<Admins> adminConfig;
 
 	/**
 	 * @param db
 	 */
 	@Inject
-	public RavenManager(IDataManager db, ConfigurationLoader<AcademicTemplate> academicConfig) {
+	public LdapManager(IDataManager db,
+			ConfigurationLoader<AcademicTemplate> academicConfig,
+			ConfigurationLoader<Admins> adminConfig) {
 		this.db = db;
 		this.academicConfig = academicConfig;
+		this.adminConfig = adminConfig;
 	}
 
 	/**
@@ -117,7 +119,8 @@ public class RavenManager {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		User user = db.getUser(crsid);
-		if (user == null || !user.isLdap()) {
+		if (user == null || user.getLdap() == null
+				|| user.getLdap().plusDays(1).isBeforeNow()) {
 			user = ldapProduceUser(crsid);
 			db.saveUser(user);
 			return Response.status(Status.CREATED).entity(user).build();
@@ -152,20 +155,22 @@ public class RavenManager {
 		LDAPUser u;
 		User user;
 		try {
+			//TODO async
 			u = LDAPQueryManager.getUser(crsid);
 			boolean notStudent = academicConfig.getConfig().represents(u);
-			user = new User(crsid, u.getSurname(), u.getRegName(),
-					u.getDisplayName(), u.getEmail(), u.getInstitutions(),
-					u.getCollegeName(), !notStudent);
+			boolean admin = adminConfig.getConfig().isAdmin(crsid);
+			user = new User(crsid,
+					u.getSurname(), u.getRegName(), u.getDisplayName(),
+					u.getEmail(), u.getInstitutions(), u.getCollegeName(),
+					!notStudent, admin);
 			List<String> photos = u.getPhotos();
 			if (photos != null) {
-				user.setPhoto(photos.get(photos.size()-1));
+				user.setPhoto(photos.get(photos.size() - 1));
 			}
 		} catch (LDAPObjectNotFoundException e) {
 			user = new User(crsid);
 		}
 		return user;
 	}
-
 
 }

@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="submit-service.html">
 
-<polymer-element name="submit-component" attributes="tickId signedUp testRunning reportAvailable unitPass humanPass">
+<polymer-element name="submit-component" attributes="tickId signedUp testRunning reportAvailable unitPass humanPass repo">
     <template>
         <!-- STYLES -->
         <link rel="stylesheet" type="text/css" href="../../css/shared-styles.css" shim-shadowdom>
@@ -15,12 +15,13 @@
                         status="{{status}}"
                         testRunning="{{testRunning}}"
                         reportAvailable="{{reportAvailable}}"
-                        unitPass="{{unitPass}}">
+                        unitPass="{{unitPass}}"
+                        repo="{{repo}}">
         </submit-service>
 
         <!--Submit button -->
         <core-collapse opened?="{{!testRunning && !signedUp && !humanPass}}">
-            <paper-button label="SUBMIT" on-tap="{{submit}}"
+            <paper-button class="tick-component" label="SUBMIT" on-tap="{{submit}}"
                 disabled?="{{signedUp || testRunning}}">
             </paper-button>
         </core-collapse>
@@ -53,6 +54,10 @@
                 this.targetProgress = 0;
             },
 
+            tickIdChanged: function() {
+                this.hardChange = true;
+            },
+
             progressUpdated: function() {
                 //this.displayProgress = this.status.progress;
                 this.targetProgress = this.status.progress / this.status.maxProgress * 100;
@@ -66,7 +71,12 @@
 
             stepProgressAnimation: function() {
                 if (this.displayProgress < this.targetProgress) {
-                    this.displayProgress+= Math.ceil(.001 * (this.targetProgress - this.displayProgress));
+                    if (this.hardChange) {
+                        this.hardChange = false;
+                        this.displayProgress = this.targetProgress;
+                    } else {
+                        this.displayProgress += Math.ceil(.001 * (this.targetProgress - this.displayProgress));
+                    }
                     var that = this;
                     this.job('animate', function() {
                         that.stepProgressAnimation();

@@ -19,8 +19,9 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.remote.GitApi;
 import uk.ac.cam.cl.ticking.ui.api.remote.SignupApi;
 import uk.ac.cam.cl.ticking.ui.api.remote.TestApi;
-import uk.ac.cam.cl.ticking.ui.auth.RavenManager;
+import uk.ac.cam.cl.ticking.ui.auth.LdapManager;
 import uk.ac.cam.cl.ticking.ui.configuration.AcademicTemplate;
+import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
@@ -50,7 +51,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static SubmissionApiFacade submissionApiFacade = null;
 	private static ForkApiFacade forkApiFacade = null;
 	private static TickSignups tickSignups = null;
-	private static RavenManager ravenManager = null;
+	private static LdapManager ldapManager = null;
 
 	/**
 	 * {@inheritDoc}
@@ -103,6 +104,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 		}).toInstance(
 				(ConfigurationLoader<AcademicTemplate>) ConfigurationRegister
 						.getLoader(AcademicTemplate.class));
+		bind(new TypeLiteral<ConfigurationLoader<Admins>>() {
+		}).toInstance(
+				(ConfigurationLoader<Admins>) ConfigurationRegister
+						.getLoader(Admins.class));
 	}
 
 	/**
@@ -118,10 +123,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static TickApiFacade getTickApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
 			ITestService testServiceProxy, WebInterface gitServiceProxy) {
 		if (tickApiFacade == null) {
-			tickApiFacade = new TickApiFacade(db, config, testServiceProxy,
-					gitServiceProxy);
+			tickApiFacade = new TickApiFacade(db, config, adminConfig,
+					testServiceProxy, gitServiceProxy);
 		}
 		return tickApiFacade;
 	}
@@ -129,9 +135,12 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static UserApiFacade getUserApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config, WebInterface gitServiceProxy) {
+			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
+			WebInterface gitServiceProxy) {
 		if (userApiFacade == null) {
-			userApiFacade = new UserApiFacade(db, config, gitServiceProxy);
+			userApiFacade = new UserApiFacade(db, config, adminConfig,
+					gitServiceProxy);
 		}
 		return userApiFacade;
 	}
@@ -139,9 +148,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static GroupingApiFacade getGroupingApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config, RavenManager raven) {
+			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig, LdapManager raven) {
 		if (groupingApiFacade == null) {
-			groupingApiFacade = new GroupingApiFacade(db, config, raven);
+			groupingApiFacade = new GroupingApiFacade(db, config, adminConfig,
+					raven);
 		}
 		return groupingApiFacade;
 	}
@@ -149,9 +160,12 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static GroupApiFacade getGroupApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config, TickSignups tickSignupService) {
+			ConfigurationLoader<Configuration> config,
+			ConfigurationLoader<Admins> adminConfig,
+			TickSignups tickSignupService) {
 		if (groupApiFacade == null) {
-			groupApiFacade = new GroupApiFacade(db, config, tickSignupService);
+			groupApiFacade = new GroupApiFacade(db, config, adminConfig,
+					tickSignupService);
 		}
 		return groupApiFacade;
 	}
@@ -160,10 +174,11 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static SubmissionApiFacade getSubmissionApiSingleton(
 			IDataManager db, ConfigurationLoader<Configuration> config,
-			ITestService testServiceProxy, TickSignups tickSignupService ) {
+			ConfigurationLoader<Admins> adminConfig,
+			ITestService testServiceProxy, TickSignups tickSignupService) {
 		if (submissionApiFacade == null) {
 			submissionApiFacade = new SubmissionApiFacade(db, config,
-					testServiceProxy, tickSignupService);
+					adminConfig, testServiceProxy, tickSignupService);
 		}
 		return submissionApiFacade;
 	}
@@ -172,18 +187,19 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static ForkApiFacade getForkApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ITestService testService, WebInterface gitService, TickSignups tickSignupService) {
+			ConfigurationLoader<Admins> adminConfig, ITestService testService,
+			WebInterface gitService, TickSignups tickSignupService) {
 		if (forkApiFacade == null) {
-			forkApiFacade = new ForkApiFacade(db, config, testService,
-					gitService, tickSignupService);
+			forkApiFacade = new ForkApiFacade(db, config, adminConfig,
+					testService, gitService, tickSignupService);
 		}
 		return forkApiFacade;
 	}
 
 	@Inject
 	@Provides
-	private static TickSignups getTickSignupsSingleton(IDataManager db, 
-	        SignupsWebInterface signupServiceProxy) {
+	private static TickSignups getTickSignupsSingleton(IDataManager db,
+			SignupsWebInterface signupServiceProxy) {
 		if (tickSignups == null) {
 			tickSignups = new TickSignups(db, signupServiceProxy);
 		}
@@ -192,12 +208,13 @@ public class GuiceConfigurationModule extends AbstractModule {
 
 	@Inject
 	@Provides
-	private static RavenManager getRavenManager(IDataManager db,
-			ConfigurationLoader<AcademicTemplate> academicConfig) {
-		if (ravenManager == null) {
-			ravenManager = new RavenManager(db, academicConfig);
+	private static LdapManager getLdapManager(IDataManager db,
+			ConfigurationLoader<AcademicTemplate> academicConfig,
+			ConfigurationLoader<Admins> adminConfig) {
+		if (ldapManager == null) {
+			ldapManager = new LdapManager(db, academicConfig, adminConfig);
 		}
-		return ravenManager;
+		return ldapManager;
 	}
 
 }

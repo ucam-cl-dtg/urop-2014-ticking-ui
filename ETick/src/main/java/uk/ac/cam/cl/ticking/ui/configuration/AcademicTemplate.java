@@ -2,8 +2,6 @@ package uk.ac.cam.cl.ticking.ui.configuration;
 
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
-
 import uk.ac.cam.cl.dtg.ldap.LDAPUser;
 
 /**

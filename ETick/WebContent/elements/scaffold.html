@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="menu-button.html">
 <link rel="import" href="dashboard.html">
 <link rel="import" href="onlogin.html">
@@ -26,8 +27,8 @@
 
 			<div id="title">Tickl</div>
 
-			<div flex layout horizontal end-justified>
-			<core-selector id="navMenu" valueattr="id" selected="dashButton" class="fix" selectedAttribute="">
+			<core-selector id="navMenu" valueattr="id" selected="dashButton" selectedAttribute=""
+				flex layout horizontal end-justified>
 
 				<template if="{{!$.loginAPIs.ldap.isStudent}}">
 	                <menu-button id="ticksMenu" label="Ticks" valueattr="label">
@@ -50,7 +51,6 @@
 				<paper-button id="dashButton" label="DASHBOARD"></paper-button>
 
 			</core-selector>
-			</div>
 
 			<div layout horizontal end-justified>
 				<div>
@@ -69,8 +69,9 @@
 
 		<template id="groupTemp" if="{{gid}}">
 			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}"
-				on-delete-group="{{groupDeletedHandler}}"></x-group>
+				on-group-deleted="{{groupDeletedHandler}}"></x-group>
 		</template>
+		<paper-toast id="groupDeletedToast" duration="3000" text="Successfully deleted group."></paper-toast>
 		
 		<template id="tickTemp" if="{{showTickCreator}}">
 			<main-card animated>
@@ -116,10 +117,6 @@
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
-                console.log();
-                console.log(oldValue);
-                console.log(newValue);
-
 				if (!newValue || (oldValue && oldValue.id === "createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
@@ -155,6 +152,14 @@
 				}.bind(this), 0);
 			},
 
+			groupDeletedHandler: function () {
+				this.$.loginAPIs.$.sidebarAjax.go();
+				var groupName = this.$.groupTemp.model.name;
+				this.$.groupDeletedToast.text = 'Successfully deleted group "' + groupName + '".';
+				this.$.navMenu.selected = "dashButton";
+				this.$.groupDeletedToast.show();
+			},
+
 			// Tick menu handlers:
 
 			noTickCreator: function () {
@@ -175,14 +180,6 @@
 				this.tickId = newValue.getAttribute('tickId');
 				this.$.tickTemp.model = { showTickCreator: true, tickId: this.tickId };
 			},
-
-			groupDeletedHandler: function () {
-				console.log(this.$.groupTemp.model.gid);
-				this.$.loginAPIs.$.sidebarAjax.go();
-				this.toSelect = "-1";
-				this.noGroup();
-				// this.$.navMenu.selected = "dashButton";
-			}
 		});
 	</script>
 </polymer-element>

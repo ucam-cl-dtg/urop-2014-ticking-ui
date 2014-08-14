@@ -1,0 +1,40 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="date-calendar.html">
+<link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
+
+<polymer-element name="tick-session-box" attributes="sheet" noscript>
+	<template>
+		<style>
+			:host {
+				display: block;
+				border-radius: 2px;
+				position: relative;
+			}
+			#container {
+				padding: 10px;
+			}
+			h1 {
+				margin: 0;
+				font-size: 1.4rem;
+				font-weight: 100;
+			}
+
+			h2 {
+				margin: 0;
+				font-size: 0.7rem;
+				color: #808080;
+				font-weight: 300;
+			}
+		</style>
+		<div layout horizontal center id="container">
+			<!-- TODO: Get Session Date for datetime. -->
+			<date-calendar hexColorPrimary="#259b24" hexColorSecondary="#a2f78d" datetime="{{sheet.startTime}}"></date-calendar>
+			<div flex></div>
+			<div layout vertical end>
+				<h1>{{sheet.title}}</h1>
+				<h2>{{sheet.location}}</h2>
+			</div>
+			<paper-ripple class="recenteringTouch" fit></paper-ripple>
+		</div>
+	</template>
+</polymer-element>

@@ -34,8 +34,8 @@ public interface IDataManager {
 
 	/**
 	 * @param m
-	 *            - Fork object to be saved into storage. If the
-	 *            fork exists it will be updated, else it will be created
+	 *            - Fork object to be saved into storage. If the fork exists it
+	 *            will be updated, else it will be created
 	 */
 	public void saveFork(Fork s);
 
@@ -72,8 +72,7 @@ public interface IDataManager {
 	 *            - Fork object to be saved into storage.
 	 * @throws DuplicateDataEntryException
 	 */
-	public void insertFork(Fork s)
-			throws DuplicateDataEntryException;
+	public void insertFork(Fork s) throws DuplicateDataEntryException;
 
 	/**
 	 * @param g
@@ -121,6 +120,14 @@ public interface IDataManager {
 	 * @return List of all users who are students
 	 */
 	public List<User> getStudents();
+	
+	/**
+	 * Goes to the configured storage and attempts to find all users who are
+	 * admins
+	 * 
+	 * @return List of all users who are admins
+	 */
+	public List<User> getAdmins();
 
 	/**
 	 * Goes to the configured storage and attempts to find the users belonging
@@ -275,7 +282,8 @@ public interface IDataManager {
 	public List<Tick> getTicks();
 
 	/**
-	 * Goes to the configured storage and attempts to find the fork with the specified id
+	 * Goes to the configured storage and attempts to find the fork with the
+	 * specified id
 	 * 
 	 * @param forkId
 	 * @return fork with the gievn Id
@@ -283,21 +291,22 @@ public interface IDataManager {
 	public Fork getFork(String forkId);
 
 	/**
-	 * Goes to the configured storage and attempts to find the forks
-	 * belonging to the specified user
+	 * Goes to the configured storage and attempts to find the forks belonging
+	 * to the specified user
 	 * 
 	 * @param author
 	 * @return List of forks from the given author
 	 */
 	public List<Fork> getForks(String author);
-	
+
 	/**
 	 * Stores the id/authCode pair.
+	 * 
 	 * @param id
 	 * @param authCode
 	 */
 	public void addAuthCode(String id, String authCode);
-	
+
 	/**
 	 * 
 	 * @param id
