@@ -82,10 +82,9 @@
                              tickId="{{tickId}}"
                              sheetId="{{sheetId}}"
                              reportCreationDate="{{date}}"
-                             on-main-card-swipe-away="{{swipeAway}}"
                              on-tick-passed="{{tickPassed}}"
-							 on-tick-failed="{{tickFailed}}" 
-							 on-tick-no-show="{{tickNoShow}}">
+                             on-tick-failed="{{tickFailed}}" 
+                             on-tick-no-show="{{tickNoShow}}">
           </ticker-set-result>
         </template>
 
@@ -104,15 +103,10 @@
                   .getElementById(this.selectedFileId);
               window.scroll(element.offsetLeft, element.offsetTop);
             }
-          , swipeBack:
-            function ()
-            {
-              this.fire("main-card-swipe-back", {"card":this});
-            }
+
   		  , updateTickerView:
   		    function()
   			{
-  			  this.fire("main-card-swipe-away", {"card":this});
   			  this.fire("update-ticker-viewer", {"result": this.result});
   			}
   		  , tickPassed:
