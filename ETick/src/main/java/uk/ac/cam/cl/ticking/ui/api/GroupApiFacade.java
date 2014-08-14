@@ -116,18 +116,16 @@ public class GroupApiFacade implements IGroupApiFacade {
 		
 		for (Role role : Role.values()) {
 			writer.println(role.name());
-			writer.println();
 			for (User user : db.getUsers(groupId, role)) {
 				writer.print(user.getCrsid()+", ");
 			}
+			writer.println();
 		}
 		
-		writer.println("The first line");
-		writer.println("The second line");
 		writer.close();
 
 		ResponseBuilder response = Response.ok((Object) temp);
-        response.header("Content-Disposition", "attachment; filename='"+group.getName()+"'");
+        response.header("Content-Disposition", "attachment; filename="+group.getName());
         return response.build();
 	}
 
