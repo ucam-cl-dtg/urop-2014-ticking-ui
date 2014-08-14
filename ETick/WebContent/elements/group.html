@@ -79,7 +79,8 @@
 
             <!-- Ticking Sessions Tab -->
             <core-collapse id="tickingSessions">
-	        	<tick-session-list sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"></tick-session-list>
+	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
+	        		on-sheet-created="{{sheetCreated}}"></tick-session-list>
 	        </core-collapse>
 
 		</main-card>

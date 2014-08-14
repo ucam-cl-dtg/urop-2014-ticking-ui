@@ -54,15 +54,16 @@
 				color: #2f2f2f;
 			}
 		</style>
-		<time id="cal" datetime="{{tick.deadline}}" class="icon">
-			  <em id="day">{{day}}</em>
-			  <strong id="month">{{month}}</strong>
-			  <span id="date">{{date}}</span>
-		</time>
+			<time id="cal" class="icon">
+				  <em id="day">{{day}}</em>
+				  <strong id="month">{{month}}</strong>
+				  <span id="date">{{date}}</span>
+			</time>
 	</template>
 	<script>
 		Polymer('date-calendar', {
 			domReady: function () {
+
 				var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 				var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 				var d = new Date(this.datetime);
