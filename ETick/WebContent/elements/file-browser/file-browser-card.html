@@ -160,9 +160,11 @@
                       encodeURIComponent("Question about tick " +
                           this.tickId) +
                     "&body=" +
-                      encodeURIComponent("Hi,\n\nTo view the " +
-                          "tick, visit: " + this.getTickURL()) + "\">" +
-                  this.lastTickedBy +
+                      encodeURIComponent("Hi,\n\nI have a question " +
+                          "about why you failed my submission (" +
+                          "online at: " + this.getTickURL() + ").") +
+                  "\">" +
+                    this.lastTickedBy +
                   "</a>" +
                 " at " + new Date(this.lastTickedOn).toLocaleString() +
                 ".";
