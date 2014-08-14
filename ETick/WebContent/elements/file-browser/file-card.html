@@ -122,7 +122,7 @@
                 "</li></ol>";
             }
 
-          , commentsChanged: this.contentChanged
+          , commentsChanged: function () { this.contentChanged; }
 
           , highlightChanged:
             function ()
