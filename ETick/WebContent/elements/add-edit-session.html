@@ -2,6 +2,8 @@
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/core-icons/communication-icons.html">
 <link rel="import" href="../bower_components/core-icons/device-icons.html">
+<link rel="import" href="../bower_components/core-icons/image-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="date-entry.html">
 
 
@@ -28,6 +30,19 @@
        			width: 27px;
        			margin-right: 10px;
 				margin-top: 8px;
+			}
+			paper-input.datetime {
+				width: initial;
+				margin-right: 20px;
+			}
+			#submitButton {
+				background: #259b24;
+				color: #fff;
+			}
+
+			#buttonsContainer paper-button {
+				width: 18%;
+				margin: 20px 10px 10px;
 			}
 		</style>
 
@@ -66,38 +81,107 @@
 
 		<h2>Ticking Slot Length:</h2>
 		<div layout horizontal start>
-			<core-icon class="big" icon="device:timer"></core-icon>
+			<core-icon class="big" icon="image:timelapse"></core-icon>
 			<paper-input id="slotLengthInput"
 				disabled="{{sheet}}"
 				value="{{sheet.slotLength}}"
 				placeholder="In minutes..."
-				validate="^[0-9]+$"
+				pattern="^[0-9]+$"
 				error="Invalid slot length.">
 			</paper-input>
 		</div>
 
 		<h2>Date and Time</h2>
-		<date-entry></date-entry>
+		<div layout horizontal start>
+			<core-icon class="big" icon="event"></core-icon>
+			<paper-input id="date" type="date" class="datetime"
+				required error="Session date." on-change="{{validate}}"></paper-input>
 
+			<core-icon class="big" icon="device:access-time"></core-icon>
+			<paper-input id="startTime" type="time" class="datetime"
+				required error="Start time." on-change="{{validate}}"></paper-input>
 
+			<core-icon class="big" icon="device:access-time"></core-icon>
+			<paper-input id="endTime" type="time" class="datetime"
+				required error="End time." on-change="{{validate}}"></paper-input>
+		</div>
+
+		<h2>Tickers</h2>
+		<template repeat="{{ticker in tickers}}">
+			<div layout horizontal center>
+				<paper-input disabled value="{{ticker}}"></paper-input>
+				<paper-icon-button icon="delete" ticker="{{ticker}}" on-click="{{removeTicker}}">
+				</paper-icon-button>
+			</div>
+		</template>
+
+		<div layout horizontal center>
+			<paper-input id="addTickerInput"
+				placeholder="New ticker...">
+			</paper-input>
+			<paper-icon-button id="addTickerButton" icon="add"
+				on-click="{{addTicker}}"></paper-icon-button>
+		</div>
+
+		<div id="buttonsContainer" layout horizontal center end-justified>
+			<paper-button raisedButton id="resetButton" label="{{sheet ? 'RESET' : 'CLEAR'}}"></paper-button>
+			<paper-button raisedButton id="submitButton" label="{{sheet ? 'SAVE' : 'CREATE'}}" disabled="{{disableSubmit}}"></paper-button>
+		</div>
 
 
 	</template>
 	<script>
 		Polymer('add-edit-session', {
 
-			created: function  () {
+			domReady: function () {
+
 				this.sheet =  {
 					title: "Foo",
 					location: "Foosville",
 					description: "For Foo's Sake.",
-					slotLength: 10
+					slotLength: 10,
+					columns: [ { _id: "Ticker A"}, {_id : "Ticker B"} ]
 				};
+
+				this.tickers = this.sheet ? 
+					this.sheet.columns.map(function(item) {
+						return item._id;
+					}) : [];
+
+				this.validate();
 			},
 
-			domReady: function () {
-				console.log(this.sheet);
-			}
+			validate: function () {
+				if (this.$.titleInput.inputValue &&
+					this.tickers && this.tickers.length >= 1 &&
+					this.$.date.value &&
+					this.$.startTime.value && this.$.endTime.value) {
+					console.log(this.$.date.value);
+					console.log(this.$.startTime.value);
+					console.log(this.$.endTime.value);
+					this.disableSubmit = false;
+				}
+				else {
+					this.disableSubmit = true;
+				}
+			},
+
+			addTicker: function () {
+				var s = this.$.addTickerInput.inputValue;
+				if (s) {
+					this.tickers.push(s);
+				}
+				this.validate();
+			},
+
+			removeTicker: function (e, detail, target) {
+				var name = target.getAttribute('ticker');
+				var i = this.tickers.indexOf(name);
+				if (i > -1) {
+					this.tickers.splice(i, 1);
+				}
+				this.validate();
+			},
 			
 		});
 	</script>
