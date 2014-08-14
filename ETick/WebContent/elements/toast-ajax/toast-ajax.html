@@ -205,8 +205,11 @@ this to happen.
                 }
                 console.log(e.detail.response);
               }
-              this.popUpToast(e.detail.response,
-                this.waitShown || this.popUpError);
+              else
+              {
+                this.popUpToast(e.detail.response,
+                  this.waitShown || this.popUpError);
+              }
             }
             else
             {
