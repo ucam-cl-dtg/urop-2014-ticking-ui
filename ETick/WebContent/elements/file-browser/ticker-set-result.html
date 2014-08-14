@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html"/>
 <link rel="import" href="../../bower_components/core-input/core-input.html"/>
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html"/>
+<link rel="import" href="../confirm-button/confirm-button.html"/>
 
 <polymer-element name="ticker-set-result"
                  attributes="crsid
@@ -17,15 +18,27 @@
     <link rel="stylesheet" href="button-style.css"/>
     <link rel="stylesheet" href="ticker-set-result-style.css"/>
 
-    <core-ajax id="setTickResult"
+    <toast-ajax id="setTickResult"
                method="PUT"
-               contentType="application/json">
-    </core-ajax>
+               contentType="application/json"
 
-    <core-ajax id="setNoShow"
+               popUpError
+               captureError
+               popUpResponse
+               waitMessage="Marking tick...."
+               responseMessage="Tick for {{crsid}} marked as {{tickStatus}}.">
+    </toast-ajax>
+
+    <toast-ajax id="setNoShow"
                method="DELETE"
-               contentType="application/json">
-    </core-ajax>
+               contentType="application/json"
+
+               popUpError
+               captureError
+               popUpResponse
+               waitMessage="Unbooking {{crsid}}'s sign-ups.... "
+               responseMessage="Student {{crsid}} unsigned due to not showing up.">
+    </toast-ajax>
 
     <div class="top">
       <core-input id="tickerComment"
@@ -36,27 +49,35 @@
       </core-input>
     </div>
     <div class="bottom">
-      <paper-button raisedButton
-                    class="colored green"
-                    label="PASS"
-                    on-tap="{{passTick}}">
-      </paper-button>
-      <paper-button raisedButton
-                    class="colored red"
-                    label="FAIL"
-                    on-tap="{{failTick}}">
-      </paper-button>
-      <paper-button raisedButton
-                    class="colored bluegrey"
-                    label="NO SHOW"
-                    on-tap="{{noShow}}">
-      </paper-button>
+      <confirm-button yesBgColor="#455ede"
+                      noBgColor="#91a7ff">
+        <paper-button raisedButton
+                      id="pass"
+                      class="spaced wide green"
+                      label="PASS"
+                      on-tap="{{passTick}}">
+        </paper-button>
+        <paper-button raisedButton
+                      id="fail"
+                      class="spaced wide red"
+                      label="FAIL"
+                      on-tap="{{failTick}}">
+        </paper-button>
+        <paper-button raisedButton
+                      id="noShow"
+                      class="spaced wide bluegrey"
+                      label="NO SHOW"
+                      on-tap="{{noShow}}">
+        </paper-button>
+      <confirm-button>
     </div>
   </template>
   <script src="../../hardcoded.js"></script>
   <script>
     Polymer('ticker-set-result'
-      , {   sendTick:
+      , {   tickStatus: null
+          , sure: false
+          , sendTick:
             function (tickStatus, comment)
             {
               "use strict";
@@ -96,29 +117,44 @@
             }
 
           , passTick:
-            function ()
+            function (e)
             {
-              this.sendTick(true,  this.$.tickerComment.value);
-              this.fire("tick-passed",{});
+              var confirmElement = e.srcElement.parentElement;
+              if (confirmElement.sure &&
+                  confirmElement.currentConfirm == e.srcElement)
+              {
+                this.sendTick(true,  this.$.tickerComment.value);
+                this.tickStatus = "passed";
+                this.fire("tick-passed",{});
+              }
             }
 
           , failTick:
-            function ()
+            function (e)
             {
-              this.sendTick(false, this.$.tickerComment.value);
-              this.fire("tick-failed",{});
+              var confirmElement = e.srcElement.parentElement;
+              if (confirmElement.sure &&
+                  confirmElement.currentConfirm == e.srcElement)
+              {
+                this.sendTick(false, this.$.tickerComment.value);
+                this.tickStatus = "failed";
+                this.fire("tick-failed",{});
+              }
             }
 
           , noShow:
-            function ()
+            function (e)
             {
-              this.$.setNoShow.url =
-              ticking_service +
-                "/signups/students/"
-                + this.crsid
-                + "/bookings/" + this.sheetId;
-              this.$.setNoShow.go();
-              this.fire("tick-no-show",{});
+              var confirmElement = e.srcElement.parentElement;
+              if (confirmElement.sure &&
+                  confirmElement.currentConfirm == e.srcElement)
+              {
+                this.$.setNoShow.url = ticking_service +
+                      "/signups/students/" + this.crsid
+                      + "/bookings/" + this.sheetId;
+                this.$.setNoShow.go();
+                this.fire("tick-no-show",{});
+              }
             }
         });
   </script>
