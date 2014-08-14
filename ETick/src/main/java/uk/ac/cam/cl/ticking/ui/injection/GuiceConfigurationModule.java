@@ -28,7 +28,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
 import uk.ac.cam.cl.ticking.ui.database.Mongo;
-import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
@@ -125,7 +125,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static TickApiFacade getTickApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
 			ITestService testServiceProxy, WebInterface gitServiceProxy,
-			PermissionsChecker permissions) {
+			PermissionsManager permissions) {
 		if (tickApiFacade == null) {
 			tickApiFacade = new TickApiFacade(db, config, testServiceProxy,
 					gitServiceProxy, permissions);
@@ -137,7 +137,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static UserApiFacade getUserApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			WebInterface gitServiceProxy, PermissionsChecker permissions) {
+			WebInterface gitServiceProxy, PermissionsManager permissions) {
 		if (userApiFacade == null) {
 			userApiFacade = new UserApiFacade(db, config, gitServiceProxy,
 					permissions);
@@ -149,7 +149,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static GroupingApiFacade getGroupingApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config, LdapManager raven,
-			PermissionsChecker permissions) {
+			PermissionsManager permissions) {
 		if (groupingApiFacade == null) {
 			groupingApiFacade = new GroupingApiFacade(db, config, raven,
 					permissions);
@@ -161,7 +161,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static GroupApiFacade getGroupApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			TickSignups tickSignupService, PermissionsChecker permissions) {
+			TickSignups tickSignupService, PermissionsManager permissions) {
 		if (groupApiFacade == null) {
 			groupApiFacade = new GroupApiFacade(db, config, tickSignupService,
 					permissions);
@@ -174,7 +174,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static SubmissionApiFacade getSubmissionApiSingleton(
 			IDataManager db, ConfigurationLoader<Configuration> config,
 			ITestService testServiceProxy, TickSignups tickSignupService,
-			PermissionsChecker permissions) {
+			PermissionsManager permissions) {
 		if (submissionApiFacade == null) {
 			submissionApiFacade = new SubmissionApiFacade(db, config,
 					testServiceProxy, tickSignupService, permissions);
@@ -187,7 +187,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static ForkApiFacade getForkApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
 			ITestService testService, WebInterface gitService,
-			TickSignups tickSignupService, PermissionsChecker permissions) {
+			TickSignups tickSignupService, PermissionsManager permissions) {
 		if (forkApiFacade == null) {
 			forkApiFacade = new ForkApiFacade(db, config, testService,
 					gitService, tickSignupService, permissions);

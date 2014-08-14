@@ -33,7 +33,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
-import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -52,7 +52,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	private ITestService testServiceProxy;
 	private TickSignups tickSignupService;
 
-	private PermissionsChecker permissions;
+	private PermissionsManager permissions;
 
 	/**
 	 * @param db
@@ -62,7 +62,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	public SubmissionApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
 			ITestService testServiceProxy, TickSignups tickSignupService,
-			PermissionsChecker permissions) {
+			PermissionsManager permissions) {
 		this.db = db;
 		this.config = config;
 		this.testServiceProxy = testServiceProxy;

@@ -189,7 +189,7 @@ this to happen.
             if (this.captureError && e.detail.response != null)
             {
               /* If stack-traces happen */
-              if (e.detail.response.length > maximumErrorCharacters)
+              if (e.detail.response.length > this.maximumErrorCharacters)
               {
                 if (errorMessage != null)
                 {

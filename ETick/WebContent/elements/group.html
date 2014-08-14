@@ -32,6 +32,12 @@
 			handleAs="json"
 			on-core-response="{{sheetListResponse}}">
 		</core-ajax>
+		
+		<!-- Export group -->
+		<core-ajax id="exportGroupAPI"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid }}"
+			handleAs="text/plain">
+		</core-ajax>
 
         <main-card animated>
             <paper-tabs id="tabs" selected="0">
@@ -51,6 +57,7 @@
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
 								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
 								<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
+								<paper-icon-button id="groupExportButton" icon="file-download" on-click="{{exportGroup}}"></paper-icon-button>
 							</template>
 						</span>
                     </div>
@@ -173,6 +180,10 @@
                 this.selectedTickObj = detail.tickObj;
 
                 console.log(detail);
+			},
+			
+			exportGroup: function () {
+				this.$.exportGroupAPI.go();
 			},
 
 			sheetCreated: function () {

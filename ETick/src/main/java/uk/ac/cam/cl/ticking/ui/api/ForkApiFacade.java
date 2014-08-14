@@ -28,14 +28,13 @@ import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IForkApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ForkBean;
-import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
-import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -55,7 +54,7 @@ public class ForkApiFacade implements IForkApiFacade {
 	private ITestService testServiceProxy;
 	private TickSignups tickSignupService;
 
-	private PermissionsChecker permissions;
+	private PermissionsManager permissions;
 
 	/**
 	 * @param db
@@ -65,7 +64,7 @@ public class ForkApiFacade implements IForkApiFacade {
 	public ForkApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
 			ITestService testServiceProxy, WebInterface gitServiceProxy,
-			TickSignups tickSignupService, PermissionsChecker permissions) {
+			TickSignups tickSignupService, PermissionsManager permissions) {
 		this.db = db;
 		this.config = config;
 		this.testServiceProxy = testServiceProxy;

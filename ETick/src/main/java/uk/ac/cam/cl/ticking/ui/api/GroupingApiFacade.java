@@ -23,7 +23,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
-import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -42,11 +42,11 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 
 	private LdapManager raven;
 	
-	private PermissionsChecker permissions;
+	private PermissionsManager permissions;
 
 	@Inject
 	public GroupingApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config, LdapManager raven, PermissionsChecker permissions) {
+			ConfigurationLoader<Configuration> config, LdapManager raven, PermissionsManager permissions) {
 		this.db = db;
 		this.config = config;
 		this.raven = raven;

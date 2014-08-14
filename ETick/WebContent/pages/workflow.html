@@ -1,268 +1,264 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="eTick">
 <html>
-<head>
-<title>Workflow</title>
-<script src="../bower_components/platform/platform.js"></script>
-<link rel="import" href="../bower_components/font-roboto/roboto.html">
-<link rel="import"
-	href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
-<link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../elements/dialog.html">
+  <head>
+    <title>Workflow</title>
+    <script src="../bower_components/platform/platform.js"></script>
+    <link rel="import" href="../bower_components/font-roboto/roboto.html"/>
+    <link rel="import" href="../bower_components/paper-button/paper-button.html"/>
+    <link rel="import" href="../bower_components/core-ajax/core-ajax.html"/>
+    <link rel="import" href="../bower_components/paper-input/paper-input.html"/>
+    <link rel="import" href="../elements/dialog.html"/>
+    <style>
+      body {
+        font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+        margin: 0;
+        padding: 24px;
+      }
+
+      h2 {
+        color: #5264ae;
+        padding: 0;
+      }
+
+      h1 {
+        color: #1F2383;
+      }
+
+      paper-button {
+        margin: 1em;
+        width: 10em;
+      }
+
+      paper-button.colored {
+        background: #259b24;
+        color: #fff;
+      }
+
+      #hidden {
+        display: none;
+      }
+
+      my-dialog h1 {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Submitter</h1>
+    <!-- page code -->
+    <table>
+      <tr>
+        <td>
+          <h2>Fork a Repo:</h2>
+          <paper-button raisedButton class="colored" label="FORK" id="fork"></paper-button>
+        </td><td>
+          <h2>Submit Tick:</h2>
+          <paper-button raisedButton class="colored" label="SUBMIT" id="submit"></paper-button>
+        </td><td>
+          <h2>Status:</h2>
+          <paper-button raisedButton class="colored" label="STATUS" id="stat"></paper-button>
+        </td><td>
+          <h2>Last Report:</h2>
+          <paper-button raisedButton class="colored" label="LAST" id="last"></paper-button>
+        </td><td>
+          <h2>Sign up:</h2>
+          <paper-button raisedButton class="colored" label="SESSION" id="sign-up"></paper-button>
+        </td>
+      </tr>
+    </table>
+    <h1>Marker</h1>
+    <!-- page code -->
+    <table>
+      <tr>
+        <td>
+          <h2>Select Column:</h2>
+          <paper-button raisedButton class="colored" label="SELECT" id="session"></paper-button>
+        </td><td>
+          <h2>Select Slot:</h2>
+          <paper-button raisedButton class="colored" label="SELECT" id="slot"></paper-button>
+        </td><td>
+          <h2>View Report:</h2>
+          <paper-button raisedButton class="colored" label="REPORT" id="report"></paper-button>
+        </td><td>
+          <h2>Add Comments:</h2>
+          <paper-button raisedButton class="colored" label="COMMENT" id="comment"></paper-button>
+        </td><td>
+          <h2>Pass/Fail:</h2>
+          <paper-button raisedButton class="colored" label="PASS/FAIL" id="pass-fail"></paper-button>
+        </td>
+      </tr>
+    </table>
+    <h1>Author</h1>
+    <!-- page code -->
+    <table>
+      <tr>
+        <td>
+          <h2>Add Tick:</h2>
+          <paper-button raisedButton class="colored" label="ADD" id="add"></paper-button>
+        </td><td>
+          <h2>Add User:</h2>
+          <paper-button raisedButton class="colored" label="ADD" id="users"></paper-button>
+        </td><td>
+          <h2>Create Session:</h2>
+          <paper-button raisedButton class="colored" label="CREATE" id="create-session"></paper-button>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Add Repository -->
+
+    <my-dialog id="addOverlay" transition="core-transition-top">
+    <h3>Create a Repository:</h3>
+    <div horizontal layout center>
+      <paper-input id="addInput"
+                   floatingLabel
+                   label="Repository name..."
+                   validate="^([0-9a-zA-Z])([\w|\-|/|.]*)$"
+                   error="Invalid repository name.">
+      </paper-input>
+      <paper-button class="button hidden" label="CREATE" id="create" core-overlay-toggle></paper-button>
+    </div>
+    </my-dialog>
+
+    <my-dialog id="addError" transition="core-transition-center">
+    <h3>Error:</h3>
+    <p>Could not create repository.</p>
+    <my-dialog>
+
+    <core-ajax  id="addAPI"
+                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/"
+                handleAs="json"
+                contentType="application/json"
+                method="POST">
+    </core-ajax>
+
+    <!-- Fork Repository -->
+    <my-dialog id="forkOverlay" transition="core-transition-top">
+    <h3>Fork a Repository:</h3>
+    <div horizontal layout center>
+      <paper-input id="forkInput"
+                   floatingLabel
+                   label="Repository name..."
+                   validate="^([0-9a-zA-Z])([\w|\-|/|.]*)$"
+                   error="Invalid repository name.">
+      </paper-input>
+      <paper-button class="button hidden" label="FORK" id="forkify" core-overlay-toggle></paper-button>
+    </div>
+    </my-dialog>
+    <my-dialog id="forkError" transition="core-transition-center">
+    <h3>Error:</h3>
+    <p>Could not fork the repository.</p>
+    <my-dialog>
+
+    <core-ajax  id="forkAPI"
+                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/"
+                handleAs="json"
+                method="POST">
+    </core-ajax>
+
+    <!-- Submit Tick -->
+    <core-ajax  id="subAPI"
+                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/tester"
+                method="POST">
+    </core-ajax>
+
+    <core-ajax  id="statusAPI"
+                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/tester/running"
+                handleAs="json">
+    </core-ajax>
+
+    <core-ajax  id="lastAPI"
+                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/tester/last"
+                handleAs="json">
+    </core-ajax>
+
+    <script>
+      var fork = document.querySelector('#fork');
+      var add = document.querySelector('#add');
+      var submit = document.querySelector('#submit');
+      var stat = document.querySelector('#stat');
+      var addInput = document.querySelector('#addInput');
+      var forkInput = document.querySelector('#forkInput');
+      var create = document.querySelector('#create');
+      var forkify = document.querySelector('#forkify');
+      var call = document.querySelector('#addAPI');
+      var forkAPI = document.querySelector('#forkAPI');
+      var subAPI = document.querySelector('#subAPI');
+      var statusAPI = document.querySelector('#statusAPI');
+      var last = document.querySelector('#last');
+      var lastAPI = document.querySelector('#lastAPI');
+      var poll;
+
+      last.addEventListener('click', function() {
+        lastAPI.go();
+      });
+
+      lastAPI.addEventListener('core-response', function () {
+        console.log(lastAPI.response);
+      });
+
+      submit.addEventListener('click', function () {
+        subAPI.go();
+      });
+
+      stat.addEventListener('click', function () {
+        poll = setInterval(function() {
+          statusAPI.go();
+        }, 1000);
+      });
+
+      statusAPI.addEventListener('core-response', function() {
+        var progress = statusAPI.response.progress;
+        var maxProgress = statusAPI.response.maxProgress;
+        var info = statusAPI.response.info;
+        console.log('Progress: ' + progress + '/' + maxProgress + ' : ' + info);
+        if (progress === maxProgress) {
+          clearInterval(poll);
+        }
+      });
+
+      addInput.addEventListener('input', function() {
+        if(addInput.invalid) {
+          create.style.display = 'none';
+        }
+        else {
+          create.style.display = 'inline-block';
+        }
+      });
+      forkInput.addEventListener('input', function() {
+        if(forkInput.invalid) {
+          forkify.style.display = 'none';
+        }
+        else {
+          forkify.style.display = 'inline-block';
+        }
+      });
 
 
+      add.addEventListener('click', function() {
+        document.querySelector('#addOverlay').toggle();
+      });
 
-<style>
-body {
-	font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
-	margin: 0;
-	padding: 24px;
-}
+      fork.addEventListener('click', function() {
+        forkAPI.go();
+      });
 
-h2 {
-	color: #5264ae;
-	padding: 0;
-}
+      forkAPI.addEventListener('core-response', function() {
+        console.log(forkAPI.response);
+      });
 
-h1 {
-	color: #1F2383;
-}
+      create.addEventListener('click', function() {
+        call.body = '{"name": "' + addInput.value + '"}';
+        call.go();
+      });
 
-paper-button {
-	margin: 1em;
-	width: 10em;
-}
-
-paper-button.colored {
-	background: #259b24;
-	color: #fff;
-}
-
-#hidden {
-	display: none;
-}
-
-my-dialog h1 {
-	color: red;
-}
-
-</style>
-</head>
-<body>
-	<h1>Submitter</h1>
-	<!-- page code -->
-	<table>
-		<tr>
-		<td>
-			<h2>Fork a Repo:</h2>
-			<paper-button raisedButton class="colored" label="FORK" id="fork"></paper-button>
-		</td><td>
-			<h2>Submit Tick:</h2>
-			<paper-button raisedButton class="colored" label="SUBMIT" id="submit"></paper-button>
-		</td><td>
-			<h2>Status:</h2>
-			<paper-button raisedButton class="colored" label="STATUS" id="stat"></paper-button>
-		</td><td>
-			<h2>Last Report:</h2>
-			<paper-button raisedButton class="colored" label="LAST" id="last"></paper-button>
-		</td><td>
-			<h2>Sign up:</h2>
-			<paper-button raisedButton class="colored" label="SESSION" id="sign-up"></paper-button>
-		</td>
-		</tr>
-	</table>
-	<h1>Marker</h1>
-	<!-- page code -->
-	<table>
-		<tr>
-		<td>
-			<h2>Select Column:</h2>
-			<paper-button raisedButton class="colored" label="SELECT" id="session"></paper-button>
-		</td><td>
-			<h2>Select Slot:</h2>
-			<paper-button raisedButton class="colored" label="SELECT" id="slot"></paper-button>
-		</td><td>
-			<h2>View Report:</h2>
-			<paper-button raisedButton class="colored" label="REPORT" id="report"></paper-button>
-		</td><td>
-			<h2>Add Comments:</h2>
-			<paper-button raisedButton class="colored" label="COMMENT" id="comment"></paper-button>
-		</td><td>
-			<h2>Pass/Fail:</h2>
-			<paper-button raisedButton class="colored" label="PASS/FAIL" id="pass-fail"></paper-button>
-		</td>
-		</tr>
-	</table>
-	<h1>Author</h1>
-	<!-- page code -->
-	<table>
-		<tr>
-		<td>
-			<h2>Add Tick:</h2>
-			<paper-button raisedButton class="colored" label="ADD" id="add"></paper-button>
-		</td><td>
-			<h2>Add User:</h2>
-			<paper-button raisedButton class="colored" label="ADD" id="users"></paper-button>
-		</td><td>
-			<h2>Create Session:</h2>
-			<paper-button raisedButton class="colored" label="CREATE" id="create-session"></paper-button>
-		</td>
-		</tr>
-	</table>
-
-	<!-- Add Repository -->
-
-	<my-dialog id="addOverlay" transition="core-transition-top">
-		<h3>Create a Repository:</h3>
-		<div horizontal layout center>
-			<paper-input 
-				id="addInput" 
-				floatingLabel 
-				label="Repository name..." 
-				validate="^([0-9a-zA-Z])([\w|\-|/|.]*)$" 
-				error="Invalid repository name.">
-			</paper-input>
-			<paper-button class="button hidden" label="CREATE" id="create" core-overlay-toggle></paper-button>
-		</div>
-	</my-dialog>
-
-	<my-dialog id="addError" transition="core-transition-center">
-		<h3>Error:</h3>
-		<p>Could not create repository.</p>
-	<my-dialog>
-
-	<core-ajax  id="addAPI" 
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" 
-				handleAs="json"
-				contentType="application/json"
-				method="POST"></core-ajax>
-
-	<!-- Fork Repository -->
-
-	<my-dialog id="forkOverlay" transition="core-transition-top">
-		<h3>Fork a Repository:</h3>
-		<div horizontal layout center>
-			<paper-input 
-				id="forkInput" 
-				floatingLabel 
-				label="Repository name..." 
-				validate="^([0-9a-zA-Z])([\w|\-|/|.]*)$" 
-				error="Invalid repository name.">
-			</paper-input>
-			<paper-button class="button hidden" label="FORK" id="forkify" core-overlay-toggle></paper-button>
-		</div>
-	</my-dialog>
-	<my-dialog id="forkError" transition="core-transition-center">
-		<h3>Error:</h3>
-		<p>Could not fork the repository.</p>
-	<my-dialog>
-
-	<core-ajax  id="forkAPI" 
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/" 
-				handleAs="json"
-				method="POST"></core-ajax>
-
-	<!-- Submit Tick -->
-	<core-ajax  id="subAPI" 
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/tester" 
-				method="POST"></core-ajax>
-
-	<core-ajax  id="statusAPI" 
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/tester/running" 
-				handleAs="json"></core-ajax>
-
-	<core-ajax  id="lastAPI" 
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/tester/last" 
-				handleAs="json"></core-ajax>
-
-	<script>
-		var fork = document.querySelector('#fork');
-		var add = document.querySelector('#add');
-		var submit = document.querySelector('#submit');
-		var stat = document.querySelector('#stat');
-		var addInput = document.querySelector('#addInput');
-		var forkInput = document.querySelector('#forkInput');
-		var create = document.querySelector('#create');
-		var forkify = document.querySelector('#forkify');
-		var call = document.querySelector('#addAPI');
-		var forkAPI = document.querySelector('#forkAPI');
-		var subAPI = document.querySelector('#subAPI');
-		var statusAPI = document.querySelector('#statusAPI');
-		var last = document.querySelector('#last');
-		var lastAPI = document.querySelector('#lastAPI');
-		var poll;
-
-		last.addEventListener('click', function() {
-			lastAPI.go();
-		});
-
-		lastAPI.addEventListener('core-response', function () {
-			console.log(lastAPI.response);
-		});
-
-		submit.addEventListener('click', function () {
-			subAPI.go();
-		});
-
-		stat.addEventListener('click', function () {
-			poll = setInterval(function() {
-				statusAPI.go();
-			}, 1000);
-		});
-
-		statusAPI.addEventListener('core-response', function() {
-			var progress = statusAPI.response.progress;
-			var maxProgress = statusAPI.response.maxProgress;
-			var info = statusAPI.response.info;
-			console.log('Progress: ' + progress + '/' + maxProgress + ' : ' + info);
-			if (progress === maxProgress) {
-				clearInterval(poll);
-			}
-		});
-
-		addInput.addEventListener('input', function() {
-			if(addInput.invalid) {
-				create.style.display = 'none';
-			}
-			else {
-				create.style.display = 'inline-block';
-			}
-		});
-		forkInput.addEventListener('input', function() {
-			if(forkInput.invalid) {
-				forkify.style.display = 'none';
-			}
-			else {
-				forkify.style.display = 'inline-block';
-			}
-		});
-
-
-		add.addEventListener('click', function() {
-			document.querySelector('#addOverlay').toggle();
-		});
-
-		fork.addEventListener('click', function() {
-			forkAPI.go();
-		});
-
-		forkAPI.addEventListener('core-response', function() {
-			console.log(forkAPI.response);
-		});
-
-		create.addEventListener('click', function() {
-			call.body = '{"name": "' + addInput.value + '"}';
-			call.go();
-		});
-
-		call.addEventListener('core-response', function() {
-				console.log(this.response);
-				console.log('Success');
-		});
-		call.addEventListener('core-error', function() {
-			document.querySelector('#addError').toggle();
-		});
-	</script>
-</body>
+      call.addEventListener('core-response', function() {
+        console.log(this.response);
+        console.log('Success');
+      });
+      call.addEventListener('core-error', function() {
+        document.querySelector('#addError').toggle();
+      });
+    </script>
+  </body>
 </html>
