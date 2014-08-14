@@ -112,12 +112,12 @@ public class GroupApiFacade implements IGroupApiFacade {
 					+ groupId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(Strings.IDEMPOTENTRETRY).build();
-		} 
+		}
 		
 		for (Role role : Role.values()) {
 			writer.println(role.name());
 			for (User user : db.getUsers(groupId, role)) {
-				writer.print(user.getCrsid()+", ");
+				writer.print(user.getCrsid()+" ");
 			}
 			writer.println();
 		}
@@ -125,7 +125,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		writer.close();
 
 		ResponseBuilder response = Response.ok((Object) temp);
-        response.header("Content-Disposition", "attachment; filename="+group.getName());
+        response.header("Content-Disposition", "attachment; filename=\""+group.getName()+"\"");
         return response.build();
 	}
 
