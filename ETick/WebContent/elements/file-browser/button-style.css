@@ -1,0 +1,15 @@
+/* vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 spell spelllang=en_gb : */
+paper-button.green {
+  background: #009933;
+  color: #fff;
+}
+
+paper-button.red {
+  background: #e51c23;
+  color: #fff;
+}
+
+paper-button.bluegrey {
+  background: #607d8b;
+  color: #fff;
+}
