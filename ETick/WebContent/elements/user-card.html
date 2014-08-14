@@ -60,14 +60,14 @@
 				<div flex><h3>Welcome</h3></div>
 				<template if="{{ldap.photo==='undefined'}}">
 					<template if="{{ldap.isStudent}}">
-						<img src="../images/temp_student.svg"></img>
+						<img src="../images/temp_student.svg"/>
 					</template>
 					<template if="{{!ldap.isStudent}}">
-						<img src="../images/temp_staff.svg"></img>
+						<img src="../images/temp_staff.svg"/>
 					</template>
 				</template>
 				<template if="{{ldap.photo!=='undefined'}}">
-					<img src="data:image/jpeg;base64,{{ldap.photo}}"></img>
+					<img src="data:image/jpeg;base64,{{ldap.photo}}"/>
 				</template>
 				<h2>{{ldap.displayName}}</h2>
 		</div>
