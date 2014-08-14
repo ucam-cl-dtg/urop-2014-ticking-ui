@@ -186,7 +186,7 @@ public class DemoRavenFilter implements Filter
     public static String ATTR_REMOTE_USER = "RavenRemoteUser";
 
     /** The default location of the raven public key certificate, relative to the web application */
-    static final String DEFAULT_CERTIFICATE_PATH = "/WEB-INF/raven/demo/pubkey901.crt";
+    static final String DEFAULT_CERTIFICATE_PATH = "/WEB-INF/raven/pubkey901.crt";
 
     /** This is the default name for the raven public key */
     public static final String DEFAULT_KEYNAME = "webauth-pubkey901";

@@ -2,7 +2,7 @@ package uk.ac.cam.cl.ticking.ui.util;
 
 public class Strings {
 
-	public static final String DBNAME = "UROP_UI";
+	public static final String DBNAME = "UROP_UI_DEMO";
 
 	public static final String TICKSCOLLECTION = "Ticks";
 	public static final String FORKSCOLLECTION = "Forks";

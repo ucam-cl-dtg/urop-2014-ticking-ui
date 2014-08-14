@@ -6,7 +6,7 @@
     <filter-class>uk.ac.cam.cl.ticking.ui.auth.DemoRavenFilter</filter-class>
   </filter>
   <filter-mapping>
-    <filter-name>ravenFilter</filter-name>
+    <filter-name>demoRavenFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 </web-app>
