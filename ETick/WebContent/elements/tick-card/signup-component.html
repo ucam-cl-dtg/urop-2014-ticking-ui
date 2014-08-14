@@ -38,12 +38,12 @@
 
         <!-- Error message: sign up unavailable because the unit tester has not been passed -->
         <core-collapse opened?="{{!testRunning && !unitPass && !humanPass}}">
-            <div class="error">Bookings unavailable (automated tests not passed)</div>
+            <div class="error">Booking unavailable (automated tests not passed)</div>
         </core-collapse>
 
         <!-- Error message: sign up unavailable because a test is running -->
         <core-collapse opened?="{{testRunning && !humanPass}}">
-            <div class="error">Bookings unavailable (test running)</div>
+            <div class="error">Booking unavailable (test running)</div>
         </core-collapse>
 
         <!-- Error message: tick has been passed -->
@@ -56,7 +56,7 @@
 
         <are-you-sure
                 id="cancelDialog"
-                heading="Cancel Booking?"
+                heading="Cancel Ticking Session?"
                 on-yes="{{deleteBooking}}">
         </are-you-sure>
     </template>

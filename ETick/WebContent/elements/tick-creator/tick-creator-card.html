@@ -190,11 +190,7 @@
         </span>
     </div>
 
-    <paper-dialog id="alertRestoreDefaults" heading="Restore Defaults?" backdrop="true" transition="paper-transition-bottom">
-        <p>This will clear your existing settings!</p>
-        <paper-button id="dialogCancel" label="Cancel" dismissive autofocus></paper-button>
-        <paper-button id="dialogSubmit" label="Continue" affirmative on-tap="{{restoreDefaults}}"></paper-button>
-    </paper-dialog>
+    <are-you-sure id="alertRestoreDefaults" heading="Restore Defaults?" on-yes="{{restoreDefaults}}"></are-you-sure>
 </template>
 <script>
     Polymer('tick-creator-card', {
