@@ -6,8 +6,7 @@
 
 <polymer-element name="file-card"
     attributes="content comments
-                name id highlight
-                syntaxStyleSheet">
+                name id highlight">
   <template>
     <link rel="stylesheet" href="../../css/shared-styles.css"/>
     <link rel="stylesheet" href="../../bower_components/highlightjs/styles/default.css"/>
@@ -36,18 +35,7 @@
               {
                 this.content = this.$.codeContent.innerHTML;
               }
-
-              this.styleSheetElement.id = "syntaxStyle";
-              if (typeof this.shadowRoot != typeof undefined)
-              {
-                this.shadowRoot.appendChild(this.styleSheetElement);
-              }
-              else
-              {
-                document.head.appendChild(this.styleSheetElement);
-              }
             }
-          , styleSheetElement: document.createElement('style')
 
             /* http://www.polymer-project.org/docs/polymer/polymer.html#change-watchers */
           , contentChanged:
@@ -134,7 +122,7 @@
                 "</li></ol>";
             }
 
-          , commentsChanged: this.contentChanged
+          , commentsChanged: function () { this.contentChanged; }
 
           , highlightChanged:
             function ()
@@ -171,41 +159,6 @@
                             }
                           });
                   }.bind(this));
-            }
-
-          , syntaxStyleSheetChanged:
-            function ()
-            {
-              this.$.syntaxAjax.url =
-                "bower_components/highlightjs/styles/"
-                + this.syntaxStyleSheet + ".css";
-            }
-
-          , assignStylesheet:
-            function ()
-            {
-              if (typeof this.$ != typeof undefined
-                &&typeof this.$.syntaxStyle != typeof undefined)
-              {
-                this.$.syntaxStyle.textContent =
-                  this.$.syntaxAjax.response;
-              }
-              else if (typeof this.shadowRoot != typeof undefined
-                &&this.shadowRoot.getElementById("syntaxStyle") != null)
-              {
-                this.shadowRoot.getElementById("syntaxStyle").textContent =
-                  this.$.syntaxAjax.response;
-              }
-              else if (document.getElementById("syntaxStyle") != null)
-              {
-                document.getElementById("syntaxStyle").textContent =
-                  this.$.syntaxAjax.response;
-              }
-              else
-              {
-                this.styleSheetElement.textContent =
-                  this.$.syntaxAjax.response;
-              }
             }
         });
   </script>

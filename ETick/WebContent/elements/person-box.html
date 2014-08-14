@@ -2,7 +2,7 @@
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
-<link rel="import" href="../bower_components/core-icons/iconsets/social-icons.html">
+<link rel="import" href="../bower_components/core-icons/social-icons.html">
 <link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
 
 <polymer-element name="person-box" attributes="name crsid college isStudent">
@@ -34,10 +34,16 @@
 			#container {
 				padding: 10px;
 			}
+
+			core-icon.big {
+				width: 40px;
+				height: 40px;
+			}
 		</style>
 
 		<div layout horizontal center>
-			<core-icon flex icon="{{icon}}" size="40"></core-icon>
+			<core-icon class="big" icon="{{icon}}" size="40"></core-icon>
+			<div flex></div>
 			<div id="container" layout vertical>
 				<h1>{{name}}</h1>
 				<div layout horizontal center>

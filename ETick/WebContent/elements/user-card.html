@@ -81,7 +81,7 @@
 						floatingLabel
 						value="{{ldap.ssh}}"
 						label="Public SSH key..."
-						validate="^\s*(ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|ssh-ed25519|ssh-dss|ssh-rsa)\s+[0-9A-Za-z+/]+=*(\s+.*)?$"
+						pattern="^\s*(ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|ssh-ed25519|ssh-dss|ssh-rsa)\s+[0-9A-Za-z+/]+=*(\s+.*)?$"
 						error="Invalid Key."
 						on-input="{{handleAddInput}}">
 			</paper-input>

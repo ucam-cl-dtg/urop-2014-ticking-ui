@@ -28,7 +28,7 @@
 
         <!-- Progress bar (with caption) -->
         <core-collapse opened?="{{testRunning && !humanPass && !deadlinePassed}}">
-            <paper-progress id="progressBar" value="{{displayProgress}}"></paper-progress>
+            <paper-progress id="progressBar" value="{{displayProgress}}" secondaryProgress="{{displaySecondaryProgress}}"></paper-progress>
             <div id="progressCaption">{{status.info}}</div>
         </core-collapse>
 
@@ -49,7 +49,7 @@
     <script>
         Polymer('submit-component', {
             observe: {
-                'status.progress': 'progressUpdated'
+                'status.info': 'progressUpdated'
             },
 
             created: function() {
@@ -65,43 +65,80 @@
             },
 
             deadlineChanged: function() {
-                if (this.deadline != null) {
-                    this.deadlinePassed = new Date(this.deadline) < new Date();
-                } else {
-                    this.deadlinePassed = false;
-                }
+                this.deadlinePassed = this.deadline == null ? false : new Date(this.deadline) < new Date();
+            },
+
+            testRunningChanged: function() {
+                console.log("test running: " + this.testRunning)
             },
 
             progressUpdated: function() {
                 //this.displayProgress = this.status.progress;
+                if (this.status == null) {
+                    return;
+                }
+
                 this.targetProgress = this.status.progress / this.status.maxProgress * 100;
+
+                if (this.status.originalPositionInQueue == 0) {
+                    this.targetSecondaryProgress = 100;
+                } else {
+                    this.targetSecondaryProgress = (1 - (this.status.currentPositionInQueue / this.status.originalPositionInQueue)) * 100;
+                }
+
                 this.startProgressAnimation();
             },
 
             startProgressAnimation: function() {
-                //this.stepProgressAnimation();
                 this.stepProgressAnimation();
             },
 
             stepProgressAnimation: function() {
+                var toHardChange = false;
                 if (this.displayProgress < this.targetProgress) {
                     if (this.hardChange) {
-                        this.hardChange = false;
                         this.displayProgress = this.targetProgress;
+                        toHardChange = true;
                     } else {
-                        this.displayProgress += Math.ceil(.001 * (this.targetProgress - this.displayProgress));
+                        this.displayProgress +=
+                                Math.ceil(.001 * (this.targetProgress - this.displayProgress));
                     }
+                }
+
+                if (this.displaySecondaryProgress < this.targetSecondaryProgress) {
+                    if (this.hardChange) {
+                        this.displaySecondaryProgress = this.targetSecondaryProgress;
+                        toHardChange = true;
+                    } else {
+                        this.displaySecondaryProgress +=
+                                Math.ceil(.001 * (this.targetSecondaryProgress - this.displaySecondaryProgress));
+                    }
+                }
+
+                if (this.displayProgress < this.targetProgress ||
+                        this.displaySecondaryProgress < this.targetSecondaryProgress) {
                     var that = this;
-                    this.job('animate', function() {
+                    this.job('animate', function () {
                         that.stepProgressAnimation();
                     }, 16);
                 }
+
+                if (toHardChange){this.hardChange = false;}
             },
 
             statusChanged: function() {
+                if (this.status == null) {
+                    return;
+                }
+
                 if (this.status.progress == 0) {
                     this.displayProgress = 0;
                     this.targetProgress = 0;
+                }
+
+                if (this.status.currentPositionInQueue == this.status.originalPositionInQueue && this.status.originalPositionInQueue != 0) {
+                    this.displaySecondaryProgress = 0;
+                    this.targetSecondaryProgress = 0;
                 }
             },
 

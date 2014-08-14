@@ -1,0 +1,33 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<polymer-element name="time-entry" attributes="">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		
+			<paper-input id="hours"
+				floatingLabel
+				placeholder="HH"
+				pattern="^\d\d$"
+				required
+				error=" ">
+			</paper-input>
+			<paper-input id="minutes"
+				floatingLabel
+				placeholder="MM"
+				pattern="^\d\d$"
+				required
+				error=" ">
+			</paper-input>
+
+	</template>
+	<script>
+		Polymer('time-entry', {
+			
+		});
+	</script>
+</polymer-element>

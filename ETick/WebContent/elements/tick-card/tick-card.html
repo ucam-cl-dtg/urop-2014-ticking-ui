@@ -6,7 +6,9 @@
 <link rel="import" href="fork-service.html">
 <link rel="import" href="fork-component.html">
 
-<polymer-element name="tick-card" attributes="tickName tickId sheets repoName tickObj">
+<polymer-element name="tick-card" attributes="tickName tickId sheets
+                                              repoName tickObj
+                                              lastTickedBy lastTickedOn">
     <template>
         <link rel="stylesheet" href="../../css/elements/group-members.css">
         <link rel="stylesheet" href="tick-components.css">
@@ -21,7 +23,9 @@
                 testRunning="{{testRunning}}"
                 reportAvailable="{{reportAvailable}}"
                 repo="{{repo}}"
-                forked="{{forked}}">
+                forked="{{forked}}"
+                lastTickedBy="{{lastTickedBy}}"
+                lastTickedOn="{{lastTickedOn}}">
         </fork-service>
 
         <div id="mainContainer">

@@ -21,14 +21,18 @@ import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cl.signups.api.Column;
 import uk.ac.cam.cl.signups.api.Group;
 import uk.ac.cam.cl.signups.api.Sheet;
 import uk.ac.cam.cl.signups.api.SheetInfo;
 import uk.ac.cam.cl.signups.api.Slot;
+import uk.ac.cam.cl.signups.api.beans.BatchCreateBean;
+import uk.ac.cam.cl.signups.api.beans.BatchDeleteBean;
 import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
 import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
 import uk.ac.cam.cl.signups.api.beans.PermissionsBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
+import uk.ac.cam.cl.signups.api.beans.UpdateSheetBean;
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
 import uk.ac.cam.cl.signups.api.exceptions.ItemNotFoundException;
 import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
@@ -482,7 +486,9 @@ public class TickSignups {
     /* Below are the methods for the author workflow */
     
     /**
-     * Creates a new sheet for the given group.
+     * Creates a new sheet for the given group. All columns are filled
+     * with regularly spaced empty slots between the start and end times,
+     * of the specified length.
      */
     @POST
     @Path("/sheets")
@@ -497,7 +503,7 @@ public class TickSignups {
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
         long sheetLengthInMinutes = (bean.getEndTime() - bean.getStartTime())/60000;
-        if (bean.getEndTime() <= bean.getStartTime()) {
+        if (sheetLengthInMinutes <= 0) {
             log.debug("The end time must be after the start time");
             return Response.status(Status.BAD_REQUEST).entity("The end time must be after "
                     + "the start time").build();
@@ -585,6 +591,138 @@ public class TickSignups {
         return Response.ok().build();
     }
     
+    
+    /**
+     * Edits the given sheet. Title, location and description are updated. Any tickers
+     * added to the list are created; any tickers removed from the list are deleted, along
+     * with any bookings made to their column. A "rename" is treated as a deletion and an
+     * insertion. The slot length cannot be edited. The start and end times can be changed,
+     * but must remain consistent with the previous start/end times and the slot length. If
+     * the sheet is extended, slots are added at the appropriate intervals; if the sheet is
+     * made shorter, the slots outside the new start and end times are deleted (along with
+     * any bookings made at those times). TODO: update fork objects when deletions are made
+     */
+    @POST
+    @Path("/sheets/{sheetID}")
+    @Consumes("application/json")
+    public Response editSheet(@Context HttpServletRequest request,
+            @PathParam("sheetID") String sheetID, EditSheetBean bean) {
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        log.debug("User " + crsid + " is attempting to edit the sheet of ID " + sheetID);
+        Sheet sheet;
+        try {
+            if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.AUTHOR)) {
+                log.debug("The user " + crsid + " is not an author in the group " + getGroupID(sheetID));
+                return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+            }
+            sheet = service.getSheet(sheetID);
+        } catch (ItemNotFoundException e) {
+            log.debug("Sheet not found", e);
+            return Response.status(Status.NOT_FOUND).entity("The sheet was not found").build();
+        }
+        if ((sheet.getStartTime().getTime() - bean.getStartTime()) % sheet.getSlotLength() != 0) {
+            log.debug("The new start time but be an integer multiple of slot lengths away from the " +
+                    "old start time of " + sheet.getStartTime().toString());
+            return Response.status(Status.FORBIDDEN).entity("The new start time but be an integer "
+                    + "multiple of slot lengths away from the " +
+                    "old start time of " + sheet.getStartTime().toString()).build();
+        }
+        if ((sheet.getEndTime().getTime() - bean.getEndTime()) % sheet.getSlotLength() != 0) {
+            log.debug("The new end time but be an integer multiple of slot lengths away from the " +
+                    "old end time of " + sheet.getEndTime().toString());
+            return Response.status(Status.FORBIDDEN).entity("The new end time but be an integer "
+                    + "multiple of slot lengths away from the " +
+                    "old end time of " + sheet.getEndTime().toString()).build();
+        }
+        long sheetLengthInMinutes = (bean.getEndTime() - bean.getStartTime())/60000;
+        if (sheetLengthInMinutes/bean.getSlotLengthInMinutes() > 500) {
+            log.debug("Too many slots would have been created");
+            return Response.status(Status.FORBIDDEN).entity("This sheet would have a silly "
+                    + "number of slots if created.").build();
+        }
+        List<Column> oldTickers = sheet.getColumns();
+        List<String> oldTickerNames = new ArrayList<String>();
+        for (Column oldTicker : oldTickers) {
+            oldTickerNames.add(oldTicker.getName());
+        }
+        try {
+            for (String newTicker : bean.getTickerNames()) { // add new tickers
+                if (!oldTickerNames.contains(newTicker)) {
+                    service.createColumn(sheetID, new CreateColumnBean(newTicker,
+                            db.getAuthCode(sheetID), new Date(bean.getStartTime()),
+                            new Date(bean.getEndTime()), bean.getSlotLengthInMinutes()));
+                    sheet = service.getSheet(sheetID); // TODO: check no silly concurrency problems
+                }
+            }
+            for (String oldTicker : oldTickerNames) { // delete removed tickers
+                if (!bean.getTickerNames().contains(oldTicker)) {
+                    service.deleteColumn(sheetID, oldTicker, db.getAuthCode(sheetID));
+                    sheet = service.getSheet(sheetID);
+                }
+            }
+            sheet.setTitle(bean.getTitle());
+            sheet.setDescription(bean.getDescription());
+            sheet.setLocation(bean.getLocation());
+            service.updateSheet(sheetID, new UpdateSheetBean(sheet, db.getAuthCode(sheetID)));
+        } catch (ItemNotFoundException e) {
+            log.error("The sheet was not found, while earlier in this method it was", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Internal Server Error: some changes not made").build();
+        } catch (NotAllowedException e) {
+            log.error("The auth code stored was for some reason not correct", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Internal Server Error: some changes not made").build();
+        } catch (DuplicateNameException e) {
+            log.error("A new ticker was found to have the same name as an old ticker, " +
+                    "even though new tickers are only created when there are no old ones" +
+                    "with that name", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Internal Server Error: some changes not made").build();
+        }
+        try {
+            if (bean.getStartTime() < sheet.getStartTime().getTime()) { //  need to add slots to start
+                service.createSlotsForAllColumns(sheetID,
+                        new BatchCreateBean(bean.getStartTime(), sheet.getStartTime().getTime(),
+                                sheet.getSlotLength(), db.getAuthCode(sheetID)));
+            }
+            if (bean.getEndTime() > sheet.getEndTime().getTime()) { // need to add slots to end
+                service.createSlotsForAllColumns(sheetID,
+                        new BatchCreateBean(sheet.getEndTime().getTime(), bean.getEndTime(),
+                                sheet.getSlotLength(), db.getAuthCode(sheetID)));
+            }
+            if (bean.getStartTime() > sheet.getStartTime().getTime()) { // need to delete slots from start
+                service.deleteSlotsBetween(sheetID,
+                        new BatchDeleteBean(sheet.getStartTime().getTime(), bean.getStartTime(), db.getAuthCode(sheetID)));
+            }
+            if (bean.getEndTime() < sheet.getEndTime().getTime()) { // need to delete slots from end
+                service.deleteSlotsBetween(sheetID,
+                        new BatchDeleteBean(bean.getEndTime(), sheet.getEndTime().getTime(), db.getAuthCode(sheetID)));
+            }
+        } catch (ItemNotFoundException e) {
+            log.error("The sheet was not found, while earlier in this method it was, " +
+                    "or something else that should have been found wasn't", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Internal Server Error: some changes not made").build();
+        } catch (NotAllowedException e) {
+            log.error("The auth code stored was for some reason not correct", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Internal Server Error: some changes not made").build();
+        } catch (DuplicateNameException e) {
+            log.error("Slots that should not already exist were found to exist", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Internal Server Error").build();
+        }
+        log.debug("Sheet updated");
+        return Response.ok().build();
+    }
+    
+    /**
+     * Removes the given sheet from the database, and irreversibly loses
+     * all information associated with it, including bookings. TODO: update fork objects
+     * @param request
+     * @param sheetID
+     * @return
+     */
     @DELETE
     @Path("/sheets/{sheetID}")
     public Response deleteSheet(@Context HttpServletRequest request,
@@ -597,7 +735,7 @@ public class TickSignups {
                 return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
             }
             service.deleteSheet(sheetID, db.getAuthCode(sheetID));
-            log.debug("Sheet deleetd");
+            log.debug("Sheet deleted");
             return Response.ok().build();
         } catch (ItemNotFoundException e) {
             log.debug("The sheet of ID " + sheetID + " was not found", e);
@@ -611,7 +749,7 @@ public class TickSignups {
     
     /**
      * Adds a new column to the sheet, filled with regularly spaced
-     * empty slots.
+     * empty slots. TODO: change bean - we want this column to conform to the others
      * @param sheetID
      * @param authCode
      * @param name
@@ -676,7 +814,7 @@ public class TickSignups {
     
     /**
      * Deletes the specified column from the sheet. This also deletes
-     * all the bookings made for that column.
+     * all the bookings made for that column. TODO: update fork objects
      */
     @DELETE
     @Path("/sheets/{sheetID}/tickers/{ticker}")

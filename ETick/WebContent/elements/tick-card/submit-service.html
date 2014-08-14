@@ -64,15 +64,19 @@
             startPolling: function() {
                 console.log("Starting Polling");
                 this.testRunning = true;
-                this.status = {progress: 0, maxProgress: 1, info: "Starting..."};
+                this.status = {progress: 0, maxProgress: 1, info: "Waiting...", originalPositionInQueue: 1, currentPositionInQueue: 1};
                 this.$.ajaxPoll.go();
+            },
+
+            stopPolling: function() {
+                this.pollStop = true;
             },
 
             pollError: function(e, detail) {
                 console.log("poll error");
 
                 this.job('delay-poll', function() {
-                    this.startPolling();
+                    this.pollNext();
                 }, 4000);
 
                 //TODO: sometimes poll fails because there is nothing to poll, so this should be handled somehow
@@ -100,8 +104,11 @@
              */
             pollNext: function() {
                 this.status = this.$.ajaxPoll.response;
+                if (this.status == null) {
+                    return;
+                }
 
-                if (this.status.progress == this.status.maxProgress) {
+                if (this.status.progress == this.status.maxProgress && this.status.currentPositionInQueue == 0) {
                     var statusString = this.status.info;
                     this.status.info = "Done";
                     var oldRepo = this.repo.valueOf();

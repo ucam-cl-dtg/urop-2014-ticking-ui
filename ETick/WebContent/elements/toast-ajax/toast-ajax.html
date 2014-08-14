@@ -189,9 +189,9 @@ this to happen.
             if (this.captureError && e.detail.response != null)
             {
               /* If stack-traces happen */
-              if (e.detail.response.length > maximumErrorCharacters)
+              if (e.detail.response.length > this.maximumErrorCharacters)
               {
-                if (errorMessage != null)
+                if (this.errorMessage != null)
                 {
                   this.popUpToast(this.errorMessage +
                       " See log for further details",
@@ -205,8 +205,11 @@ this to happen.
                 }
                 console.log(e.detail.response);
               }
-              this.popUpToast(e.detail.response,
-                this.waitShown || this.popUpError);
+              else
+              {
+                this.popUpToast(e.detail.response,
+                  this.waitShown || this.popUpError);
+              }
             }
             else
             {

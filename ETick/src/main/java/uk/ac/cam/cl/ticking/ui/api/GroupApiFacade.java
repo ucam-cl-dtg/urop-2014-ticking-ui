@@ -1,5 +1,8 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +13,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.joda.time.DateTime;
@@ -24,7 +28,6 @@ import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean;
-import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -80,6 +83,51 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		return Response.ok(group).build();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Response exportGroup(String groupId) {
+		Group group = db.getGroup(groupId);
+
+		/* Get the group object, returning if not found */
+		if (group == null) {
+			log.error("Requested group " + groupId
+					+ " but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+		
+		File temp;
+		PrintWriter writer;
+		
+		try {
+			temp = File.createTempFile(group.getGroupId(), ".txt");
+			writer = new PrintWriter(temp);
+			
+		} catch (IOException e) {
+			log.error("Tried exporting group "
+					+ groupId, e);
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(Strings.IDEMPOTENTRETRY).build();
+		}
+		
+		for (Role role : Role.values()) {
+			writer.println(role.name());
+			for (User user : db.getUsers(groupId, role)) {
+				writer.print(user.getCrsid()+" ");
+			}
+			writer.println();
+		}
+		
+		writer.close();
+
+		ResponseBuilder response = Response.ok((Object) temp);
+        response.header("Content-Disposition", "attachment; filename=\""+group.getName()+".txt\"");
+        response.header("Set-Cookie","fileDownload=true; path=/");
+        return response.build();
 	}
 
 	/**
