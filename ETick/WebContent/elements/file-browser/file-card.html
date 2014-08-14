@@ -4,21 +4,13 @@
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html"/>
 <link rel="import" href="../../elements/main-card.html"/>
 
-<link rel="stylesheet" href="style.css"/>
-
 <polymer-element name="file-card"
     attributes="content comments
                 name id highlight
                 syntaxStyleSheet">
   <template>
-    <!-- HighlightJS colourscheme -->
-    <core-ajax id="syntaxAjax"
-               auto
-               method="GET"
-               on-core-response="{{assignStylesheet}}"
-               handleAs="text"></core-ajax>
-    <style id="syntaxStyle"></style>
-
+    <link rel="stylesheet" href="../../css/shared-styles.css"/>
+    <link rel="stylesheet" href="../../bower_components/highlightjs/styles/default.css"/>
     <link rel="stylesheet" href="file-style.css"/>
 
     <div class="container" vertical layout>

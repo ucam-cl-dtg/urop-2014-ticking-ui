@@ -62,56 +62,6 @@
           </marked-element>
         </template>
 
-        <select name="syntaxSelect"
-                value="{{syntaxStyleSheet}}"
-                label="Colour scheme: ">
-          <!-- The commented values don't have good highlighting support -->
-          <!-- <option value="arta">Arta</option> -->
-          <option value="ascetic">Ascetic</option>
-          <!-- <option value="atelier-dune.dark">Atelier dune (dark)</option> -->
-          <option value="atelier-dune.light">Atelier dune (light)</option>
-          <!-- <option value="atelier-forest.dark">Atelier forest (dark)</option> -->
-          <option value="atelier-forest.light">Atelier forest (light)</option>
-          <!-- <option value="atelier-heath.dark">Atelier heath (dark)</option> -->
-          <option value="atelier-heath.light">Atelier heath (light)</option>
-          <!-- <option value="atelier-lakeside.dark">Atelier lakeside (dark)</option> -->
-          <option value="atelier-lakeside.light">Atelier lakeside (light)</option>
-          <!-- <option value="atelier-seaside.dark">Atelier seaside (dark)</option> -->
-          <!-- <option value="atelier-seaside.light">Atelier seaside (light)</option> -->
-          <option value="brown_paper">Brown paper</option>
-          <!-- <option value="dark">Dark</option> -->
-          <option value="default" selected="true">Default</option>
-          <option value="docco">Docco</option>
-          <!-- <option value="far">Far</option> -->
-          <option value="foundation">Foundation</option>
-          <option value="github">GitHub</option>
-          <option value="googlecode">Google code</option>
-          <option value="idea">Idea</option>
-          <!-- <option value="ir_black">IR black</option> -->
-          <option value="magula">Magula</option>
-          <option value="mono-blue">Mono blue</option>
-          <!-- <option value="monokai">Monokai</option> -->
-          <!-- <option value="monokai_sublime">Monokai (Sublime editor)</option> -->
-          <!-- <option value="obsidian">Obsidian</option> -->
-          <!-- <option value="paraiso.dark">Paraiso (dark)</option> -->
-          <option value="paraiso.light">Paraiso (light)</option>
-          <!-- <option value="pojoaque">Pojoaque</option> -->
-          <!-- <option value="railscasts">Railscasts</option> -->
-          <!-- <option value="rainbow">Rainbow</option> -->
-          <!-- <option value="school_book">School book</option> -->
-          <!-- <option value="solarized_dark">Solarized (dark)</option> -->
-          <!-- <option value="solarized_light">Solarized (light)</option> -->
-          <!-- <option value="sunburst">Sunburst</option> -->
-          <option value="tomorrow">Tomorrow</option>
-          <!-- <option value="tomorrow-night-blue">Tomorrow night blue</option> -->
-          <!-- <option value="tomorrow-night-bright">Tomorrow night bright</option> -->
-          <!-- <option value="tomorrow-night">Tomorrow night</option> -->
-          <!-- <option value="tomorrow-night-eighties">Tomorrow night eighties</option> -->
-          <option value="vs">VS</option>
-          <option value="xcode">XCode</option>
-          <!-- <option value="zenburn">Zenburn</option> -->
-        </select>
-
         <!-- File contents -->
         <template repeat="{{file in files}}">
           <section id="file{{file.id}}" name="file{{file.id}}">
