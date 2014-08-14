@@ -125,7 +125,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		writer.close();
 
 		ResponseBuilder response = Response.ok((Object) temp);
-        response.header("Content-Disposition", "attachment; filename=\""+group.getName()+"\"");
+        response.header("Content-Disposition", "attachment; filename=\""+group.getName()+".txt\"");
         return response.build();
 	}
 
