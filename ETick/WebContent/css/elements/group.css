@@ -16,6 +16,10 @@ paper-tabs::shadow #selectionBar {
 	background-color: #a7ffeb;
 }
 
+paper-tabs:focus {
+	outline: none;
+}
+
 #frame {
 	display: block;
 	width: 100%;
