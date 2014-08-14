@@ -29,11 +29,8 @@
 		</core-ajax>
 
 		<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
-
-		<paper-icon-button id="editSessionButton" icon="create" on-click="{{addClicked}}"></paper-icon-button>
-
-		<template id="stuff">
-
+		<paper-dialog id="addDialog" heading="Create Ticking Session:"
+			backdrop transition="core-transition-top">
 			<h2 class="subtitle">Session Information</h2>
 			<div layout vertical center>
 				<paper-input id="titleInput" 
@@ -97,8 +94,7 @@
 			<template if="{{showSubmit}}">
 				<paper-button id="addSubmit" class="dialogSubmit" label="CREATE" on-click="{{createButtonClicked}}" affirmative></paper-button>
 			</template>
-
-		</template>
+		</paper-dialog>
 
 		<paper-toast id="addSessionSuccess" duration="8000"></paper-toast>
 		<paper-toast id="addSessionError" duration="8000"></paper-toast>
@@ -112,8 +108,7 @@
 			},
 
 			addClicked: function () {
-				this.showAdd = true;
-				this.fire('edit-add-session', this.$.stuff)
+				this.$.addDialog.toggle();
 			},
 
 			validate: function () {
