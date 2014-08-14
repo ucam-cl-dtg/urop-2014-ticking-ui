@@ -131,13 +131,13 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Get the users in the group, sort and return them */
 		List<User> users = db.getUsers(groupId);
-		Iterator<User> i = users.iterator();
+		/*Iterator<User> i = users.iterator();
 		while (i.hasNext()) {
 			User user = i.next();
 			if (user.isAdmin()) {
 				i.remove();
 			}
-		}
+		}*/
 		Collections.sort(users);
 		return Response.ok(users).build();
 	}
@@ -228,13 +228,11 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.saveGrouping(grouping);
 		}
 
-		/* Give admins all roles for the group */
+		/* Give admins the correct role for the group */
 		for (User admin : db.getAdmins()) {
-			for (Role role : Role.values()) {
-				Grouping grouping = new Grouping(group.getGroupId(),
-						admin.getCrsid(), role);
-				db.saveGrouping(grouping);
-			}
+			Grouping grouping = new Grouping(group.getGroupId(),
+					admin.getCrsid(), Role.ADMIN);
+			db.saveGrouping(grouping);
 		}
 
 		/* return the created group object */

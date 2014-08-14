@@ -14,6 +14,6 @@ package uk.ac.cam.cl.ticking.ui.actors;
  *
  */
 public enum Role {
-	SUBMITTER, MARKER, AUTHOR, OVERVIEW;
+	SUBMITTER, MARKER, AUTHOR, OVERVIEW, ADMIN;
 
 }

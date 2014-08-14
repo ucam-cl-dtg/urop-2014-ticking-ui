@@ -47,7 +47,7 @@
                     <div layout horizontal end style="width: 100%;">
                         <p class="creator">Created by: {{creator}}</p>
 						<span layout horizontal end end-justified flex>
-							<template if="{{isAuthor}}">
+							<template if="{{isAuthor||isAdmin}}">
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
 								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
 								<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
@@ -68,15 +68,15 @@
 
             <core-collapse id="ticks">
                 <tick-list gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"
-                           canFork="{{isSubmitter}}"></tick-list>
+                           canFork="{{isSubmitter||isAdmin}}"></tick-list>
             </core-collapse>
 
             <core-collapse id="groups">
-                <group-members gid="{{gid}}" allowAdd="{{isAuthor}}" rows="4"></group-members>
+                <group-members gid="{{gid}}" allowAdd="{{isAuthor||isAdmin}}" rows="4"></group-members>
             </core-collapse>
 
             <core-collapse id="tickingSessions">
-	        	<tick-session-list sheets="{{sheets}}" isAuthor="{{isAuthor}}"></tick-session-list>
+	        	<tick-session-list sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"></tick-session-list>
 	        </core-collapse>
 
 		</main-card>
@@ -104,7 +104,7 @@
 
         <!-- Marker card for ticking sessions. -->
 
-	    <template if="{{isMarker && $.tickingSessions.opened}}">
+	    <template if="{{(isMarker||isAdmin) && $.tickingSessions.opened}}">
 	        <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
 	    </template>
 
@@ -135,6 +135,7 @@
 				this.isAuthor = (this.roles.indexOf('AUTHOR') > -1);
 				this.isSubmitter = (this.roles.indexOf('SUBMITTER') > -1);
 				this.isMarker = (this.roles.indexOf('MARKER') > -1);
+				this.isAdmin = (this.roles.indexOf('ADMIN') > -1);
 			},
 
             nameChanged: function() {
