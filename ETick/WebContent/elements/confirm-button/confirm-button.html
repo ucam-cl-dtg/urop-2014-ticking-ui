@@ -1,0 +1,126 @@
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
+<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+<!--
+  This just adds a confirm action to the paper-button contents.
+  To use this, import this file, as usual. Then as usual, add an
+  instance of this element, with the contents of paper buttons, like so:
+  (NOTE: For this to make sense, you need more than one paper-button,
+  otherwise there will only be a "YES" button!)
+
+      <confirm-button>
+        <paper-button raisedButton
+                      id="pass"
+                      class="spaced wide green"
+                      label="PASS"
+                      on-tap="{{passTick}}">
+        </paper-button>
+        <paper-button raisedButton
+                      id="fail"
+                      class="spaced wide red"
+                      label="FAIL"
+                      on-tap="{{failTick}}">
+        </paper-button>
+      <confirm-button>
+
+  Then you also need to surround your button events with a conditional
+  like this:
+
+            passTick:
+            function (e)
+            {
+              var confirmElement = e.srcElement.parentElement;
+              if (confirmElement.sure &&
+                  confirmElement.currentConfirm == e.srcElement)
+              {
+                // Whatever passTick should do
+              }
+            }
+
+          , failTick:
+            function (e)
+            {
+              var confirmElement = e.srcElement.parentElement;
+              if (confirmElement.sure &&
+                  confirmElement.currentConfirm == e.srcElement)
+              {
+                // Whatever failTick should do
+              }
+            }
+-->
+<polymer-element name="confirm-button" attributes="yesColor noColor">
+  <template>
+    <span on-tap="{{tapEvent}}">
+      <content>
+      </content>
+    </span>
+  </template>
+  <script>
+    Polymer('confirm-button',
+        {   sure: false
+          , currentConfirm: null
+          , yesColor: "#e51c23"
+          , noColor:  "#009933"
+          , domReady:
+            function ()
+            {
+              var buttons =
+                this.querySelectorAll('paper-button');
+
+              var i;
+              var len = buttons.length;
+              for (i = 0; i < len; i++)
+              {
+                buttons.item(i).label_confirm_ =
+                  buttons.item(i).label;
+
+                buttons.item(i).backgroundColor_confirm_ =
+                  buttons.item(i).style.backgroundColor;
+              }
+            }
+
+          , tapEvent:
+            function (e)
+            {
+              var buttons =
+                this.querySelectorAll('paper-button');
+
+              var i;
+              var len = buttons.length;
+              if (this.sure)
+              {
+                for (i = 0; i < len; i++)
+                {
+                  var current = buttons.item(i);
+
+                  current.label = current.label_confirm_
+                  current.style.backgroundColor =
+                    current.backgroundColor_confirm_;
+                }
+
+                this.sure = false;
+              }
+              else
+              {
+                for (i = 0; i < len; i++)
+                {
+                  var current = buttons.item(i);
+
+                  if (e.srcElement == current)
+                  {
+                    current.label = "yes";
+                    current.style.backgroundColor = "#e51c23";
+                  }
+                  else
+                  {
+                    current.label = "NO";
+                    current.style.backgroundColor = "#009933";
+                  }
+                }
+
+                this.sure = true;
+                this.currentConfirm = e.srcElement;
+              }
+            }
+        });
+  </script>
+</polymer-element>
