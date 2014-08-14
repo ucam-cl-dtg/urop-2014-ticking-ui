@@ -58,8 +58,10 @@
     Polymer('confirm-button',
         {   sure: false
           , currentConfirm: null
-          , yesColor: "#e51c23"
-          , noColor:  "#009933"
+          , yesBgColor: "#e51c23"
+          , yesFgColor: "#ffffff"
+          , noBgColor:  "#009933"
+          , noFgColor:  "#ffffff"
           , domReady:
             function ()
             {
@@ -75,6 +77,9 @@
 
                 buttons.item(i).backgroundColor_confirm_ =
                   buttons.item(i).style.backgroundColor;
+
+                buttons.item(i).color_confirm_ =
+                  buttons.item(i).style.color;
               }
             }
 
@@ -108,12 +113,14 @@
                   if (e.srcElement == current)
                   {
                     current.label = "yes";
-                    current.style.backgroundColor = this.yesColor;
+                    current.style.backgroundColor = this.yesBgColor;
+                    current.style.color = this.yesFgColor;
                   }
                   else
                   {
                     current.label = "NO";
-                    current.style.backgroundColor = this.noColor;
+                    current.style.backgroundColor = this.noBgColor;
+                    current.style.color = this.noFgColor;
                   }
                 }
 
