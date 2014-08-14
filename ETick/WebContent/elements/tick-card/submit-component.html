@@ -65,9 +65,7 @@
 
             deadlineChanged: function() {
                 if (this.deadline != null) {
-                    if (this.deadline < new Date()) {
-                        this.deadlinePassed = true;
-                    }
+                    this.deadlinePassed = new Date(this.deadline) < new Date();
                 }
             },
 

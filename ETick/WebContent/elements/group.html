@@ -107,7 +107,8 @@
 				tickName="{{selectedTickName}}"
 				tickId="{{selectedTickId}}"
 				sheets="{{sheets}}"
-				repoName="{{repoName}}"></tick-card>
+				repoName="{{repoName}}"
+                tickObj="{{selectedTickObj}}"></tick-card>
 		</main-card>
 		</template>
 
@@ -174,11 +175,14 @@
 			forkClickedHandler: function (e, detail) {
 				this.selectedTickId = detail.tickId;
 				this.selectedTickName = detail.tickName;
+                this.selectedTickObj = detail.tickObj;
+
+                console.log(detail);
 			},
 
 			sheetCreated: function () {
 				this.$.sheetListAPI.go();
-			},
+			}
 		});
 	</script>
 </polymer-element>

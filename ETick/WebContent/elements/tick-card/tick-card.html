@@ -6,7 +6,7 @@
 <link rel="import" href="fork-service.html">
 <link rel="import" href="fork-component.html">
 
-<polymer-element name="tick-card" attributes="tickName tickId sheets repoName">
+<polymer-element name="tick-card" attributes="tickName tickId sheets repoName tickObj">
     <template>
         <link rel="stylesheet" href="../../css/elements/group-members.css">
         <link rel="stylesheet" href="tick-components.css">
@@ -21,8 +21,7 @@
                 testRunning="{{testRunning}}"
                 reportAvailable="{{reportAvailable}}"
                 repo="{{repo}}"
-                forked="{{forked}}"
-                deadline="{{deadline}}">
+                forked="{{forked}}">
         </fork-service>
 
         <div id="mainContainer">
@@ -56,7 +55,7 @@
                                       reportAvailable="{{reportAvailable}}"
                                       unitPass="{{unitPass}}"
                                       humanPass="{{humanPass}}"
-                                      deadline="{{deadline}}">
+                                      deadline="{{tickObj.deadline}}">
                     </submit-component>
                     <div class="spacer"></div>
                     <!--<report-component flex
@@ -92,11 +91,18 @@
                 this.deadline = null;
 
                 this.repoName = null;
+                this.tickObj = null;
+            },
+
+            tickObjChanged: function() {
+                console.log("Tick object:");
+                console.log(this.tickObj.deadline);
+
             },
 
             domReady: function() {
                 var that = this.$;
-                this.$.forkService.addEventListener('test-running', function(e) {
+                this.$.forkService.addEventListener('test-running', function() {
                     that.submitComponent.continuePolling();
                 });
             },
