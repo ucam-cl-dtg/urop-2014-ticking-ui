@@ -53,8 +53,11 @@
 				padding-top: 1em;
 				color: #2f2f2f;
 			}
+			time.blank {
+				opacity: 0;
+			}
 		</style>
-		<time id="cal" datetime="{{tick.deadline}}" class="icon">
+		<time id="cal" class="icon">
 			  <em id="day">{{day}}</em>
 			  <strong id="month">{{month}}</strong>
 			  <span id="date">{{date}}</span>
@@ -63,6 +66,12 @@
 	<script>
 		Polymer('date-calendar', {
 			domReady: function () {
+
+				if (!this.datetime) {
+					this.$.cal.classList.add('blank');
+					return;
+				}
+
 				var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 				var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 				var d = new Date(this.datetime);
