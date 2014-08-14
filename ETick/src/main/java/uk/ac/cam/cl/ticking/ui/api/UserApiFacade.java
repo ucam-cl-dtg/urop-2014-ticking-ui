@@ -24,7 +24,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
-import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -43,7 +43,7 @@ public class UserApiFacade implements IUserApiFacade {
 
 	private WebInterface gitServiceProxy;
 	
-	private PermissionsChecker permissions;
+	private PermissionsManager permissions;
 
 	/**
 	 * @param db
@@ -52,7 +52,7 @@ public class UserApiFacade implements IUserApiFacade {
 	@Inject
 	public UserApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			WebInterface gitServiceProxy, PermissionsChecker permissions) {
+			WebInterface gitServiceProxy, PermissionsManager permissions) {
 		this.db = db;
 		this.config = config;
 		this.gitServiceProxy = gitServiceProxy;

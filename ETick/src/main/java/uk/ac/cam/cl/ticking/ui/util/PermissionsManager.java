@@ -14,14 +14,14 @@ import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 import com.google.inject.Inject;
 
-public class PermissionsChecker {
+public class PermissionsManager {
 
 	private IDataManager db;
 
 	private ConfigurationLoader<Admins> adminConfig;
 	
 	@Inject
-	public PermissionsChecker(IDataManager db, ConfigurationLoader<Admins> adminConfig) {
+	public PermissionsManager(IDataManager db, ConfigurationLoader<Admins> adminConfig) {
 		this.db = db;
 		this.adminConfig = adminConfig;
 	}

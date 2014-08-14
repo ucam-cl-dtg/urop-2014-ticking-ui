@@ -30,7 +30,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
-import uk.ac.cam.cl.ticking.ui.util.PermissionsChecker;
+import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
@@ -48,7 +48,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 	private TickSignups tickSignupService;
 	
-	private PermissionsChecker permissions;
+	private PermissionsManager permissions;
 
 	/**
 	 * @param db
@@ -57,7 +57,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 	@Inject
 	public GroupApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			TickSignups tickSignupService, PermissionsChecker permissions) {
+			TickSignups tickSignupService, PermissionsManager permissions) {
 		this.db = db;
 		this.config = config;
 		this.tickSignupService = tickSignupService;
