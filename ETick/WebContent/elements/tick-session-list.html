@@ -23,11 +23,12 @@
 			<!-- <h1 flex>Ticking Sessions ({{sheets ? sheets.length : 0}})</h1> -->
 			<template if="{{isAuthor}}">
 				<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
+				<paper-icon-button id="editSessionButton" icon="create" on-click="{{editClicked}}"></paper-icon-button>
 			</template>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
-		<box-list id="list">
+		<box-list selector id="list" on-core-select="{{sheetSelected}}">
 			<template repeat="{{sheet in sheets | sheetListFilter($.searchBox.query) }}">
 				<tick-session-box class="itemBox" sheet="{{sheet}}"></tick-session-box>
 			</template>
@@ -48,7 +49,23 @@
 			},
 
 			addClicked: function () {
-				this.fire('add-clicked');
+				this.fire('add-sheet-clicked');
+			},
+
+			sheetSelected: function () {
+				var sel = this.$.list.$.selector.selectedItem;
+				if (sel) {
+					this.selectedSheet = sel.sheet;
+				}
+
+			},
+
+			editClicked: function () {
+				if (this.selectedSheet) {
+					this.fire('edit-sheet-clicked', {
+						sheet: this.selectedSheet
+					});
+				}
 			}
 		});
 	</script>
