@@ -12,6 +12,7 @@
 <link rel="import" href="are-you-sure.html">
 <link rel="import" href="delete-group.html">
 <link rel="import" href="tick-session-list.html">
+<link rel="import" href="add-edit-session.html">
 
 <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
 <script src="../js/jquery.fileDownload.js" type="text/javascript"></script>
@@ -37,7 +38,8 @@
 		</core-ajax>
 
         <main-card animated>
-            <paper-tabs id="tabs" selected="0">
+			<!-- temporary on-tap to try and remove deep signups card -->
+            <paper-tabs id="tabs" selected="0" on-tap={{changeTab}}>
                 <paper-tab>{{name}}</paper-tab>
                 <paper-tab>TICKS</paper-tab>
                 <paper-tab>TICKING SESSIONS</paper-tab>
@@ -84,8 +86,10 @@
             <!-- Ticking Sessions Tab -->
             <span id="tickingSessions" hidden>
 	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
-	        		on-sheet-created="{{sheetCreated}}"
-	        		on-edit-add-session="{{editAddSession}}"></tick-session-list>
+	        		on-add-sheet-clicked="{{addSheetHandler}}"
+	        		on-edit-sheet-clicked="{{editSheetHandler}}"
+	        		on-sheet-selected="{{sheetSelectedHandler}}">
+	        	</tick-session-list>
 	        </span>
 
 		</main-card>
@@ -118,20 +122,23 @@
             </template>
         </span>
 
+         <!-- Ticking session create/edit card. -->
+	    <template id="addEditSessionTemp" if="{{showAddEditSession}}">
+			<main-card animated>
+				<add-edit-session gid="{{gid}}" sheet="{{sheet}}"
+				on-sheet-created="{{sheetCreated}}"
+				on-sheet-cancel="{{sheetCancelled}}"></add-edit-session>
+			</main-card>
+		</template>
+
 
         <!-- Marker card for ticking sessions. -->
         <span id="deepTickingSessions" hidden>
-	        <template if="{{(isMarker||isAdmin)}}">
-                <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
-            </template>
+	        <!-- moved template to ticker-signup -->
+            <ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.title}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
+            
         </span>
 
-	    <!-- Ticking session create/edit card. -->
-
-	    <!-- <template if="{{showEditAddSession}}"> -->
-	    	<main-card id="editAddSessionCard">
-		    </main-card>
-		<!-- </template> -->
 
 	</template>
 	<script>
@@ -150,6 +157,8 @@
                     that.deepTicks.hidden = that.ticks.hidden;
                     that.tickingSessions.hidden = this.tabIndex != 2;
                     that.deepTickingSessions.hidden = that.tickingSessions.hidden;
+                    that.addEditSessionTemp.model.showAddEditSession = 
+                    that.addEditSessionTemp.model.showAddEditSession && !that.tickingSessions.hidden;
                     that.members.hidden = this.tabIndex != 3;
                 });
 			},
@@ -197,10 +206,39 @@
 
 			sheetCreated: function () {
 				this.$.sheetListAPI.go();
+				this.$.addEditSessionTemp.model = {
+					showAddEditSession: false,
+					gid: null,
+					sheet: null
+				}
 			},
 
-			editAddSession: function (e, detail) {
-				this.$.editAddSessionCard.appendChild(detail);
+			addSheetHandler: function () {
+				this.$.addEditSessionTemp.model = {
+					showAddEditSession: true,
+					gid: this.gid,
+					sheet: null
+				}
+			},			
+			
+			editSheetHandler: function (e, detail) {
+				this.$.addEditSessionTemp.model = {
+					showAddEditSession: true,
+					gid: this.gid,
+					sheet: this.sheet
+				};
+			},
+
+			sheetCancelled: function () {
+				this.$.addEditSessionTemp.model = {
+					showAddEditSession: false,
+					gid: null,
+					sheet: null
+				}
+			},
+
+			sheetSelectedHandler: function (e, detail) {
+				this.sheet = detail.sheet;
 			}
 		});
 	</script>

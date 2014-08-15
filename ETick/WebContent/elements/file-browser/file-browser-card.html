@@ -38,8 +38,7 @@
     </files-service>
     <div class="container" horizontal layout>
       <div class="sidebar">
-        <h3 class="result">
-          {{resultString}}
+        <h3 id="resultString" class="result">
         </h3>
         <files-list files="{{files}}"
                     selectedFileId="{{selectedFileId}}">
@@ -65,7 +64,6 @@
           <section id="file{{file.id}}" name="file{{file.id}}">
           <file-card content="{{file.content}}"
                      name="{{file.name}}"
-                     id="{{file.id}}"
                      comments="{{errors}}"
                      highlight="{{highlight}}">
           </file-card>
@@ -92,8 +90,7 @@
   </template>
   <script>
     Polymer('file-browser-card'
-      , {   resultString: ""
-          , selectedFileIdChanged:
+      , {   selectedFileIdChanged:
             function ()
             {
               var element = 
@@ -105,7 +102,7 @@
   		  , updateTickerView:
   		    function(reason)
   			{
-  			  this.fire("update-ticker-viewer", {"result": reason});
+  			  this.fire("hide-report", {"result": reason});
   			}
   		  , tickPassed:
   		    function()
@@ -123,19 +120,51 @@
   			  this.updateTickerView("noShow");
   			}
 
+        , getTickURL:
+          function ()
+          {
+            if (this.crsid == null)
+            {
+              crsid = this.repoName.split("/")[0];
+            }
+            else
+            {
+              crsid = this.crsid;
+            }
+
+            return window.location.href + "standalone_tick_view.html" +
+              "?repoName=" + encodeURIComponent(this.repoName) +
+              "&crsid=" + encodeURIComponent(crsid) +
+              "&tickId=" + encodeURIComponent(this.tickId) +
+              "&lastTickedBy=" + encodeURIComponent(this.lastTickedBy) +
+              "&lastTickedOn=" + encodeURIComponent(this.lastTickedOn);
+          }
+
         , recalculateResult:
           function ()
           {
             if (this.testResult == "FAIL")
             {
-              this.resultString =
+              this.$.resultString.innerHTML =
                 "You have failed the automatic tests." +
                 " See below for more detailed information."
             }
             else if (this.tickerResult == "FAIL")
             {
-              this.resultString =
-                "You have been failed by ticker " + this.lastTickedBy +
+              this.$.resultString.innerHTML =
+                "You have been failed by ticker " +
+                  "<a href=\"mailto:" +
+                    this.lastTickedBy + "@cam.ac.uk" +
+                    "?subject=" +
+                      encodeURIComponent("Question about tick " +
+                          this.tickId) +
+                    "&body=" +
+                      encodeURIComponent("Hi,\n\nI have a question " +
+                          "about why you failed my submission (" +
+                          "online at: " + this.getTickURL() + ").") +
+                  "\">" +
+                    this.lastTickedBy +
+                  "</a>" +
                 " at " + new Date(this.lastTickedOn).toLocaleString() +
                 ".";
             }
@@ -145,7 +174,7 @@
             }
             else
             {
-              this.resultString = "You have passed!";
+              this.$.resultString.innerHTML = "You have passed!";
             }
           }
 

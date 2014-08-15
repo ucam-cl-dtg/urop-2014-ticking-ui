@@ -168,7 +168,6 @@
 				var p = this.selectedPeople
 				if (p && p.length) {
 					var jsonSelectedPeople = JSON.stringify(p);
-					console.log(jsonSelectedPeople);
 					this.$.deleteAjax.body = '{ "crsids" : ' + jsonSelectedPeople + ', "roles" : [] }';
 					this.$.deleteAjax.go();
 				}

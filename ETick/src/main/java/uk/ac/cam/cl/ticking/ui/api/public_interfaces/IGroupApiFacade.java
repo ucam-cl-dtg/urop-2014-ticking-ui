@@ -31,8 +31,7 @@ public interface IGroupApiFacade {
 	/**
 	 * 
 	 * @param groupId
-	 * @param byName
-	 * @return the group object, found either by groupId or name as specified
+	 * @return the group object
 	 */
 	@GET
 	@Path("/{groupId}")
@@ -42,13 +41,22 @@ public interface IGroupApiFacade {
 	/**
 	 * 
 	 * @param groupId
-	 * @param byName
-	 * @return the group object, found either by groupId or name as specified
+	 * @return the list of users in the group, sorted by role as txt
 	 */
 	@GET
 	@Path("/{groupId}")
 	@Produces("text/plain")
 	public abstract Response exportGroup(@PathParam("groupId") String groupId);
+	
+	/**
+	 * 
+	 * @param groupId
+	 * @return the status of all the fork objects for the users and ticks in the group as csv
+	 */
+	@GET
+	@Path("/{groupId}/status")
+	@Produces("text/plain")
+	public abstract Response exportGroupForkStatus(@PathParam("groupId") String groupId);
 
 	/**
 	 * Deletes the specified group, clearing up any dangling associations with

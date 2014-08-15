@@ -105,6 +105,12 @@ public class TickApiFacade implements ITickApiFacade {
 		try {
 			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId));
 			db.removeTick(tickId);
+			/*Remove dangling group references*/
+			for (String groupId : tick.getGroups()) {
+				Group group = db.getGroup(groupId);
+				group.removeTick(tickId);
+				db.saveGroup(group);
+			}
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
@@ -121,6 +127,12 @@ public class TickApiFacade implements ITickApiFacade {
 					RepositoryNotFoundException.class.getName())) {
 				/* We still want to remove the tick */
 				db.removeTick(tickId);
+				/*Remove dangling group references*/
+				for (String groupId : tick.getGroups()) {
+					Group group = db.getGroup(groupId);
+					group.removeTick(tickId);
+					db.saveGroup(group);
+				}
 
 				log.warn("User " + crsid + " tried deleting repository for "
 						+ tickId, s.getCause(), s.getStackTrace());

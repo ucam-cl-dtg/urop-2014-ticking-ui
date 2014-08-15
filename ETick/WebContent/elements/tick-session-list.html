@@ -3,6 +3,7 @@
 <link rel="import" href="tick-session-box.html">
 <link rel="import" href="box-list.html">
 <link rel="import" href="add-session.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
 <polymer-element name="tick-session-list" attributes="gid sheets isAuthor">
 	<template>
@@ -21,12 +22,13 @@
 		<div id="headerBar" layout horizontal center end-justified>
 			<!-- <h1 flex>Ticking Sessions ({{sheets ? sheets.length : 0}})</h1> -->
 			<template if="{{isAuthor}}">
-				<add-session gid="{{gid}}"></add-session>
+				<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
+				<paper-icon-button id="editSessionButton" icon="create" on-click="{{editClicked}}"></paper-icon-button>
 			</template>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
-		<box-list id="list">
+		<box-list selector id="list" on-core-select="{{sheetSelected}}">
 			<template repeat="{{sheet in sheets | sheetListFilter($.searchBox.query) }}">
 				<tick-session-box class="itemBox" sheet="{{sheet}}"></tick-session-box>
 			</template>
@@ -45,6 +47,27 @@
 				var q = this.$.searchBox.query.toLowerCase();
 				return (item.title.toLowerCase().indexOf(q) > -1);
 			},
+
+			addClicked: function () {
+				this.fire('add-sheet-clicked');
+			},
+
+			sheetSelected: function () {
+				var sel = this.$.list.$.selector.selectedItem;
+				if (sel) {
+					this.selectedSheet = sel.sheet;
+					this.fire('sheet-selected', {
+						sheet: this.selectedSheet
+					})
+				}
+
+			},
+
+			editClicked: function () {
+				if (this.selectedSheet) {
+					this.fire('edit-sheet-clicked');
+				}
+			}
 		});
 	</script>
 </polymer-element>
