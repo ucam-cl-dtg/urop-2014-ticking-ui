@@ -83,7 +83,11 @@
 
             <!-- Ticking Sessions Tab -->
             <span id="tickingSessions" hidden>
-	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
+	        	<tick-session-list 
+	        		id="tickingSessionList"
+	        		gid="{{gid}}" 
+	        		sheets="{{sheets}}" 
+	        		isAuthor="{{isAuthor||isAdmin}}"
 	        		on-add-sheet-clicked="{{addSheetHandler}}"
 	        		on-edit-sheet-clicked="{{editSheetHandler}}"
 	        		on-sheet-selected="{{sheetSelectedHandler}}"
@@ -198,6 +202,7 @@
 			},
 
 			sheetCreated: function () {
+				this.$.tickingSessionList.clearSelection();
 				this.$.sheetListAPI.go();
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: false,
