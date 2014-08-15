@@ -53,7 +53,7 @@
 			},
 
 			csv: function () {
-				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid )
+				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid +'/status/csv')
 		        .done(function () {})
 		        .fail(function () { this.$.deletexportError.show(); });
 			}
