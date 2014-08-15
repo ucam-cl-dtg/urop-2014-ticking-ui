@@ -239,9 +239,9 @@
 				this.sheet = detail.sheet;
 			},
 
-			<!-- to clear signups slots card, if this isn't viable then will have to  -->
 			changeTab: function() { 
 				this.sheet = null;
+				this.$.tickingSessionList.clearSelection();
 			} 
 		});
 	</script>
