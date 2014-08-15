@@ -66,11 +66,12 @@
 	<script>
 		Polymer('date-calendar', {
 			domReady: function () {
-
 				if (!this.datetime) {
 					this.$.cal.classList.add('blank');
 					return;
-				}
+				} else {
+                    this.$.cal.classList.remove('blank');
+                }
 
 				var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 				var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -91,7 +92,7 @@
                 this.domReady();
             },
 
-            dateTimeChanged: function() {
+            datetimeChanged: function() {
                 this.domReady();
             }
 		});
