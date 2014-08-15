@@ -2,12 +2,30 @@
 <link rel="import" href="../sheet-selector.html">
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../are-you-sure.html">
+<link rel="import" href="../date-calendar.html">
+<link rel="import" href="../time-clock.html">
 
 <polymer-element name="signup-component" attributes="tickId sheets signedUp unitPass testRunning humanPass">
     <template>
         <link rel="stylesheet" type="text/css" href="../../css/shared-styles.css" shim-shadowdom>
         <link rel="stylesheet" type="text/css" href="tick-components.css" shim-shadowdom>
+
+        <!-- Call to load sign up information -->
+        <toast-ajax
+                id="ajaxLoadBookings"
+                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/bookings"
+                handleAs="json"
+                on-core-response="{{bookingsLoaded}}"
+
+                waitMessage="Loading booking information..."
+                waitBeforeToast="1000"
+                captureError
+                popUpError
+                errorMessage="Error loading booking information">
+        </toast-ajax>
 
         <!-- Call to delete a sign up -->
         <toast-ajax
@@ -25,6 +43,28 @@
                 popUpComplete
                 completeMessage="Booking cancelled.">
         </toast-ajax>
+
+        <!-- Information about currently booked tick -->
+        <core-collapse opened?="{{signedUp}}">
+            <div style="padding: 3px;" layout horizontal>
+                <date-calendar hexColorPrimary="#FF8000" hexColorSecondary="#fff" datetime="{{bookingDateTime}}"></date-calendar>
+                <time-clock datetime="{{booking.startTime}}"></time-clock>
+
+                <div layout vertical>
+                    <div flex></div>
+                    <div class="error">Ticker:&nbsp;</div>
+                    <div flex></div>
+                </div>
+
+                <div layout vertical>
+                    <div flex></div>
+                    <div>{{booking.ticker}}</div>
+                    <div flex></div>
+                </div>
+            </div>
+        </core-collapse>
+
+        <br>
 
         <!-- Sign up button -->
         <core-collapse opened?="{{!signedUp && !testRunning && unitPass && !humanPass}}">
@@ -70,6 +110,10 @@
                 });
             },
 
+            tickIdChanged: function() {
+                console.log("tickId changed!", this.tickId);
+            },
+
             openSignupDialog: function() {
                 this.$.signupDialog.toggle();
             },
@@ -84,6 +128,35 @@
 
             deleteSuccess: function() {
                 this.signedUp = false;
+                console.log("here!")
+            },
+
+            signedUpChanged: function() {
+                this.$.ajaxLoadBookings.go();
+            },
+
+            bookingChanged: function() {
+                console.log("start time changed to", this.booking.startTime);
+            },
+
+            /**
+             * Extracts the booking made for this tickId so that the display can be updated to show the user the
+             * date and time of their current booking
+             */
+            bookingsLoaded: function() {
+                var bookings = this.$.ajaxLoadBookings.response;
+                var tickId = this.tickId;
+                bookings = bookings.filter(function(el)
+                {
+                    console.log(el.tickID, tickId);
+                    return el.tickID.valueOf() == tickId.valueOf();
+                });
+
+                //assert bookings.length == 1
+                this.booking = bookings[0];
+                this.bookingDateTime = new Date(this.booking.startTime);
+
+                console.log("booking", this.booking);
             }
         });
     </script>

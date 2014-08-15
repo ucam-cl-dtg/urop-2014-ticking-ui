@@ -12,8 +12,10 @@
                 repoName
                 testCount
                 testResult
+                reportsList
                 tickerResult
                 reportResult
+                selectedReport
                 reportCreationDate">
   <template>
     <link rel="stylesheet" href="../../css/shared-styles.css"/>
@@ -51,13 +53,13 @@
               ||this.crsid == null)
             {
               this.$.report.url =
-                ticking_service + "/submission/" + this.tickId + "/last";
+                ticking_service + "/submission/" + this.tickId;
             }
             else
             {
               this.$.report.url =
-                ticking_service + "/submission/" + this.tickId + "/last"
-                + "?crsid=" + this.crsid;
+                ticking_service + "/submission/" + this.tickId +
+                "?crsid=" + this.crsid;
             }
 
           }
@@ -82,14 +84,37 @@
 
                 return;
             }
-            /* Load files, fires due to auto attribute */
+
+            /* Changing this.selectedReport fills in attributes and
+             * loads files. */
+
+            this.reportsList =
+              this.$.report.response.map(
+                  function (report)
+                  {
+                    return  {   "date"   : report.creationDate
+                              , "commit" : report.commitId
+                            };
+                  });
+          }
+
+        , selectedReportChanged:
+          function ()
+          {
+            console.log(this);
+            if (this.$.report.response == null
+              ||this.selectedReport == null) return;
+
+            var selReport = this.$.report.response[this.selectedReport];
+
+            /* Load files */
             if (typeof this.crsid == typeof undefined
               ||this.crsid == null)
             {
               this.$.fileContent.url =
                 ticking_service + "/fork/"
                 + this.tickId + "/"
-                + this.$.report.response.commitId
+                + selReport.commitId
                 + "/files";
             }
             else
@@ -97,28 +122,27 @@
               this.$.fileContent.url =
                 ticking_service + "/fork/"
                 + this.tickId + "/"
-                + this.$.report.response.commitId
+                + selReport.commitId
                 + "/files?crsid="
                 + this.crsid;
             }
             this.$.fileContent.go();
 
-            /* Make a copy of the loaded data */
-            this.testResult   = this.$.report.response.testResult;
-            this.tickerResult = this.$.report.response.tickerResult;
-            this.reportResult = this.$.report.response.reportResult;
-            this.comments     = this.$.report.response.tickerComments;
+            this.testResult   = selReport.testResult;
+            this.tickerResult = selReport.tickerResult;
+            this.reportResult = selReport.reportResult;
+            this.comments     = selReport.tickerComments;
+            this.commitId     = selReport.commitId;
+            this.testCount    = selReport.noOfTests;
+            this.date         = new Date(selReport.creationDate);
             this.errors       =
-              this.$.report.response.items.reduce(
+              selReport.items.reduce(
                   function (prev, curr)
                   {
                     curr.className = curr.outcome + prev.length;
                     return prev.concat(curr);
                   }, []);
-            this.commitId     = this.$.report.response.commitId;
-            this.date         = new Date(this.$.report.response
-                                                    .creationDate);
-            this.testCount    = this.$.report.response.noOfTests;
+            console.log(selReport);
           }
 
         , filesLoaded:
