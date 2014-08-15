@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/core-icon/core-icon.html">
 <link rel="import" href="submit-component.html">
 <link rel="import" href="report-component.html">
 <link rel="import" href="signup-component.html">
@@ -14,12 +15,49 @@
         <link rel="stylesheet" href="../../css/elements/group-members.css">
         <link rel="stylesheet" href="tick-components.css">
 
+        <!--<style>-->
+            <!--h1 {-->
+                <!--margin: 0;-->
+            <!--}-->
+            <!--:host {-->
+                <!--margin-top: 10px;-->
+            <!--}-->
+        <!--</style>-->
+
         <style>
+            :host {
+                margin: 10px;
+            }
             h1 {
                 margin: 0;
+                font-size: 1.8rem;
+                font-weight: lighter;
             }
-            :host {
-                margin-top: 10px;
+            h2 {
+                font-weight: normal;
+                font-size: 1.2rem;
+            }
+            paper-input {
+                width: 100%;
+            }
+            core-icon.big {
+                height: 27px;
+                width: 27px;
+                margin-right: 10px;
+                margin-top: 8px;
+            }
+            paper-input.datetime {
+                width: initial;
+                margin-right: 20px;
+            }
+            #submitButton {
+                background: #259b24;
+                color: #fff;
+            }
+
+            #buttonsContainer paper-button {
+                width: 18%;
+                margin: 20px 10px 10px;
             }
         </style>
 
@@ -38,43 +76,44 @@
                 lastTickedOn="{{lastTickedOn}}">
         </fork-service>
 
-        <div id="mainContainer">
+        <div id="mainContainer" layout horizontal>
 
-            <div layout horizontal style="margin-right: 10px;">
-                <h1 flex>{{tickName}}</h1>
-                <span layout vertical>
-                    <div flex></div>
-                    <div class="error">{{datetime == null ? 'No deadline' : 'Deadline:&nbsp;'}}</div>
-                    <div flex></div>
-                </span>
+            <div flex>
+                <div layout horizontal style="margin-right: 10px;">
+                    <h1 flex vertical center>{{tickName}}</h1>
+                    <span layout vertical>
+                        <div flex></div>
+                        <div class="error">{{datetime == null ? 'No deadline' : 'Deadline:&nbsp;'}}</div>
+                        <div flex></div>
+                    </span>
 
-                <core-collapse opened?="{{datetime != null}}" horizontal>
-                <div style="padding: 3px;">
-                    <date-calendar datetime="{{datetime}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>
+                    <core-collapse opened?="{{datetime != null}}" horizontal>
+                    <div style="padding: 3px;">
+                        <date-calendar datetime="{{datetime}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>
+                    </div>
+                    </core-collapse>
                 </div>
+
+                <core-collapse opened?="{{displayRepo != null}}">
+                    <h2>Repository</h2>
+                    <div layout horizontal start>
+                        <!--<div style="width: 24px;"></div> &lt;!&ndash; 24px is the core-icon width &ndash;&gt;-->
+                        <div>{{displayRepo}}</div>
+                    </div>
                 </core-collapse>
-            </div>
 
-            <core-collapse opened?="{{displayRepo != null}}">
-            <div layout horizontal>
-                <div class="spacer"></div>
-                <div>{{displayRepo}}</div>
-            </div>
-            </core-collapse>
+                <br>
 
-            <br>
+                <core-collapse opened?="{{!forked}}">
+                    <fork-component
+                            on-create-fork="{{createFork}}"
+                            repo="{{repo}}">
+                    </fork-component>
+                </core-collapse>
 
-            <core-collapse opened?="{{!forked}}">
-                <fork-component
-                        on-create-fork="{{createFork}}"
-                        repo="{{repo}}">
-                </fork-component>
-            </core-collapse>
-
-            <core-collapse opened?="{{forked}}">
-                <div layout horizontal>
-                    <div class="spacer"></div>
-                    <submit-component flex two
+                <core-collapse opened?="{{forked}}">
+                    <h2>Submissions</h2>
+                    <submit-component flex
                                       id="submitComponent"
                                       tickId="{{tickId}}"
                                       signedUp="{{signedUp}}"
@@ -85,7 +124,8 @@
                                       repo="{{repo}}"
                                       deadline="{{tickObj.deadline}}">
                     </submit-component>
-                    <div class="spacer"></div>
+
+                    <h2>Ticking Session</h2>
                     <signup-component flex
                                       sheets="{{sheets}}"
                                       signedUp="{{signedUp}}"
@@ -94,9 +134,11 @@
                                       tickId="{{tickId}}"
                                       humanPass="{{humanPass}}">
                     </signup-component>
-                    <div class="spacer"></div>
-                </div>
-            </core-collapse>
+                    </div>
+                </core-collapse>
+
+                <div style="width: 20px;"></div>
+            </div>
         </div>
         <br><br>
     </template>

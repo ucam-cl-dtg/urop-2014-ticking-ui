@@ -18,12 +18,12 @@
                         unitPass="{{unitPass}}"
                         repo="{{repo}}">
         </submit-service>
-
+        
         <!--Submit button -->
         <core-collapse opened?="{{!testRunning && !signedUp && !humanPass && !deadlinePassed}}">
-            <paper-button class="tick-component" label="SUBMIT" on-tap="{{submit}}"
-                disabled?="{{signedUp || testRunning}}">
-            </paper-button>
+                <paper-button flex class="tick-component" label="{{reportAvailable ? 'RESUBMIT' : 'SUBMIT'}}" on-tap="{{submit}}"
+                    disabled?="{{signedUp || testRunning}}">
+                </paper-button>
         </core-collapse>
 
         <!-- Progress bar (with caption) -->
