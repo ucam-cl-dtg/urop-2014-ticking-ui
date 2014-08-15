@@ -4,8 +4,9 @@
 <link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../are-you-sure.html">
 
-<polymer-element name="ticker-signups-viewport" attributes="sessionId studentMode description location crsId tickId repoName ticker slotId">
+<polymer-element name="ticker-signups-viewport" attributes="kick sessionId studentMode description location crsId tickId repoName ticker slotId">
   <template>
     <style>
     :host {
@@ -23,24 +24,44 @@
     </style>
 	
 	<!-- Get tickers for this session -->
-    <core-ajax
-        id="ajaxLoadTickers"
+	<toast-ajax
+		id="ajaxLoadTickers"
         url="{{pathLoadTickers}}"
+		waitMessage="loading tickers..."
+		responseMessage="tickers loaded"
+		captureError
+		waitBeforeToast="500"
         handleAs="json"
 		contentType="application/json"
         on-core-response="{{tickersDataLoaded}}"
         on-core-error="{{alertError}}">
-    </core-ajax>
-	
+	</toast-ajax>
+
 	<!-- Get slots for this session and ticker -->
-    <core-ajax
-        id="ajaxLoadSlots"
+    <toast-ajax
+		id="ajaxLoadSlots"
         url="{{pathLoadSlots}}"
+		waitMessage="loading slots..."
+		responseMessage="slots loaded"
+		captureError
+		waitBeforeToast="10"
         handleAs="json"
 		contentType="application/json"
-        on-core-response="{{slotsDataLoaded}}"
-        on-core-error="{{alertError}}">
-    </core-ajax>
+        on-core-response="{{slotsDataLoaded}}">
+	</toast-ajax>
+	
+	<!-- Kick someone out of a slot -->
+    <toast-ajax
+		id="ajaxKick"
+        url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/students/{{crsId}}/ticks/{{tickId}}"
+		waitMessage="kicking {{crsId}}..."
+		responseMessage="kicked {{crsId}}"
+		captureError
+		waitBeforeToast="10"
+        handleAs="json"
+		contentType="application/json"
+        on-core-response="{{ajaxLoadSlots}}">
+	</toast-ajax>
 	
 	<div layout vertical>
 		<div id="card-header" align="left">
@@ -78,7 +99,7 @@
 							</div>
 							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
 								<span>Remove {{slot.student}} from Slot</span>
-								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="right" id="{{slot._id + 'kick'}}" icon="exit-to-app"></core-icon-button>
+								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="right" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
 							</div>
 						</span>
 						<div>
@@ -151,9 +172,6 @@
 				}
 				this.date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
 			},
-			alertError: function() {
-				alert("Sorry, something went wrong accessing signups data");
-			},
 			tickerChange: function(event) {
 				if(event.target.checked) {
 					this.ticker = event.target.label;
@@ -192,6 +210,26 @@
 					}
 				}
 				this.fire("show-report");
+			},
+			kick : function(event) {
+				this.kick = false;
+				this.slotId = event.target.id;
+				var slotId = event.target.id;
+				for(i=0;i<this.slots.length;i++) {
+					if(this.slots[i]._id === slotId) {
+						this.crsId = this.slots[i].student;
+						this.tickId = this.slots[i].comment;
+						break;
+					}
+				}
+				console.log("open are you sure dialog" + this.crsId);
+				this.fire("toggle-are-you-sure");
+			},
+			kickChange : function() {
+				if (this.kick) {
+					console.log("kick");
+					this.$.ajaxKick.go();
+				} 
 			}
 		})
   </script>
