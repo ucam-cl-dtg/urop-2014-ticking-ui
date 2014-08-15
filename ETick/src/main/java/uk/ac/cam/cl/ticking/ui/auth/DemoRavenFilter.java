@@ -338,122 +338,24 @@ public class DemoRavenFilter implements Filter
         HttpServletRequest request = (HttpServletRequest) servletReq;
         HttpServletResponse response = (HttpServletResponse) servletResp;
         HttpSession session = request.getSession();
-
-        log.debug("RavenFilter running for: " + request.getServletPath());
-
-        // Check for an authentication reply in the request
-        String wlsResponse = request.getParameter(WLS_RESPONSE_PARAM);
-        log.debug("WLS-Response is " + wlsResponse);
-
-        // WebauthResponse storedResponse = (WebauthResponse)
-        // session.getAttribute(WLS_RESPONSE_PARAM);
-        WebauthRequest storedRavenReq = (WebauthRequest) session.getAttribute(SESS_RAVEN_REQ_KEY);
-        RavenState storedState = (RavenState) session.getAttribute(SESS_STORED_STATE_KEY);
-
-        /*
-         * Check the stored state if we have it
-         */
-        if (storedState != null)
-        {
-            if (storedState.status != 200)
-            {
-                session.setAttribute(SESS_STORED_STATE_KEY, null);
-                response.sendError(storedState.status);
-                return;
-            }
-
-            /*
-             * We do not check for expiry of the state because in this implementation we simply use
-             * the session expiry the web admin has configured in Tomcat (since the Raven
-             * authentication is only used to set up the session, it makes sense to use the
-             * session's expiry rather than Raven's).
-             */
-
-            /*
-             * We do not check for state.last or state.issue being in the future. State.issue is
-             * already checked in the WebauthValidator when the state is initially created.
-             * State.last is set by System.currentTimeMillis at state creation time and therefore
-             * cannot be in the future.
-             */
-
-            if (wlsResponse == null || wlsResponse.length() == 0)
-            {
-                chain.doFilter(request, response);
-                return;
-            }
-        }// end if (storedState != null)
-
-        /*
-         * Check the received response if we have it.
-         * 
-         * Note - if we have both a stored state and a WLS-Response, we let the WLS-Response
-         * override the stored state (this is no worse than if the same request arrived a few
-         * minutes later when the first session would have expired, thus removing the stored state)
-         */
-        if (wlsResponse != null && wlsResponse.length() > 0)
-        {
-            WebauthResponse webauthResponse = new WebauthResponse(wlsResponse);
-            session.setAttribute(WLS_RESPONSE_PARAM, webauthResponse);
-            try
-            {
-                log.debug("Validating received response with stored request");
-                this.getWebauthValidator().validate(storedRavenReq, webauthResponse);
-
-                RavenPrincipal principal = new RavenPrincipal(webauthResponse.get("principal"));
-                RavenState state = new RavenState(200, webauthResponse.get("issue"),
-                        webauthResponse.get("life"), webauthResponse.get("id"), principal,
-                        webauthResponse.get("auth"), webauthResponse.get("sso"), webauthResponse
-                                .get("params"));
-
-                log.debug("Storing new state " + state.toString());
-                session.setAttribute(SESS_STORED_STATE_KEY, state);
-                session.setAttribute(ATTR_REMOTE_USER, state.principal.getName());
-                request.setAttribute(ATTR_REMOTE_USER, state.principal.getName());
-
-                /*
-                 * We do a redirect here so the user doesn't see the WLS-Response in his browser
-                 * location
-                 */
-                response.sendRedirect(webauthResponse.get("url"));
-                return;
-            }
-            catch (WebauthException e)
-            {
-                log.debug("Response validation failed - " + e.getMessage());
-                try
-                {
-                    int status = webauthResponse.getInt("status");
-                    if (status > 0)
-                        response.sendError(status, e.getMessage());
-                    else
-                        response.sendError(500, "Response validation failed - " + e.getMessage());
-                }
-                catch (Exception e2)
-                {
-                    response.sendError(500, "Response validation failed - " + e.getMessage());
-                }
-                return;
-            }
+        
+        // If we are in testing mode then we check to see if the requestor
+        // has specified which user they would like to masquerade as
+        String user = request
+                .getParameter("raven_test_user");
+        if (user == null) {
+            // If its not specified then try and fish it out of the session
+            // (to see if they set it in an earlier request)
+            user = (String) session.getAttribute(ATTR_REMOTE_USER);
         }
-        else
-        {
-            /*
-             * No WLS-Response, no stored state. Redirect the user to Raven to log in
-             */
-            WebauthRequest webauthReq = new WebauthRequest();
-
-            StringBuffer url = request.getRequestURL();
-            if (request.getQueryString() != null && request.getQueryString().length() > 0)
-            {
-                url.append('?');
-                url.append(request.getQueryString());
-            }
-            log.debug("Redirecting with url " + url.toString());
-            webauthReq.set("url", url.toString());
-            session.setAttribute(SESS_RAVEN_REQ_KEY, webauthReq);
-            response.sendRedirect(sRavenAuthenticatePage + "?" + webauthReq.toQString());
-            return;
+        if (user == null) {
+            // Otherwise default to the user 'test'
+            user = "test";
         }
+        servletReq.setAttribute(ATTR_REMOTE_USER, user);
+        session.setAttribute(ATTR_REMOTE_USER, user);
+        chain.doFilter(servletReq, servletResp);
+        return;
     }
 
     class RavenPrincipal implements Principal
