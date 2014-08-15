@@ -19,7 +19,7 @@
 		<!-- Delete button. -->
 		<paper-icon-button id="deleteButton"
 			icon="drive-spreadsheet"
-			on-click="{{exportStatus}}">
+			on-click="{{toggle}}">
 		</paper-icon-button>
 
 		<!-- Filetype dialog. -->
@@ -54,11 +54,7 @@
 				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid )
 		        .done(function () {})
 		        .fail(function () { this.$.deletexportError.show(); });
-			},
-
-			exportStatus: function () {
-				toggle();
-			},
+			}
 
 		});
 	</script>
