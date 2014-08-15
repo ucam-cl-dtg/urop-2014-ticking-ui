@@ -4,29 +4,34 @@
 <link rel="import" href="tickerSignupsView/TickerSignupsViewport.html">
 <link rel="import" href="file-browser/file-browser-card.html">
 
-<polymer-element name="ticker-signup" attributes="groupId">
+<polymer-element name="ticker-signup" attributes="groupId isMarker isAdmin sessionId sessionName location description">
 	<template>
+		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
 		<div class="container">
-			<main-card animated>
-				<ticker-signups-card on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
-			</main-card>
-			<main-card animated hidden?="{{!viewReport}}">
-				<file-browser-card id="filebrowser" on-update-ticker-viewer="{{updateTickerViewer}}" slotId="{{slotId}}" sheetId="{{sessionId}}" crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
-			</main-card>	
+			<template if="{{((isMarker||isAdmin)&&(sessionId))}}">
+				<main-card animated>
+					<ticker-signups-card on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" reason="{{reason}}" refresh="{{!viewReport}}" studentMode="{{false}}" location="{{location}}" description="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
+				</main-card>
+				<main-card animated hidden?="{{!viewReport}}">
+					<file-browser-card id="filebrowser" on-hide-report="{{hideReport}}" slotId="{{slotId}}" sheetId="{{sessionId}}" crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
+				</main-card>
+			</template>
+			<template if="{{(!(isMarker||isAdmin)&&(sessionId))}}">
+				<main-card animated>
+					<ticker-signups-card studentMode="{{true}}" location="{{location}}" description="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
+				</main-card>
+			</template>
 		</div>
 	</template>
 	<script>
 	Polymer('ticker-signup', {
             hideReport: function(e, detail) {
+				this.reason = detail.reason;
 				this.viewReport = false;
-            },
-            updateTickerViewer: function(e, detail) {
-				this.$.tickerSignupsCard.updateTickerViewer(detail);
             },
 			showReport: function () {
 				// Code to show report again.
 				this.viewReport = true;
-				this.$.filebrowser.swipeBack();
 			}
 		});
     </script>
