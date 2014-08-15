@@ -394,10 +394,10 @@ public class DemoRavenFilter implements Filter
         {
             WebauthResponse webauthResponse = new WebauthResponse(wlsResponse);
             session.setAttribute(WLS_RESPONSE_PARAM, webauthResponse);
-            try
-            {
+            /*try
+            {*/
                 log.debug("Validating received response with stored request");
-                this.getWebauthValidator().validate(storedRavenReq, webauthResponse);
+                //this.getWebauthValidator().validate(storedRavenReq, webauthResponse);
 
                 RavenPrincipal principal = new RavenPrincipal(webauthResponse.get("principal"));
                 RavenState state = new RavenState(200, webauthResponse.get("issue"),
@@ -416,7 +416,7 @@ public class DemoRavenFilter implements Filter
                  */
                 response.sendRedirect(webauthResponse.get("url"));
                 return;
-            }
+            /*}
             catch (WebauthException e)
             {
                 log.debug("Response validation failed - " + e.getMessage());
@@ -433,7 +433,7 @@ public class DemoRavenFilter implements Filter
                     response.sendError(500, "Response validation failed - " + e.getMessage());
                 }
                 return;
-            }
+            }*/
         }
         else
         {
