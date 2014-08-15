@@ -72,7 +72,7 @@
 				<paper-input id="titleInput" 
 					floatingInput
 					required
-					value="{{sheet.title}}"
+					value="{{titleName}}"
 					placeholder="Ticking session title..."
 					pattern="^[^/]+$"
 					error="Invalid session title."
@@ -83,7 +83,7 @@
 				<!-- TODO: try multiline -->
 				<core-icon class="big" icon="info-outline"></core-icon>
 				<paper-input id="descInput"
-					value="{{sheet.description}}"
+					value="{{desc}}"
 					label="Description..."
 					maxRows="5"></paper-input>
 			</div>
@@ -92,7 +92,7 @@
 				<core-icon class="big" icon="communication:location-on">
 				</core-icon>
 				<paper-input id="locInput"
-					value="{{sheet.location}}"
+					value="{{loc}}"
 					floatingInput
 					placeholder="Location..."></paper-input>
 			</div>
@@ -103,9 +103,9 @@
 			<core-icon class="big" icon="image:timelapse"></core-icon>
 			<paper-input id="slotLengthInput"
 				required
-				disabled="{{sheet}}"
+				disabled?="{{sheet}}"
 				on-input="{{validate}}"
-				value="{{sheet.slotLength}}"
+				value="{{slotLengthDisplay}}"
 				placeholder="In minutes..."
 				pattern="^[0-9]+$"
 				error="Invalid slot length.">
@@ -178,9 +178,14 @@
 	</template>
 	<script>
 		Polymer('add-edit-session', {
-
+			
 			domReady: function () {
 				if (this.sheet) {
+					this.titleName = this.sheet.title;
+					this.desc = this.sheet.description;
+					this.loc = this.sheet.location;
+					this.slotLengthDisplay = this.sheet.slotLength;
+
 					var startDT = new Date(this.sheet.startTime).toJSON();
 					var endDT = new Date(this.sheet.endTime).toJSON();
 					var startT = startDT.indexOf('T');
