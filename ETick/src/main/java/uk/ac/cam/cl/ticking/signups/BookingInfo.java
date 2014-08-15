@@ -26,7 +26,7 @@ public class BookingInfo {
         tickID = slot.getComment();
         tickName = Tick.getNameFromID(tickID);
         startTime = slot.getStartTime();
-        groupName = groupName;
+        this.groupName = groupName;
     }
 
     public String getTicker() {
@@ -43,6 +43,10 @@ public class BookingInfo {
 
     public Date getStartTime() {
         return startTime;
-    }    
+    }
+    
+    public String getGroupName() {
+        return groupName;
+    }
 
 }
