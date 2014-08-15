@@ -39,11 +39,9 @@ import uk.ac.cam.cl.signups.api.exceptions.NotAllowedException;
 import uk.ac.cam.cl.signups.interfaces.SignupsWebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
-import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
 
 @Path("/signups")

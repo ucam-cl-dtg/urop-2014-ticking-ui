@@ -1,0 +1,64 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="are-you-sure.html">
+
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/core-collapse/core-collapse.html">
+
+<polymer-element name="export-status" attributes="gid name">
+	<template>
+		<style>
+			:host {
+				display: inherit;
+			}
+		</style>
+
+		<!-- Delete button. -->
+		<paper-icon-button id="deleteButton"
+			icon="drive-spreadsheet"
+			on-click="{{exportStatus}}">
+		</paper-icon-button>
+
+		<!-- Filetype dialog. -->
+		<paper-dialog id="fileTypeDialog"
+			opened="{{opened}}"
+			backdrop
+			transition="core-transition-top">
+			<paper-button label="XLS" on-click="{{xls}}">
+			</paper-button>
+            <paper-button label="CSV" on-click="{{csv}}">
+        	</paper-button>
+		</paper-dialog>
+
+		<!-- Response toasts. -->
+		<paper-toast id="exportError" duration="3000" text="Error serving file."></paper-toast>
+
+	</template>
+	<script>
+		Polymer('export-status', {
+			
+			opened: false,
+
+			toggle: function () {
+				this.$.fileTypeDialog.toggle();
+			},
+
+			xls: function () {
+				
+			},
+
+			csv: function () {
+				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid )
+		        .done(function () {})
+		        .fail(function () { this.$.deletexportError.show(); });
+			},
+
+			exportStatus: function () {
+				toggle();
+			},
+
+		});
+	</script>
+</polymer-element>

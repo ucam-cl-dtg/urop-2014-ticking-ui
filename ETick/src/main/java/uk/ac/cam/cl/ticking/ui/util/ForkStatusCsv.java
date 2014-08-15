@@ -53,6 +53,7 @@ public class ForkStatusCsv {
 		}
 
 		writer.append('\n');
+		writer.append('\n');
 
 		for (User user : submitters) {
 			writer.append(user.getDisplayName());

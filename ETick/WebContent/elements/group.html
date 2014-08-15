@@ -14,12 +14,6 @@
 <link rel="import" href="tick-session-list.html">
 <link rel="import" href="add-edit-session.html">
 
-<script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
-<script src="../js/jquery.fileDownload.js" type="text/javascript"></script>
-
-<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../bower_components/core-collapse/core-collapse.html">
-
 <polymer-element name="x-group" attributes="gid name info creator">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
@@ -56,7 +50,7 @@
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
 								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
 								<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
-								<paper-icon-button id="groupExportButton" icon="file-download" on-click="{{exportGroup}}"></paper-icon-button>
+								<export-status gid="{{gid}}"></export-status>
 							</template>
 						</span>
                     </div>
@@ -191,12 +185,6 @@
                 this.selectedTickObj = detail.tickObj;
 
                 console.log(detail);
-			},
-			
-			exportGroup: function () {
-				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid )
-		        .done(function () {})
-		        .fail(function () { alert('File download failed!'); });
 			},
 
 			sheetCreated: function () {
