@@ -54,7 +54,7 @@ public interface IGroupApiFacade {
 	 * @return the status of all the fork objects for the users and ticks in the group as csv
 	 */
 	@GET
-	@Path("/{groupId}/status")
+	@Path("/{groupId}/status/csv")
 	@Produces("text/plain")
 	public abstract Response exportGroupForkStatus(@PathParam("groupId") String groupId);
 

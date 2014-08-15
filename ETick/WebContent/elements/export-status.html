@@ -10,9 +10,10 @@
 
 <polymer-element name="export-status" attributes="gid name">
 	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
 		<style>
-			:host {
-				display: inherit;
+			paper-button {
+				width: 100%;
 			}
 		</style>
 
@@ -26,10 +27,11 @@
 		<paper-dialog id="fileTypeDialog"
 			opened="{{opened}}"
 			backdrop
+			heading="Choose Filetype"
 			transition="core-transition-top">
-			<paper-button label="XLS" on-click="{{xls}}">
+			<paper-button label="XLS" class="greenButton" on-click="{{xls}}">
 			</paper-button>
-            <paper-button label="CSV" on-click="{{csv}}">
+            <paper-button label="CSV" class="blueButton" on-click="{{csv}}">
         	</paper-button>
 		</paper-dialog>
 
@@ -51,7 +53,7 @@
 			},
 
 			csv: function () {
-				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid )
+				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid +'/status/csv')
 		        .done(function () {})
 		        .fail(function () { this.$.deletexportError.show(); });
 			}
