@@ -82,7 +82,7 @@
 				}
 			},
 
-			deleteSessionButton: function () {
+			deleteClicked: function () {
 				if (this.selectedSheet) {
 					var call = this.$.deleteSessionAPI;
 					call.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.selectedSheet._id
@@ -94,6 +94,7 @@
 				var toast = this.$.deleteSessionSuccess;
 				toast.text = 'Successfully deleted session "' + this.selectedSheet.title + '".';
 				toast.show();
+				this.fire('sheet-deleted');
 			},
 
 			deleteSessionError: function(e, detail) {

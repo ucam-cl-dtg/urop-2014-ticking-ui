@@ -86,7 +86,8 @@
 	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
 	        		on-add-sheet-clicked="{{addSheetHandler}}"
 	        		on-edit-sheet-clicked="{{editSheetHandler}}"
-	        		on-sheet-selected="{{sheetSelectedHandler}}">
+	        		on-sheet-selected="{{sheetSelectedHandler}}"
+	        		on-sheet-deleted="{{sheetCreated}}">
 	        	</tick-session-list>
 	        </span>
 
@@ -231,7 +232,8 @@
 
 			sheetSelectedHandler: function (e, detail) {
 				this.sheet = detail.sheet;
-			}
+			},
+
 		});
 	</script>
 </polymer-element>

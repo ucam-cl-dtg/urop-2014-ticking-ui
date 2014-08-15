@@ -57,7 +57,7 @@
 
 		<!-- Edit session API call. -->
 		<core-ajax id="editSessionAPI"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets' + sheet._id }}"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/' + sheet._id }}"
 			method="POST"
 			contentType="application/json"
 			on-core-response="{{editSessionResponse}}"
@@ -74,6 +74,7 @@
 					required
 					value="{{sheet.title}}"
 					placeholder="Ticking session title..."
+					pattern="^[^/]+$"
 					error="Invalid session title."
 					on-input="{{validate}}"></paper-input>
 			</div>
@@ -199,7 +200,7 @@
 			},
 
 			validate: function () {
-				if (this.$.titleInput.inputValue &&
+				if (this.$.titleInput.inputValue && !this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.value &&
 					this.$.startTime.value && this.$.endTime.value &&
