@@ -12,6 +12,7 @@
 <link rel="import" href="are-you-sure.html">
 <link rel="import" href="delete-group.html">
 <link rel="import" href="tick-session-list.html">
+<link rel="import" href="add-edit-session.html">
 
 <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
 <script src="../js/jquery.fileDownload.js" type="text/javascript"></script>
@@ -84,8 +85,8 @@
             <!-- Ticking Sessions Tab -->
             <span id="tickingSessions" hidden>
 	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
-	        		on-sheet-created="{{sheetCreated}}"
-	        		on-edit-add-session="{{editAddSession}}"></tick-session-list>
+	        		on-add-clicked="{{addSheetHandler}}">
+	        	</tick-session-list>
 	        </span>
 
 		</main-card>
@@ -113,6 +114,14 @@
             </template>
         </span>
 
+         <!-- Ticking session create/edit card. -->
+	    <template id="addEditSessionTemp" if="{{showAddEditSession}}">
+			<main-card animated>
+				<add-edit-session gid="{{gid}}" sheet="{{sheet}}"
+				on-sheet-created="{{sheetCreated}}"></add-edit-session>
+			</main-card>
+		</template>
+
 
         <!-- Marker card for ticking sessions. -->
         <span id="deepTickingSessions" hidden>
@@ -121,12 +130,6 @@
             </template>
         </span>
 
-	    <!-- Ticking session create/edit card. -->
-
-	    <!-- <template if="{{showEditAddSession}}"> -->
-	    	<main-card id="editAddSessionCard">
-		    </main-card>
-		<!-- </template> -->
 
 	</template>
 	<script>
@@ -192,11 +195,16 @@
 
 			sheetCreated: function () {
 				this.$.sheetListAPI.go();
+				console.log('here');
 			},
 
-			editAddSession: function (e, detail) {
-				this.$.editAddSessionCard.appendChild(detail);
-			}
+			addSheetHandler: function () {
+				this.$.addEditSessionTemp.model = {
+					showAddEditSession: true,
+					gid: this.gid,
+					sheet: null
+				}
+			},
 		});
 	</script>
 </polymer-element>
