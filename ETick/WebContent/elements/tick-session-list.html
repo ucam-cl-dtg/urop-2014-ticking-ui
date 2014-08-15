@@ -19,12 +19,21 @@
 			}
 		</style>
 
+		<!-- Delete Tick Session API. -->
+		<!-- Add session API call. -->
+		<core-ajax id="deleteSessionAPI"
+			method="DELETE"
+			on-core-response="{{deleteSessionResponse}}"
+			on-core-error="{{deleteSessionError}}">
+		</core-ajax>
+
 		<div id="headerBar" layout horizontal center end-justified>
 			<!-- <h1 flex>Ticking Sessions ({{sheets ? sheets.length : 0}})</h1> -->
 			<template if="{{isAuthor}}">
 				<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
 				<paper-icon-button id="editSessionButton" icon="create" on-click="{{editClicked}}"></paper-icon-button>
-			</template>
+				<paper-icon-button id="deleteSessionButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
+ 			</template>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
@@ -33,6 +42,10 @@
 				<tick-session-box class="itemBox" sheet="{{sheet}}"></tick-session-box>
 			</template>
 		</box-list>
+
+		<!-- Response toasts. -->
+		<paper-toast id="deleteSessionSuccess" duration="8000"></paper-toast>
+		<paper-toast id="deleteSessionError" duration="8000"></paper-toast>
 	</template>
 	<script>
 		Polymer('tick-session-list', {
@@ -58,7 +71,7 @@
 					this.selectedSheet = sel.sheet;
 					this.fire('sheet-selected', {
 						sheet: this.selectedSheet
-					})
+					});
 				}
 
 			},
@@ -67,6 +80,31 @@
 				if (this.selectedSheet) {
 					this.fire('edit-sheet-clicked');
 				}
+			},
+
+			deleteClicked: function () {
+				if (this.selectedSheet) {
+					var call = this.$.deleteSessionAPI;
+					call.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.selectedSheet._id
+					call.go();
+				}
+			},
+
+			deleteSessionResponse: function () {
+				var toast = this.$.deleteSessionSuccess;
+				toast.text = 'Successfully deleted session "' + this.selectedSheet.title + '".';
+				toast.show();
+				this.fire('sheet-deleted');
+			},
+
+			deleteSessionError: function(e, detail) {
+				var toast = this.$.deleteSessionError;
+				toast.text = detail.xhr.responseText;
+				toast.show();
+			},
+
+			clearSelection: function () {
+				this.$.list.$.selector.selected = null;
 			}
 		});
 	</script>

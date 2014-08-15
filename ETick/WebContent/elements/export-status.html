@@ -1,0 +1,65 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+<script src="../js/jquery.fileDownload.js" type="text/javascript"></script>
+
+<polymer-element name="export-status" attributes="gid name">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+		<style>
+			paper-button {
+				width: 100%;
+			}
+		</style>
+
+		<!-- Delete button. -->
+		<paper-icon-button id="deleteButton"
+			icon="drive-spreadsheet"
+			on-click="{{toggle}}">
+		</paper-icon-button>
+
+		<!-- Filetype dialog. -->
+		<paper-dialog id="fileTypeDialog"
+			opened="{{opened}}"
+			backdrop
+			heading="Choose Filetype"
+			transition="core-transition-top">
+			<paper-button label="XLS" class="greenButton" on-click="{{xls}}">
+			</paper-button>
+            <paper-button label="CSV" class="blueButton" on-click="{{csv}}">
+        	</paper-button>
+		</paper-dialog>
+
+		<!-- Response toasts. -->
+		<paper-toast id="exportError" duration="3000" text="Error serving file."></paper-toast>
+
+	</template>
+	<script>
+		Polymer('export-status', {
+			
+			opened: false,
+
+			toggle: function () {
+				this.$.fileTypeDialog.toggle();
+			},
+
+			xls: function () {
+				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid +'/status/xls')
+		        .done(function () { this.toggle() })
+		        .fail(function () { this.$.deletexportError.show(); });
+			},
+
+			csv: function () {
+				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid +'/status/csv')
+		        .done(function () { this.toggle() })
+		        .fail(function () { this.$.deletexportError.show(); });
+			}
+
+		});
+	</script>
+</polymer-element>

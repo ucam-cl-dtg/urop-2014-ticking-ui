@@ -8,9 +8,10 @@
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
 		<div class="container">
+			<are-you-sure id="confirm" on-yes="{{yes}}" on-no="{{no}}" heading="Are you sure you want to remove {{crsId}} from this slot?"></are-you-sure>
 			<template if="{{((isMarker||isAdmin)&&(sessionId))}}">
 				<main-card animated>
-					<ticker-signups-card on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" reason="{{reason}}" refresh="{{!viewReport}}" studentMode="{{false}}" location="{{location}}" description="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
+					<ticker-signups-card on-toggle-are-you-sure="{{toggleAreYouSure}}" on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" kick="{{kick}}" reason="{{reason}}" refresh="{{!viewReport}}" studentMode="{{false}}" location="{{location}}" description="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
 				</main-card>
 				<main-card animated hidden?="{{!viewReport}}">
 					<file-browser-card id="filebrowser" on-hide-report="{{hideReport}}" slotId="{{slotId}}" sheetId="{{sessionId}}" crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
@@ -32,6 +33,17 @@
 			showReport: function () {
 				// Code to show report again.
 				this.viewReport = true;
+			},
+			toggleAreYouSure: function() {
+				this.$.confirm.toggle();
+				console.log("toggleAreYouSure");
+			},
+			yes : function() {
+				console.log("kick = true");
+				this.kick = true;
+			},
+			no : function() {
+				console.log("kick = false");
 			}
 		});
     </script>

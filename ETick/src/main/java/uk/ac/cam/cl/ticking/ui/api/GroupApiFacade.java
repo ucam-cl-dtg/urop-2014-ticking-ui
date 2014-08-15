@@ -34,6 +34,7 @@ import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.ForkStatusCsv;
+import uk.ac.cam.cl.ticking.ui.util.ForkStatusXls;
 import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -51,10 +52,11 @@ public class GroupApiFacade implements IGroupApiFacade {
 	private ConfigurationLoader<Configuration> config;
 
 	private TickSignups tickSignupService;
-	
+
 	private PermissionsManager permissions;
-	
+
 	private ForkStatusCsv csv;
+	private ForkStatusXls xls;
 
 	/**
 	 * @param db
@@ -63,12 +65,14 @@ public class GroupApiFacade implements IGroupApiFacade {
 	@Inject
 	public GroupApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			TickSignups tickSignupService, PermissionsManager permissions, ForkStatusCsv csv) {
+			TickSignups tickSignupService, PermissionsManager permissions,
+			ForkStatusCsv csv, ForkStatusXls xls) {
 		this.db = db;
 		this.config = config;
 		this.tickSignupService = tickSignupService;
 		this.permissions = permissions;
 		this.csv = csv;
+		this.xls = xls;
 	}
 
 	/**
@@ -88,7 +92,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		return Response.ok(group).build();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -103,42 +107,42 @@ public class GroupApiFacade implements IGroupApiFacade {
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
-		
+
 		File temp;
 		PrintWriter writer;
-		
+
 		try {
 			temp = File.createTempFile(group.getGroupId(), ".txt");
 			writer = new PrintWriter(temp);
-			
+
 		} catch (IOException e) {
-			log.error("Tried exporting group "
-					+ groupId, e);
+			log.error("Tried exporting group " + groupId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(Strings.IDEMPOTENTRETRY).build();
 		}
-		
+
 		for (Role role : Role.values()) {
 			writer.println(role.name());
 			for (User user : db.getUsers(groupId, role)) {
-				writer.print(user.getCrsid()+" ");
+				writer.print(user.getCrsid() + " ");
 			}
 			writer.println();
 		}
-		
+
 		writer.close();
 
 		ResponseBuilder response = Response.ok((Object) temp);
-        response.header("Content-Disposition", "attachment; filename=\""+group.getName()+".txt\"");
-        response.header("Set-Cookie","fileDownload=true; path=/");
-        return response.build();
+		response.header("Content-Disposition", "attachment; filename=\""
+				+ group.getName() + ".txt\"");
+		response.header("Set-Cookie", "fileDownload=true; path=/");
+		return response.build();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response exportGroupForkStatus(String groupId) {
+	public Response exportGroupForkStatusCsv(String groupId) {
 		Group group = db.getGroup(groupId);
 
 		/* Get the group object, returning if not found */
@@ -148,21 +152,52 @@ public class GroupApiFacade implements IGroupApiFacade {
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
-		
+
 		File temp;
 		try {
 			temp = csv.generateCsvFile(group);
 		} catch (IOException e) {
-			log.error("Tried exporting group fork status"
-					+ groupId, e);
+			log.error("Tried exporting group fork status" + groupId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(Strings.IDEMPOTENTRETRY).build();
 		}
 
 		ResponseBuilder response = Response.ok((Object) temp);
-        response.header("Content-Disposition", "attachment; filename=\""+group.getName()+".csv\"");
-        response.header("Set-Cookie","fileDownload=true; path=/");
-        return response.build();
+		response.header("Content-Disposition", "attachment; filename=\""
+				+ group.getName() + ".csv\"");
+		response.header("Set-Cookie", "fileDownload=true; path=/");
+		return response.build();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Response exportGroupForkStatusXls(String groupId) {
+		Group group = db.getGroup(groupId);
+
+		/* Get the group object, returning if not found */
+		if (group == null) {
+			log.error("Requested group " + groupId
+					+ " but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		File temp;
+		try {
+			temp = xls.generateXlsFile(group);
+		} catch (IOException e) {
+			log.error("Tried exporting group fork status" + groupId, e);
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(Strings.IDEMPOTENTRETRY).build();
+		}
+
+		ResponseBuilder response = Response.ok((Object) temp);
+		response.header("Content-Disposition", "attachment; filename=\""
+				+ group.getName() + ".xls\"");
+		response.header("Set-Cookie", "fileDownload=true; path=/");
+		return response.build();
 	}
 
 	/**
@@ -214,14 +249,14 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Get the users in the group, sort and return them */
 		List<User> users = db.getUsers(groupId);
-		
-		/*Remove users who are only admins for the group*/
+
+		/* Remove users who are only admins for the group */
 		Iterator<User> i = users.iterator();
 		while (i.hasNext()) {
 			User user = i.next();
 			List<Role> roles = db.getRoles(groupId, user.getCrsid());
 			roles.remove(Role.ADMIN);
-			if (roles.size()==0) {
+			if (roles.size() == 0) {
 				i.remove();
 			}
 		}
@@ -449,11 +484,12 @@ public class GroupApiFacade implements IGroupApiFacade {
 						.getUser(), grouping.getRole()));
 			}
 		} else {
-			/*Add the user as an author and all admins to the clone*/		
+			/* Add the user as an author and all admins to the clone */
 			db.saveGrouping(new Grouping(group.getGroupId(), crsid, Role.AUTHOR));
-			
-			for (User user : db.getAdmins()){
-				db.saveGrouping(new Grouping(group.getGroupId(), user.getCrsid(), Role.ADMIN));
+
+			for (User user : db.getAdmins()) {
+				db.saveGrouping(new Grouping(group.getGroupId(), user
+						.getCrsid(), Role.ADMIN));
 			}
 		}
 
