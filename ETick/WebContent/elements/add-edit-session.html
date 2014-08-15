@@ -204,7 +204,8 @@
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.value &&
 					this.$.startTime.value && this.$.endTime.value &&
-					this.$.slotLengthInput.inputValue) {
+					this.$.slotLengthInput.inputValue &&
+					!this.$.slotLengthInput.invalid) {
 					this.disableSubmit = false;
 				}
 				else {
@@ -250,8 +251,8 @@
 			addSessionResponse: function () {
 				var toast = this.$.addSessionSuccess;
 				toast.text = "Successfully created new ticking session '" + this.title + "'.";
-				this.fire('sheet-created');
 				toast.show();
+				this.fire('sheet-created');
 			},
 
 			addSessionError: function(e, detail) {

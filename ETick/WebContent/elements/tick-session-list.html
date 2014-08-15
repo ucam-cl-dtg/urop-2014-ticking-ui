@@ -94,6 +94,7 @@
 				var toast = this.$.deleteSessionSuccess;
 				toast.text = 'Successfully deleted session "' + this.selectedSheet.title + '".';
 				toast.show();
+				this.$.list.clearSelection();
 				this.fire('sheet-deleted');
 			},
 
