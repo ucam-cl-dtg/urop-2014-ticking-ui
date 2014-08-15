@@ -107,7 +107,9 @@ public class TickApiFacade implements ITickApiFacade {
 			db.removeTick(tickId);
 			/*Remove dangling group references*/
 			for (String groupId : tick.getGroups()) {
-				db.getGroup(groupId).removeTick(tickId);
+				Group group = db.getGroup(groupId);
+				group.removeTick(tickId);
+				db.saveGroup(group);
 			}
 
 		} catch (InternalServerErrorException e) {
@@ -127,7 +129,9 @@ public class TickApiFacade implements ITickApiFacade {
 				db.removeTick(tickId);
 				/*Remove dangling group references*/
 				for (String groupId : tick.getGroups()) {
-					db.getGroup(groupId).removeTick(tickId);
+					Group group = db.getGroup(groupId);
+					group.removeTick(tickId);
+					db.saveGroup(group);
 				}
 
 				log.warn("User " + crsid + " tried deleting repository for "
