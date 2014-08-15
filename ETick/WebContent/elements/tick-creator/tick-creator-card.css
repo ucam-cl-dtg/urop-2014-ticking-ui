@@ -26,13 +26,13 @@ paper-button.tick-creator {
     width: 10em;
     height: 35px; /* Firefox/IE compatibility */
 }
-paper-button.colored-tick-creator {
+#save {
     background: #259b24;
     color: #fff;
-
-    margin: 20px;
-    width: 10em;
-    height: 35px; /* Firefox/IE compatibility */
+}
+#delete {
+    background: #e51c23;
+    color: #fff;
 }
 paper-toggle-button {
     margin-top: 23px;
