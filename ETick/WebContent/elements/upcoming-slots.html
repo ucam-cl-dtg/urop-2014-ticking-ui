@@ -25,7 +25,8 @@
 			<template repeat="{{slot in slots | slotListFilter($.searchBox.query)}}">
 				<slot-box class="itemBox" datetime="{{slot.startTime}}" 
 							tickName="{{slot.tickName}}" 
-							ticker="{{slot.ticker}}">
+							ticker="{{slot.ticker}}"
+							groupName="{{slot.groupName}}">
 				</slot-box>
 			</template>
 		</box-list>

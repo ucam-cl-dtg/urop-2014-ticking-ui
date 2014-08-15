@@ -54,9 +54,20 @@ public interface IGroupApiFacade {
 	 * @return the status of all the fork objects for the users and ticks in the group as csv
 	 */
 	@GET
-	@Path("/{groupId}/status")
+	@Path("/{groupId}/status/csv")
 	@Produces("text/plain")
-	public abstract Response exportGroupForkStatus(@PathParam("groupId") String groupId);
+	public abstract Response exportGroupForkStatusCsv(@PathParam("groupId") String groupId);
+	
+	/**
+	 * 
+	 * @param groupId
+	 * @return the status of all the fork objects for the users and ticks in the group as xls
+	 */
+	@GET
+	@Path("/{groupId}/status/xls")
+	//@Produces("application/octet-stream")
+	@Produces("application/vnd.ms-excel")
+	public abstract Response exportGroupForkStatusXls(@PathParam("groupId") String groupId);
 
 	/**
 	 * Deletes the specified group, clearing up any dangling associations with

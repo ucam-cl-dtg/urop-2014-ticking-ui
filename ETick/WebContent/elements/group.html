@@ -11,11 +11,9 @@
 <link rel="import" href="file-browser/file-browser-card.html">
 <link rel="import" href="are-you-sure.html">
 <link rel="import" href="delete-group.html">
+<link rel="import" href="export-status.html">
 <link rel="import" href="tick-session-list.html">
 <link rel="import" href="add-edit-session.html">
-
-<script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
-<script src="../js/jquery.fileDownload.js" type="text/javascript"></script>
 
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
@@ -56,7 +54,7 @@
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
 								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
 								<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
-								<paper-icon-button id="groupExportButton" icon="file-download" on-click="{{exportGroup}}"></paper-icon-button>
+								<export-status gid="{{gid}}"></export-status>
 							</template>
 						</span>
                     </div>
@@ -85,9 +83,15 @@
 
             <!-- Ticking Sessions Tab -->
             <span id="tickingSessions" hidden>
-	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
+	        	<tick-session-list 
+	        		id="tickingSessionList"
+	        		gid="{{gid}}" 
+	        		sheets="{{sheets}}" 
+	        		isAuthor="{{isAuthor||isAdmin}}"
 	        		on-add-sheet-clicked="{{addSheetHandler}}"
-	        		on-edit-sheet-clicked="{{editSheetHandler}}">
+	        		on-edit-sheet-clicked="{{editSheetHandler}}"
+	        		on-sheet-selected="{{sheetSelectedHandler}}"
+	        		on-sheet-deleted="{{sheetCreated}}">
 	        	</tick-session-list>
 	        </span>
 
@@ -134,7 +138,7 @@
         <!-- Marker card for ticking sessions. -->
         <span id="deepTickingSessions" hidden>
 	        <!-- moved template to ticker-signup -->
-            <ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheetName}}" sessionId="{{sheetId}}" location="{{location}}" description="{{description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
+            <ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.title}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
             
         </span>
 
@@ -196,14 +200,9 @@
 
                 console.log(detail);
 			},
-			
-			exportGroup: function () {
-				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid )
-		        .done(function () {})
-		        .fail(function () { alert('File download failed!'); });
-			},
 
 			sheetCreated: function () {
+				this.$.tickingSessionList.clearSelection();
 				this.$.sheetListAPI.go();
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: false,
@@ -221,7 +220,6 @@
 			},			
 			
 			editSheetHandler: function (e, detail) {
-				this.sheet = detail.sheet;
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: true,
 					gid: this.gid,
@@ -235,7 +233,16 @@
 					gid: null,
 					sheet: null
 				}
-			}
+			},
+
+			sheetSelectedHandler: function (e, detail) {
+				this.sheet = detail.sheet;
+			},
+
+			changeTab: function() { 
+				this.sheet = null;
+				this.$.tickingSessionList.clearSelection();
+			} 
 		});
 	</script>
 </polymer-element>
