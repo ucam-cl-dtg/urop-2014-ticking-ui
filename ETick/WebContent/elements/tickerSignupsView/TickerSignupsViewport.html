@@ -58,8 +58,10 @@
 		waitMessage="kicking {{crsId}}..."
 		responseMessage="kicked {{crsId}}"
 		captureError
-		waitBeforeToast="10"
+		waitBeforeToast="0.01"
 		contentType="application/json"
+		handleAs="text"
+		on-core-response="{{kickDone}}" >
 	</toast-ajax>
 	
 	<div layout vertical>
@@ -98,7 +100,7 @@
 							</div>
 							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
 								<span>Remove {{slot.student}} from Slot</span>
-								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="right" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
+								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="left" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
 							</div>
 						</span>
 						<div>
@@ -207,7 +209,6 @@
 				this.fire("show-report");
 			},
 			kick : function(event) {
-				this.kick = false;
 				this.slotId = event.target.id;
 				var slotId = event.target.id;
 				for(i=0;i<this.slots.length;i++) {
@@ -217,15 +218,19 @@
 						break;
 					}
 				}
-				console.log("open are you sure dialog" + this.crsId);
-				this.fire("toggle-are-you-sure");
+				console.log("firing to open dialog");
+				this.fire("open-are-you-sure");
 			},
 			kickChanged : function() {
 				if (this.kick) {
 					console.log("kick");
 					this.$.ajaxKick.go();
-					this.$.ajaxLoadSlots.go();
 				} 
+			},
+			kickDone : function() {
+				console.log("kicked");
+				this.kick = false;
+				this.$.ajaxLoadSlots.go();
 			}
 		})
   </script>
