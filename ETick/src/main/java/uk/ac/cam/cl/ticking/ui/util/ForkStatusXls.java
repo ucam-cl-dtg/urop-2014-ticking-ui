@@ -57,6 +57,10 @@ public class ForkStatusXls {
 		
 		Row row = sheet.createRow(rownum++);
 		
+		for (String tickId : group.getTicks()) {
+			row.createCell(cellnum++).setCellValue(db.getTick(tickId).getName());
+		}
+		
 		CellStyle rowStyle = row.getRowStyle();
 		if (rowStyle == null) {
 			rowStyle = workbook.createCellStyle();
@@ -69,12 +73,13 @@ public class ForkStatusXls {
 		
 		row.createCell(cellnum++).setCellValue("DISPLAY NAME");
 		row.createCell(cellnum++).setCellValue("CRSID");
-		row.createCell(cellnum++).setCellValue("COLLEGE");
+		Cell rightCell = row.createCell(cellnum++);
+		rightCell.setCellValue("COLLEGE");
 		
-		for (String tickId : group.getTicks()) {
-			row.createCell(cellnum++).setCellValue(db.getTick(tickId).getName());
-		}
-		
+		CellStyle borderStyle = workbook.createCellStyle();
+		borderStyle.setBorderRight(CellStyle.BORDER_THIN);
+	    borderStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	    rightCell.setCellStyle(borderStyle);
 		
 		for (User user : submitters) {
 			row = sheet.createRow(rownum++);
@@ -99,6 +104,7 @@ public class ForkStatusXls {
 									+ fork.getLastTickedOn().toString(dtf));
 							CellStyle style = workbook.createCellStyle();
 							style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+							style.setFillPattern(CellStyle.SOLID_FOREGROUND);
 							cell.setCellStyle(style);
 						} else {
 							row.createCell(cellnum++).setCellValue("Unit passed");
