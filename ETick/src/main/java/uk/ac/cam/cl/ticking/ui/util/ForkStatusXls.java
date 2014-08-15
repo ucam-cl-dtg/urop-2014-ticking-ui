@@ -10,7 +10,13 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.Comment;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -48,6 +54,8 @@ public class ForkStatusXls {
 		
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		
+		CreationHelper factory = workbook.getCreationHelper();
+		
 		HSSFSheet sheet = workbook.createSheet("Progress");
 		
 		sheet.createFreezePane(0, 1);
@@ -57,16 +65,12 @@ public class ForkStatusXls {
 		
 		Row row = sheet.createRow(rownum++);
 		
-		for (String tickId : group.getTicks()) {
-			row.createCell(cellnum++).setCellValue(db.getTick(tickId).getName());
-		}
-		
 		CellStyle rowStyle = row.getRowStyle();
 		if (rowStyle == null) {
 			rowStyle = workbook.createCellStyle();
 		}
 		
-		HSSFFont font = workbook.createFont();
+		Font font = workbook.createFont();
 		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 		rowStyle.setFont(font);
 		row.setRowStyle(rowStyle);
@@ -77,9 +81,14 @@ public class ForkStatusXls {
 		rightCell.setCellValue("COLLEGE");
 		
 		CellStyle borderStyle = workbook.createCellStyle();
-		borderStyle.setBorderRight(CellStyle.BORDER_THIN);
+		borderStyle.setBorderRight(CellStyle.BORDER_THICK);
 	    borderStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	    
 	    rightCell.setCellStyle(borderStyle);
+	    
+	    for (String tickId : group.getTicks()) {
+			row.createCell(cellnum++).setCellValue(db.getTick(tickId).getName());
+		}
 		
 		for (User user : submitters) {
 			row = sheet.createRow(rownum++);
@@ -88,7 +97,9 @@ public class ForkStatusXls {
 			
 			row.createCell(cellnum++).setCellValue(user.getDisplayName());
 			row.createCell(cellnum++).setCellValue(user.getCrsid());
-			row.createCell(cellnum++).setCellValue(user.getCollege());
+			rightCell = row.createCell(cellnum++);
+			rightCell.setCellValue(user.getCollege());
+			rightCell.setCellStyle(borderStyle);
 			
 			for (String tickId : tickIds) {
 				Fork fork = db.getFork(Fork.generateForkId(user.getCrsid(),
@@ -99,13 +110,30 @@ public class ForkStatusXls {
 					if (fork.getUnitPass()) {
 						if (fork.getHumanPass()) {
 							Cell cell = row.createCell(cellnum++);
-							cell.setCellValue("PASSED by "
-									+ fork.getLastTickedBy() + " on "
-									+ fork.getLastTickedOn().toString(dtf));
+							cell.setCellValue("PASSED");
 							CellStyle style = workbook.createCellStyle();
 							style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
 							style.setFillPattern(CellStyle.SOLID_FOREGROUND);
 							cell.setCellStyle(style);
+							
+							Drawing drawing = sheet.createDrawingPatriarch();
+
+						    // When the comment box is visible, have it show in a 1x3 space
+						    ClientAnchor anchor = factory.createClientAnchor();
+						    anchor.setCol1(cell.getColumnIndex());
+						    anchor.setCol2(cell.getColumnIndex()+1);
+						    anchor.setRow1(row.getRowNum());
+						    anchor.setRow2(row.getRowNum()+3);
+
+						    // Create the comment and set the text+author
+						    Comment comment = drawing.createCellComment(anchor);
+						    RichTextString str = factory.createRichTextString(fork.getLastTickedBy()+" "+fork.getLastTickedOn().toString(dtf));
+						    comment.setString(str);
+						    comment.setAuthor("System");
+
+						    // Assign the comment to the cell
+						    cell.setCellComment(comment);
+						    
 						} else {
 							row.createCell(cellnum++).setCellValue("Unit passed");
 						}
