@@ -64,7 +64,7 @@
             startPolling: function() {
                 console.log("Starting Polling");
                 this.testRunning = true;
-                this.status = {progress: 0, maxProgress: 1, info: "Waiting..."};
+                this.status = {progress: 0, maxProgress: 1, info: "Waiting...", originalPositionInQueue: 1, currentPositionInQueue: 1};
                 this.$.ajaxPoll.go();
             },
 

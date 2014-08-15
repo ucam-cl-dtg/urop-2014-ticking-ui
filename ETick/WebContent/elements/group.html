@@ -38,7 +38,8 @@
 		</core-ajax>
 
         <main-card animated>
-            <paper-tabs id="tabs" selected="0">
+			<!-- temporary on-tap to try and remove deep signups card -->
+            <paper-tabs id="tabs" selected="0" on-tap={{changeTab}}>
                 <paper-tab>{{name}}</paper-tab>
                 <paper-tab>TICKS</paper-tab>
                 <paper-tab>TICKING SESSIONS</paper-tab>
@@ -100,7 +101,10 @@
                                tickId="{{selectedTickId}}"
                                sheets="{{sheets}}"
                                repoName="{{repoName}}"
-                               tickObj="{{selectedTickObj}}"></tick-card>
+                               tickObj="{{selectedTickObj}}"
+                               lastTickedBy="{{lastTickedBy}}"
+                               lastTickedOn="{{lastTickedOn}}">
+                    </tick-card>
                 </main-card>
             </template>
 
@@ -108,7 +112,9 @@
             <template if="{{repoName}}">
                 <main-card animated>
                     <file-browser-card tickId="{{selectedTickId}}"
-                                       repoName="{{repoName}}">
+                                       repoName="{{repoName}}"
+                                       lastTickedBy="{{lastTickedBy}}"
+                                       lastTickedOn="{{lastTickedOn}}">
                     </file-browser-card>
                 </main-card>
             </template>
@@ -125,9 +131,9 @@
 
         <!-- Marker card for ticking sessions. -->
         <span id="deepTickingSessions" hidden>
-	        <template if="{{(isMarker||isAdmin)}}">
-                <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
-            </template>
+	        <!-- moved template to ticker-signup -->
+            <ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheetName}}" sessionId="{{sheetId}}" location="{{location}}" description="{{description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
+            
         </span>
 
 

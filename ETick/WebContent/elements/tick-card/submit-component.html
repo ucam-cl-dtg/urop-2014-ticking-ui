@@ -68,6 +68,10 @@
                 this.deadlinePassed = this.deadline == null ? false : new Date(this.deadline) < new Date();
             },
 
+            testRunningChanged: function() {
+                console.log("test running: " + this.testRunning)
+            },
+
             progressUpdated: function() {
                 //this.displayProgress = this.status.progress;
                 if (this.status == null) {
@@ -90,9 +94,11 @@
             },
 
             stepProgressAnimation: function() {
+                var toHardChange = false;
                 if (this.displayProgress < this.targetProgress) {
                     if (this.hardChange) {
                         this.displayProgress = this.targetProgress;
+                        toHardChange = true;
                     } else {
                         this.displayProgress +=
                                 Math.ceil(.001 * (this.targetProgress - this.displayProgress));
@@ -102,6 +108,7 @@
                 if (this.displaySecondaryProgress < this.targetSecondaryProgress) {
                     if (this.hardChange) {
                         this.displaySecondaryProgress = this.targetSecondaryProgress;
+                        toHardChange = true;
                     } else {
                         this.displaySecondaryProgress +=
                                 Math.ceil(.001 * (this.targetSecondaryProgress - this.displaySecondaryProgress));
@@ -116,7 +123,7 @@
                     }, 16);
                 }
 
-                this.hardChange = false;
+                if (toHardChange){this.hardChange = false;}
             },
 
             statusChanged: function() {
@@ -129,7 +136,8 @@
                     this.targetProgress = 0;
                 }
 
-                if (this.status.currentPositionInQueue == this.status.originalPositionInQueue && this.status.originalPositionInQueue != 0) {
+                if (this.status.currentPositionInQueue == this.status.originalPositionInQueue
+                        && this.status.originalPositionInQueue != 0) {
                     this.displaySecondaryProgress = 0;
                     this.targetSecondaryProgress = 0;
                 }

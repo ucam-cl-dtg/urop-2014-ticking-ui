@@ -2,8 +2,10 @@
 <link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
+<link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
+<link rel="import" href="../../bower_components/core-icon/core-icon.html">
 
-<polymer-element name="ticker-signups-viewport" attributes="sessionId description location crsId tickId repoName ticker slotId">
+<polymer-element name="ticker-signups-viewport" attributes="sessionId studentMode description location crsId tickId repoName ticker slotId">
   <template>
     <style>
     :host {
@@ -42,9 +44,9 @@
 	
 	<div layout vertical>
 		<div id="card-header" align="left">
-			<core-item icon="home" label="{{location}}"></core-item>
+			<core-item icon="home" label="Location : {{location}}"></core-item>
 			<core-item icon="today" label="Date : {{date}}"></core-item>
-			<core-item icon="info" label="{{description}}"></core-item>
+			<core-item icon="info" label="Description : {{description}}"></core-item>
 			<!-- would it be possible for class to contain date of session too? -->
 		</div>
 		<div id="ticker-select-panel" align="center">
@@ -54,20 +56,38 @@
 				</template>
 			</paper-radio-group>
 		</div>
-		<div id="slots-view-panel" align="center">
+		<div id="slots-view-panel" align="center" style="border:black solid 1px;border-bottom-style:none">
 				<template repeat="{{slot in slots}}">
-					<span layout horizontal center style="border:black solid 1px" flex>
-						<div align="left" flex three>
-								<div hidden?="{{slot.outcome != 'null'}}">
-									<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
+					<span layout vertical style="border-bottom:black solid 1px">
+						<span layout horizontal flex>
+							<div align="center" style="min-width:60px">
+								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
+								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"}}"></core-icon>
+							</div>
+							<div align="left" layout horizontal center flex three>
+									<div hidden?="{{slot.outcome != 'null'}}">
+											<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
+									</div>
+									<div hidden?="{{slot.outcome == 'null'}}">
+										<core-item label="{{slot.timeStamp}}  crsid : {{slot.student}}  ,  tick :  {{slot.comment}} , outcome : {{slot.outcome}}" style="min-height:20px" span></core-item>
+									</div>
+							</div>
+							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
+								<span>View Report</span>
+								<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
+							</div>
+							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
+								<span>Remove {{slot.student}} from Slot</span>
+								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="right" id="{{slot._id + 'kick'}}" icon="exit-to-app"></core-icon-button>
+							</div>
+						</span>
+						<div>
+							<core-collapse opened?="{{slot.collapse}}">
+								<div style="background-color:#AFEEEE">
+									<!-- todo: fill with info ticker might want -->
+									<span> put student data/photo here for student with crsid {{slot.student}} </span>
 								</div>
-								<div hidden?="{{slot.outcome == 'null'}}">
-									<core-item label="{{slot.timeStamp}}  crsid : {{slot.student}}  ,  tick :  {{slot.comment}} , outcome : {{slot.outcome}}" style="min-height:20px" span></core-item>
-								</div>
-						</div>
-						<div hidden?="{{slot.hidden}}" flex>
-							<span>View Report</span>
-							<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive" size="1"></core-icon-button>
+							</core-collapse>
 						</div>
 					</span>
 				</template>
@@ -77,16 +97,14 @@
   </template>
   <script>
   Polymer('ticker-signups-viewport', {
-			ready: function() {
-			},
 			refresh: function() {
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
-				if (this.location === "Location : ") {
-					this.location = "Location : No location is available";
+				if (this.location === "") {
+					this.location = "No location is available";
 				}
-				if (this.description === "Description : ") {
-					this.description = "Description : No description is available";
+				if (this.description === "") {
+					this.description = "No description is available";
 				}
 				this.$.ajaxLoadTickers.go();
 			},
@@ -129,7 +147,7 @@
 					}
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
 					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
-									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null"});
+									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null", collapse: false});
 				}
 				this.date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
 			},
@@ -145,8 +163,22 @@
 				}
 			},
 			updateViewConsole: function(newResult) {
-				//Wait for signups API to allow update
-				console.log(newResult + " " + this.slotId);
+				if(newResult != undefined) {
+					//Wait for signups API to allow update
+					console.log(newResult + " " + this.slotId);
+					this.$.ajaxLoadSlots.go();
+					this.slotId = undefined;
+				}
+				//else already passed/failed and something went wrong - can hide buttons once API is up to date
+			},
+			toggleInfo: function(event) {
+				var slotId = event.target.id;
+				for(i=0;i<this.slots.length;i++) {
+					if(this.slots[i]._id === slotId) {
+						this.slots[i].collapse = !this.slots[i].collapse;
+						break;
+					}
+				}
 			},
 			getReport : function(event) {
 				this.slotId = event.target.id;
