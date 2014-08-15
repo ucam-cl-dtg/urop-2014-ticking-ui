@@ -64,9 +64,9 @@
 	
 	<div layout vertical>
 		<div id="card-header" align="left">
-			<core-item icon="home" label="{{this.location=='' ? 'Location : No location available' : 'Location : ' + this.location}}"></core-item>
+			<core-item icon="home" label="Location : {{locationDisplayed}}"></core-item>
 			<core-item icon="today" label="Date : {{date}}"></core-item>
-			<core-item icon="info" label="{{this.description=='' ? 'Description : No description available' : 'Description : ' + this.description}}"></core-item>
+			<core-item icon="info" label="Description : {{descriptionDisplayed}}"></core-item>
 			<!-- would it be possible for class to contain date of session too? -->
 		</div>
 		<div id="ticker-select-panel" align="center">
@@ -82,7 +82,7 @@
 						<span layout horizontal flex>
 							<div align="center" style="min-width:60px">
 								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
-								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"}}"></core-icon>
+								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"></core-icon>
 							</div>
 							<div align="left" layout horizontal center flex three>
 									<div hidden?="{{slot.outcome != 'null'}}">
@@ -120,6 +120,8 @@
 			refresh: function() {
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
+				this.locationDisplayed = this.location ? this.location : "No location is available";
+				this.descriptionDisplayed = this.description ? this.description : "No description is available";
 				this.$.ajaxLoadTickers.go();
 			},
 			tickersDataLoaded: function() {
