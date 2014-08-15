@@ -33,8 +33,7 @@
 		waitBeforeToast="500"
         handleAs="json"
 		contentType="application/json"
-        on-core-response="{{tickersDataLoaded}}"
-        on-core-error="{{alertError}}">
+        on-core-response="{{tickersDataLoaded}}">
 	</toast-ajax>
 
 	<!-- Get slots for this session and ticker -->
@@ -58,8 +57,10 @@
 		waitMessage="kicking {{crsId}}..."
 		responseMessage="kicked {{crsId}}"
 		captureError
-		waitBeforeToast="10"
+		waitBeforeToast="0.01"
 		contentType="application/json"
+		handleAs="text"
+		on-core-response="{{kickDone}}" >
 	</toast-ajax>
 	
 	<div layout vertical>
@@ -67,7 +68,6 @@
 			<core-item icon="home" label="Location : {{locationDisplayed}}"></core-item>
 			<core-item icon="today" label="Date : {{date}}"></core-item>
 			<core-item icon="info" label="Description : {{descriptionDisplayed}}"></core-item>
-			<!-- would it be possible for class to contain date of session too? -->
 		</div>
 		<div id="ticker-select-panel" align="center">
 			<paper-radio-group selected="{{selected}}" on-change="{{tickerChange}}" layout horizontal flex>
@@ -98,7 +98,7 @@
 							</div>
 							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
 								<span>Remove {{slot.student}} from Slot</span>
-								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="right" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
+								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="left" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
 							</div>
 						</span>
 						<div>
@@ -207,7 +207,7 @@
 				this.fire("show-report");
 			},
 			kick : function(event) {
-				this.kick = false;
+				console.log("kick button pressed");
 				this.slotId = event.target.id;
 				var slotId = event.target.id;
 				for(i=0;i<this.slots.length;i++) {
@@ -217,15 +217,22 @@
 						break;
 					}
 				}
-				console.log("open are you sure dialog" + this.crsId);
-				this.fire("toggle-are-you-sure");
+				console.log("firing to open dialog");
+				this.fire("open-are-you-sure");
 			},
 			kickChanged : function() {
 				if (this.kick) {
 					console.log("kick");
+					this.kick = false;
 					this.$.ajaxKick.go();
-					this.$.ajaxLoadSlots.go();
 				} 
+				else {
+					console.log("no kick");
+				}
+			},
+			kickDone : function() {
+				console.log("kicked");
+				this.$.ajaxLoadSlots.go();
 			}
 		})
   </script>

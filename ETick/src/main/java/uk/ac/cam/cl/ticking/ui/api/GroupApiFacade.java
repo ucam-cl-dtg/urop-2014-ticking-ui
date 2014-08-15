@@ -28,6 +28,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupBean;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.UserRoleBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -261,7 +262,12 @@ public class GroupApiFacade implements IGroupApiFacade {
 			}
 		}
 		Collections.sort(users);
-		return Response.ok(users).build();
+		
+		List<UserRoleBean> userBeans = new ArrayList<>();
+		for (User user : users) {
+			userBeans.add(new UserRoleBean(user,db.getRoles(groupId, user.getCrsid())));
+		}
+		return Response.ok(userBeans).build();
 	}
 
 	/**
