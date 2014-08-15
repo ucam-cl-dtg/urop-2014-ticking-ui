@@ -28,6 +28,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.dao.MongoDataManager;
 import uk.ac.cam.cl.ticking.ui.database.Mongo;
+import uk.ac.cam.cl.ticking.ui.util.ForkStatusCsv;
 import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 
 import com.google.inject.AbstractModule;
@@ -161,10 +162,10 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Provides
 	private static GroupApiFacade getGroupApiSingleton(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			TickSignups tickSignupService, PermissionsManager permissions) {
+			TickSignups tickSignupService, PermissionsManager permissions, ForkStatusCsv csv) {
 		if (groupApiFacade == null) {
 			groupApiFacade = new GroupApiFacade(db, config, tickSignupService,
-					permissions);
+					permissions, csv);
 		}
 		return groupApiFacade;
 	}
