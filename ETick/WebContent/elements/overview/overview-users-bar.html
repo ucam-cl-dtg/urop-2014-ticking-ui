@@ -1,0 +1,18 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="overview-users-bar" attributes="users">
+    <template>
+        <link rel="stylesheet" href="overview.css">
+
+        <template repeat="{{user in users}}">
+            <div layout horizontal>
+                <h4 class="user-label">{{user.lastName}}</h4>
+                <div class="user-label">{{user.foreNames}}</div>
+                <div class="user-label">{{user.college}}</div>
+            </div>
+        </template>
+    </template>
+    <script>
+        Polymer({});
+    </script>
+</polymer-element>

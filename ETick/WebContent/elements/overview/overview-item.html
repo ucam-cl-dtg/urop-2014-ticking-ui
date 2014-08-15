@@ -5,9 +5,7 @@
         <link rel="stylesheet" href="overview.css">
 
         <div layout horizontal>
-            <div class="user-label">{{user.lastName}}</div>
-            <div class="user-label">{{user.foreNames}}</div>
-            <div class="user-label">{{user.college}}</div>
+
 
             <template repeat="{{tickComment in user.tickComments}}">
                 <div class="user-label">{{tickComment}}</div>
