@@ -62,7 +62,7 @@
 						<span layout horizontal flex>
 							<div align="center" style="min-width:60px">
 								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
-								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"}}"></core-icon>
+								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"></core-icon>
 							</div>
 							<div align="left" layout horizontal center flex three>
 									<div hidden?="{{slot.outcome != 'null'}}">
