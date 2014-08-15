@@ -188,13 +188,57 @@ public class TickSignups {
         } catch (ItemNotFoundException e) {
             log.error("The booking for the tick was found to simultaneously exist and not exist", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("The booking for this tick was found to exist and "
+                    .entity("Server Error: The booking for this tick was found to exist and "
                             + "then not found to exist. See following exception:\n"
                             + e).build();
         } catch (NotAllowedException e) {
             log.error("The unbooking should have been allowed but was not", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("The removal of the booking should have been allowed but "
+                    .entity("Server Error: The removal of the booking should have been allowed but "
+                            + "for some reason was not. See following exception:\n"
+                            + e).build();
+        }
+    }
+    
+    @DELETE
+    @Path("/students/{crsid}/ticks/{tickID}")
+    public Response tickerUnbookSlot(@Context HttpServletRequest request,
+            @PathParam("crsid") String crsid, @PathParam("tickID") String tickID) {
+        String callingCrsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        log.debug("The user " + crsid + " is trying to unbook the submitter " +
+                crsid + "'s booking for tick " + tickID);
+        Slot booking = null;
+        for (Slot slot : service.listUserSlots(crsid)) {
+            if (slot.getComment().equals(tickID)) {
+                booking = slot;
+            }
+        }
+        if (booking == null) {
+            log.debug("No booking was found for the specified tick");
+            return Response.status(Status.NOT_FOUND).entity("No booking was found for this tick").build();
+        }
+        try {
+            if (!db.getRoles(getGroupID(booking.getSheetID()), callingCrsid).contains(Role.MARKER)) {
+                log.debug("The user " + callingCrsid + " in not a marker in the group");
+                return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+            }
+            service.book(booking.getSheetID(), booking.getColumnName(),
+                    booking.getStartTime().getTime(), new SlotBookingBean(crsid, null, null));
+            Fork f = db.getFork(Fork.generateForkId(crsid, tickID));
+            f.setSignedUp(false);
+            db.saveFork(f);
+            log.debug("The slot was successfully unbooked");
+            return Response.ok().build();
+        } catch (ItemNotFoundException e) {
+            log.error("The booking for the tick was found to simultaneously exist and not exist", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Server Error: The booking for this tick was found to exist and "
+                            + "then not found to exist. See following exception:\n"
+                            + e).build();
+        } catch (NotAllowedException e) {
+            log.error("The unbooking should have been allowed but was not", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Server Error: The removal of the booking should have been allowed but "
                             + "for some reason was not. See following exception:\n"
                             + e).build();
         }
@@ -217,6 +261,7 @@ public class TickSignups {
             Fork f = db.getFork(Fork.generateForkId(crsid, tickID));
             f.setSignedUp(false);
             db.saveFork(f);
+            log.debug("The slot was successfully unbooked");
             return Response.ok().build();
         } catch (ItemNotFoundException e) {
             log.error("The booking for the tick was found to simultaneously exist and not exist", e);
@@ -492,7 +537,7 @@ public class TickSignups {
     @Path("/sheets")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response createSheet(@Context HttpServletRequest request, CreateSheetBean bean) {
+    public Response createSheet(@Context HttpServletRequest request, SheetBean bean) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         log.debug("User " + crsid + " has requested the creation of a sheet for " +
                 "the group of ID " + bean.getGroupID());
@@ -603,7 +648,7 @@ public class TickSignups {
     @Path("/sheets/{sheetID}")
     @Consumes("application/json")
     public Response editSheet(@Context HttpServletRequest request,
-            @PathParam("sheetID") String sheetID, EditSheetBean bean) {
+            @PathParam("sheetID") String sheetID, SheetBean bean) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         log.debug("User " + crsid + " is attempting to edit the sheet of ID " + sheetID);
         Sheet sheet;
