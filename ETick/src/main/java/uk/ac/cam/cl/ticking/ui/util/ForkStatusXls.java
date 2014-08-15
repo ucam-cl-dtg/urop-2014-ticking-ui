@@ -50,19 +50,12 @@ public class ForkStatusXls {
 		
 		HSSFSheet sheet = workbook.createSheet("Progress");
 		
-		sheet.createFreezePane(3, 10);
+		sheet.createFreezePane(0, 1);
 		
 		int rownum = 0;
 		int cellnum = 0;
 		
 		Row row = sheet.createRow(rownum++);
-		row.createCell(cellnum++).setCellValue("DISPLAY NAME");
-		row.createCell(cellnum++).setCellValue("CRSID");
-		row.createCell(cellnum++).setCellValue("COLLEGE");
-		
-		for (String tickId : group.getTicks()) {
-			row.createCell(cellnum++).setCellValue(db.getTick(tickId).getName());
-		}
 		
 		CellStyle rowStyle = row.getRowStyle();
 		if (rowStyle == null) {
@@ -73,6 +66,15 @@ public class ForkStatusXls {
 		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 		rowStyle.setFont(font);
 		row.setRowStyle(rowStyle);
+		
+		row.createCell(cellnum++).setCellValue("DISPLAY NAME");
+		row.createCell(cellnum++).setCellValue("CRSID");
+		row.createCell(cellnum++).setCellValue("COLLEGE");
+		
+		for (String tickId : group.getTicks()) {
+			row.createCell(cellnum++).setCellValue(db.getTick(tickId).getName());
+		}
+		
 		
 		for (User user : submitters) {
 			row = sheet.createRow(rownum++);
@@ -95,7 +97,7 @@ public class ForkStatusXls {
 							cell.setCellValue("PASSED by "
 									+ fork.getLastTickedBy() + " on "
 									+ fork.getLastTickedOn().toString(dtf));
-							CellStyle style = cell.getCellStyle();
+							CellStyle style = workbook.createCellStyle();
 							style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
 							cell.setCellStyle(style);
 						} else {
