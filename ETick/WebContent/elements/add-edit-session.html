@@ -7,7 +7,7 @@
 <link rel="import" href="date-entry.html">
 
 
-<polymer-element name="add-edit-session" attributes="sheet">
+<polymer-element name="add-edit-session" attributes="sheet gid">
 	<template>
 		<style>
 			:host {
@@ -46,6 +46,24 @@
 			}
 		</style>
 
+		<!-- Add session API call. -->
+		<core-ajax id="addSessionAPI"
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets"
+			method="POST"
+			contentType="application/json"
+			on-core-response="{{addSessionResponse}}"
+			on-core-error="{{addSessionError}}">
+		</core-ajax>
+
+		<!-- Edit session API call. -->
+		<core-ajax id="editSessionAPI"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets' + sheet._id }}"
+			method="POST"
+			contentType="application/json"
+			on-core-response="{{editSessionResponse}}"
+			on-core-error="{{editSessionError}}">
+		</core-ajax>
+
 		<h1>{{sheet ? sheet.title : 'New Ticking Session:'}}</h1>
 		<h2>Session Information</h2>
 		<div layout vertical>
@@ -57,15 +75,15 @@
 					value="{{sheet.title}}"
 					placeholder="Ticking session title..."
 					error="Invalid session title."
-					on-input=""></paper-input>
+					on-input="{{validate}}"></paper-input>
 			</div>
 
 			<div layout horizontal start>
+				<!-- TODO: try multiline -->
 				<core-icon class="big" icon="info-outline"></core-icon>
 				<paper-input id="descInput"
 					value="{{sheet.description}}"
-					multiline
-					placeholder="Description..."
+					label="Description..."
 					maxRows="5"></paper-input>
 			</div>
 
@@ -83,7 +101,9 @@
 		<div layout horizontal start>
 			<core-icon class="big" icon="image:timelapse"></core-icon>
 			<paper-input id="slotLengthInput"
+				required
 				disabled="{{sheet}}"
+				on-input="{{validate}}"
 				value="{{sheet.slotLength}}"
 				placeholder="In minutes..."
 				pattern="^[0-9]+$"
@@ -94,16 +114,31 @@
 		<h2>Date and Time</h2>
 		<div layout horizontal start>
 			<core-icon class="big" icon="event"></core-icon>
-			<paper-input id="date" type="date" class="datetime"
-				required error="Session date." on-change="{{validate}}"></paper-input>
+			<paper-input id="date" class="datetime"
+				type="date"
+				required 
+				error="Session date." 
+				value="{{date}}"
+				on-change="{{validate}}">
+			</paper-input>
 
 			<core-icon class="big" icon="device:access-time"></core-icon>
-			<paper-input id="startTime" type="time" class="datetime"
-				required error="Start time." on-change="{{validate}}"></paper-input>
+			<paper-input id="startTime" class="datetime"
+				type="time"
+				required 
+				error="Start time." 
+				value="{{startTime}}"
+				on-change="{{validate}}">
+			</paper-input>
 
 			<core-icon class="big" icon="device:access-time"></core-icon>
-			<paper-input id="endTime" type="time" class="datetime"
-				required error="End time." on-change="{{validate}}"></paper-input>
+			<paper-input id="endTime" class="datetime"
+				type="time"
+				required 
+				error="End time." 
+				value="{{endTime}}"
+				on-change="{{validate}}">
+			</paper-input>
 		</div>
 
 		<h2>Tickers</h2>
@@ -124,28 +159,40 @@
 		</div>
 
 		<div id="buttonsContainer" layout horizontal center end-justified>
-			<paper-button raisedButton id="resetButton" label="{{sheet ? 'RESET' : 'CLEAR'}}"></paper-button>
-			<paper-button raisedButton id="submitButton" label="{{sheet ? 'SAVE' : 'CREATE'}}" disabled="{{disableSubmit}}"></paper-button>
+			<paper-button raisedButton id="resetButton" label="CANCEL" on-click="{{cancelClicked}}"></paper-button>
+			<paper-button raisedButton id="submitButton" 
+				label="{{sheet ? 'SAVE' : 'CREATE'}}" 
+				disabled="{{disableSubmit}}"
+				on-click="{{submitClicked}}">
+			</paper-button>
 		</div>
 
+
+		<!-- Response toasts. -->
+		<paper-toast id="addSessionSuccess" duration="8000"></paper-toast>
+		<paper-toast id="addSessionError" duration="8000"></paper-toast>
+		<paper-toast id="editSessionSuccess" duration="8000"></paper-toast>
+		<paper-toast id="editSessionError" duration="8000"></paper-toast>
 
 	</template>
 	<script>
 		Polymer('add-edit-session', {
 
 			domReady: function () {
+				if (this.sheet) {
+					var startDT = new Date(this.sheet.startTime).toJSON();
+					var endDT = new Date(this.sheet.endTime).toJSON();
+					var startT = startDT.indexOf('T');
 
-				this.sheet =  {
-					title: "Foo",
-					location: "Foosville",
-					description: "For Foo's Sake.",
-					slotLength: 10,
-					columns: [ { _id: "Ticker A"}, {_id : "Ticker B"} ]
-				};
+					this.date = startDT.slice(0, startT);
+					this.startTime = startDT.slice(startT + 1, startDT.lastIndexOf(':'));
+					this.endTime = endDT.slice(endDT.indexOf('T') + 1, endDT.lastIndexOf(':'));
+
+				}
 
 				this.tickers = this.sheet ? 
 					this.sheet.columns.map(function(item) {
-						return item._id;
+						return item.name;
 					}) : [];
 
 				this.validate();
@@ -155,10 +202,8 @@
 				if (this.$.titleInput.inputValue &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.value &&
-					this.$.startTime.value && this.$.endTime.value) {
-					console.log(this.$.date.value);
-					console.log(this.$.startTime.value);
-					console.log(this.$.endTime.value);
+					this.$.startTime.value && this.$.endTime.value &&
+					this.$.slotLengthInput.inputValue) {
 					this.disableSubmit = false;
 				}
 				else {
@@ -181,6 +226,54 @@
 					this.tickers.splice(i, 1);
 				}
 				this.validate();
+			},
+
+			submitClicked: function () {
+				this.title = this.$.titleInput.inputValue;
+				this.description = this.$.descInput.inputValue;
+				this.location = this.$.locInput.inputValue;
+				this.subStartTime = Date.parse(this.$.date.value + "T" + this.$.startTime.value);
+				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value);
+				this.slotLength = this.$.slotLengthInput.inputValue;
+
+				if (this.sheet)  {
+					var call = this.$.editSessionAPI;
+				}
+				else {
+					var call = this.$.addSessionAPI;
+				}
+				call.body = '{"title" : "' + this.title + '", "description" : "' + this.description + '", "location" : "' + this.location + '", "startTime" : "' + this.subStartTime + '", "endTime" : "' + this.subEndTime + '", "slotLengthInMinutes" : "' + this.slotLength + '", "tickerNames" : ' + JSON.stringify(this.tickers) + ', "groupID" : "' + this.gid + '" }';
+				call.go();
+			},
+
+			addSessionResponse: function () {
+				var toast = this.$.addSessionSuccess;
+				toast.text = "Successfully created new ticking session '" + this.title + "'.";
+				this.fire('sheet-created');
+				toast.show();
+			},
+
+			addSessionError: function(e, detail) {
+				var toast = this.$.addSessionError;
+				toast.text = detail.xhr.responseText;
+				toast.show();
+			},
+
+			cancelClicked: function () {
+				this.fire('sheet-cancel');
+			},
+
+			editSessionResponse: function () {
+				var toast = this.$.addSessionSuccess;
+				toast.text = "Edited ticking session '" + this.title + "'.";
+				toast.show();
+				this.fire('sheet-cancel');
+			},
+
+			editSessionError: function(e, detail) {
+				var toast = this.$.editSessionError;
+				toast.text = detail.xhr.responseText;
+				toast.show();
 			},
 			
 		});
