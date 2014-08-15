@@ -156,7 +156,8 @@
                     that.deepTicks.hidden = that.ticks.hidden;
                     that.tickingSessions.hidden = this.tabIndex != 2;
                     that.deepTickingSessions.hidden = that.tickingSessions.hidden;
-                    that.addEditSessionTemp.model.showAddEditSession = !that.tickingSessions.hidden;
+                    that.addEditSessionTemp.model.showAddEditSession = 
+                    that.addEditSessionTemp.model.showAddEditSession && !that.tickingSessions.hidden;
                     that.members.hidden = this.tabIndex != 3;
                 });
 			},
