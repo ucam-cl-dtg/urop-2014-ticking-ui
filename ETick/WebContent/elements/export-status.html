@@ -49,12 +49,14 @@
 			},
 
 			xls: function () {
-				
+				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid +'/status/xls')
+		        .done(function () { this.toggle() })
+		        .fail(function () { this.$.deletexportError.show(); });
 			},
 
 			csv: function () {
 				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid +'/status/csv')
-		        .done(function () {})
+		        .done(function () { this.toggle() })
 		        .fail(function () { this.$.deletexportError.show(); });
 			}
 
