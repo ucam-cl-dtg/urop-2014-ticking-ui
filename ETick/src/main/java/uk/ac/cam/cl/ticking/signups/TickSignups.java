@@ -738,7 +738,8 @@ public class TickSignups {
             }
             if (bean.getEndTime() < sheet.getEndTime().getTime()) { // need to delete slots from end
                 service.deleteSlotsBetween(sheetID,
-                        new BatchDeleteBean(bean.getEndTime(), sheet.getEndTime().getTime(), db.getAuthCode(sheetID)));
+                        new BatchDeleteBean(bean.getEndTime()+1L, sheet.getEndTime().getTime()+1L, db.getAuthCode(sheetID)));
+                                        // +1L because the method includes the start time and excludes the end time TODO: change?
             }
         } catch (ItemNotFoundException e) {
             log.error("The sheet was not found, while earlier in this method it was, " +
