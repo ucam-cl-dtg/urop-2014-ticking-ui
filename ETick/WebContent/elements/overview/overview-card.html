@@ -93,7 +93,17 @@
                        crsId: el[1],
                        college: el[2],
                        tickComments: el.splice(4, el.length - 1).map(function(el) {
-                           return "X";
+                           if (el == "Unit failed") {
+                               return "F";
+                           } else if (el == "Unit passed") {
+                               return "U"
+                           } else if (el == "Initilialised") {
+                               return "I"
+                           } else if (el.lastIndexOf("PASSED by") > -1) {
+                                return "P"
+                           } else {
+                               return el;
+                           }
                        })
                    }
                 });
