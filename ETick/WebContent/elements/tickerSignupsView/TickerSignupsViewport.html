@@ -33,8 +33,7 @@
 		waitBeforeToast="500"
         handleAs="json"
 		contentType="application/json"
-        on-core-response="{{tickersDataLoaded}}"
-        on-core-error="{{alertError}}">
+        on-core-response="{{tickersDataLoaded}}">
 	</toast-ajax>
 
 	<!-- Get slots for this session and ticker -->
@@ -69,7 +68,6 @@
 			<core-item icon="home" label="Location : {{locationDisplayed}}"></core-item>
 			<core-item icon="today" label="Date : {{date}}"></core-item>
 			<core-item icon="info" label="Description : {{descriptionDisplayed}}"></core-item>
-			<!-- would it be possible for class to contain date of session too? -->
 		</div>
 		<div id="ticker-select-panel" align="center">
 			<paper-radio-group selected="{{selected}}" on-change="{{tickerChange}}" layout horizontal flex>
@@ -209,6 +207,7 @@
 				this.fire("show-report");
 			},
 			kick : function(event) {
+				console.log("kick button pressed");
 				this.slotId = event.target.id;
 				var slotId = event.target.id;
 				for(i=0;i<this.slots.length;i++) {
@@ -224,12 +223,15 @@
 			kickChanged : function() {
 				if (this.kick) {
 					console.log("kick");
+					this.kick = false;
 					this.$.ajaxKick.go();
 				} 
+				else {
+					console.log("no kick");
+				}
 			},
 			kickDone : function() {
 				console.log("kicked");
-				this.kick = false;
 				this.$.ajaxLoadSlots.go();
 			}
 		})
