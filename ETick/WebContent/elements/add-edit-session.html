@@ -178,7 +178,7 @@
 	</template>
 	<script>
 		Polymer('add-edit-session', {
-			
+
 			domReady: function () {
 				if (this.sheet) {
 					this.titleName = this.sheet.title;
@@ -216,6 +216,12 @@
 				else {
 					this.disableSubmit = true;
 				}
+				console.log(this.$.titleInput.inputValue , !this.$.titleInput.invalid ,
+					this.tickers , this.tickers.length >= 1 ,
+					this.$.date.value ,
+					this.$.startTime.value , this.$.endTime.value ,
+					this.$.slotLengthInput.inputValue ,
+					!this.$.slotLengthInput.invalid);
 			},
 
 			addTicker: function () {
