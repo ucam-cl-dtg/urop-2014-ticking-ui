@@ -67,14 +67,18 @@ public class ForkStatusCsv {
 				} else {
 					if (fork.getUnitPass()) {
 						if (fork.getHumanPass()) {
-							writer.append(", PASSED by "
+							writer.append(",PASSED by "
 									+ fork.getLastTickedBy() + " on "
 									+ fork.getLastTickedOn().toString(dtf));
 						} else {
 							writer.append(",Unit passed");
 						}
 					} else {
-						writer.append(",Unit failed");
+						if (fork.isReportAvailable()) {
+							writer.append(",Unit failed");
+						} else {
+							writer.append(",Initilialised");
+						}
 					}
 				}
 
