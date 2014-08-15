@@ -33,6 +33,7 @@ import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.exceptions.DuplicateDataEntryException;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.ForkStatusCsv;
 import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -52,6 +53,8 @@ public class GroupApiFacade implements IGroupApiFacade {
 	private TickSignups tickSignupService;
 	
 	private PermissionsManager permissions;
+	
+	private ForkStatusCsv csv;
 
 	/**
 	 * @param db
@@ -60,11 +63,12 @@ public class GroupApiFacade implements IGroupApiFacade {
 	@Inject
 	public GroupApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			TickSignups tickSignupService, PermissionsManager permissions) {
+			TickSignups tickSignupService, PermissionsManager permissions, ForkStatusCsv csv) {
 		this.db = db;
 		this.config = config;
 		this.tickSignupService = tickSignupService;
 		this.permissions = permissions;
+		this.csv = csv;
 	}
 
 	/**
@@ -123,6 +127,37 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 		
 		writer.close();
+
+		ResponseBuilder response = Response.ok((Object) temp);
+        response.header("Content-Disposition", "attachment; filename=\""+group.getName()+".txt\"");
+        response.header("Set-Cookie","fileDownload=true; path=/");
+        return response.build();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	//@Override
+	public Response exportGroupForkStatus(String groupId) {
+		Group group = db.getGroup(groupId);
+
+		/* Get the group object, returning if not found */
+		if (group == null) {
+			log.error("Requested group " + groupId
+					+ " but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+		
+		File temp;
+		try {
+			temp = csv.generateCsvFile(group);
+		} catch (IOException e) {
+			log.error("Tried exporting group fork status"
+					+ groupId, e);
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(Strings.IDEMPOTENTRETRY).build();
+		}
 
 		ResponseBuilder response = Response.ok((Object) temp);
         response.header("Content-Disposition", "attachment; filename=\""+group.getName()+".txt\"");
