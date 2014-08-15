@@ -86,7 +86,8 @@
             <!-- Ticking Sessions Tab -->
             <span id="tickingSessions" hidden>
 	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
-	        		on-add-clicked="{{addSheetHandler}}">
+	        		on-add-sheet-clicked="{{addSheetHandler}}"
+	        		on-edit-sheet-clicked="{{editSheetHandler}}">
 	        	</tick-session-list>
 	        </span>
 
@@ -124,7 +125,8 @@
 	    <template id="addEditSessionTemp" if="{{showAddEditSession}}">
 			<main-card animated>
 				<add-edit-session gid="{{gid}}" sheet="{{sheet}}"
-				on-sheet-created="{{sheetCreated}}"></add-edit-session>
+				on-sheet-created="{{sheetCreated}}"
+				on-sheet-cancel="{{sheetCancelled}}"></add-edit-session>
 			</main-card>
 		</template>
 
@@ -154,6 +156,8 @@
                     that.deepTicks.hidden = that.ticks.hidden;
                     that.tickingSessions.hidden = this.tabIndex != 2;
                     that.deepTickingSessions.hidden = that.tickingSessions.hidden;
+                    that.addEditSessionTemp.model.showAddEditSession = 
+                    that.addEditSessionTemp.model.showAddEditSession && !that.tickingSessions.hidden;
                     that.members.hidden = this.tabIndex != 3;
                 });
 			},
@@ -201,7 +205,11 @@
 
 			sheetCreated: function () {
 				this.$.sheetListAPI.go();
-				console.log('here');
+				this.$.addEditSessionTemp.model = {
+					showAddEditSession: false,
+					gid: null,
+					sheet: null
+				}
 			},
 
 			addSheetHandler: function () {
@@ -210,7 +218,24 @@
 					gid: this.gid,
 					sheet: null
 				}
+			},			
+			
+			editSheetHandler: function (e, detail) {
+				this.sheet = detail.sheet;
+				this.$.addEditSessionTemp.model = {
+					showAddEditSession: true,
+					gid: this.gid,
+					sheet: this.sheet
+				};
 			},
+
+			sheetCancelled: function () {
+				this.$.addEditSessionTemp.model = {
+					showAddEditSession: false,
+					gid: null,
+					sheet: null
+				}
+			}
 		});
 	</script>
 </polymer-element>

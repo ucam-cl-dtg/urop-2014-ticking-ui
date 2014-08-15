@@ -56,13 +56,13 @@
 		</core-ajax>
 
 		<!-- Edit session API call. -->
-		<!-- <core-ajax id="editSessionAPI"
+		<core-ajax id="editSessionAPI"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets' + sheet._id }}"
 			method="POST"
 			contentType="application/json"
 			on-core-response="{{editSessionResponse}}"
 			on-core-error="{{editSessionError}}">
-		</core-ajax> -->
+		</core-ajax>
 
 		<h1>{{sheet ? sheet.title : 'New Ticking Session:'}}</h1>
 		<h2>Session Information</h2>
@@ -101,7 +101,9 @@
 		<div layout horizontal start>
 			<core-icon class="big" icon="image:timelapse"></core-icon>
 			<paper-input id="slotLengthInput"
+				required
 				disabled="{{sheet}}"
+				on-input="{{validate}}"
 				value="{{sheet.slotLength}}"
 				placeholder="In minutes..."
 				pattern="^[0-9]+$"
@@ -157,7 +159,7 @@
 		</div>
 
 		<div id="buttonsContainer" layout horizontal center end-justified>
-			<paper-button raisedButton id="resetButton" label="{{sheet ? 'RESET' : 'CLEAR'}}"></paper-button>
+			<paper-button raisedButton id="resetButton" label="CANCEL" on-click="{{cancelClicked}}"></paper-button>
 			<paper-button raisedButton id="submitButton" 
 				label="{{sheet ? 'SAVE' : 'CREATE'}}" 
 				disabled="{{disableSubmit}}"
@@ -169,6 +171,8 @@
 		<!-- Response toasts. -->
 		<paper-toast id="addSessionSuccess" duration="8000"></paper-toast>
 		<paper-toast id="addSessionError" duration="8000"></paper-toast>
+		<paper-toast id="editSessionSuccess" duration="8000"></paper-toast>
+		<paper-toast id="editSessionError" duration="8000"></paper-toast>
 
 	</template>
 	<script>
@@ -188,7 +192,7 @@
 
 				this.tickers = this.sheet ? 
 					this.sheet.columns.map(function(item) {
-						return item._id;
+						return item.name;
 					}) : [];
 
 				this.validate();
@@ -198,7 +202,8 @@
 				if (this.$.titleInput.inputValue &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.value &&
-					this.$.startTime.value && this.$.endTime.value) {
+					this.$.startTime.value && this.$.endTime.value &&
+					this.$.slotLengthInput.inputValue) {
 					this.disableSubmit = false;
 				}
 				else {
@@ -231,7 +236,12 @@
 				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
-				var call = this.$.addSessionAPI;
+				if (this.sheet)  {
+					var call = this.$.editSessionAPI;
+				}
+				else {
+					var call = this.$.addSessionAPI;
+				}
 				call.body = '{"title" : "' + this.title + '", "description" : "' + this.description + '", "location" : "' + this.location + '", "startTime" : "' + this.subStartTime + '", "endTime" : "' + this.subEndTime + '", "slotLengthInMinutes" : "' + this.slotLength + '", "tickerNames" : ' + JSON.stringify(this.tickers) + ', "groupID" : "' + this.gid + '" }';
 				call.go();
 			},
@@ -245,6 +255,23 @@
 
 			addSessionError: function(e, detail) {
 				var toast = this.$.addSessionError;
+				toast.text = detail.xhr.responseText;
+				toast.show();
+			},
+
+			cancelClicked: function () {
+				this.fire('sheet-cancel');
+			},
+
+			editSessionResponse: function () {
+				var toast = this.$.addSessionSuccess;
+				toast.text = "Edited ticking session '" + this.title + "'.";
+				toast.show();
+				this.fire('sheet-cancel');
+			},
+
+			editSessionError: function(e, detail) {
+				var toast = this.$.editSessionError;
 				toast.text = detail.xhr.responseText;
 				toast.show();
 			},
