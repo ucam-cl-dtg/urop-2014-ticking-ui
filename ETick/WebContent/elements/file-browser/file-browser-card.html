@@ -1,6 +1,8 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/core-splitter/core-splitter.html"/>
+<link rel="import" href="../../bower_components/core-dropdown/core-dropdown.html"/>
+<link rel="import" href="../../bower_components/core-item/core-item.html"/>
 <link rel="import" href="../../bower_components/marked-element/marked-element.html"/>
 <link rel="import" href="files-service.html"/>
 <link rel="import" href="file-card.html"/>
@@ -33,8 +35,10 @@
                    commitId="{{commitId}}"
                    testCount="{{testCount}}"
                    testResult="{{testResult}}"
+                   reportsList="{{reportsList}}"
                    tickerResult="{{tickerResult}}"
-                   reportResult="{{reportResult}}">
+                   reportResult="{{reportResult}}"
+                   selectedReport="{{selectedReport}}">
     </files-service>
     <div class="container" horizontal layout>
       <div class="sidebar">
@@ -49,14 +53,26 @@
       </div>
       <core-splitter direction="left"></core-splitter>
       <div class="main">
+
+        <!-- Report selection -->
+        <core-dropdown id="reportSelector"
+                       selected="{{selectedReport}}">
+          <template repeat="{{report in reportsListString}}">
+            <core-item label="{{report}}"></core-item>
+          </template>
+        </core-dropdown>
+        <br/>
+
         <!-- Ticker comments -->
         <template if="{{comments != null}}">
-          Ticker comments:
-          <!-- Indentation due to marked element considering spaces -->
-          <marked-element
-              class="ticker-comments">
-{{comments}}
-          </marked-element>
+          <div class="ticker-comments">
+            Ticker comments:
+            <!-- Indentation due to marked element considering spaces -->
+            <marked-element
+                class="ticker-comments">
+  {{comments}}
+            </marked-element>
+          </div>
         </template>
 
         <!-- File contents -->
@@ -177,6 +193,21 @@
         , testResultChanged: function () { this.recalculateResult(); }
         , tickerResultChanged: function () { this.recalculateResult(); }
         , reportResultChanged: function () { this.recalculateResult(); }
+
+        , reportsListChanged:
+          function ()
+          {
+            this.reportsListString =
+              this.reportsList.map(
+                  function (obj)
+                  {
+                    return "Commit " + obj.commit.slice(0,7) +
+                      ", report generated " +
+                      new Date(obj.date).toLocaleString();
+                  });
+            this.$.reportSelector.selected =
+              this.reportsListString.length - 1;
+          }
         });
   </script>
 </polymer-element>
