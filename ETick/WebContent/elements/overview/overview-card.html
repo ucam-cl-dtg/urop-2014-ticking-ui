@@ -1,15 +1,15 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="overview-item.html">
 <link rel="import" href="overview-headings.html">
 
 <polymer-element name="overview-card">
     <template>
         <style>
-            overview-item {
-                width: 100%;
-            }
+
         </style>
 
         <core-ajax
@@ -21,10 +21,31 @@
                 on-core-response="{{overviewLoaded}}">
         </core-ajax>
 
-        <overview-headings tickNames="{{tickNames}}"></overview-headings>
-        <template repeat="{{user in users}}">
-            <overview-item user="{{user}}"></overview-item>
-        </template>
+        <!-- Card content goes here -->
+
+        <div style="height: 250px;" layout vertical>
+
+        <core-header-panel mode="waterfall" flex>
+            <core-toolbar style="padding: 0;">
+                <div id="headings" style="overflow: hidden;">
+                    <overview-headings tickNames="{{tickNames}}"></overview-headings>
+                </div>
+            </core-toolbar>
+
+
+
+
+            <div id="scrollArea" style=" overflow-x: scroll;" on-scroll="{{scrolled}}">
+                <template repeat="{{user in users}}">
+                    <overview-item user="{{user}}"></overview-item>
+                </template>
+            </div>
+        </core-header-panel>
+
+        </div>
+
+
+
     </template>
     <script>
         Polymer('overview-card',{
@@ -57,12 +78,20 @@
                 //remove the first two rows (column headings and a blank line)
                 users = users.slice(2, users.length - 1 );
 
+                users = users.concat(users);
+
                 //use the list of column titles to convert each user's tickComments into a dictionary
                 console.log(users);
                 console.log(colTitles);
 
                 this.users = users;
                 this.tickNames = colTitles;
+            },
+
+            scrolled: function(a,b,c) {
+                console.log(a, b, c);
+
+                this.$.headings.scrollLeft = this.$.scrollArea.scrollLeft;
             }
         });
     </script>
