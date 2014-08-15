@@ -132,7 +132,8 @@
 			<main-card animated>
 				<add-edit-session gid="{{gid}}" sheet="{{sheet}}"
 				on-sheet-created="{{sheetCreated}}"
-				on-sheet-cancel="{{sheetCancelled}}"></add-edit-session>
+				on-sheet-cancel="{{sheetCancelled}}"
+				on-sheet-edited="{{sheetEdited}}"></add-edit-session>
 			</main-card>
 		</template>
 
@@ -245,7 +246,12 @@
 			changeTab: function() { 
 				this.sheet = null;
 				this.$.tickingSessionList.clearSelection();
-			} 
+			},
+
+			sheetEdited: function () {
+				this.$.sheetListAPI.go();
+				this.sheetCancelled();
+			}
 		});
 	</script>
 </polymer-element>

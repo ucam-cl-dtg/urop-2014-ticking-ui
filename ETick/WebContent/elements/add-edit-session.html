@@ -72,7 +72,7 @@
 				<paper-input id="titleInput" 
 					floatingInput
 					required
-					value="{{titleName}}"
+					value="{{sheet.title}}"
 					placeholder="Ticking session title..."
 					pattern="^[^/]+$"
 					error="Invalid session title."
@@ -205,6 +205,14 @@
 			},
 
 			validate: function () {
+
+				console.log(this.$.titleInput.inputValue && !this.$.titleInput.invalid &&
+					this.tickers && this.tickers.length >= 1 &&
+					this.$.date.value &&
+					this.$.startTime.value && this.$.endTime.value &&
+					this.$.slotLengthInput.inputValue &&
+					!this.$.slotLengthInput.invalid);
+
 				if (this.$.titleInput.inputValue && !this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.value &&
@@ -274,7 +282,7 @@
 				var toast = this.$.addSessionSuccess;
 				toast.text = "Edited ticking session '" + this.title + "'.";
 				toast.show();
-				this.fire('sheet-cancel');
+				this.fire('sheet-edited');
 			},
 
 			editSessionError: function(e, detail) {
