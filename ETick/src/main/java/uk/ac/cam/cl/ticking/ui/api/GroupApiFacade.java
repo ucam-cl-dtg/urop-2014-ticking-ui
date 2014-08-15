@@ -160,7 +160,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		ResponseBuilder response = Response.ok((Object) temp);
-        response.header("Content-Disposition", "attachment; filename=\""+group.getName()+".txt\"");
+        response.header("Content-Disposition", "attachment; filename=\""+group.getName()+".csv\"");
         response.header("Set-Cookie","fileDownload=true; path=/");
         return response.build();
 	}
