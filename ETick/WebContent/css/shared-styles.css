@@ -34,6 +34,11 @@ paper-checkbox {
 	color: #fff;
 }
 
+.blueButton {
+	background: #4285f4;
+	color: #fff;
+}
+
 .dialogYes {
     background-color: #259b24; /* Material Green 500 */
     color: #FFFFFF;
