@@ -65,6 +65,10 @@ public class ForkStatusXls {
 		}
 		
 		CellStyle rowStyle = row.getRowStyle();
+		if (rowStyle == null) {
+			rowStyle = workbook.createCellStyle();
+		}
+		
 		HSSFFont font = workbook.createFont();
 		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 		rowStyle.setFont(font);
