@@ -5,6 +5,7 @@
 <link rel="import" href="signup-component.html">
 <link rel="import" href="fork-service.html">
 <link rel="import" href="fork-component.html">
+<link rel="import" href="../date-calendar.html">
 
 <polymer-element name="tick-card" attributes="tickName tickId sheets
                                               repoName tickObj
@@ -12,6 +13,15 @@
     <template>
         <link rel="stylesheet" href="../../css/elements/group-members.css">
         <link rel="stylesheet" href="tick-components.css">
+
+        <style>
+            h1 {
+                margin: 0;
+            }
+            :host {
+                margin-top: 10px;
+            }
+        </style>
 
         <!-- for managing fork object data -->
         <fork-service
@@ -30,7 +40,18 @@
 
         <div id="mainContainer">
 
-            <h1>{{tickName}}</h1>
+            <div layout horizontal style="margin-right: 10px;">
+                <h1 flex>{{tickName}}</h1>
+                <span layout vertical>
+                    <div flex></div>
+                    <div class="error">{{datetime == null ? 'No deadline' : 'Deadline:&nbsp;'}}</div>
+                    <div flex></div>
+                </span>
+
+                <core-collapse opened?="{{datetime != null}}" horizontal>
+                    <date-calendar datetime="{{datetime}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}" hexColorSecondary="#481442"></date-calendar>
+                </core-collapse>
+            </div>
 
             <core-collapse opened?="{{displayRepo != null}}">
             <div layout horizontal>
@@ -38,7 +59,6 @@
                 <div>{{displayRepo}}</div>
             </div>
             </core-collapse>
-
 
             <br>
 
@@ -64,13 +84,6 @@
                                       deadline="{{tickObj.deadline}}">
                     </submit-component>
                     <div class="spacer"></div>
-                    <!--<report-component flex
-                                      reportAvailable="{{reportAvailable}}"
-                                      repoName="{{repoName}}"
-                                      repo="{{repo}}"
-                                      testRunning="{{testRunning}}"
-                                      unitPass="{{unitPass}}"></report-component>
-                    <div class="spacer"></div>-->
                     <signup-component flex
                                       sheets="{{sheets}}"
                                       signedUp="{{signedUp}}"
@@ -95,15 +108,10 @@
                 this.reportAvailable  = null;
                 this.repo = null;
                 this.displayRepo = null;
-                this.deadline = null;
                 this.repoName = null;
                 this.tickObj = null;
-            },
-
-            tickObjChanged: function() {
-                console.log("Tick object:");
-                console.log(this.tickObj.deadline);
-
+                this.datetime = null;
+                this.deadlinePassed = null;
             },
 
             domReady: function() {
@@ -111,6 +119,17 @@
                 this.$.forkService.addEventListener('test-running', function() {
                     that.submitComponent.continuePolling();
                 });
+            },
+
+            tickObjChanged: function() {
+                if (this.tickObj.deadline == null) {
+                    this.datetime = null;
+                    this.deadlinePassed = false;
+                } else {
+                    this.datetime = new Date(this.tickObj.deadline);
+                    this.deadlinePassed = this.datetime < new Date();
+                    console.log("deadline Passed?", this.deadlinePassed);
+                }
             },
 
             createFork: function() {
