@@ -137,7 +137,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 	/**
 	 * {@inheritDoc}
 	 */
-	//@Override
+	@Override
 	public Response exportGroupForkStatus(String groupId) {
 		Group group = db.getGroup(groupId);
 
