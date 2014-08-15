@@ -48,6 +48,7 @@ public class ForkStatusCsv {
 		writer.append("Display Name");
 		writer.append(",CRSid");
 		writer.append(",College");
+		writer.append(',');
 		for (String tickId : group.getTicks()) {
 			writer.append(',' + db.getTick(tickId).getName());
 		}
@@ -59,6 +60,7 @@ public class ForkStatusCsv {
 			writer.append(user.getDisplayName());
 			writer.append(',' + user.getCrsid());
 			writer.append(',' + user.getCollege());
+			writer.append(',');
 
 			for (String tickId : tickIds) {
 				Fork fork = db.getFork(Fork.generateForkId(user.getCrsid(),
