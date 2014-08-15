@@ -26,7 +26,7 @@
 				font-weight: 300;
 			}
 		</style>
-		<div layout horizontal center id="container">
+		<div layout horizontal center id="container" on-tap="{{onClick}}">
 			<!-- TODO: Get Session Date for datetime. -->
 			<date-calendar hexColorPrimary="#259b24" hexColorSecondary="#a2f78d" datetime="{{sheet.startTime}}"></date-calendar>
 			<div flex></div>
@@ -37,4 +37,11 @@
 			<paper-ripple class="recenteringTouch" fit></paper-ripple>
 		</div>
 	</template>
+	<script>
+		Polymer("tick-session-box", {
+				onClick: function() {
+					this.fire("sheet-clicked",{"sheet":this.sheet});
+				}
+			})
+	</script>
 </polymer-element>

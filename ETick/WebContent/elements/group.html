@@ -37,7 +37,8 @@
 		</core-ajax>
 
         <main-card animated>
-            <paper-tabs id="tabs" selected="0">
+			<!-- temporary on-tap to try and remove deep signups card -->
+            <paper-tabs id="tabs" selected="0" on-tap={{changeTab}}>
                 <paper-tab>{{name}}</paper-tab>
                 <paper-tab>TICKS</paper-tab>
                 <paper-tab>TICKING SESSIONS</paper-tab>
@@ -83,7 +84,7 @@
 
             <!-- Ticking Sessions Tab -->
             <span id="tickingSessions" hidden>
-	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
+	        	<tick-session-list gid="{{gid}}" on-sheet-clicked="{{openSession}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
 	        		on-sheet-created="{{sheetCreated}}"
 	        		on-edit-add-session="{{editAddSession}}"></tick-session-list>
 	        </span>
@@ -121,9 +122,9 @@
 
         <!-- Marker card for ticking sessions. -->
         <span id="deepTickingSessions" hidden>
-	        <template if="{{(isMarker||isAdmin)}}">
-                <ticker-signup groupId="{{gid}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
-            </template>
+	        <!-- moved template to ticker-signup -->
+            <ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheetName}}" sessionId="{{sheetId}}" location="{{location}}" description="{{description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
+            
         </span>
 
 	    <!-- Ticking session create/edit card. -->
@@ -201,6 +202,17 @@
 
 			editAddSession: function (e, detail) {
 				this.$.editAddSessionCard.appendChild(detail);
+			},
+			
+			openSession: function(e,detail) {
+				this.sheetId = detail.sheet._id;
+				this.sheetName = detail.sheet.title;
+				this.location = detail.sheet.location;
+				this.description = detail.sheet.description;
+			},
+			
+			changeTab: function() {
+				this.sheetId = undefined;
 			}
 		});
 	</script>
