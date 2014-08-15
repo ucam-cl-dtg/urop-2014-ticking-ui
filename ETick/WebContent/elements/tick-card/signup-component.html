@@ -6,6 +6,7 @@
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../are-you-sure.html">
 <link rel="import" href="../date-calendar.html">
+<link rel="import" href="../time-clock.html">
 
 <polymer-element name="signup-component" attributes="tickId sheets signedUp unitPass testRunning humanPass">
     <template>
@@ -43,11 +44,27 @@
                 completeMessage="Booking cancelled.">
         </toast-ajax>
 
+        <!-- Information about currently booked tick -->
         <core-collapse opened?="{{signedUp}}">
-            <div style="padding: 3px;">
+            <div style="padding: 3px;" layout horizontal>
                 <date-calendar hexColorPrimary="#FF8000" hexColorSecondary="#fff" datetime="{{bookingDateTime}}"></date-calendar>
+                <time-clock datetime="{{booking.startTime}}"></time-clock>
+
+                <div layout vertical>
+                    <div flex></div>
+                    <div class="error">Ticker:&nbsp;</div>
+                    <div flex></div>
+                </div>
+
+                <div layout vertical>
+                    <div flex></div>
+                    <div>{{booking.ticker}}</div>
+                    <div flex></div>
+                </div>
             </div>
         </core-collapse>
+
+        <br>
 
         <!-- Sign up button -->
         <core-collapse opened?="{{!signedUp && !testRunning && unitPass && !humanPass}}">
@@ -116,6 +133,10 @@
 
             signedUpChanged: function() {
                 this.$.ajaxLoadBookings.go();
+            },
+
+            bookingChanged: function() {
+                console.log("start time changed to", this.booking.startTime);
             },
 
             /**
