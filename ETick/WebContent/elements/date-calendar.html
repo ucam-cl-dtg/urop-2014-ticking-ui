@@ -85,7 +85,11 @@
 				monthStyle.background = this.hexColorPrimary;
 				monthStyle.boxShadow = '0 2px 0 ' + this.hexColorPrimary;
 				monthStyle.borderBottom = '1px dashed ' + this.hexColorSecondary;
-			}
+			},
+
+            hexColorPrimaryChanged: function() {
+                this.domReady();
+            }
 		});
 	</script>
 </polymer-element>
