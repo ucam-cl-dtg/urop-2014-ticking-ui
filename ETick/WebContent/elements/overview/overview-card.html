@@ -8,6 +8,8 @@
 
 <polymer-element name="overview-card">
     <template>
+        <link rel="stylesheet" href="overview.css">
+
         <style>
 
         </style>
@@ -26,33 +28,47 @@
         <div style="height: 250px;" layout vertical>
 
             <div layout horizontal>
-                <!-- TODO: fixed bit -->
-                <div style="width: 480px;"></div>
+                <!-- fixed bit -->
+                <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
+                    <h4 class="user-label">{{item}}</h4>
+                </template>
+
+
+
 
                 <!-- Top bar -->
-                <div style="height: 100px;">
+                <div style="height: 60px; overflow-x: hidden;" layout horizontal>
                     <div id="headings" style="overflow: hidden;">
                         <overview-ticks-bar tickNames="{{tickNames}}"></overview-ticks-bar>
                     </div>
+
+
                 </div>
+
+                <!-- vertical scroll bar spacer -->
 
             </div>
 
             <div layout horizontal>
-                <!-- TODO: user names -->
-                <div id="userHeadings" style="overflow: hidden">
-                    <overview-users-bar users="{{users}}"></overview-users-bar>
+                <!-- user names and colleges -->
+                <div layout vertical>
+                    <div id="userHeadings" style="overflow: hidden; height: 230px;">
+                        <overview-users-bar users="{{users}}"></overview-users-bar>
+                    </div>
+
+                    <!-- horizontal scroll bar spacer -->
+                    <!--<div style="height: 20px;"></div>-->
                 </div>
 
+
+
                 <!-- Scrolling content -->
-                <div id="scrollArea" style=" overflow-x: scroll;" on-scroll="{{scrolled}}">
+                <div id="scrollArea" style=" overflow-x: scroll;" on-scroll="{{scrolled}}" flex>
                     <template repeat="{{user in users}}">
                         <overview-item user="{{user}}"></overview-item>
                     </template>
                 </div>
             </div>
-
-
         </div>
     </template>
     <script>
@@ -100,8 +116,9 @@
 
             scrolled: function() {
                 this.$.headings.scrollLeft = this.$.scrollArea.scrollLeft;
-
                 this.$.userHeadings.scrollTop = this.$.scrollArea.scrollTop;
+
+                this.$.userHeadings.width = this.$.scrollArea.clientWidth;
             }
         });
     </script>
