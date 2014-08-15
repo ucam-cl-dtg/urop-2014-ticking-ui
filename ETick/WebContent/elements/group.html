@@ -87,7 +87,8 @@
             <span id="tickingSessions" hidden>
 	        	<tick-session-list gid="{{gid}}" sheets="{{sheets}}" isAuthor="{{isAuthor||isAdmin}}"
 	        		on-add-sheet-clicked="{{addSheetHandler}}"
-	        		on-edit-sheet-clicked="{{editSheetHandler}}">
+	        		on-edit-sheet-clicked="{{editSheetHandler}}"
+	        		on-sheet-selected="{{sheetSelectedHandler}}">
 	        	</tick-session-list>
 	        </span>
 
@@ -134,7 +135,7 @@
         <!-- Marker card for ticking sessions. -->
         <span id="deepTickingSessions" hidden>
 	        <!-- moved template to ticker-signup -->
-            <ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheetName}}" sessionId="{{sheetId}}" location="{{location}}" description="{{description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
+            <ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.name}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
             
         </span>
 
@@ -221,7 +222,6 @@
 			},			
 			
 			editSheetHandler: function (e, detail) {
-				this.sheet = detail.sheet;
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: true,
 					gid: this.gid,
@@ -235,6 +235,10 @@
 					gid: null,
 					sheet: null
 				}
+			},
+
+			sheetSelectedHandler: function (e, detail) {
+				this.sheet = detail.sheet;
 			}
 		});
 	</script>

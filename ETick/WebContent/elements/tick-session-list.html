@@ -56,15 +56,16 @@
 				var sel = this.$.list.$.selector.selectedItem;
 				if (sel) {
 					this.selectedSheet = sel.sheet;
+					this.fire('sheet-selected', {
+						sheet: this.selectedSheet
+					})
 				}
 
 			},
 
 			editClicked: function () {
 				if (this.selectedSheet) {
-					this.fire('edit-sheet-clicked', {
-						sheet: this.selectedSheet
-					});
+					this.fire('edit-sheet-clicked');
 				}
 			}
 		});
