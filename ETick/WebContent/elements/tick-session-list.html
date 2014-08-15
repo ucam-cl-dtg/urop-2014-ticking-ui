@@ -67,6 +67,7 @@
 
 			sheetSelected: function () {
 				var sel = this.$.list.$.selector.selectedItem;
+				console.log(sel);
 				if (sel) {
 					this.selectedSheet = sel.sheet;
 					this.fire('sheet-selected', {
@@ -77,6 +78,7 @@
 			},
 
 			editClicked: function () {
+				console.log(this.selectedSheet);
 				if (this.selectedSheet) {
 					this.fire('edit-sheet-clicked');
 				}
@@ -105,6 +107,7 @@
 
 			clearSelection: function () {
 				this.$.list.$.selector.selected = null;
+				this.selectedSheet = null;
 			}
 		});
 	</script>

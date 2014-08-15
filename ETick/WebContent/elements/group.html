@@ -50,10 +50,12 @@
                     <div layout horizontal end style="width: 100%;">
                         <p class="creator">Created by: {{creator}}</p>
 						<span layout horizontal end end-justified flex>
-							<template if="{{isAuthor||isAdmin}}">
+							<template if="{{isAuthor || isAdmin}}">
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
 								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
 								<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
+							</template>
+							<template if="{{isOverview}}">
 								<export-status gid="{{gid}}"></export-status>
 							</template>
 						</span>
@@ -174,6 +176,7 @@
 				this.isSubmitter = (this.roles.indexOf('SUBMITTER') > -1);
 				this.isMarker = (this.roles.indexOf('MARKER') > -1);
 				this.isAdmin = (this.roles.indexOf('ADMIN') > -1);
+				this.isOverview = (this.roles.indexOf('OVERVIEW') > -1);
 			},
 
             nameChanged: function() {

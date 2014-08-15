@@ -21,7 +21,8 @@
 						name="{{person.displayName}}"
 						crsid="{{person._id}}"
 						college="{{person.college == 'Unknown' ? '' : person.college}}"
-						isStudent="{{person.isStudent}}">
+						isStudent="{{person.isStudent}}"
+						photo="{{person.photo === 'undefined' ? null : person.photo}}">
 					</person-box>	
 			</template>	
 		</box-list>
