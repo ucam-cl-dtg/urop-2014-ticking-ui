@@ -54,20 +54,19 @@
     <toast-ajax
 		id="ajaxKick"
         url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/students/{{crsId}}/ticks/{{tickId}}"
+		method = "DELETE"
 		waitMessage="kicking {{crsId}}..."
 		responseMessage="kicked {{crsId}}"
 		captureError
 		waitBeforeToast="10"
-        handleAs="json"
 		contentType="application/json"
-        on-core-response="{{ajaxLoadSlots}}">
 	</toast-ajax>
 	
 	<div layout vertical>
 		<div id="card-header" align="left">
-			<core-item icon="home" label="Location : {{location}}"></core-item>
+			<core-item icon="home" label="{{this.location=='' ? 'Location : No location available' : 'Location : ' + this.location}}"></core-item>
 			<core-item icon="today" label="Date : {{date}}"></core-item>
-			<core-item icon="info" label="Description : {{description}}"></core-item>
+			<core-item icon="info" label="{{this.description=='' ? 'Description : No description available' : 'Description : ' + this.description}}"></core-item>
 			<!-- would it be possible for class to contain date of session too? -->
 		</div>
 		<div id="ticker-select-panel" align="center">
@@ -121,12 +120,6 @@
 			refresh: function() {
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
-				if (this.location === "") {
-					this.location = "No location is available";
-				}
-				if (this.description === "") {
-					this.description = "No description is available";
-				}
 				this.$.ajaxLoadTickers.go();
 			},
 			tickersDataLoaded: function() {
@@ -225,10 +218,11 @@
 				console.log("open are you sure dialog" + this.crsId);
 				this.fire("toggle-are-you-sure");
 			},
-			kickChange : function() {
+			kickChanged : function() {
 				if (this.kick) {
 					console.log("kick");
 					this.$.ajaxKick.go();
+					this.$.ajaxLoadSlots.go();
 				} 
 			}
 		})

@@ -231,6 +231,10 @@
 
 			sheetSelectedHandler: function (e, detail) {
 				this.sheet = detail.sheet;
+			},
+			<!-- to clear signups slots card, if this isn't viable then will have to change-->
+			changeTab: function() {
+				this.sheet = null;
 			}
 		});
 	</script>

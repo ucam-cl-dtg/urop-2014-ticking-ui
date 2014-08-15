@@ -8,21 +8,19 @@
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
 		<div class="container">
-			<template>
-				<are-you-sure id="dialog" on-yes="{{yes}}" on-no="{{no}}" heading="Are you sure you wish to kick {{crsId}} from this slot?"></are-you-sure>
-				<div hidden?="{{!((isMarker||isAdmin)&&(sessionId))}}">
-					<main-card animated>
-						<ticker-signups-card on-toggle-are-you-sure="{{toggleAreYouSure}}" on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" kick="{{kick}}" reason="{{reason}}" refresh="{{!viewReport}}" studentMode="{{false}}" locationx="{{location}}" descriptionx="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
-					</main-card>
-					<main-card animated hidden?="{{!viewReport}}">
-						<file-browser-card id="filebrowser" on-hide-report="{{hideReport}}" slotId="{{slotId}}" sheetId="{{sessionId}}" crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
-					</main-card>
-				</div>
-				<div hidden?="{{!(!(isMarker||isAdmin)&&(sessionId))}}">
-					<main-card animated>
-						<ticker-signups-card studentMode="{{true}}" locationx="{{location}}" descriptionx="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
-					</main-card>
-				</div>
+			<are-you-sure id="confirm" on-yes="{{yes}}" on-no="{{no}}" heading="Are you sure you want to remove {{crsId}} from this slot?"></are-you-sure>
+			<template if="{{((isMarker||isAdmin)&&(sessionId))}}">
+				<main-card animated>
+					<ticker-signups-card on-toggle-are-you-sure="{{toggleAreYouSure}}" on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" kick="{{kick}}" reason="{{reason}}" refresh="{{!viewReport}}" studentMode="{{false}}" location="{{location}}" description="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
+				</main-card>
+				<main-card animated hidden?="{{!viewReport}}">
+					<file-browser-card id="filebrowser" on-hide-report="{{hideReport}}" slotId="{{slotId}}" sheetId="{{sessionId}}" crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
+				</main-card>
+			</template>
+			<template if="{{(!(isMarker||isAdmin)&&(sessionId))}}">
+				<main-card animated>
+					<ticker-signups-card studentMode="{{true}}" location="{{location}}" description="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
+				</main-card>
 			</template>
 		</div>
 	</template>
@@ -37,17 +35,15 @@
 				this.viewReport = true;
 			},
 			toggleAreYouSure: function() {
-				this.$.dialog.toggle();
+				this.$.confirm.toggle();
+				console.log("toggleAreYouSure");
 			},
 			yes : function() {
 				console.log("kick = true");
-				this.toggleAreYouSure();
-				console.log("kicking...");
 				this.kick = true;
 			},
 			no : function() {
 				console.log("kick = false");
-				this.toggleAreYouSure();
 			}
 		});
     </script>
