@@ -99,7 +99,10 @@
                                tickId="{{selectedTickId}}"
                                sheets="{{sheets}}"
                                repoName="{{repoName}}"
-                               tickObj="{{selectedTickObj}}"></tick-card>
+                               tickObj="{{selectedTickObj}}"
+                               lastTickedBy="{{lastTickedBy}}"
+                               lastTickedOn="{{lastTickedOn}}">
+                    </tick-card>
                 </main-card>
             </template>
 
@@ -107,7 +110,9 @@
             <template if="{{repoName}}">
                 <main-card animated>
                     <file-browser-card tickId="{{selectedTickId}}"
-                                       repoName="{{repoName}}">
+                                       repoName="{{repoName}}"
+                                       lastTickedBy="{{lastTickedBy}}"
+                                       lastTickedOn="{{lastTickedOn}}">
                     </file-browser-card>
                 </main-card>
             </template>

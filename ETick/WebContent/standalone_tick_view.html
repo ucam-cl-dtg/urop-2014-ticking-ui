@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 textwidth=72 : -->
+<html>
+  <head>
+    <title>Test Page</title>
+    <script src="bower_components/platform/platform.js"></script>
+    <link rel="import" href="bower_components/font-roboto/roboto.html">
+    <link rel="import" href="elements/main-card.html">
+    <link rel="import" href="elements/file-browser/file-browser-card.html">
+
+    <style>
+html,body {
+  height: 100%;
+  margin: 0;
+  background-color: #E5E5E5;
+  font-family: 'RobotoDraft', sans-serif;
+}
+    </style>
+  </head>
+  <body unresolved touch-action="auto">
+    <div class="container">
+      <main-card animated unresolved>
+        <file-browser-card unresolved>
+        </file-browser-card>
+      </main-card>
+    </div>
+    <script>
+      "use strict";
+
+      var URIParams = JSON.parse(
+          "{" + window.location.search.slice(1) /* Removes "?" */
+                  .split(/[&;]/g).map(
+                    function (keyEqVal)
+                    {
+                      return keyEqVal.replace(/^(.*)=(.*)$/,
+                          function (match, capture1, capture2)
+                          {
+                            return '"' + decodeURIComponent(capture1) +
+                                   '"' + ":" + '"' +
+                                   decodeURIComponent(capture2) + '"';
+                          });
+                    }).join(",") +
+          "}");
+
+      var card = document.querySelector('file-browser-card')
+      card.setAttribute('crsid', URIParams.crsid);
+      card.setAttribute('tickId', URIParams.tickId);
+      card.setAttribute('repoName', URIParams.repoName);
+      card.setAttribute('lastTickedBy', URIParams.lastTickedBy);
+      card.setAttribute('lastTickedOn', URIParams.lastTickedOn);
+      card.setAttribute('resolved', '');
+      card.removeAttribute('unresolved');
+    </script>
+  </body>
+</html>

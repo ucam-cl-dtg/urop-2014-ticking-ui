@@ -211,7 +211,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		}
 
 		/* Check if the tests are complete */
-		if (status.getProgress() == status.getMaxProgress()) {
+		if ((status.getProgress() == status.getMaxProgress())&&(status.getCurrentPositionInQueue()==0)) {
 
 			/* The fork has finished testing and the report is available */
 			fork.setTesting(false);

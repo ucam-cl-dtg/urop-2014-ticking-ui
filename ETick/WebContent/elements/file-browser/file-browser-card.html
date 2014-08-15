@@ -9,17 +9,15 @@
 <link rel="import" href="ticker-set-result.html"/>
 
 <!-- This is the main card for file-browsing.
-  The mandatory attributes are repoName, tickId.
+  The mandatory attributes are repoName, tickId (lastTickedBy and
+  lastTickedOn too, if the following optional ones not provided).
   The optional attributes are sheetId, crsid, ticker.
   These must be supplied together, if they are supplied.
   If they are supplied, this card also becomes a pass/fail card.
 -->
 <polymer-element name="file-browser-card"
-                 attributes="repoName
-                             sheetId
-                             tickId
-                             crsid
-                             ticker">
+                 attributes="repoName sheetId tickId crsid ticker
+                             lastTickedBy lastTickedOn">
   <!-- TODO: get ALL reports -->
   <template>
     <link rel="stylesheet" href="../../css/shared-styles.css"/>
@@ -40,9 +38,8 @@
     </files-service>
     <div class="container" horizontal layout>
       <div class="sidebar">
-        <p class="result">
-          You have {{reportResult=="FAIL" || testResult=="FAIL" ? "failed." : "passed!"}}
-        </p>
+        <h3 id="resultString" class="result">
+        </h3>
         <files-list files="{{files}}"
                     selectedFileId="{{selectedFileId}}">
         </files-list>
@@ -82,10 +79,9 @@
                              tickId="{{tickId}}"
                              sheetId="{{sheetId}}"
                              reportCreationDate="{{date}}"
-                             on-main-card-swipe-away="{{swipeAway}}"
                              on-tick-passed="{{tickPassed}}"
-							 on-tick-failed="{{tickFailed}}" 
-							 on-tick-no-show="{{tickNoShow}}">
+                             on-tick-failed="{{tickFailed}}" 
+                             on-tick-no-show="{{tickNoShow}}">
           </ticker-set-result>
         </template>
 
@@ -95,8 +91,7 @@
   </template>
   <script>
     Polymer('file-browser-card'
-      , {   syntaxStyleSheet: "default"
-          , selectedFileIdChanged:
+      , {   selectedFileIdChanged:
             function ()
             {
               var element = 
@@ -104,35 +99,89 @@
                   .getElementById(this.selectedFileId);
               window.scroll(element.offsetLeft, element.offsetTop);
             }
-          , swipeBack:
-            function ()
-            {
-              this.fire("main-card-swipe-back", {"card":this});
-            }
+
   		  , updateTickerView:
-  		    function()
+  		    function(reason)
   			{
-  			  this.fire("main-card-swipe-away", {"card":this});
-  			  this.fire("update-ticker-viewer", {"result": this.result});
+  			  this.fire("update-ticker-viewer", {"result": reason});
   			}
   		  , tickPassed:
   		    function()
   			{
-  			  this.result = "pass";
-  			  this.updateTickerView();
+  			  this.updateTickerView("pass");
   			}
   		  , tickFailed:
   		    function()
   			{
-  			  this.result = "fail";
-  			  this.updateTickerView();
+  			  this.updateTickerView("fail");
   			}
   		  , tickNoShow:
   		    function()
   			{
-  			  this.result = "noShow";
-  			  this.updateTickerView();
+  			  this.updateTickerView("noShow");
   			}
+
+        , getTickURL:
+          function ()
+          {
+            if (this.crsid == null)
+            {
+              crsid = this.repoName.split("/")[0];
+            }
+            else
+            {
+              crsid = this.crsid;
+            }
+
+            return window.location.href + "standalone_tick_view.html" +
+              "?repoName=" + encodeURIComponent(this.repoName) +
+              "&crsid=" + encodeURIComponent(crsid) +
+              "&tickId=" + encodeURIComponent(this.tickId) +
+              "&lastTickedBy=" + encodeURIComponent(this.lastTickedBy) +
+              "&lastTickedOn=" + encodeURIComponent(this.lastTickedOn);
+          }
+
+        , recalculateResult:
+          function ()
+          {
+            if (this.testResult == "FAIL")
+            {
+              this.$.resultString.innerHTML =
+                "You have failed the automatic tests." +
+                " See below for more detailed information."
+            }
+            else if (this.tickerResult == "FAIL")
+            {
+              this.$.resultString.innerHTML =
+                "You have been failed by ticker " +
+                  "<a href=\"mailto:" +
+                    this.lastTickedBy + "@cam.ac.uk" +
+                    "?subject=" +
+                      encodeURIComponent("Question about tick " +
+                          this.tickId) +
+                    "&body=" +
+                      encodeURIComponent("Hi,\n\nI have a question " +
+                          "about why you failed my submission (" +
+                          "online at: " + this.getTickURL() + ").") +
+                  "\">" +
+                    this.lastTickedBy +
+                  "</a>" +
+                " at " + new Date(this.lastTickedOn).toLocaleString() +
+                ".";
+            }
+            else if (this.reportResult == "FAIL")
+            {
+              // TODO: When is this?
+            }
+            else
+            {
+              this.$.resultString.innerHTML = "You have passed!";
+            }
+          }
+
+        , testResultChanged: function () { this.recalculateResult(); }
+        , tickerResultChanged: function () { this.recalculateResult(); }
+        , reportResultChanged: function () { this.recalculateResult(); }
         });
   </script>
 </polymer-element>
