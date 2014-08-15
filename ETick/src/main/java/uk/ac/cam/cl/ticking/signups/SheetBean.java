@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
-public class CreateSheetBean {
+public class SheetBean {
     private String title;
     private String description;
     private String location;
@@ -21,7 +21,7 @@ public class CreateSheetBean {
     private List<String> tickerNames;
     private String groupID;
     
-    public CreateSheetBean(String title, String description, String location,
+    public SheetBean(String title, String description, String location,
             Long startTime, int slotLengthInMinutes, Long endTime,
             List<String> tickerNames, String groupID, String groupAuthCode) {
         this.title = title;
@@ -34,7 +34,7 @@ public class CreateSheetBean {
         this.groupID = groupID;
     }
     
-    public CreateSheetBean() {
+    public SheetBean() {
         // Default constructor
     }
 
