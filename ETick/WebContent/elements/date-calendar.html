@@ -80,16 +80,20 @@
 				this.day = weekdays[d.getDay()];
 				this.month = months[d.getMonth()];
 
-				// Apply primary and secondary colors to style:
-				this.$.day.style.color = this.hexColorPrimary;
-				var monthStyle = this.$.month.style;
-				monthStyle.background = this.hexColorPrimary;
-				monthStyle.boxShadow = '0 2px 0 ' + this.hexColorPrimary;
-				monthStyle.borderBottom = '1px dashed ' + this.hexColorSecondary;
+                this.updateColors();
 			},
 
+            updateColors: function() {
+                // Apply primary and secondary colors to style:
+                this.$.day.style.color = this.hexColorPrimary;
+                var monthStyle = this.$.month.style;
+                monthStyle.background = this.hexColorPrimary;
+                monthStyle.boxShadow = '0 2px 0 ' + this.hexColorPrimary;
+                monthStyle.borderBottom = '1px dashed ' + this.hexColorSecondary;
+            },
+
             hexColorPrimaryChanged: function() {
-                this.domReady();
+                this.updateColors();
             },
 
             datetimeChanged: function() {
