@@ -150,6 +150,10 @@ public class ForkStatusXls {
 			
 		}
 		
+		for (int i = 0; i<100; i++) {
+			sheet.autoSizeColumn(i);
+		}
+		
 		File temp = File.createTempFile(groupId, ".xls");
 		FileOutputStream out = new FileOutputStream(temp);
 
