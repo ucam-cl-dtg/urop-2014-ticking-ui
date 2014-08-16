@@ -2,12 +2,9 @@
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
-<link rel="import" href="overview-item.html">
+<link rel="import" href="overview-list.html">
 <link rel="import" href="overview-ticks-bar.html">
 <link rel="import" href="overview-users-bar.html">
-
-<!-- TODO: remove if not used -->
-<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
 
 <polymer-element name="overview-card">
     <template>
@@ -68,7 +65,7 @@
                 <div id="scrollArea" style=" overflow-x: scroll;" on-scroll="{{scrolled}}" flex>
                     <template repeat="{{user in users}}">
                         <div id="template">
-                            <overview-item user="{{user}}"></overview-item>
+                            <overview-list user="{{user}}"></overview-list>
                         </div>
                     </template>
                 </div>
@@ -104,26 +101,42 @@
                        crsId: el[1],
                        college: el[2],
                        collegeAbbr: that.collegeDict.hasOwnProperty(el[2]) ? that.collegeDict[el[2]] : "",
-                       tickComments: el.splice(4, el.length - 1).map(function(el) {
-                           if (el == "Unit failed") {
-                               return "F";
-                           } else if (el == "Unit passed") {
-                               return "U"
-                           } else if (el == "Initilialised") {
-                               return "I"
-                           } else if (el.lastIndexOf("PASSED by") > -1) {
-                                return "P"
-                           } else if (el == "") {
-                                return "-"
-                           }    else{
-                               return el;
-                           }
-                       })
+                       displayStrings:
+                               el.splice(4, el.length - 1).map(function (el) {
+                                   var iconCode;
+                                   var tooltip;
+
+                                   if (el == "Unit failed") {
+                                       iconCode = "F";
+                                       tooltip = "Failed automated tests.";
+                                   } else if (el == "Unit passed") {
+                                       iconCode = "U";
+                                       tooltip = "Passed automated tests.";
+                                   } else if (el == "Initilialised") {
+                                       iconCode = "I";
+                                       tooltip = "Not submitted.";
+                                   } else if (el.lastIndexOf("PASSED by") > -1) {
+                                       iconCode = "P";
+                                       el = el.toLowerCase();
+                                       tooltip = el.charAt(0).toUpperCase() + el.slice(1);
+                                   } else if (el == "") {
+                                       iconCode = "-";
+                                       tooltip = "Not started.";
+                                   } else {
+                                       iconCode = el;
+                                   }
+
+
+
+                                   return {iconCode: iconCode, tooltip: tooltip};
+                               })
                    }
                 });
 
                 //build list of column titles
-                var colTitles = users[0].tickComments;
+                var colTitles = users[0].displayStrings.map(function(el) {
+                    return el.iconCode;
+                });
 
                 //remove the first two rows (column headings and a blank line)
                 users = users.slice(2, users.length - 1 );
