@@ -4,8 +4,17 @@
     <template>
         <link rel="stylesheet" href="overview.css">
 
+        <style>
+            #user-div:nth-child(odd){
+                background: #f6f6f6;
+            }
+            #user-div:nth-child(even) {
+                background: #e9e9e9;
+            }
+        </style>
+
         <template repeat="{{user in users}}">
-            <div layout horizontal>
+            <div id="user-div" layout horizontal>
                 <h4 class="user-label">{{user.lastName}}</h4>
                 <div class="user-label">{{user.foreNames}}</div>
                 <div class="user-label">{{user.college}}</div>

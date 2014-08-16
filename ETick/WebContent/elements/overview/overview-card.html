@@ -11,7 +11,12 @@
         <link rel="stylesheet" href="overview.css">
 
         <style>
-
+            #template:nth-child(odd){
+                background: #f6f6f6;
+            }
+            #template:nth-child(even) {
+                background: #e9e9e9;
+            }
         </style>
 
         <core-ajax
@@ -58,7 +63,9 @@
                 <!-- Scrolling content -->
                 <div id="scrollArea" style=" overflow-x: scroll;" on-scroll="{{scrolled}}" flex>
                     <template repeat="{{user in users}}">
+                        <div id="template">
                         <overview-item user="{{user}}"></overview-item>
+                        </div>
                     </template>
                 </div>
             </div>
