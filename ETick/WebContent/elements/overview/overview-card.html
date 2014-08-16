@@ -30,7 +30,7 @@
 
         <!-- Card content goes here -->
 
-        <div style="height: 600px;" layout vertical>
+        <div style="height: 600px;" layout vertical style="position: relative">
             <div layout horizontal style="min-height: 150px; background: #2D91EC; color: #ABD3F7">
                 <!-- fixed bit -->
                 <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
@@ -46,10 +46,11 @@
                     </div>
                 </div>
 
-                <!-- vertical scroll bar spacer -->
-            </div>
 
-            <div layout horizontal>
+            </div>
+            <div id="hShadow"></div>
+
+            <div layout horizontal style="margin-top: -6px">
                 <!-- user names and colleges -->
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
@@ -200,6 +201,12 @@
             scrolled: function() {
                 this.$.headings.scrollLeft = this.$.scrollArea.scrollLeft;
                 this.$.userHeadings.scrollTop = this.$.scrollArea.scrollTop;
+
+                if (this.$.scrollArea.scrollTop > 0) {
+                    this.$.hShadow.classList.add('horizontalDropShadow');
+                } else {
+                    this.$.hShadow.classList.remove('horizontalDropShadow');
+                }
 
                 this.$.userHeadings.width = this.$.scrollArea.clientWidth;
             }

@@ -15,7 +15,7 @@
     padding: 5px;
 }
 
-#horizontalDropShadow {
+/*#horizontalDropShadow {
     position: absolute;
     top: 0;
     left: 0;
@@ -24,6 +24,23 @@
     box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
 
     background-color: #ff0000;
+}*/
+
+.horizontalDropShadow {
+    position: relative;
+    top: 0px;
+    left: 0;
+    right: 0;
+    height: 6px;
+    min-height: 6px;
+    margin-top: -6px;
+    box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+}
+
+#dropTest {
+    background: #008000;
+    min-height: 20px;
+    min-width: 100px;
 }
 
 .rotated {
