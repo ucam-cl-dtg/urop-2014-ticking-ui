@@ -54,6 +54,7 @@
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
                         <overview-users-bar users="{{users}}"></overview-users-bar>
+                        <div style="height: 100px;"></div>
                     </div>
 
                     <!-- horizontal scroll bar spacer -->
@@ -64,7 +65,7 @@
                 <div id="scrollArea" style=" overflow-x: scroll;" on-scroll="{{scrolled}}" flex>
                     <template repeat="{{user in users}}">
                         <div id="template">
-                        <overview-item user="{{user}}"></overview-item>
+                            <overview-item user="{{user}}"></overview-item>
                         </div>
                     </template>
                 </div>
