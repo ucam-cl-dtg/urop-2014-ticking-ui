@@ -8,7 +8,7 @@
             <template repeat="{{tickName in tickNames}}">
                 <!-- The weird margin thing going on here is the only way I could make the labels be at the bottom
                      of the header bar. -->
-                <h4 style="margin-bottom: -35px; margin-top: 35px;" class="tick-label rotated">{{tickName}}</h4>
+                <div style="margin-bottom: -35px; margin-top: 35px;" class="tick-label rotated">{{tickName}}</div>
             </template>
             <h4 id="spacer" class="user-label"></h4>
         </div>

@@ -31,11 +31,11 @@
         <!-- Card content goes here -->
 
         <div style="height: 600px;" layout vertical>
-            <div layout horizontal style="min-height: 150px;">
+            <div layout horizontal style="min-height: 150px; background: #2D91EC; color: white">
                 <!-- fixed bit -->
                 <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
                     <div layout horizontal end class="user-label">
-                    <h4 class="user-label">{{item}}</h4>
+                        <div class="user-label" style="{{'width: ' + (item=='College' ? '20px;' : '150px;')}}">{{item}}</div>
                     </div>
                 </template>
 
@@ -73,7 +73,11 @@
         </div>
     </template>
     <script>
-        Polymer('overview-card',{
+        Polymer('overview-card', {
+            created: function() {
+                this.buildCollegeDictionary();
+            },
+
             overviewLoaded: function() {
                 //load string of comma separated values
                 var csv = this.$.ajaxLoadOverview.response;
@@ -86,13 +90,17 @@
                     return el.split(',');
                 });
 
+                console.log(this.collegeDict);
+
                 //build user objects from these columns
+                var that = this;
                 var users = arrayed.map(function(el) {
                    return {
                        foreNames: el[0].split(" ").slice(0, el[0].split(" ").length - 1).join(" "),
                        lastName: el[0].split(" ").slice(el[0].split(" ").length - 1),
                        crsId: el[1],
-                       college: el[2],
+                       college: "Gonville and Caius", //el[2],
+                       collegeAbbr: that.collegeDict.hasOwnProperty(el[2]) ? that.collegeDict[el[2]] : "",
                        tickComments: el.splice(4, el.length - 1).map(function(el) {
                            if (el == "Unit failed") {
                                return "F";
@@ -135,6 +143,42 @@
 
                 this.users = users;
                 this.tickNames = colTitles;
+            },
+
+            buildCollegeDictionary: function() {
+                var college = {};
+
+                college["Christ's"]           = "CHRISTS";
+                college["Churchill"]          = "CHURCH";
+                college["Clare"]              = "CLARE";
+                college["Corpus Christi"]     = "CORPUS";
+                //Darwin
+                college["Downing"]            = "DOWN";
+                college["Emmanuel"]           = "EMM";
+                college["Fitzwilliam"]        = "FITZ";
+                college["Girton"]             = "GIRTON";
+                college["Gonville and Caius"] = "CAIUS";
+                college["Homerton"]           = "HOM";
+                college["Jesus"]              = "JESUS";
+                college["King's"]             = "KINGS";
+                college["Lucy Cavendish"]     = "";
+                college["Magdalene"]          = "MAGD";
+                college["Murray Edwards"]     = "";
+                college["Newnham"]            = "NEWH";
+                college["Pembroke"]           = "PEMB";
+                college["Peterhouse"]         = "PET";
+                college["Queens'"]            = "QUEENS";
+                college["Robinson"]           = "ROBIN";
+                college["Selwyn"]             = "SEL";
+                college["Sidney Sussex"]      = "SID";
+                college["St Catharine's"]     = "CATH";
+                college["St Edmund's"]        = "EDMUND";
+                college["St John's"]          = "JOHNS";
+                college["Trinity"]            = "";
+                //Westminster
+                //Wolfson
+
+                this.collegeDict = college;
             },
 
             scrolled: function() {
