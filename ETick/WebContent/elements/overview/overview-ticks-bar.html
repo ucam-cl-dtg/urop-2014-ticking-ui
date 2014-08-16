@@ -1,18 +1,27 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<polymer-element name="overview-ticks-bar" attributes="tickNames">
+<polymer-element name="overview-ticks-bar" attributes="tickNames height">
     <template>
         <link rel="stylesheet" href="overview.css">
 
-
-        <div layout horizontal>
+        <div layout horizontal style="height: 150px;">
             <template repeat="{{tickName in tickNames}}">
-                <h4 class="user-label">{{tickName}}</h4>
+                <!-- The weird margin thing going on here is the only way I could make the labels be at the bottom
+                     of the header bar. -->
+                <h4 style="margin-bottom: -35px; margin-top: 35px;" class="tick-label rotated">{{tickName}}</h4>
             </template>
-            <h4 class="user-label"></h4>
+            <h4 id="spacer" class="user-label"></h4>
         </div>
     </template>
     <script>
-        Polymer({});
+        Polymer('overview-ticks-bar', {
+            tickNamesChanged: function () {
+                this.job('resize', this.resetHeight(), 100);
+            },
+
+            resetHeight: function() {
+                this.height = this.$.spacer.width;
+            }
+        });
     </script>
 </polymer-element>

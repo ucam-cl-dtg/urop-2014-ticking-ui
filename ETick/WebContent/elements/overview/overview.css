@@ -5,6 +5,13 @@
     padding: 5px;
 }
 
+.tick-label {
+    width: 50px;
+    min-width: 50px;
+    margin: 0;
+    padding: 5px;
+}
+
 #horizontalDropShadow {
     position: absolute;
     top: 0;
@@ -14,4 +21,15 @@
     box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
 
     background-color: #ff0000;
+}
+
+.rotated {
+    /* Safari */
+    -webkit-transform: rotate(-90deg);
+
+    /* Firefox */
+    -moz-transform: rotate(-90deg);
+
+    /* IE */
+    -ms-transform: rotate(-90deg);
 }

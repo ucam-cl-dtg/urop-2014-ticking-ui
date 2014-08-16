@@ -25,42 +25,35 @@
 
         <!-- Card content goes here -->
 
-        <div style="height: 250px;" layout vertical>
-
-            <div layout horizontal>
+        <div style="height: 600px;" layout vertical>
+            <div layout horizontal style="min-height: 150px;">
                 <!-- fixed bit -->
                 <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
+                    <div layout horizontal end>
                     <h4 class="user-label">{{item}}</h4>
+                    </div>
                 </template>
 
-
-
-
                 <!-- Top bar -->
-                <div style="height: 60px; overflow-x: hidden;" layout horizontal>
-                    <div id="headings" style="overflow: hidden;">
-                        <overview-ticks-bar tickNames="{{tickNames}}"></overview-ticks-bar>
+                <div style="overflow-x: hidden; height: 150px;" layout horizontal>
+                    <div id="headings" style="overflow: hidden; height: 150px;">
+                        <overview-ticks-bar style="height: 150px;" tickNames="{{tickNames}}"></overview-ticks-bar>
                     </div>
-
-
                 </div>
 
                 <!-- vertical scroll bar spacer -->
-
             </div>
 
             <div layout horizontal>
                 <!-- user names and colleges -->
                 <div layout vertical>
-                    <div id="userHeadings" style="overflow: hidden; height: 230px;">
+                    <div id="userHeadings" style="overflow: hidden;">
                         <overview-users-bar users="{{users}}"></overview-users-bar>
                     </div>
 
                     <!-- horizontal scroll bar spacer -->
                     <!--<div style="height: 20px;"></div>-->
                 </div>
-
-
 
                 <!-- Scrolling content -->
                 <div id="scrollArea" style=" overflow-x: scroll;" on-scroll="{{scrolled}}" flex>
@@ -101,7 +94,9 @@
                                return "I"
                            } else if (el.lastIndexOf("PASSED by") > -1) {
                                 return "P"
-                           } else {
+                           } else if (el == "") {
+                                return "-"
+                           }    else{
                                return el;
                            }
                        })
@@ -114,6 +109,9 @@
                 //remove the first two rows (column headings and a blank line)
                 users = users.slice(2, users.length - 1 );
 
+                users = users.concat(users);
+                users = users.concat(users);
+                users = users.concat(users);
                 users = users.concat(users);
 
                 //use the list of column titles to convert each user's tickComments into a dictionary

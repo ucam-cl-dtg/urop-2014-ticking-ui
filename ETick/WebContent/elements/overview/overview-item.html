@@ -3,12 +3,11 @@
 <polymer-element name="overview-item" attributes="user">
     <template>
         <link rel="stylesheet" href="overview.css">
-
         <div layout horizontal>
-
-
             <template repeat="{{tickComment in user.tickComments}}">
-                <div class="user-label">{{tickComment}}</div>
+                <div class="tick-label" vertical layout center>
+                    <div>{{tickComment}}</div>
+                </div>
             </template>
         </div>
     </template>
