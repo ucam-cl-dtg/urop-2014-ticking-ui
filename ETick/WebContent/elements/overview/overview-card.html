@@ -35,7 +35,7 @@
                 <!-- fixed bit -->
                 <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
                     <div layout horizontal end class="user-label">
-                        <div class="user-label">{{item}}</div>
+                        <div on-tap="{{sort}}" class="user-label unselectable">{{item}}</div>
                     </div>
                 </template>
 
@@ -56,7 +56,7 @@
                 <!-- user names and colleges -->
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
-                        <overview-users-bar users="{{users}}"></overview-users-bar>
+                        <overview-users-bar sortField="{{sortField}}" users="{{users}}"></overview-users-bar>
                         <div style="height: 100px;"></div>
                     </div>
 
@@ -146,10 +146,8 @@
                 //remove the first two rows (column headings and a blank line)
                 users = users.slice(2, users.length - 1 );
 
-                users = users.concat(users);
-                users = users.concat(users);
-                users = users.concat(users);
-                users = users.concat(users);
+                //users = users.concat(users);
+                //users = users.concat(users);
 
                /* users = users.map(function(el) {
                    if (el.college == "Girton") {
@@ -158,12 +156,119 @@
                     return el;
                 });*/
 
+
                 //use the list of column titles to convert each user's tickComments into a dictionary
                 console.log(users);
                 console.log(colTitles);
 
                 this.users = users;
                 this.tickNames = colTitles;
+
+                this.sortLastNameAscending();
+            },
+
+            sort: function(a, b, sender) {
+                if (this.sortField == sender.innerHTML) {
+                    this.sortDir *= -1;
+                } else {
+                    this.sortField = sender.innerHTML;
+                    this.sortDir = 1;
+                }
+
+                switch (this.sortField) {
+                    case "Name":
+                        this.sortLastName(this.sortDir);
+                        break;
+                    case "Forename(s)":
+                        this.sortForeNames(this.sortDir);
+                        break;
+                    case "College":
+                        this.sortCollege(this.sortDir);
+                        break;
+                }
+
+            },
+
+            sortLastNameAscending: function() {
+                this.sortField = "Name";
+                this.sortDir = "1";
+                this.sortLastName(1);
+            },
+
+            /**
+             * This should only be called by sortLastNameAscending and sortLastNameDescending, to ensure correct usage
+             * of the mode parameter
+             */
+            sortLastName: function(mode) {
+                this.users.sort(function(a, b) {
+                    if (a.lastName < b.lastName) {
+                        return -1 * mode;
+                    } else if (a.lastName > b.lastName) {
+                        return mode;
+                    } else {
+                        if (a.foreNames < b.foreNames) {
+                            return -1 * mode;
+                        } else if (a.foreNames > b.foreNames) {
+                            return mode;
+                        } else {
+                            if (a.college < b.college) {
+                                return -1 * mode;
+                            } else if (a.college > b.college) {
+                                return mode;
+                            } else {
+                                return 0;
+                            }
+                        }
+                    }
+                });
+            },
+
+            sortForeNames: function(mode) {
+                this.users.sort(function(a, b) {
+                    if (a.foreNames < b.foreNames) {
+                        return -1 * mode;
+                    } else if (a.foreNames > b.foreNames) {
+                        return mode;
+                    } else {
+                        if (a.lastName < b.lastName) {
+                            return -1 * mode;
+                        } else if (a.lastName > b.lastName) {
+                            return mode;
+                        } else {
+                            if (a.college < b.college) {
+                                return -1 * mode;
+                            } else if (a.college > b.college) {
+                                return mode;
+                            } else {
+                                return 0;
+                            }
+                        }
+                    }
+                });
+            },
+
+            sortCollege: function(mode) {
+                this.users.sort(function(a, b) {
+                    if (a.college < b.college) {
+                        return -1 * mode;
+                    } else if (a.college > b.college) {
+                        return mode;
+                    } else {
+                        if (a.lastName < b.lastName) {
+                            return -1 * mode;
+                        } else if (a.lastName > b.lastName) {
+                            return mode;
+                        } else {
+                            if (a.foreNames < b.foreNames) {
+                                return -1 * mode;
+                            } else if (a.foreNames > b.foreNames) {
+                                return mode;
+                            } else {
+                                return 0;
+                            }
+                        }
+                    }
+                });
             },
 
             buildCollegeDictionary: function() {
