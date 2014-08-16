@@ -14,6 +14,7 @@
 <link rel="import" href="export-status.html">
 <link rel="import" href="tick-session-list.html">
 <link rel="import" href="add-edit-session.html">
+<link rel="import" href="overview/overview-card.html">
 
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
@@ -142,6 +143,12 @@
             
         </span>
 
+        <span id="deepOverview">
+            <main-card animated >
+                <overview-card></overview-card>
+            </main-card>
+        </span>
+
 
 	</template>
 	<script>
@@ -156,6 +163,7 @@
                     this.tabIndex = that.tabs.selected;
 
                     that.overview.hidden = this.tabIndex != 0;
+                    that.deepOverview.hidden = that.overview.hidden;
                     that.ticks.hidden = this.tabIndex != 1;
                     that.deepTicks.hidden = that.ticks.hidden;
                     that.tickingSessions.hidden = this.tabIndex != 2;
