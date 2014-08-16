@@ -29,7 +29,7 @@
             <div layout horizontal style="min-height: 150px;">
                 <!-- fixed bit -->
                 <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
-                    <div layout horizontal end>
+                    <div layout horizontal end class="user-label">
                     <h4 class="user-label">{{item}}</h4>
                     </div>
                 </template>
@@ -113,6 +113,13 @@
                 users = users.concat(users);
                 users = users.concat(users);
                 users = users.concat(users);
+
+               /* users = users.map(function(el) {
+                   if (el.college == "Girton") {
+                       el.college = "Gonville and Cauis"
+                   }
+                    return el;
+                });*/
 
                 //use the list of column titles to convert each user's tickComments into a dictionary
                 console.log(users);
