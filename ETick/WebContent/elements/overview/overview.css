@@ -28,13 +28,23 @@
 
 .horizontalDropShadow {
     position: relative;
-    top: 0px;
+    top: 0;
     left: 0;
     right: 0;
     height: 6px;
     min-height: 6px;
     margin-top: -6px;
     box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+}
+
+.verticalDropShadow {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 6px;
+    margin-left: -6px;
+    box-shadow: inset 5px 0px 6px -3px rgba(0, 0, 0, 0.4);
 }
 
 #dropTest {

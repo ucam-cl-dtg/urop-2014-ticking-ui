@@ -39,9 +39,11 @@
                     </div>
                 </template>
 
+                <div id="vShadowHeader" style="height: 143px;"></div>
+
                 <!-- Top bar -->
                 <div style="overflow-x: hidden; height: 150px;" layout horizontal>
-                    <div id="headings" style="overflow: hidden; height: 150px;">
+                    <div id="headings" style="overflow: hidden; height: 150px; margin-left: -6px;">
                         <overview-ticks-bar style="height: 150px;" tickNames="{{tickNames}}"></overview-ticks-bar>
                     </div>
                 </div>
@@ -62,8 +64,10 @@
                     <!--<div style="height: 20px;"></div>-->
                 </div>
 
+                <div id="vShadow"></div>
+
                 <!-- Scrolling content -->
-                <div id="scrollArea" style=" overflow-x: scroll;" on-scroll="{{scrolled}}" flex>
+                <div id="scrollArea" style=" overflow-x: scroll; margin-left: -6px;" on-scroll="{{scrolled}}" flex>
                     <template repeat="{{user in users}}">
                         <div id="template">
                             <overview-list user="{{user}}"></overview-list>
@@ -206,6 +210,14 @@
                     this.$.hShadow.classList.add('horizontalDropShadow');
                 } else {
                     this.$.hShadow.classList.remove('horizontalDropShadow');
+                }
+
+                if (this.$.scrollArea.scrollLeft > 0) {
+                    this.$.vShadow.classList.add('verticalDropShadow');
+                    this.$.vShadowHeader.classList.add('verticalDropShadow');
+                } else {
+                    this.$.vShadow.classList.remove('verticalDropShadow');
+                    this.$.vShadowHeader.classList.remove('verticalDropShadow');
                 }
 
                 this.$.userHeadings.width = this.$.scrollArea.clientWidth;
