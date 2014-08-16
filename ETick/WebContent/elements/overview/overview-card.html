@@ -6,6 +6,9 @@
 <link rel="import" href="overview-ticks-bar.html">
 <link rel="import" href="overview-users-bar.html">
 
+<!-- TODO: remove if not used -->
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
+
 <polymer-element name="overview-card">
     <template>
         <link rel="stylesheet" href="overview.css">
@@ -31,11 +34,11 @@
         <!-- Card content goes here -->
 
         <div style="height: 600px;" layout vertical>
-            <div layout horizontal style="min-height: 150px; background: #2D91EC; color: white">
+            <div layout horizontal style="min-height: 150px; background: #2D91EC; color: #ABD3F7">
                 <!-- fixed bit -->
                 <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
                     <div layout horizontal end class="user-label">
-                        <div class="user-label" style="{{'width: ' + (item=='College' ? '20px;' : '150px;')}}">{{item}}</div>
+                        <div class="user-label">{{item}}</div>
                     </div>
                 </template>
 
@@ -99,7 +102,7 @@
                        foreNames: el[0].split(" ").slice(0, el[0].split(" ").length - 1).join(" "),
                        lastName: el[0].split(" ").slice(el[0].split(" ").length - 1),
                        crsId: el[1],
-                       college: "Gonville and Caius", //el[2],
+                       college: el[2],
                        collegeAbbr: that.collegeDict.hasOwnProperty(el[2]) ? that.collegeDict[el[2]] : "",
                        tickComments: el.splice(4, el.length - 1).map(function(el) {
                            if (el == "Unit failed") {
