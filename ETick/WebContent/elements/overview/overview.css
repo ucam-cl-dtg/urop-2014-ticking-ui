@@ -82,3 +82,11 @@
 .sort-field {
     font-weight: bold;
 }
+
+.sort-field-header {
+    color: white;
+}
+
+.overview-header-height {
+    min-height: 150px;
+}

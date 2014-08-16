@@ -30,20 +30,20 @@
 
         <!-- Card content goes here -->
 
-        <div style="height: 600px;" layout vertical style="position: relative">
-            <div layout horizontal style="min-height: 150px; background: #2D91EC; color: #ABD3F7">
+        <div style="height: 600px; position: relative;" layout vertical>
+            <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
                 <!-- fixed bit -->
                 <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
                     <div layout horizontal end class="user-label">
-                        <div on-tap="{{sort}}" class="user-label unselectable">{{item}}</div>
+                        <div on-tap="{{sort}}" class="{{'user-label unselectable' + (sortField == item ? ' sort-field-header' : '')}}">{{item}}</div>
                     </div>
                 </template>
 
                 <div id="vShadowHeader" style="height: 143px;"></div>
 
                 <!-- Top bar -->
-                <div style="overflow-x: hidden; height: 150px;" layout horizontal>
-                    <div id="headings" style="overflow: hidden; height: 150px; margin-left: -6px;">
+                <div style="overflow-x: hidden;" layout horizontal class="overview-header-height">
+                    <div id="headings" style="overflow: hidden; margin-left: -6px;" class="overview-header-height">
                         <overview-ticks-bar style="height: 150px;" tickNames="{{tickNames}}"></overview-ticks-bar>
                     </div>
                 </div>
