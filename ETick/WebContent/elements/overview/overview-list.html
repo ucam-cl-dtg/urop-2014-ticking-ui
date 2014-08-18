@@ -20,7 +20,7 @@
                      to have several hundred. To improve load performance, tooltips are generated lazily -->
 
                 <template if="{{enableTooltip}}">
-                    <core-tooltip label="{{displayString.tooltip}}" style="min-width: 60px;">
+                    <core-tooltip label="{{displayString.tooltip}}" style="min-width: 60px; outline: none;">
                         <div class="tick-label" vertical layout center>
                             <!--<div>{{displayString.iconCode}}</div>-->
                             <status-icon mode="{{displayString.iconCode}}"></status-icon>

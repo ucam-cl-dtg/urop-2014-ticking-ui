@@ -1,3 +1,4 @@
+
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/core-icons/communication-icons.html">
@@ -31,6 +32,11 @@
        			margin-right: 10px;
 				margin-top: 8px;
 			}
+
+			core-icon.center {
+				margin: 0;
+			}
+
 			paper-input.datetime {
 				width: initial;
 				margin-right: 20px;
@@ -43,6 +49,11 @@
 			#buttonsContainer paper-button {
 				width: 18%;
 				margin: 20px 10px 10px;
+			}
+
+			#descInput {
+				width: 100%;
+				outline: none;
 			}
 		</style>
 
@@ -79,13 +90,9 @@
 					on-input="{{validate}}"></paper-input>
 			</div>
 
-			<div layout horizontal start>
-				<!-- TODO: try multiline -->
-				<core-icon class="big" icon="info-outline"></core-icon>
-				<paper-input id="descInput"
-					value="{{desc}}"
-					label="Description..."
-					maxRows="5"></paper-input>
+			<div layout horizontal center>
+				<core-icon class="big center" icon="info-outline"></core-icon>
+				<textarea id="descInput" rows="3">{{desc}}</textarea>
 			</div>
 
 			<div layout horizontal start>
@@ -241,7 +248,7 @@
 			submitClicked: function () {
 
 				this.title = this.$.titleInput.inputValue;
-				this.description = this.$.descInput.inputValue;
+				this.description = this.$.descInput.value;
 				this.location = this.$.locInput.inputValue;
 				this.subStartTime = Date.parse(this.$.date.value + "T" + this.$.startTime.value);
 				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value);
