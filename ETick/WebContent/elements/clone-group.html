@@ -19,7 +19,6 @@
 		<!-- Clone group API. -->
 		<toast-ajax id="cloneAPI"
 			method="POST"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid }}"
 			on-core-response="{{cloneResponse}}"
 			contentType="application/json"
 			
@@ -86,11 +85,11 @@
 			var api = this.$.cloneAPI;
 
 			api.body = '{"name":"' + name + '", "info":"' + info + '"}';
-			api.url = 'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid;			
-			api.url += ((this.$.memberBox.checked) ? "?members=true" : "?members=false");
-			api.url += ((this.$.tickBox.checked) ? "?ticks=true" : "?ticks=false");
-			console.log(api.url);
-			// api.go();
+			api.url = 'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid;
+			api.url += (this.$.memberBox.checked) ? '?members=true' : '?members=false';
+			api.url += (this.$.tickBox.checked) ? '&ticks=true' : '&ticks=false';
+			
+			api.go();
 		}, 
 		
 		cloneResponse: function () {
