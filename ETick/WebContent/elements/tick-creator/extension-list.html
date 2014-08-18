@@ -1,0 +1,47 @@
+<!-- List of person-box's -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/core-selector/core-selector.html">
+<link rel="import" href="extension-box.html">
+<link rel="import" href="../box-list.html">
+
+<polymer-element name="extension-list" attributes="people query">
+	<template>
+		<style>
+			:host {
+				display: block;
+				width: 100%;
+			}
+		</style>
+		<box-list id="list" multi selector valueattr="crsid">
+			<template repeat="{{person in people | filter(query) }}">
+					<person-box
+						class="itemBox"
+						name="{{person.user.displayName}}"
+						crsid="{{person.user._id}}"
+						college="{{person.user.college == 'Unknown' ? '' : person.user.college}}"
+						extension="{{person.deadline}}">
+					</person-box>	
+			</template>	
+		</box-list>
+	</template>
+	<script>
+		Polymer('person-list', {
+			
+			listFilter: function(item) {
+				var q = this.query.toLowerCase();
+				return (item.displayName.toLowerCase().indexOf(q) > -1 ||
+						item._id.toLowerCase().indexOf(q) > -1 ||
+						item.college.toLowerCase().indexOf(q) > -1);
+			},
+
+			filter: function(items, q) {
+				if (items && q) {
+					return items.filter(this.listFilter.bind(this));
+				}
+				return items;
+			}
+		});
+	</script>
+</polymer-element>
