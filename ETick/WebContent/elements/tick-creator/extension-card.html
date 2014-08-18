@@ -97,7 +97,7 @@
 	            date.setUTCFullYear(year);
 	            var ISOdate = date.toISOString();
 				
-				this.$.extensionAPI.body = '{ "crsids": ' + jsonCRSids + ', "deadline" : ' + ISOdate + '}';
+				this.$.extensionAPI.body = '{ "crsids": ' + jsonCRSids + ', "deadline" : "' + ISOdate + '"}';
 				this.$.extensionAPI.go();
 			},
 
