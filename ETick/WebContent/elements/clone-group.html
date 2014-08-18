@@ -21,7 +21,7 @@
 			method="POST"
 			on-core-response="{{cloneResponse}}"
 			contentType="application/json"
-			
+			handleAs="json"
 			waitMessage="Cloning group..."
             waitBeforeToast="1000"
             captureError
@@ -94,7 +94,11 @@
 		
 		cloneResponse: function () {
 			var clonedGroup = this.$.cloneAPI.response;
-			console.log(clonedGroup);
+			// QUICK FIX (BAD): This hack fixes the persistant overlay bug.
+			// TODO: Find better fix. 
+			this.async(function () {
+				this.fire('group-cloned', clonedGroup);
+			}, null, 500);
 		}
 
 	});

@@ -70,7 +70,8 @@
 		<template id="groupTemp" if="{{gid}}">
 			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}" editedBy="{{editedBy}}"
 				editedOn="{{editedOn}}"
-				on-group-deleted="{{groupDeletedHandler}}"></x-group>
+				on-group-deleted="{{groupDeletedHandler}}"
+				on-group-cloned="{{groupCreatedHandler}}"></x-group>
 		</template>
 		<paper-toast id="groupDeletedToast" duration="3000" text="Successfully deleted group."></paper-toast>
 		
@@ -141,6 +142,7 @@
 			},
 
 			groupCreatedHandler: function (e, detail) {
+				console.log(detail.name);
 				this.$.loginAPIs.$.sidebarAjax.go();
 				this.toSelect = detail.name;
 
