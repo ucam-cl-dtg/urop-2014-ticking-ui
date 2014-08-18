@@ -1,0 +1,39 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
+
+<polymer-element name="overview-list-item" attributes="tickComments">
+    <template>
+        <link rel="stylesheet" href="overview.css">
+        <div layout horizontal on-mouseover="{{pointerOver}}">
+            <!--<template repeat="{{tickComment in tickComments}}">-->
+                <!-- Generating a tooltip seems to be a bit time-consuming, especially when an overview page is likely
+                     to have several hundred. To improve load performance, tooltips are generated lazily -->
+
+                <template if="{{enableTooltip}}">
+                    <core-tooltip label="{{tickComment}}">
+                        <div class="tick-label" vertical layout center>
+                            <div>{{tickComment}}</div>
+                        </div>
+                    </core-tooltip>
+                </template>
+
+                <template if="{{!enableTooltip}}">
+                        <div class="tick-label" vertical layout center>
+                            <div>{{tickComment}}</div>
+                        </div>
+                </template>
+            <!--</template>-->
+        </div>
+    </template>
+    <script>
+        Polymer('overview-list-item', {
+            created: function() {
+                this.enableTooltip = false;
+            },
+
+            pointerOver: function() {
+                this.enableTooltip = true;
+            }
+        });
+    </script>
+</polymer-element>

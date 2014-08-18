@@ -15,8 +15,10 @@
 <link rel="import" href="export-status.html">
 <link rel="import" href="tick-session-list.html">
 <link rel="import" href="add-edit-session.html">
+<link rel="import" href="overview/overview-card.html">
 
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
 
 <polymer-element name="x-group" attributes="gid name info creator editedBy editedOn">
@@ -59,7 +61,7 @@
 							<template if="{{isAuthor || isAdmin}}">
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
 								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
-								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit group>
+								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
 							</template>
 							<template if="{{isOverview}}">
 								<export-status gid="{{gid}}"></export-status>
@@ -137,11 +139,11 @@
 	    <template id="addEditSessionTemp" if="{{showAddEditSession}}">
 			<main-card animated>
 				<add-edit-session gid="{{gid}}" sheet="{{sheet}}"
-				on-sheet-created="{{sheetCreated}}"
 				on-sheet-cancel="{{sheetCancelled}}"
 				on-sheet-edited="{{sheetCreated}}"></add-edit-session>
 			</main-card>
 		</template>
+		<paper-toast id="addEditResponseToast" duration="8000"></paper-toast>
 
 
         <!-- Marker card for ticking sessions. -->
@@ -149,6 +151,14 @@
 	        <!-- moved template to ticker-signup -->
             <ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.title}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
             
+        </span>
+
+        <span id="deepOverview">
+            <template if="{{isOverview}}">
+                <main-card animated>
+                    <overview-card gid="{{gid}}"></overview-card>
+                </main-card>
+            </template>
         </span>
 
 
@@ -167,6 +177,7 @@
                     this.tabIndex = that.tabs.selected;
 
                     that.overview.hidden = this.tabIndex != 0;
+                    that.deepOverview.hidden = that.overview.hidden;
                     that.ticks.hidden = this.tabIndex != 1;
                     that.deepTicks.hidden = that.ticks.hidden;
                     that.tickingSessions.hidden = this.tabIndex != 2;
@@ -218,9 +229,13 @@
                 console.log(detail);
 			},
 
-			sheetCreated: function () {				
+			sheetCreated: function (e, detail) {
 				this.$.sheetListAPI.go();
 				this.sheetCancelled();
+				if (detail && detail.message) {
+					this.$.addEditResponseToast.text = detail.message;
+					this.$.addEditResponseToast.show();
+				}
 			},
 
 			addSheetHandler: function () {
