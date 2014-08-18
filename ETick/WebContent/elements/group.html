@@ -60,7 +60,7 @@
 						<span layout horizontal end end-justified flex>
 							<template if="{{isAuthor || isAdmin}}">
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
-								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
+								<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
 								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
 							</template>
 							<template if="{{isOverview}}">
@@ -190,7 +190,7 @@
 			
 			formatDate: function (datum) {
 				var date = new Date(datum);
-			    return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
+			    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
 			},
 
 			roleResponse: function() {
