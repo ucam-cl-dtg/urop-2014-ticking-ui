@@ -68,7 +68,8 @@
 		</template>
 
 		<template id="groupTemp" if="{{gid}}">
-			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}"
+			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}" editedBy="{{editedBy}}"
+				editedOn="{{editedOn}}"
 				on-group-deleted="{{groupDeletedHandler}}"></x-group>
 		</template>
 		<paper-toast id="groupDeletedToast" duration="3000" text="Successfully deleted group."></paper-toast>
@@ -132,6 +133,8 @@
 						name: newValue.label,
 						info: newValue.getAttribute('info'),
 						creator: newValue.getAttribute('creator')
+						editedBy: newValue.getAttribute('editedBy')
+						editedOn: newValue.getAttribute('edited')
 					};
 				}
 			},
