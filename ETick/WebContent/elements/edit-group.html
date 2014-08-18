@@ -61,9 +61,11 @@
 	</template>
 	<script>
 	Polymer('edit-group', {
-		newInfo: this.info;
-	
-		newName: this.name;
+		domReady: function() {
+			this.newName = this.name;
+			this.newInfo = this.info;
+			
+		}
 		
 		handleNameInput: function () {
 			if (this.$.editGroupName.inputValue === "") {
@@ -94,7 +96,10 @@
 			api.go();
 		}, 
 		
-		editResponse: function () {}
+		editResponse: function () {
+			this.name = this.newName;
+			this.info = this.newInfo;
+		}
 
 	});
 	</script>
