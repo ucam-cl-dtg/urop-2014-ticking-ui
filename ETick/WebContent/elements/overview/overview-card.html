@@ -139,13 +139,15 @@
                    }
                 });
 
+                console.log("just processed", users);
+
                 //build list of column titles
                 var colTitles = users[0].displayStrings.map(function(el) {
                     return el.iconCode;
                 });
 
                 for (var i = 0; i < colTitles.length; i++) {
-                    colTitles[i] = {text: colTitles[i], index: i - 1};
+                    colTitles[i] = {text: colTitles[i], index: i};
                 }
 
                 //remove the first two rows (column headings and a blank line)
@@ -169,6 +171,8 @@
                 this.users = users;
                 this.displayUsers = users;
                 this.tickNames = colTitles;
+
+                console.log("tick names", this.tickNames);
 
                 this.sortLastNameAscending();
 
