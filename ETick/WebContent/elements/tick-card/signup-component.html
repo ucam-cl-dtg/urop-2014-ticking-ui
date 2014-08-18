@@ -132,7 +132,9 @@
             },
 
             signedUpChanged: function() {
-                this.$.ajaxLoadBookings.go();
+                if (this.signedUp) {
+                    this.$.ajaxLoadBookings.go();
+                }
             },
 
             bookingChanged: function() {
