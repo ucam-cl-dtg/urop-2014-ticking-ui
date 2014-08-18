@@ -6,7 +6,7 @@
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
 <link rel="import" href="../are-you-sure.html">
 
-<polymer-element name="ticker-signups-viewport" attributes="kick sessionId studentMode description location crsId tickId repoName ticker slotId">
+<polymer-element name="ticker-signups-viewport" attributes="sessionId studentMode description location crsId tickId repoName ticker slotId">
   <template>
     <style>
     :host {
@@ -50,18 +50,14 @@
 	</toast-ajax>
 	
 	<!-- Kick someone out of a slot -->
-    <toast-ajax
+    <core-ajax
 		id="ajaxKick"
         url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/students/{{crsId}}/ticks/{{tickId}}"
 		method = "DELETE"
-		waitMessage="kicking {{crsId}}..."
-		responseMessage="kicked {{crsId}}"
-		captureError
-		waitBeforeToast="0.01"
 		contentType="application/json"
 		handleAs="text"
 		on-core-response="{{kickDone}}" >
-	</toast-ajax>
+	</core-ajax>
 	
 	<div layout vertical>
 		<div id="card-header" align="left">
@@ -207,7 +203,6 @@
 				this.fire("show-report");
 			},
 			kick : function(event) {
-				console.log("kick button pressed");
 				this.slotId = event.target.id;
 				var slotId = event.target.id;
 				for(i=0;i<this.slots.length;i++) {
@@ -217,21 +212,12 @@
 						break;
 					}
 				}
-				console.log("firing to open dialog");
 				this.fire("open-are-you-sure");
 			},
-			kickChanged : function() {
-				if (this.kick) {
-					console.log("kick");
-					this.kick = false;
-					this.$.ajaxKick.go();
-				} 
-				else {
-					console.log("no kick");
-				}
+			kickForSure : function() {
+				this.$.ajaxKick.go();
 			},
 			kickDone : function() {
-				console.log("kicked");
 				this.$.ajaxLoadSlots.go();
 			}
 		})

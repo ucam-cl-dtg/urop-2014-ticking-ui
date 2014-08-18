@@ -35,15 +35,13 @@
 				this.viewReport = true;
 			},
 			openAreYouSure: function() {
-				console.log("opening dialog");
 				this.$.confirm.toggle();
 			},
 			yes : function() {
-				console.log("kick = true");
 				this.kick = true;
 			},
 			no : function() {
-				console.log("kick = false");
+				this.kick = false;
 			}
 		});
     </script>

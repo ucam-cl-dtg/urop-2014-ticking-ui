@@ -42,7 +42,7 @@
 
         <div layout horizontal>
             <div flex class="viewer-panel">
-                <ticker-signups-viewport studentMode={{studentMode}} on-show-report={{showReport}} kick="{{kick}}" location="{{locationx}}" description="{{descriptionx}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
+                <ticker-signups-viewport studentMode={{studentMode}} on-show-report={{showReport}} location="{{locationx}}" description="{{descriptionx}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
             </div>
         </div>
 
@@ -59,9 +59,6 @@
 			updateTickerViewer: function(detail) {
                 this.$.view.updateViewConsole(detail.result);
             },
-            crsIdChanged: function() {
-                console.log("Switching report to: crsid: " + this.crsId + ", tickId: " + this.tickId + ", repoName: " + this.repoName + ", ticker: " + this.ticker);
-            },
 			sessionIdChanged: function() {
 				this.$.view.refresh();
 			},
@@ -70,7 +67,13 @@
 					this.$.view.updateViewConsole(this.reason);
 					this.refresh = !this.refresh;
 				}
-			}
+			},
+			kickChanged : function() {
+				if (this.kick) {
+					this.$.view.kickForSure();
+					this.kick = false;
+				} 
+			},
         })
     </script>
 </polymer-element>
