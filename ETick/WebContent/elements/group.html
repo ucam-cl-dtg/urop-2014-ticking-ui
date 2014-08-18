@@ -60,7 +60,7 @@
 						<span layout horizontal end end-justified flex>
 							<template if="{{isAuthor || isAdmin}}">
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
-								<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></paper-icon-button>
+								<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
 								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
 							</template>
 							<template if="{{isOverview}}">
