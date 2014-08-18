@@ -90,3 +90,35 @@
 .overview-header-height {
     min-height: 150px;
 }
+
+polyfill-next-selector {shadow: 'overviewSearchBox core-input';}
+#overviewSearchBox::shadow core-input {
+    color: white;
+    width: 385px;
+}
+
+#overviewSearchBox {
+    margin-bottom: -20px;
+}
+
+/*polyfill-next-selector {shadow: 'overviewSearchBox core-input';}*/
+#overviewSearchBox /deep/ input  {
+    color: white;
+}
+
+#overviewSearchBox::shadow #clearButton  {
+    color: #ABD3F7;
+}
+
+#overviewSearchBox /deep/ ::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #ABD3F7;
+}
+
+#overviewSearchBox /deep/ ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #ABD3F7;
+    opacity:  1;
+}
+
+#overviewSearchBox /deep/ :-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:   #ABD3F7;
+}

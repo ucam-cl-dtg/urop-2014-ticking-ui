@@ -42,18 +42,30 @@
         <!-- Card content goes here -->
 
         <div style="max-height: 600px; position: relative;" layout vertical>
-            <div id="headerBar" layout horizontal center style="height: 46px;">
-                <span flex></span>
-                <search-box id="searchBox" placeholder="Search..."></search-box>
-            </div>
+
 
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
                 <!-- fixed bit -->
-                <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
-                    <div layout horizontal end class="user-label">
-                        <div on-tap="{{sort}}" class="{{'user-label unselectable' + (sortField == item ? ' sort-field-header' : '')}}">{{item}}</div>
+
+                <div layout vertical>
+                    <div flex></div>
+
+                    <div id="headerBar" layout horizontal center style="height: 46px;">
+                        <span flex></span>
+                        <search-box id="overviewSearchBox" placeholder="Search..."></search-box>
                     </div>
-                </template>
+                    
+                    
+                    <div layout horizontal>
+                    <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
+                        <div layout horizontal end class="user-label">
+                            <div on-tap="{{sort}}" class="{{'user-label unselectable' + (sortField == item ? ' sort-field-header' : '')}}">{{item}}</div>
+                        </div>
+                    </template>
+                    </div>
+                </div>
+
+
 
                 <div id="vShadowHeader" style="height: 144px;"></div>
 
@@ -70,7 +82,7 @@
                 <!-- user names and colleges -->
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
-                        <overview-users-bar sortField="{{sortField}}" users="{{users | overviewListFilter($.searchBox.query)}}"></overview-users-bar>
+                        <overview-users-bar sortField="{{sortField}}" users="{{users | overviewListFilter($.overviewSearchBox.query)}}"></overview-users-bar>
                         <div style="height: 100px;"></div>
                     </div>
                 </div>
@@ -79,7 +91,7 @@
 
                 <!-- Scrolling content -->
                 <div id="scrollArea" style="overflow-x: auto; margin-left: -6px;" on-scroll="{{scrolled}}" flex>
-                   <template repeat="{{user in users | overviewListFilter($.searchBox.query)}}">
+                   <template repeat="{{user in users | overviewListFilter($.overviewSearchBox.query)}}">
                         <div id="template">
                             <overview-list user="{{user}}"></overview-list>
                         </div>
@@ -352,7 +364,7 @@
                     return false;
                 }
 
-                var qs = this.$.searchBox.query.toLowerCase().split(" ");
+                var qs = this.$.overviewSearchBox.query.toLowerCase().split(" ");
                 return qs.filter(function(q) {
                     if (q == "") {
                         return false;
