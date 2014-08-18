@@ -1,0 +1,40 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-icon/core-icon.html">
+
+<polymer-element name="status-icon" attributes="mode">
+    <template>
+        <core-icon icon="{{iconName}}"></core-icon>
+    </template>
+    <script>
+        Polymer('status-icon', {
+            created: function() {
+                this.iconName = "";
+            },
+
+            modeChanged: function() {
+                console.log("mode", this.mode);
+                switch (this.mode) {
+                    case "-": //not started
+                        this.iconName = "";
+                        break;
+                    case "I": //initialised (i.e. started but not submitted)
+                        this.iconName = "create"; //"more-horiz";
+                        break;
+                    case "F": //failed automated tester
+                        this.iconName = "clear";
+                        break;
+                    case "U": //passed automated tester
+                        this.iconName = "done";
+                        break;
+                    case "P": //passed human tests
+                        this.iconName = "done-all";
+                        break;
+                    default:
+                        this.iconName = "";
+                        console.log("Error: invalid icon code");
+                        break;
+                }
+            }
+        });
+    </script>
+</polymer-element>
