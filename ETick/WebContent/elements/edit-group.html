@@ -15,14 +15,20 @@
 			paper-button {
 				width: 100%;
 			}
+			#editGroupInfo {
+				width: 100%;
+				outline: none;
+				border-bottom: 1px solid #757575;
+			}
+
 		</style>
 		<!-- Edit group API. -->
 		<toast-ajax id="editAPI"
 			method="PUT"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid }}"
 			on-core-response="{{editResponse}}"
+			handleAs="json"
 			contentType="application/json"
-			
 			waitMessage="Saving changes..."
             waitBeforeToast="1000"
             captureError
@@ -48,15 +54,9 @@
 				value="{{newName}}">
 			</paper-input>
 			<h2 class="subtitle">Group Info:</h2>
-			<paper-input id="editGroupInfo"
-				multiline
-				maxRows="5"
-				label=""
-				value="{{newInfo}}"
-				error="Invalid group name.">
-			</paper-input>
+			<textarea id="editGroupInfo" rows="3">{{newInfo}}</textarea>
 			
-			<template if="{{showSubmit}}">
+			<template if="{{!$.editGroupName.invalid}}">
 				<paper-button id="editSubmit" class="dialogSubmit" label="EDIT" on-click="{{editButtonClicked}}" affirmative></paper-button>
 			</template>
 		</paper-dialog>
@@ -69,15 +69,6 @@
 			this.newInfo = this.info;
 			
 		},
-		
-		handleNameInput: function () {
-			if (this.$.editGroupName.inputValue === "") {
-				this.showSubmit = false;
-			}
-			else {
-				this.showSubmit = true;
-			}
-		},
 
 		toggleDialog: function () {
 			this.$.editGroupDialog.toggle();
@@ -86,7 +77,7 @@
 		editButtonClicked: function () {
 
 			var name = this.$.editGroupName.inputValue;
-			var info = encodeURI(this.$.editGroupInfo.inputValue);
+			var info = encodeURI(this.$.editGroupInfo.value);
 			var api = this.$.editAPI;
 
 			api.body = '{"name":"' + name + '", "info":"' + info + '"}';
@@ -94,8 +85,8 @@
 		}, 
 		
 		editResponse: function () {
-			this.name = this.newName;
-			this.info = this.newInfo;
+			var group = this.$.editAPI.response;
+			console.log(group);
 		}
 
 	});
