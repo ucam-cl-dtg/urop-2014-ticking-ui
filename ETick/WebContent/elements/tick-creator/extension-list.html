@@ -16,13 +16,13 @@
 		</style>
 		<box-list id="list" multi selector valueattr="crsid">
 			<template repeat="{{person in people | filter(query) }}">
-					<person-box
+					<extension-box
 						class="itemBox"
 						name="{{person.user.displayName}}"
 						crsid="{{person.user._id}}"
 						college="{{person.user.college == 'Unknown' ? '' : person.user.college}}"
 						extension="{{person.deadline}}">
-					</person-box>	
+					</extension-box>	
 			</template>	
 		</box-list>
 	</template>
