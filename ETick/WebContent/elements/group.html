@@ -80,7 +80,7 @@
 
             <!-- Group Members Tab -->
             <span id="members" hidden>
-                <group-members gid="{{gid}}" allowAdd="{{isAuthor||isAdmin}}" rows="4"></group-members>
+                <group-members gid="{{gid}}" allowAdd="{{isAuthor||isAdmin}}" rows="5"></group-members>
             </span>
 
             <!-- Ticking Sessions Tab -->
@@ -249,7 +249,7 @@
 			},
 
 			sheetEdited: function () {
-				this.$.sheetListAPI.go();
+			this.$.sheetListAPI.go();
 				this.sheetCancelled();
 			}
 		});
