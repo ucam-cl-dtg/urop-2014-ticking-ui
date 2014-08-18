@@ -26,20 +26,17 @@
 		</toast-ajax>
 		
 		<div layout horizontal center flex style="min-height:100px">
-			<div flex>
+			<div align="right" style="padding-right:20px;padding-left:120px">
 				<template if="{{photo}}">
-					<img class="profilePhoto" style="margin-top:5px;height:100px;width:100px" src="data:image/jpeg;base64,{{photo}}"/>
+					<img class="profilePhoto" style="margin-top:5px;height:130px;width:130px" src="data:image/jpeg;base64,{{photo}}"/>
 				</template>
 				<template if="{{!photo}}">
-					<core-icon class="big" style="height:48px;width:48px" icon="{{isStudent ? 'social:school' : 'social:person'}}"></core-icon>
+					<core-icon class="big" style="height:64px;width:64px" icon="{{isStudent ? 'social:school' : 'social:person'}}"></core-icon>
 				</template>
 			</div>
 			
-			<div flex align="center">
+			<div flex layout vertical align="left">
 				<span> name : {{name}} </span>
-			</div>
-			
-			<div flex align="center">
 				<span> college : {{college}} </span>
 			</div>
 		</div>
