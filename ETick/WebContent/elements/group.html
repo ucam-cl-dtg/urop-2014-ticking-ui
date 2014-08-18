@@ -144,9 +144,11 @@
         </span>
 
         <span id="deepOverview">
-            <main-card animated >
-                <overview-card gid="{{gid}}"></overview-card>
-            </main-card>
+            <template if="{{isOverview}}">
+                <main-card animated>
+                    <overview-card gid="{{gid}}"></overview-card>
+                </main-card>
+            </template>
         </span>
 
 
@@ -182,6 +184,7 @@
 				this.isSubmitter = (this.roles.indexOf('SUBMITTER') > -1);
 				this.isMarker = (this.roles.indexOf('MARKER') > -1);
 				this.isAdmin = (this.roles.indexOf('ADMIN') > -1);
+                this.isOverview = (this.roles.indexOf('OVERVIEW') > -1);
 			},
 
             nameChanged: function() {
