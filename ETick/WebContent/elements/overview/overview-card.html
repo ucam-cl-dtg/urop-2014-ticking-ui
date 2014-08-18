@@ -52,7 +52,7 @@
 
                     <div id="headerBar" layout horizontal center style="height: 46px;">
                         <span flex></span>
-                        <search-box id="overviewSearchBox" placeholder="Search..."></search-box>
+                        <search-box id="overviewSearchBox" placeholder="Search..." query="{{query}}"></search-box>
                     </div>
                     
                     
@@ -82,7 +82,7 @@
                 <!-- user names and colleges -->
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
-                        <overview-users-bar sortField="{{sortField}}" users="{{users | overviewListFilter($.overviewSearchBox.query)}}"></overview-users-bar>
+                        <overview-users-bar sortField="{{sortField}}" users="{{displayUsers}}"></overview-users-bar>
                         <div style="height: 100px;"></div>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
 
                 <!-- Scrolling content -->
                 <div id="scrollArea" style="overflow-x: auto; margin-left: -6px;" on-scroll="{{scrolled}}" flex>
-                   <template repeat="{{user in users | overviewListFilter($.overviewSearchBox.query)}}">
+                   <template repeat="{{user in displayUsers}}">
                         <div id="template">
                             <overview-list user="{{user}}"></overview-list>
                         </div>
@@ -189,6 +189,7 @@
                 console.log(colTitles);
 
                 this.users = users;
+                this.displayUsers = users;
                 this.tickNames = colTitles;
 
                 this.sortLastNameAscending();
@@ -218,6 +219,8 @@
                 }
             },
 
+
+
             sortTick: function(e, params) {
                 this.sortField = "";
 
@@ -232,12 +235,28 @@
                     return params.mode * (comparisonDict[a.displayStrings[params.selectedIndex].iconCode] -
                             comparisonDict[b.displayStrings[params.selectedIndex].iconCode]);
                 });
+
+                //ugly fix which enables searching and sorting at the same time
+//                var q = this.$.overviewSearchBox.query;
+//                this.$.overviewSearchBox.query = "";
+//                var that = this.$;
+//                this.job('sort', function() {
+//                    that.overviewSearchBox.query = q;
+//                });
             },
 
             sortLastNameAscending: function() {
                 this.sortField = "Name";
                 this.sortDir = "1";
                 this.sortLastName(1);
+            },
+
+            queryChanged: function() {
+                this.displayUsers = this.overviewListFilter(this.users, this.query);
+            },
+
+            usersChanged: function() {
+                this.displayUsers = this.overviewListFilter(this.users, this.query);
             },
 
             /**
