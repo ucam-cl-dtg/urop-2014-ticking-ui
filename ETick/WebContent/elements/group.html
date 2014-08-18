@@ -133,7 +133,7 @@
 				<add-edit-session gid="{{gid}}" sheet="{{sheet}}"
 				on-sheet-created="{{sheetCreated}}"
 				on-sheet-cancel="{{sheetCancelled}}"
-				on-sheet-edited="{{sheetEdited}}"></add-edit-session>
+				on-sheet-edited="{{sheetCreated}}"></add-edit-session>
 			</main-card>
 		</template>
 
@@ -205,14 +205,9 @@
                 console.log(detail);
 			},
 
-			sheetCreated: function () {
-				this.$.tickingSessionList.clearSelection();
+			sheetCreated: function () {				
 				this.$.sheetListAPI.go();
-				this.$.addEditSessionTemp.model = {
-					showAddEditSession: false,
-					gid: null,
-					sheet: null
-				}
+				this.sheetCancelled();
 			},
 
 			addSheetHandler: function () {
@@ -232,6 +227,7 @@
 			},
 
 			sheetCancelled: function () {
+				this.$.tickingSessionList.clearSelection();
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: false,
 					gid: null,
@@ -246,11 +242,6 @@
 			changeTab: function() { 
 				this.sheet = null;
 				this.$.tickingSessionList.clearSelection();
-			},
-
-			sheetEdited: function () {
-			this.$.sheetListAPI.go();
-				this.sheetCancelled();
 			}
 		});
 	</script>
