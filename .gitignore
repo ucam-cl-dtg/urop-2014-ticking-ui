@@ -9,6 +9,7 @@ release.properties
 
 *.class
 *.jar
+*.gz
 **/doc/
 **/logs/
 **/node_modules/
