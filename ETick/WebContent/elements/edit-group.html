@@ -1,0 +1,106 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<polymer-element name="edit-group" attributes="gid name info">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+		<style>
+			:host {
+				display: inherit;
+			}
+		</style>
+		<!-- Edit group API. -->
+		<toast-ajax id="editAPI"
+			method="PUT"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid }}"
+			on-core-response="{{editResponse}}"
+			contentType="application/json"
+			
+			waitMessage="Saving changes..."
+            waitBeforeToast="1000"
+            captureError
+            popUpError
+            errorMessage="Error Saving changes.">
+		</toast-ajax>
+
+		<!-- Edit button. -->
+		<paper-icon-button id="editButton"
+			icon="create"
+			on-click="{{toggleDialog}}">
+		</paper-icon-button>
+
+		<!-- Edit dialog -->
+		<paper-dialog id="editGroupDialog" heading="Edit Group:" backdrop	
+				transition="core-transition-top">
+			<paper-input id="editGroupName"
+				required
+				floatingLabel
+				label="Group name..."
+				error="Required."
+				on-input="{{handleNameInput}}"
+				value="{{newName}}">
+			</paper-input>
+			<h2 class="subtitle">Group Info:</h2>
+			<paper-input id="editGroupInfo"
+				multiline
+				maxRows="5"
+				label=""
+				value="{{newInfo}}"
+				error="Invalid group name.">
+			</paper-input>
+			
+			<template if="{{showSubmit}}">
+				<paper-button id="editSubmit" class="dialogSubmit" label="EDIT" on-click="{{editButtonClicked}}" affirmative></paper-button>
+			</template>
+		</paper-dialog>
+
+	</template>
+	<script>
+	Polymer('edit-group', {
+		domReady: function() {
+			this.newName = this.name;
+			this.newInfo = this.info;
+			
+		},
+		
+		handleNameInput: function () {
+			if (this.$.editGroupName.inputValue === "") {
+				this.showSubmit = false;
+			}
+			else {
+				this.showSubmit = true;
+			}
+		},
+
+		toggleDialog: function () {
+			this.$.editGroupDialog.toggle();
+		},
+
+		resetAPI: function () {
+			var api = this.$.editAPI;
+			api.body = "";
+		},
+
+		editButtonClicked: function () {
+			this.resetAPI();
+
+			var name = this.$.editGroupName.inputValue;
+			var info = encodeURI(this.$.editGroupInfo.inputValue);
+			var api = this.$.editAPI;
+
+			api.body = '{"name":"' + name + '", "info":"' + info + '"}';
+			api.go();
+		}, 
+		
+		editResponse: function () {
+			this.name = this.newName;
+			this.info = this.newInfo;
+		}
+
+	});
+	</script>
+</polymer-element>

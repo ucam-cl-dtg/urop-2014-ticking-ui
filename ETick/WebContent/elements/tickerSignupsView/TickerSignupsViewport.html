@@ -61,9 +61,9 @@
 	
 	<div layout vertical>
 		<div id="card-header" align="left">
-			<core-item icon="home" label="Location : {{locationDisplayed}}"></core-item>
+			<core-item icon="home" label="{{locationDisplayed}}"></core-item>
 			<core-item icon="today" label="Date : {{date}}"></core-item>
-			<core-item icon="info" label="Description : {{descriptionDisplayed}}"></core-item>
+			<core-item icon="info" label="{{descriptionDisplayed}}"></core-item>
 		</div>
 		<div id="ticker-select-panel" align="center">
 			<paper-radio-group selected="{{selected}}" on-change="{{tickerChange}}" layout horizontal flex>
@@ -116,8 +116,18 @@
 			refresh: function() {
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
-				this.locationDisplayed = this.location ? this.location : "No location is available";
-				this.descriptionDisplayed = this.description ? this.description : "No description is available";
+				if (this.location === "") {
+					this.locationDisplayed = "Location : No location is available";
+				}
+				else {
+					this.locationDisplayed = "Location : " + this.location;
+				}
+				if (this.description === "") {
+					this.descriptionDisplayed = "Description : No description is available";
+				}
+				else {
+					this.descriptionDisplayed = "Description : " + this.description;
+				}
 				this.$.ajaxLoadTickers.go();
 			},
 			tickersDataLoaded: function() {

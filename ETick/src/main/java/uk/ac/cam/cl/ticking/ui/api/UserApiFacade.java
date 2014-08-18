@@ -79,6 +79,27 @@ public class UserApiFacade implements IUserApiFacade {
 
 		return Response.ok(user).build();
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Response getUserFromCrsid(HttpServletRequest request, String crsid) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+
+		/* Get the user object, returning if not found */
+		User user = db.getUser(crsid);
+
+		if (user == null) {
+			log.error("User " + crsid + " requested user " + crsid
+					+ " but they couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		return Response.ok(user).build();
+	}
 
 	/**
 	 * {@inheritDoc}

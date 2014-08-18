@@ -101,7 +101,6 @@
         , selectedReportChanged:
           function ()
           {
-            console.log(this);
             if (this.$.report.response == null
               ||this.selectedReport == null) return;
 
@@ -142,7 +141,6 @@
                     curr.className = curr.outcome + prev.length;
                     return prev.concat(curr);
                   }, []);
-            console.log(selReport);
           }
 
         , filesLoaded:

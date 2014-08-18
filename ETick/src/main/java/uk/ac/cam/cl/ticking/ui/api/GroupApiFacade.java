@@ -391,7 +391,16 @@ public class GroupApiFacade implements IGroupApiFacade {
 			/* Merge bean fields with group fields */
 			prevGroup.setEdited(DateTime.now());
 			prevGroup.setEditedBy(crsid);
-			prevGroup.setInfo(groupBean.getInfo());
+			/* Set the group info from an escaped string */
+			try {
+				prevGroup.setInfo(URLDecoder.decode(groupBean.getInfo(),
+						StandardCharsets.UTF_8.name()));
+
+			} catch (UnsupportedEncodingException e) {
+				log.error("UTF_8 URL decoding failed", e);
+				// Hardcoded: known to be supported @see
+				// http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#iana
+			}
 			prevGroup.setName(groupBean.getName());
 
 			/* Save group and return it */

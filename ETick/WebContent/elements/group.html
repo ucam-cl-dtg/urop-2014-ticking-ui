@@ -11,6 +11,7 @@
 <link rel="import" href="file-browser/file-browser-card.html">
 <link rel="import" href="are-you-sure.html">
 <link rel="import" href="delete-group.html">
+<link rel="import" href="edit-group.html">
 <link rel="import" href="export-status.html">
 <link rel="import" href="tick-session-list.html">
 <link rel="import" href="add-edit-session.html">
@@ -18,7 +19,7 @@
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
 
-<polymer-element name="x-group" attributes="gid name info creator">
+<polymer-element name="x-group" attributes="gid name info creator editedBy editedOn">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
 
@@ -38,7 +39,7 @@
         <main-card animated>
 			<!-- temporary on-tap to try and remove deep signups card -->
             <paper-tabs id="tabs" selected="0" on-tap={{changeTab}}>
-                <paper-tab>{{name}}</paper-tab>
+                <paper-tab>{{upperName}}</paper-tab>
                 <paper-tab>TICKS</paper-tab>
                 <paper-tab>TICKING SESSIONS</paper-tab>
                 <paper-tab>MEMBERS</paper-tab>
@@ -48,12 +49,17 @@
             <span id="overview">
                 <div id="details" layout vertical start>
                     <div layout horizontal end style="width: 100%;">
-                        <p class="creator">Created by: {{creator}}</p>
+                        <p class="creator">
+                        	Created by: {{creator}}
+                        	
+                        		Edited by: {{editedBy}} on {{editedOn}}
+                        	
+                        </p>
 						<span layout horizontal end end-justified flex>
 							<template if="{{isAuthor || isAdmin}}">
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
 								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
-								<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
+								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit group>
 							</template>
 							<template if="{{isOverview}}">
 								<export-status gid="{{gid}}"></export-status>
@@ -181,8 +187,8 @@
 			},
 
             nameChanged: function() {
-                if (this.name != this.name.toUpperCase()) {
-                    this.name = this.name.toUpperCase();
+                if (this.upperName != this.name.toUpperCase()) {
+                    this.upperName = this.name.toUpperCase();
                 }
             },
 			cardSwiped: function (e, detail) {
