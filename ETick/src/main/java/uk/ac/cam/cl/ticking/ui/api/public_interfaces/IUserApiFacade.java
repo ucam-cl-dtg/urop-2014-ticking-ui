@@ -29,6 +29,19 @@ public interface IUserApiFacade {
 	public abstract Response getUser(@Context HttpServletRequest request);
 
 	/**
+	 * Returns the User object for the requested user
+	 * 
+	 * @param request
+	 * @return the user
+	 */
+	@GET
+	@Path("/{crsid}")
+	@Produces("application/json")
+	public abstract Response getUserFromCrsid(
+			@Context HttpServletRequest request,
+			@PathParam("crsid") String crsid);
+
+	/**
 	 * Deletes a user from the system as well as all associated groupings. If
 	 * purge is specified, also removes all content they created, such as groups
 	 * and ticks.
