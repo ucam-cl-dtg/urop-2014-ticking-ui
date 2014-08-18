@@ -86,10 +86,6 @@
                 this.buildCollegeDictionary();
             },
 
-            domReady: function() {
-                this.updateScrollAreas();
-            },
-
             overviewLoaded: function() {
                 //load string of comma separated values
                 var csv = this.$.ajaxLoadOverview.response;
@@ -175,6 +171,8 @@
                 this.tickNames = colTitles;
 
                 this.sortLastNameAscending();
+
+                this.updateScrollAreas();
             },
 
             sort: function(a, b, sender) {
@@ -234,10 +232,14 @@
             },
 
             queryChanged: function() {
-                this.displayUsers = this.overviewListFilter(this.users, this.query);
+                this.queryOrUsersChanged();
             },
 
             usersChanged: function() {
+                this.queryOrUsersChanged();
+            },
+
+            queryOrUsersChanged: function() {
                 var temp = this.overviewListFilter(this.users, this.query);
 
                 this.displayUsers = [];
