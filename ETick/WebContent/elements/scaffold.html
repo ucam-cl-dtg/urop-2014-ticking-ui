@@ -41,7 +41,7 @@
 
 				<menu-button id="groupsMenu" label="Groups" valueattr="label">
 					<template repeat="{{item in items}}">
-						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}" info="{{item.info}}" creator="{{item.creator}}"></core-item>
+						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}" info="{{item.info}}" creator="{{item.creator}}" editedBy="{{item.editedBy}}" editedOn="{{item.edited}}"></core-item>
 					</template>
 					<template if="{{!$.loginAPIs.ldap.isStudent}}">
 						<core-item id="createGroupItem" icon="add" label="Create..."></core-item>
@@ -133,9 +133,13 @@
 						name: newValue.label,
 						info: newValue.getAttribute('info'),
 						creator: newValue.getAttribute('creator'),
+					
 						editedBy: newValue.getAttribute('editedBy'),
 						editedOn: newValue.getAttribute('edited')
 					};
+					console.log(newValue.getAttribute('editedBy'));
+					console.log(newValue.getAttribute('edited'));
+					console.log(newValue);
 				}
 			},
 
