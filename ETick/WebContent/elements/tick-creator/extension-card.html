@@ -9,7 +9,7 @@
 <link rel="import" href="../dialog.html">
 <link rel="import" href="../search-box.html">
 
-<polymer-element name="group-members" attributes="tid">
+<polymer-element name="extension-card" attributes="tid">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group-members.css">
 		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
@@ -68,7 +68,7 @@
 
 	</template>
 	<script>
-		Polymer('group-members', {
+		Polymer('extension-card', {
 
 			observe: {
 				'$.searchBox.query' : 'searchBoxChanged'
