@@ -44,7 +44,6 @@
 				floatingLabel
 				label="Group name..."
 				error="Required."
-				on-input="{{handleNameInput}}"
 				value="{{newName}}">
 			</paper-input>
 			<h2 class="subtitle">Group Info:</h2>
@@ -63,7 +62,7 @@
 				<div flex>Ticks</div>
 			</div>
 			
-			<template if="{{showSubmit}}">
+			<template if="{{!$.cloneGroupName.invalid}}">
 				<paper-button id="cloneSubmit" class="dialogSubmit" label="CLONE" on-click="{{cloneButtonClicked}}" affirmative></paper-button>
 			</template>
 		</paper-dialog>
@@ -75,37 +74,23 @@
 			this.newName = this.name+' (Clone)';
 			
 		},
-		
-		handleNameInput: function () {
-			if (this.$.cloneGroupName.inputValue === "") {
-				this.showSubmit = false;
-			}
-			else {
-				this.showSubmit = true;
-			}
-		},
 
 		toggleDialog: function () {
 			this.$.cloneGroupDialog.toggle();
 		},
 
-		resetAPI: function () {
-			var api = this.$.cloneAPI;
-			api.body = "";
-		},
-
 		cloneButtonClicked: function () {
-			this.resetAPI();
 
 			var name = this.$.cloneGroupName.inputValue;
 			var info = encodeURI(this.$.cloneGroupInfo.inputValue);
 			var api = this.$.cloneAPI;
 
 			api.body = '{"name":"' + name + '", "info":"' + info + '"}';
-			
-			api.url += (this.$.memberBox.checked) ? "?members=true" : "?members=false";
-			api.url += (this.$.tickBox.checked) ? "?ticks=true" : "?ticks=false";
-			api.go();
+			api.url = 'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid;			
+			api.url += ((this.$.memberBox.checked) ? "?members=true" : "?members=false");
+			api.url += ((this.$.tickBox.checked) ? "?ticks=true" : "?ticks=false");
+			console.log(api.url);
+			// api.go();
 		}, 
 		
 		cloneResponse: function () {
