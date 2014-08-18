@@ -39,7 +39,7 @@
 	                </menu-button>
 	            </template>
 
-				<menu-button id="groupsMenu" label="Groups" valueattr="label">
+				<menu-button id="groupsMenu" label="Groups" valueattr="gid">
 					<template repeat="{{item in items}}">
 						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}" info="{{item.info}}" creator="{{item.creator}}" editedBy="{{item.editedBy}}" editedOn="{{item.edited}}"></core-item>
 					</template>
@@ -70,7 +70,8 @@
 		<template id="groupTemp" if="{{gid}}">
 			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}" editedBy="{{editedBy}}"
 				editedOn="{{editedOn}}"
-				on-group-deleted="{{groupDeletedHandler}}"></x-group>
+				on-group-deleted="{{groupDeletedHandler}}"
+				on-group-cloned="{{groupCreatedHandler}}"></x-group>
 		</template>
 		<paper-toast id="groupDeletedToast" duration="3000" text="Successfully deleted group."></paper-toast>
 		
@@ -121,7 +122,7 @@
 				if (!newValue || (oldValue && oldValue.id === "createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
-					this.$.groupsMenu.selected = oldValue ? oldValue.label : "-1";
+					this.$.groupsMenu.selected = oldValue ? oldValue.getAttribute('gid') : "-1";
 				}
 				else {
 					this.showDash = false;
@@ -141,8 +142,9 @@
 			},
 
 			groupCreatedHandler: function (e, detail) {
+				console.log(detail.name);
 				this.$.loginAPIs.$.sidebarAjax.go();
-				this.toSelect = detail.name;
+				this.toSelect = detail._id;
 
 				this.showDash = false;
 			},
