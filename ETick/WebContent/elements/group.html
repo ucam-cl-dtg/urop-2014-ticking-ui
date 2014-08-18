@@ -52,9 +52,9 @@
                     <div layout horizontal end style="width: 100%;">
                         <p class="creator">
                         	Created by: {{creator}}
-                        	
-                        		Edited by: {{editedBy}} on {{editedOn}}
-                        	
+                        	<template if="{{editedOn}}">
+                        		, Edited by: {{editedBy}} on {{formattedEditedOn}}
+                        	</template>
                         </p>
 						<span layout horizontal end end-justified flex>
 							<template if="{{isAuthor || isAdmin}}">
@@ -159,6 +159,8 @@
 		Polymer('x-group', {  
 
 			domReady: function () {
+				this.formattedEditedOn = this.formatDate(this.editedOn);
+				
 				this.$.roleAjax.go();
 				this.$.sheetListAPI.go();
 
@@ -175,6 +177,11 @@
                     that.addEditSessionTemp.model.showAddEditSession && !that.tickingSessions.hidden;
                     that.members.hidden = this.tabIndex != 3;
                 });
+			},
+			
+			formatDate: function (datum) {
+				var date = new Date(datum);
+			    return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
 			},
 
 			roleResponse: function() {
