@@ -6,6 +6,8 @@
 <link rel="import" href="overview-ticks-bar.html">
 <link rel="import" href="overview-users-bar.html">
 
+<link rel="import" href="../search-box.html">
+
 <polymer-element name="overview-card">
     <template>
         <link rel="stylesheet" href="overview.css">
@@ -19,18 +21,32 @@
             }
         </style>
 
-        <core-ajax
-                id="ajaxLoadOverview"
-                auto
-                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/53ea39f9e4b00e79c9984081/status/csv"
-                handleAs="text"
+        <!--<core-ajax-->
+                <!--id="ajaxLoadOverview"-->
+                <!--auto-->
+                <!--url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/53ea39f9e4b00e79c9984081/status/csv"-->
+                <!--handleAs="text"-->
 
-                on-core-response="{{overviewLoaded}}">
+                <!--on-core-response="{{overviewLoaded}}">-->
+        <!--</core-ajax>-->
+
+        <core-ajax
+        id="ajaxLoadOverview"
+        auto
+        url="http://localhost:8000/data.csv"
+        handleAs="text"
+
+        on-core-response="{{overviewLoaded}}">
         </core-ajax>
 
         <!-- Card content goes here -->
 
-        <div style="height: 600px; position: relative;" layout vertical>
+        <div style="max-height: 600px; position: relative;" layout vertical>
+            <div id="headerBar" layout horizontal center style="height: 46px;">
+                <span flex></span>
+                <search-box id="searchBox" placeholder="Search..."></search-box>
+            </div>
+
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
                 <!-- fixed bit -->
                 <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
@@ -39,16 +55,14 @@
                     </div>
                 </template>
 
-                <div id="vShadowHeader" style="height: 143px;"></div>
+                <div id="vShadowHeader" style="height: 144px;"></div>
 
                 <!-- Top bar -->
                 <div style="overflow-x: hidden;" layout horizontal class="overview-header-height">
                     <div id="headings" style="overflow: hidden; margin-left: -6px;" class="overview-header-height">
-                        <overview-ticks-bar style="height: 150px;" tickNames="{{tickNames}}"></overview-ticks-bar>
+                        <overview-ticks-bar id="overviewTicksBar" style="height: 150px;" tickNames="{{tickNames}}" on-tick-selected="{{sortTick}}"></overview-ticks-bar>
                     </div>
                 </div>
-
-
             </div>
             <div id="hShadow"></div>
 
@@ -56,19 +70,16 @@
                 <!-- user names and colleges -->
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
-                        <overview-users-bar sortField="{{sortField}}" users="{{users}}"></overview-users-bar>
+                        <overview-users-bar sortField="{{sortField}}" users="{{users | overviewListFilter($.searchBox.query)}}"></overview-users-bar>
                         <div style="height: 100px;"></div>
                     </div>
-
-                    <!-- horizontal scroll bar spacer -->
-                    <!--<div style="height: 20px;"></div>-->
                 </div>
 
                 <div id="vShadow"></div>
 
                 <!-- Scrolling content -->
-                <div id="scrollArea" style=" overflow-x: scroll; margin-left: -6px;" on-scroll="{{scrolled}}" flex>
-                    <template repeat="{{user in users}}">
+                <div id="scrollArea" style="overflow-x: auto; margin-left: -6px;" on-scroll="{{scrolled}}" flex>
+                   <template repeat="{{user in users | overviewListFilter($.searchBox.query)}}">
                         <div id="template">
                             <overview-list user="{{user}}"></overview-list>
                         </div>
@@ -143,13 +154,17 @@
                     return el.iconCode;
                 });
 
+                for (var i = 0; i < colTitles.length; i++) {
+                    colTitles[i] = {text: colTitles[i], index: i - 1};
+                }
+
                 //remove the first two rows (column headings and a blank line)
                 users = users.slice(2, users.length - 1 );
 
-                //users = users.concat(users);
-                //users = users.concat(users);
+//                users = users.concat(users);
+//                users = users.concat(users);
 
-               /* users = users.map(function(el) {
+                /* users = users.map(function(el) {
                    if (el.college == "Girton") {
                        el.college = "Gonville and Cauis"
                    }
@@ -168,6 +183,9 @@
             },
 
             sort: function(a, b, sender) {
+                //Mark all tick headings as unselected
+                this.$.overviewTicksBar.selectedIndex = -1;
+
                 if (this.sortField == sender.innerHTML) {
                     this.sortDir *= -1;
                 } else {
@@ -186,7 +204,22 @@
                         this.sortCollege(this.sortDir);
                         break;
                 }
+            },
 
+            sortTick: function(e, params) {
+                this.sortField = "";
+
+                var comparisonDict = {};
+                comparisonDict["-"] = 0;
+                comparisonDict["I"] = 1;
+                comparisonDict["F"] = 2;
+                comparisonDict["U"] = 3;
+                comparisonDict["P"] = 4;
+
+                this.users.sort(function(a, b) {
+                    return params.mode * (comparisonDict[a.displayStrings[params.selectedIndex].iconCode] -
+                            comparisonDict[b.displayStrings[params.selectedIndex].iconCode]);
+                });
             },
 
             sortLastNameAscending: function() {
@@ -305,6 +338,30 @@
                 //Wolfson
 
                 this.collegeDict = college;
+            },
+
+            overviewListFilter: function(items, q) {
+                if (items && q) {
+                    return items.filter(this.overviewFilter.bind(this));
+                }
+                return items;
+            },
+
+            overviewFilter: function(item) {
+                if (item == undefined || item == null || item == "") {
+                    return false;
+                }
+
+                var qs = this.$.searchBox.query.toLowerCase().split(" ");
+                return qs.filter(function(q) {
+                    if (q == "") {
+                        return false;
+                    }
+
+                    return (item.lastName[0].toLowerCase().indexOf(q) > -1 ||
+                            item.foreNames.toLowerCase().indexOf(q) > -1 ||
+                            item.college.toLowerCase().indexOf(q) > -1);
+                }).length > 0;
             },
 
             scrolled: function() {

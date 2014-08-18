@@ -1,20 +1,38 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<polymer-element name="overview-ticks-bar" attributes="tickNames height">
+<!-- height is currently not being used anywhere. It is included in case it is decided that the tick bar's height
+     should be adjusted to match the height of the longest tick name -->
+<polymer-element name="overview-ticks-bar" attributes="tickNames height selectedIndex">
     <template>
         <link rel="stylesheet" href="overview.css">
 
         <div layout horizontal style="height: 150px;">
             <template repeat="{{tickName in tickNames}}">
                 <!-- The weird margin thing going on here is the only way I could make the labels be at the bottom
-                     of the header bar. -->
-                <div style="margin-bottom: -35px; margin-top: 35px;" class="tick-label rotated">{{tickName}}</div>
+                     of the header bar. Without margin-top, Chrome moves the element diagonally. No idea why. -->
+                <div id="{{tickName.index}}" style="margin-bottom: -35px; margin-top: 35px;"
+                     class="{{'tick-label rotated unselectable' + (tickName.index == selectedIndex ? ' sort-field-header' : '')}}"
+                     on-tap="{{titleClicked}}">{{tickName.text}}</div>
             </template>
             <h4 id="spacer" class="user-label"></h4>
         </div>
     </template>
     <script>
         Polymer('overview-ticks-bar', {
+            created: function() {
+                this.selectedIndex = -1;
+            },
+
+            titleClicked: function(a, b, sender) {
+                if (this.selectedIndex == sender.id) {
+                    this.mode *= -1;
+                } else {
+                    this.selectedIndex = sender.id;
+                    this.mode = 1;
+                }
+                this.fire('tick-selected', {selectedIndex: this.selectedIndex, mode: this.mode});
+            },
+
             tickNamesChanged: function () {
                 this.job('resize', this.resetHeight(), 100);
             },
