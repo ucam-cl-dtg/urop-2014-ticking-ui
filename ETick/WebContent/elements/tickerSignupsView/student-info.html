@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-icons/core-icons.html">
-<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
 
 <polymer-element name="student-info" attributes="crsId opened">
     <template>
@@ -25,13 +25,13 @@
 			on-core-response="{{studentLoaded}}">
 		</toast-ajax>
 		
-		<div layout horizontal center>
+		<div layout horizontal center flex style="min-height:100px">
 			<div flex>
 				<template if="{{photo}}">
-					<img class="profilePhoto" src="data:image/jpeg;base64,{{photo}}"/>
+					<img class="profilePhoto" style="margin-top:5px;height:100px;width:100px" src="data:image/jpeg;base64,{{photo}}"/>
 				</template>
 				<template if="{{!photo}}">
-					<core-icon class="big" icon="{{isStudent ? 'social:school' : 'social:person'}}"></core-icon>
+					<core-icon class="big" style="height:48px;width:48px" icon="{{isStudent ? 'social:school' : 'social:person'}}"></core-icon>
 				</template>
 			</div>
 			
@@ -42,22 +42,26 @@
 			<div flex align="center">
 				<span> college : {{college}} </span>
 			</div>
-			
 		</div>
     </template>
     <script>
-        Polymer( 'ticker-signups-card', {
+        Polymer( 'student-info', {
             openedChanged : function() {
 				if(this.opened) {
 					this.$.ajaxLoadStudent.go();
 				}
 			},
 			studentLoaded: function() {
-				var loadedData = this.$.ajaxLoadStudent.response.slice(0);
+				var loadedData = this.$.ajaxLoadStudent.response;
 				this.name = loadedData.displayName;
 				this.college = loadedData.college;
-				this.photo = loadedData.photo;
+				if (loadedData.photo != "undefined") {
+					this.photo = loadedData.photo;
+				}
+				else {
+					this.photo = null;
+				}
 			}
-        })
+        });
     </script>
 </polymer-element>

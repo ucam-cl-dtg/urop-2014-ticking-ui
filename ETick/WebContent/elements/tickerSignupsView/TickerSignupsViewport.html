@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../are-you-sure.html">
 <link rel="import" href="student-info.html">
 
@@ -22,6 +23,12 @@
 	  padding-top: 5px
       margin-bottom: 10px;
     }
+	#listTemplate:nth-child(even) {
+		background:#e9e9e9;
+	}
+	#listTemplate:nth-child(odd) {
+		background:#f6f6f6;
+	}
     </style>
 	
 	<!-- Get tickers for this session -->
@@ -74,7 +81,7 @@
 			</paper-radio-group>
 		</div>
 		<div id="slots-view-panel" align="center" style="border:black solid 1px;border-bottom-style:none">
-				<template repeat="{{slot in slots}}">
+				<template id="listTemplate" repeat="{{slot in slots}}">
 					<span layout vertical style="border-bottom:black solid 1px">
 						<span layout horizontal flex>
 							<div align="center" style="min-width:60px">
@@ -100,7 +107,7 @@
 						</span>
 						<div>
 							<core-collapse opened?="{{slot.collapse}}">
-								<div style="background-color:#AFEEEE">
+								<div>
 									<student-info crsId="{{slot.student}}" opened="{{slot.collapse}}"></student-info>
 								</div>
 							</core-collapse>
