@@ -1,3 +1,4 @@
+
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/core-icons/communication-icons.html">
@@ -31,6 +32,11 @@
        			margin-right: 10px;
 				margin-top: 8px;
 			}
+
+			core-icon.center {
+				margin: 0;
+			}
+
 			paper-input.datetime {
 				width: initial;
 				margin-right: 20px;
@@ -43,6 +49,11 @@
 			#buttonsContainer paper-button {
 				width: 18%;
 				margin: 20px 10px 10px;
+			}
+
+			#descInput {
+				width: 100%;
+				outline: none;
 			}
 		</style>
 
@@ -79,13 +90,9 @@
 					on-input="{{validate}}"></paper-input>
 			</div>
 
-			<div layout horizontal start>
-				<!-- TODO: try multiline -->
-				<core-icon class="big" icon="info-outline"></core-icon>
-				<paper-input id="descInput"
-					value="{{desc}}"
-					label="Description..."
-					maxRows="5"></paper-input>
+			<div layout horizontal center>
+				<core-icon class="big center" icon="info-outline"></core-icon>
+				<textarea id="descInput" rows="3">{{desc}}</textarea>
 			</div>
 
 			<div layout horizontal start>
@@ -162,17 +169,14 @@
 		<div id="buttonsContainer" layout horizontal center end-justified>
 			<paper-button raisedButton id="resetButton" label="CANCEL" on-click="{{cancelClicked}}"></paper-button>
 			<paper-button raisedButton id="submitButton" 
-				label="{{sheet ? 'SAVE' : 'CREATE'}}" 
-				disabled="{{disableSubmit}}"
+				label="{{sheet ? 'SAVE' : 'CREATE'}}"
 				on-click="{{submitClicked}}">
 			</paper-button>
 		</div>
 
 
-		<!-- Response toasts. -->
-		<paper-toast id="addSessionSuccess" duration="8000"></paper-toast>
+		<!-- Error toasts. -->
 		<paper-toast id="addSessionError" duration="8000"></paper-toast>
-		<paper-toast id="editSessionSuccess" duration="8000"></paper-toast>
 		<paper-toast id="editSessionError" duration="8000"></paper-toast>
 
 	</template>
@@ -201,28 +205,26 @@
 						return item.name;
 					}) : [];
 
+
+				this.disableSubmit = false;
+
 				this.validate();
+
+				
+				this.$.locInput.$.input.list = "browsers";
+				console.log(this.$.locInput.$.input);
 			},
 
 			validate: function () {
-
-				console.log(this.$.titleInput.inputValue && !this.$.titleInput.invalid &&
-					this.tickers && this.tickers.length >= 1 &&
-					this.$.date.value &&
-					this.$.startTime.value && this.$.endTime.value &&
-					this.$.slotLengthInput.inputValue &&
-					!this.$.slotLengthInput.invalid);
-
 				if (this.$.titleInput.inputValue && !this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.value &&
 					this.$.startTime.value && this.$.endTime.value &&
-					this.$.slotLengthInput.inputValue &&
 					!this.$.slotLengthInput.invalid) {
-					this.disableSubmit = false;
+					this.$.submitButton.disabled = false;
 				}
 				else {
-					this.disableSubmit = true;
+					this.$.submitButton.disabled = true;
 				}
 			},
 
@@ -244,12 +246,15 @@
 			},
 
 			submitClicked: function () {
+
 				this.title = this.$.titleInput.inputValue;
-				this.description = this.$.descInput.inputValue;
+				this.description = this.$.descInput.value;
 				this.location = this.$.locInput.inputValue;
 				this.subStartTime = Date.parse(this.$.date.value + "T" + this.$.startTime.value);
 				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
+
+				console.log((new Date(this.subStartTime)).toLocaleString(), (new Date(this.subEndTime)).toLocaleString());
 
 				if (this.sheet)  {
 					var call = this.$.editSessionAPI;
@@ -262,10 +267,9 @@
 			},
 
 			addSessionResponse: function () {
-				var toast = this.$.addSessionSuccess;
-				toast.text = "Successfully created new ticking session '" + this.title + "'.";
-				toast.show();
-				this.fire('sheet-created');
+				this.fire('sheet-edited', {
+					message: "Successfully created new ticking session '" + this.title + "'."
+				});
 			},
 
 			addSessionError: function(e, detail) {
@@ -279,10 +283,9 @@
 			},
 
 			editSessionResponse: function () {
-				var toast = this.$.addSessionSuccess;
-				toast.text = "Edited ticking session '" + this.title + "'.";
-				toast.show();
-				this.fire('sheet-edited');
+				this.fire('sheet-edited', {
+					message: "Edited ticking session '" + this.title + "'."
+				});
 			},
 
 			editSessionError: function(e, detail) {

@@ -14,12 +14,13 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.git.api.KeyException;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
-import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -65,6 +66,27 @@ public class UserApiFacade implements IUserApiFacade {
 	@Override
 	public Response getUser(HttpServletRequest request) {
 		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+
+		/* Get the user object, returning if not found */
+		User user = db.getUser(crsid);
+
+		if (user == null) {
+			log.error("User " + crsid + " requested user " + crsid
+					+ " but they couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		return Response.ok(user).build();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Response getUserFromCrsid(HttpServletRequest request, String crsid) {
+		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
 		/* Get the user object, returning if not found */
@@ -189,11 +211,36 @@ public class UserApiFacade implements IUserApiFacade {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
-			log.error("User " + crsid + " tried adding ssh key for " + crsid,
-					s.getCause(), s.getStackTrace());
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(Strings.IDEMPOTENTRETRY).build();
-		} catch (IOException e) {
+			if (s.getClassName().equals(IOException.class.getName())) {
+				log.error("User " + crsid + " tried adding ssh key for " + crsid,
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
+
+			if (s.getClassName().equals(
+					KeyException.class.getName())) {
+				log.error("User " + crsid + " tried adding ssh key for " + crsid,
+						s.getCause(), s.getStackTrace());
+				String[] badkeys = s.getMessage().split(" ");
+				for (String badkey: badkeys) {
+					User badUser = db.getUser(badkey.split(".")[0]);
+					badUser.setSsh(null);
+				}
+				if (s.getMessage().contains(crsid)) {
+					return Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity(Strings.BADKEY).build();
+				}
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+
+			} else {
+				log.error("User " + crsid + " tried adding ssh key for " + crsid,
+						s.getCause(), s.getStackTrace());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
+		} catch (IOException | KeyException e) {
 			log.error("User " + crsid + " tried adding ssh key for " + crsid, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();

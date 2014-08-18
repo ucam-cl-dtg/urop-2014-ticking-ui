@@ -14,6 +14,8 @@ import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationRegister;
 
 public class GitApi {
 
+    private static final int GITCONNECTIONS = 8; /* Crashes if too high */
+
 	private static WebInterface webInterface;
 
 	static {
@@ -21,13 +23,13 @@ public class GitApi {
 				Configuration.class).getConfig();
 
 		PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
-		cm.setDefaultMaxPerRoute(10); // 10 at most through each endpoint
-		cm.setMaxTotal(10); // 200 at most overall
+		cm.setDefaultMaxPerRoute(GITCONNECTIONS);
+		cm.setMaxTotal(GITCONNECTIONS);
 		HttpClient httpClient = new DefaultHttpClient(cm);
 		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
 
 		ResteasyClient client = new ResteasyClientBuilder()
-				.maxPooledPerRoute(10).httpEngine(engine).build();
+				.maxPooledPerRoute(GITCONNECTIONS).httpEngine(engine).build();
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 
 		webInterface = target.proxy(WebInterface.class);

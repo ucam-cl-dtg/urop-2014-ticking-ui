@@ -1,0 +1,124 @@
+.user-label {
+    width: 135px;
+    min-width: 135px;
+    margin: 0;
+    padding: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tick-label {
+    width: 50px;
+    min-width: 50px;
+    margin: 0;
+    padding: 5px;
+}
+
+/*#horizontalDropShadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+
+    background-color: #ff0000;
+}*/
+
+.horizontalDropShadow {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    min-height: 6px;
+    margin-top: -6px;
+    box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+}
+
+.verticalDropShadow {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 6px;
+    margin-left: -6px;
+    box-shadow: inset 5px 0px 6px -3px rgba(0, 0, 0, 0.4);
+}
+
+#dropTest {
+    background: #008000;
+    min-height: 20px;
+    min-width: 100px;
+}
+
+.rotated {
+    /* Webkit */
+    -webkit-transform: rotate(-90deg);
+
+    /* Firefox */
+    -moz-transform: rotate(-90deg);
+
+    /* IE (it doesn't hurt to try...) */
+    -ms-transform: rotate(-90deg);
+}
+
+.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+
+    /*
+      Introduced in IE 10.
+      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+    */
+    -ms-user-select: none;
+    user-select: none;
+
+    cursor: default;
+}
+
+.sort-field {
+    /*font-weight: bold;*/
+}
+
+.sort-field-header {
+    color: white;
+}
+
+.overview-header-height {
+    min-height: 150px;
+}
+
+polyfill-next-selector {shadow: 'overviewSearchBox core-input';}
+#overviewSearchBox::shadow core-input {
+    color: white;
+    width: 345px;
+}
+
+#overviewSearchBox {
+    margin-bottom: -20px;
+}
+
+/*polyfill-next-selector {shadow: 'overviewSearchBox core-input';}*/
+#overviewSearchBox /deep/ input  {
+    color: white;
+}
+
+#overviewSearchBox::shadow #clearButton  {
+    color: #ABD3F7;
+}
+
+#overviewSearchBox /deep/ ::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #ABD3F7;
+}
+
+#overviewSearchBox /deep/ ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #ABD3F7;
+    opacity:  1;
+}
+
+#overviewSearchBox /deep/ :-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:   #ABD3F7;
+}

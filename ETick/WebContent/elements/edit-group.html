@@ -7,9 +7,13 @@
 
 <polymer-element name="edit-group" attributes="gid name info">
 	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
 		<style>
 			:host {
 				display: inherit;
+			}
+			paper-button {
+				width: 100%;
 			}
 		</style>
 		<!-- Edit group API. -->
@@ -17,6 +21,7 @@
 			method="PUT"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + gid }}"
 			on-core-response="{{editResponse}}"
+			contentType="application/json"
 			
 			waitMessage="Saving changes..."
             waitBeforeToast="1000"
@@ -39,14 +44,15 @@
 				floatingLabel
 				label="Group name..."
 				error="Required."
-				on-input="{{handleNameInput}}">
+				on-input="{{handleNameInput}}"
+				value="{{newName}}">
 			</paper-input>
 			<h2 class="subtitle">Group Info:</h2>
 			<paper-input id="editGroupInfo"
 				multiline
 				maxRows="5"
 				label=""
-				value="{{info}}"
+				value="{{newInfo}}"
 				error="Invalid group name.">
 			</paper-input>
 			
@@ -58,8 +64,14 @@
 	</template>
 	<script>
 	Polymer('edit-group', {
+		domReady: function() {
+			this.newName = this.name;
+			this.newInfo = this.info;
+			
+		},
+		
 		handleNameInput: function () {
-			if (this.$.newGroupName.inputValue === "") {
+			if (this.$.editGroupName.inputValue === "") {
 				this.showSubmit = false;
 			}
 			else {
@@ -71,15 +83,9 @@
 			this.$.editGroupDialog.toggle();
 		},
 
-		resetAPI: function () {
-			var api = this.$.editAPI;
-			api.body = "";
-		},
-
 		editButtonClicked: function () {
-			this.resetAPI();
 
-			var name = this.$.newGroupName.inputValue;
+			var name = this.$.editGroupName.inputValue;
 			var info = encodeURI(this.$.editGroupInfo.inputValue);
 			var api = this.$.editAPI;
 
@@ -87,7 +93,10 @@
 			api.go();
 		}, 
 		
-		editResponse: function () {}
+		editResponse: function () {
+			this.name = this.newName;
+			this.info = this.newInfo;
+		}
 
 	});
 	</script>

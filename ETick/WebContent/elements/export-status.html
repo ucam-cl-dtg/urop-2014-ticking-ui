@@ -20,21 +20,21 @@
 			}
 		</style>
 
-		<!-- Delete button. -->
+		<!-- Export button. -->
 		<paper-icon-button id="deleteButton"
-			icon="drive-spreadsheet"
-			on-click="{{toggle}}">
+			icon="file-download"
+			on-click="{{toggleDialog}}">
 		</paper-icon-button>
 
 		<!-- Filetype dialog. -->
 		<paper-dialog id="fileTypeDialog"
 			opened="{{opened}}"
 			backdrop
-			heading="Choose Filetype"
+			heading="Export as:"
 			transition="core-transition-top">
-			<paper-button label="XLS" class="greenButton" on-click="{{xls}}">
+			<paper-button label=".XLS" class="greenButton" on-click="{{xls}}">
 			</paper-button>
-            <paper-button label="CSV" class="blueButton" on-click="{{csv}}">
+            <paper-button label=".CSV" class="blueButton" on-click="{{csv}}">
         	</paper-button>
 		</paper-dialog>
 
@@ -47,20 +47,20 @@
 			
 			opened: false,
 
-			toggle: function () {
+			toggleDialog: function () {
 				this.$.fileTypeDialog.toggle();
 			},
 
 			xls: function () {
 				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + this.gid +'/status/xls')
-		        .done(function () { this.toggle() })
-		        .fail(function () { this.$.deletexportError.show(); });
+		        .done(function () { this.toggleDialog() })
+		        .fail(function () { this.$.exportError.show(); });
 			},
 
 			csv: function () {
 				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + this.gid +'/status/csv')
-		        .done(function () { this.toggle() })
-		        .fail(function () { this.$.deletexportError.show(); });
+		        .done(function () { this.toggleDialog() })
+		        .fail(function () { this.$.exportError.show(); });
 			}
 
 		});

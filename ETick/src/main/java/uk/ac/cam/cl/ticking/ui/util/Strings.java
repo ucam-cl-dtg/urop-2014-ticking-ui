@@ -42,6 +42,8 @@ public class Strings {
 	public static final String NOCOMMITS = "Error: Your submission appears to have no commits";
 
 	public static final String TESTRUNNING = "Error: You still have a test running for this tick";
+	
+	public static final String BADKEY = "The key you have entered is malformed";
 
 	/**
 	 * Private constructor to prevent this class being created
