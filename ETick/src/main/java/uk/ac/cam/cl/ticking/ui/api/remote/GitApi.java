@@ -21,13 +21,13 @@ public class GitApi {
 				Configuration.class).getConfig();
 
 		PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
-		cm.setDefaultMaxPerRoute(200);
-		cm.setMaxTotal(200);
+		cm.setDefaultMaxPerRoute(10); // 10 at most through each endpoint
+		cm.setMaxTotal(10); // 200 at most overall
 		HttpClient httpClient = new DefaultHttpClient(cm);
 		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
 
 		ResteasyClient client = new ResteasyClientBuilder()
-				.maxPooledPerRoute(200).httpEngine(engine).build();
+				.maxPooledPerRoute(10).httpEngine(engine).build();
 		ResteasyWebTarget target = client.target(config.getGitApiLocation());
 
 		webInterface = target.proxy(WebInterface.class);

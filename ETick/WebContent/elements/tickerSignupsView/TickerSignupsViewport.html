@@ -52,7 +52,7 @@
 	<!-- Kick someone out of a slot -->
     <core-ajax
 		id="ajaxKick"
-        url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/students/{{crsId}}/ticks/{{tickId}}"
+        url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/students/{{crsId}}/ticks/{{tickId}}"
 		method = "DELETE"
 		contentType="application/json"
 		handleAs="text"
@@ -115,7 +115,7 @@
   Polymer('ticker-signups-viewport', {
 			refresh: function() {
 				this.fire("hide-report");
-				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
+				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.sessionId;
 				if (this.location === "") {
 					this.locationDisplayed = "Location : No location is available";
 				}
