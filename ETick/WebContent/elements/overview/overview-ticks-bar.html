@@ -34,7 +34,12 @@
             },
 
             tickNamesChanged: function () {
-                this.job('resize', this.resetHeight(), 100);
+                this.job('resize',
+                        function ()
+                        {
+                            return this.resetHeight()
+                        }
+                        , 100);
             },
 
             resetHeight: function() {
