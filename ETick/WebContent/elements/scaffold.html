@@ -12,6 +12,7 @@
 <link rel="import" href="group.html">
 <link rel="import" href="create-group.html">
 <link rel="import" href="tick-creator/tick-creator-card.html">
+<link rel="import" href="tick-creator/extension-card.html">
 
 <polymer-element name="page-scaffold" attributes="">
 	<template>
@@ -76,6 +77,9 @@
 		<paper-toast id="groupDeletedToast" duration="3000" text="Successfully deleted group."></paper-toast>
 		
 		<template id="tickTemp" if="{{showTickCreator}}">
+			<main-card animated>
+				<extension-card tid="{{tickId}}"></extension-card>
+			</main-card>
 			<main-card animated>
 				<tick-creator-card tickId="{{tickId}}"></tick-creator-card>
 			</main-card>
