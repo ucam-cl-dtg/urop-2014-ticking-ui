@@ -3,6 +3,7 @@ package uk.ac.cam.cl.ticking.ui.api;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -113,6 +114,17 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 
 		/* Return the sorted list of users for the group */
 		List<User> users = db.getUsers(groupId);
+		
+		/* Remove users who are only admins for the group */
+		Iterator<User> i = users.iterator();
+		while (i.hasNext()) {
+			User user = i.next();
+			List<Role> roles = db.getRoles(groupId, user.getCrsid());
+			roles.remove(Role.ADMIN);
+			if (roles.size() == 0) {
+				i.remove();
+			}
+		}
 		Collections.sort(users);
 		
 		List<UserRoleBean> userBeans = new ArrayList<>();
