@@ -11,12 +11,15 @@
 <link rel="import" href="file-browser/file-browser-card.html">
 <link rel="import" href="are-you-sure.html">
 <link rel="import" href="delete-group.html">
+<link rel="import" href="clone-group.html">
 <link rel="import" href="edit-group.html">
 <link rel="import" href="export-status.html">
 <link rel="import" href="tick-session-list.html">
 <link rel="import" href="add-edit-session.html">
+<link rel="import" href="overview/overview-card.html">
 
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
 
 <polymer-element name="x-group" attributes="gid name info creator editedBy editedOn">
@@ -51,18 +54,15 @@
                     <div layout horizontal end style="width: 100%;">
                         <p class="creator">
                         	Created by: {{creator}}
-                        	
-                        		Edited by: {{editedBy}} on {{editedOn}}
-                        	
+                        	<template if="{{editedOn}}">
+                        		, Edited by: {{editedBy}} on {{formattedEditedOn}}
+                        	</template>
                         </p>
 						<span layout horizontal end end-justified flex>
 							<template if="{{isAuthor || isAdmin}}">
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
-								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
-								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit group>
-							</template>
-							<template if="{{isOverview}}">
-								<export-status gid="{{gid}}"></export-status>
+								<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
+								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
 							</template>
 						</span>
                     </div>
@@ -137,11 +137,11 @@
 	    <template id="addEditSessionTemp" if="{{showAddEditSession}}">
 			<main-card animated>
 				<add-edit-session gid="{{gid}}" sheet="{{sheet}}"
-				on-sheet-created="{{sheetCreated}}"
 				on-sheet-cancel="{{sheetCancelled}}"
 				on-sheet-edited="{{sheetCreated}}"></add-edit-session>
 			</main-card>
 		</template>
+		<paper-toast id="addEditResponseToast" duration="8000"></paper-toast>
 
 
         <!-- Marker card for ticking sessions. -->
@@ -151,12 +151,22 @@
             
         </span>
 
+        <span id="deepOverview">
+            <template if="{{isOverview}}">
+                <main-card animated>
+                    <overview-card gid="{{gid}}"></overview-card>
+                </main-card>
+            </template>
+        </span>
+
 
 	</template>
 	<script>
 		Polymer('x-group', {  
 
 			domReady: function () {
+				this.formattedEditedOn = this.formatDate(this.editedOn);
+				
 				this.$.roleAjax.go();
 				this.$.sheetListAPI.go();
 
@@ -165,6 +175,7 @@
                     this.tabIndex = that.tabs.selected;
 
                     that.overview.hidden = this.tabIndex != 0;
+                    that.deepOverview.hidden = that.overview.hidden;
                     that.ticks.hidden = this.tabIndex != 1;
                     that.deepTicks.hidden = that.ticks.hidden;
                     that.tickingSessions.hidden = this.tabIndex != 2;
@@ -173,6 +184,11 @@
                     that.addEditSessionTemp.model.showAddEditSession && !that.tickingSessions.hidden;
                     that.members.hidden = this.tabIndex != 3;
                 });
+			},
+			
+			formatDate: function (datum) {
+				var date = new Date(datum);
+			    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
 			},
 
 			roleResponse: function() {
@@ -211,9 +227,13 @@
                 console.log(detail);
 			},
 
-			sheetCreated: function () {				
+			sheetCreated: function (e, detail) {
 				this.$.sheetListAPI.go();
 				this.sheetCancelled();
+				if (detail && detail.message) {
+					this.$.addEditResponseToast.text = detail.message;
+					this.$.addEditResponseToast.show();
+				}
 			},
 
 			addSheetHandler: function () {

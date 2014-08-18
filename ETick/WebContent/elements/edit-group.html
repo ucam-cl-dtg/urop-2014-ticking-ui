@@ -12,6 +12,9 @@
 			:host {
 				display: inherit;
 			}
+			paper-button {
+				width: 100%;
+			}
 		</style>
 		<!-- Edit group API. -->
 		<toast-ajax id="editAPI"
@@ -80,13 +83,7 @@
 			this.$.editGroupDialog.toggle();
 		},
 
-		resetAPI: function () {
-			var api = this.$.editAPI;
-			api.body = "";
-		},
-
 		editButtonClicked: function () {
-			this.resetAPI();
 
 			var name = this.$.editGroupName.inputValue;
 			var info = encodeURI(this.$.editGroupInfo.inputValue);

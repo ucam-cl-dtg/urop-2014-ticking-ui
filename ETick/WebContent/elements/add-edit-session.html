@@ -168,10 +168,8 @@
 		</div>
 
 
-		<!-- Response toasts. -->
-		<paper-toast id="addSessionSuccess" duration="8000"></paper-toast>
+		<!-- Error toasts. -->
 		<paper-toast id="addSessionError" duration="8000"></paper-toast>
-		<paper-toast id="editSessionSuccess" duration="8000"></paper-toast>
 		<paper-toast id="editSessionError" duration="8000"></paper-toast>
 
 	</template>
@@ -204,6 +202,10 @@
 				this.disableSubmit = false;
 
 				this.validate();
+
+				
+				this.$.locInput.$.input.list = "browsers";
+				console.log(this.$.locInput.$.input);
 			},
 
 			validate: function () {
@@ -258,10 +260,9 @@
 			},
 
 			addSessionResponse: function () {
-				var toast = this.$.addSessionSuccess;
-				toast.text = "Successfully created new ticking session '" + this.title + "'.";
-				toast.show();
-				this.fire('sheet-created');
+				this.fire('sheet-edited', {
+					message: "Successfully created new ticking session '" + this.title + "'."
+				});
 			},
 
 			addSessionError: function(e, detail) {
@@ -275,10 +276,9 @@
 			},
 
 			editSessionResponse: function () {
-				var toast = this.$.addSessionSuccess;
-				toast.text = "Edited ticking session '" + this.title + "'.";
-				toast.show();
-				this.fire('sheet-edited');
+				this.fire('sheet-edited', {
+					message: "Edited ticking session '" + this.title + "'."
+				});
 			},
 
 			editSessionError: function(e, detail) {

@@ -1,0 +1,39 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
+
+<polymer-element name="overview-users-bar" attributes="users sortField">
+    <template>
+        <link rel="stylesheet" href="overview.css">
+
+        <style>
+            #user-div:nth-child(odd){
+                background: #f6f6f6;
+            }
+            #user-div:nth-child(even) {
+                background: #e9e9e9;
+            }
+            #user-div {
+                padding-left: 5px;
+                margin-right: -5px;
+                height: 34px;
+            }
+        </style>
+
+        <template repeat="{{user in users}}">
+            <!--<core-tooltip position="right" label="{{user.foreNames + ' ' + user.lastName + ' (' + user.crsId + ')' + ', ' + user.college}}">-->
+            <div id="user-div" layout horizontal>
+                <div class="{{'user-label' + (sortField == 'Name'        ? ' sort-field' : '')}}">{{user.lastName}}</div>
+                <div class="{{'user-label' + (sortField == 'Forename(s)' ? ' sort-field' : '')}}">{{user.foreNames}}</div>
+                <div class="{{'user-label' + (sortField == 'College'     ? ' sort-field' : '')}}">{{user.college}}</div>
+            </div>
+            <!--</core-tooltip>-->
+        </template>
+    </template>
+    <script>
+        Polymer('overview-users-bar', {
+            created: function() {
+                this.sortField = 'Name';
+            }
+        });
+    </script>
+</polymer-element>
