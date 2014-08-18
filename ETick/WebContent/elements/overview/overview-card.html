@@ -1,12 +1,13 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../search-box.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
+<link rel="import" href="../export-status.html">
 <link rel="import" href="overview-list.html">
 <link rel="import" href="overview-ticks-bar.html">
 <link rel="import" href="overview-users-bar.html">
-
-<link rel="import" href="../search-box.html">
 
 <polymer-element name="overview-card" attributes="gid">
     <template>
@@ -33,9 +34,10 @@
                     <div id="headerBar" layout horizontal center style="height: 46px;">
                         <span flex></span>
                         <search-box id="overviewSearchBox" placeholder="Search..." query="{{query}}"></search-box>
+                        <!--<paper-icon-button icon="file-download" style="margin-top: 20px;"></paper-icon-button>-->
+                        <export-status style="margin-top: 20px;"></export-status>
                     </div>
-                    
-                    
+
                     <div layout horizontal>
                     <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
                         <div layout horizontal end class="user-label">
@@ -44,8 +46,6 @@
                     </template>
                     </div>
                 </div>
-
-
 
                 <div id="vShadowHeader" style="height: 144px;"></div>
 
