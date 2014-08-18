@@ -156,7 +156,6 @@
 
 			groupEditedHandler: function(e, detail) {
 				this.noGroup();
-				detail.gid = detail._id;
 				this.toSelect = detail._id;
 				this.$.loginAPIs.$.sidebarAjax.go();
 			},
