@@ -1,8 +1,10 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
@@ -24,8 +26,9 @@ import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ExtensionBean;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ExtensionReturnBean;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
-import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -467,8 +470,7 @@ public class TickApiFacade implements ITickApiFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response setDeadline(HttpServletRequest request, String tickId,
-			DateTime date) {
+	public Response setExtension(HttpServletRequest request, String tickId, ExtensionBean extensionBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
@@ -477,6 +479,46 @@ public class TickApiFacade implements ITickApiFacade {
 
 		if (tick == null) {
 			log.error("User " + crsid + " requested tick " + tickId
+					+ " to add extensions, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Check permissions */
+		if (!permissions.tickCreator(crsid, tick)) {
+			log.warn("User " + crsid + " tried to add an extension to tick "
+					+ tickId + " but was denied permission");
+			return Response.status(Status.FORBIDDEN)
+					.entity(Strings.INVALIDROLE).build();
+		}
+
+		/* Update the extensions, save and return */
+		for (String user : extensionBean.getCrsids()) {
+			tick.addExtension(user, extensionBean.getDeadline());
+		}
+		db.saveTick(tick);
+		
+		List<ExtensionReturnBean> extensions = new ArrayList<>();
+		for (Entry<String, DateTime> entry : tick.getExtensions().entrySet()) {
+			extensions.add(new ExtensionReturnBean(db.getUser(entry.getKey()), entry.getValue()));
+		}
+		
+		return Response.status(Status.CREATED).entity(extensions).build();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Response getExtensions(HttpServletRequest request, String tickId) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+
+		/* Get the tick object and return if it doesn't exist */
+		Tick tick = db.getTick(tickId);
+
+		if (tick == null) {
+			log.error("User " + crsid + " requested extensions for tick" + tickId
 					+ " to update deadline, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -484,16 +526,17 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickCreator(crsid, tick)) {
-			log.warn("User " + crsid + " tried to change the deadline of tick "
+			log.warn("User " + crsid + " tried get the extensions of tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 
-		/* Update the deadline, save and return */
-		tick.setDeadline(date);
-		db.saveTick(tick);
-		return Response.status(Status.CREATED).entity(tick).build();
+		List<ExtensionReturnBean> extensions = new ArrayList<>();
+		for (Entry<String, DateTime> entry : tick.getExtensions().entrySet()) {
+			extensions.add(new ExtensionReturnBean(db.getUser(entry.getKey()), entry.getValue()));
+		}
+		return Response.ok(extensions).build();
 	}
 
 	/**

@@ -1,0 +1,125 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog-transition.html">
+<link rel="import" href="../bower_components/core-transition/core-transition.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="extension-list.html">
+<link rel="import" href="../dialog.html">
+<link rel="import" href="../search-box.html">
+
+<polymer-element name="extension-card" attributes="tid">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/elements/group-members.css">
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+
+		<!-- Extension API. -->
+		<toast-ajax id="extensionAPI"
+			method="PUT"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension' }}"
+			on-core-response="{{extensionResponse}}"
+			contentType="application/json"
+			
+			waitMessage="Adding extensions..."
+            waitBeforeToast="1000"
+            captureError
+            popUpError
+            errorMessage="Error adding extensions.">
+		</toast-ajax>
+
+		<!-- Member list Ajax call. -->
+		<core-ajax id="listAjax"
+			auto
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension'}}"
+			handleAs="json"
+			on-core-response="{{listResponse}}">
+		</core-ajax>
+
+		<!-- Card heading. -->
+		<div id="headerBar" layout horizontal center>
+			<h1 flex>Extensions ({{number}})</h1>
+            <span flex></span>
+			<paper-icon-button icon="add" on-click="{{addExtensionClicked}}"></paper-icon-button>
+			<search-box id="searchBox" placeholder="Search..."></search-box>
+		</div>
+
+		<!-- Member list. -->
+		<div id="personListContainer">
+			<extension-list id="members" query="{{searchQuery}}" on-core-select="{{personSelectionChanged}}"></person-list>
+		</div>
+
+		<!-- Extension dialog -->
+		<paper-dialog id="extensionDialog" heading="Add an extension:" backdrop	
+			transition="core-transition-top">
+			<paper-input id="addInput" class="dialogInput"
+				floatingLabel
+				label="CRSid(s)..."
+				error="Invalid CRSid(s)."
+				pattern="^([a-zA-Z]+\d+[^\w\d]*)+$"
+				on-input="{{handleAddInput}}">
+			</paper-input>
+			<h2 class="subtitle">Extension:</h2>
+			<date-entry valid="{{dateValid}}" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry>
+			<template if="{{showSubmit}}">
+				<paper-button id="addSubmit" class="dialogSubmit" label="ADD" on-click="{{addExtension}}" affirmative></paper-button>
+			</template>
+		</paper-dialog>
+
+	</template>
+	<script>
+		Polymer('extension-card', {
+
+			observe: {
+				'$.searchBox.query' : 'searchBoxChanged'
+			},
+
+			searchBoxChanged: function (oldValue, newValue) {
+				this.searchQuery = newValue;
+			},
+
+			listResponse: function() {
+				var list = this.$.listAjax.response;
+				this.number = list.length;
+				this.$.members.people = list;
+			},
+
+			addExtension: function() {
+				var newCRSIDs = this.$.addInput.value.trim().split(/[^\w\d]+/);
+				var jsonCRSids = JSON.stringify(newCRSIDs);
+				
+				var year = this.year;
+	            var month = this.month - 1;
+	            var day = this.day;
+	            var date = new Date();
+	            date.setUTCDate(day);
+	            date.setUTCMonth(month);
+	            date.setUTCFullYear(year);
+	            var ISOdate = date.toISOString();
+				
+				this.$.extensionAPI.body = '{ "crsids": ' + jsonCRSids + ', "deadline" : ' + ISOdate + '}';
+				this.$.extensionAPI.go();
+			},
+
+			handleAddInput: function () {
+				if (this.$.addInput.invalid || this.$.addInput.inputValue === "") {
+					this.showSubmit = false;
+				}
+				else {
+					this.showSubmit = true;
+				}
+			},
+
+			addExtensionClicked: function () {
+				this.$.addDialog.toggle();
+			},
+
+			addExtensionResponse: function() {
+				var list = this.$.addMemberAjax.response;
+				this.number = list.length;
+				this.$.members.people = list;
+			},
+
+		});
+	</script>
+</polymer-element>

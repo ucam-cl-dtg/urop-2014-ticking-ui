@@ -1,0 +1,61 @@
+<!-- Box/card element representing a person in a list of people who have extensions. -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/core-icons/social-icons.html">
+<link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../date-calendar.html">
+
+<polymer-element name="extension-box" attributes="name crsid college extension" noscript>
+	<template>
+		<style>
+			:host {
+				display: block;
+				border-radius: 2px;
+				position: relative;
+			}
+
+			h1 {
+				margin: 0;
+				font-size: 1.4rem;
+				font-weight: 100;
+			}
+
+			h2 {
+				margin: 0;
+				font-size: 0.7rem;
+				color: #808080;
+				font-weight: 300;
+			}
+
+			core-icon {
+				color: rgb(112, 81, 236);
+			}
+
+			#container {
+				padding: 10px;
+			}
+
+			core-icon.big {
+				width: 60px;
+				height: 60px;
+				margin: 5px;
+			}
+
+		</style>
+
+		<div layout horizontal center>
+			<date-calendar datetime="{{extension}}"
+				hexColorPrimary="#F75EA7" hexColorSecondary="#CE00E0"></date-calendar>
+
+			<div id="container" layout vertical>
+				<h1>{{name}}</h1>
+				<div layout horizontal center>
+					<h2 flex>{{college}}</h2>
+					<h2>{{crsid}}</h2>
+				</div>
+				<paper-ripple class="recenteringTouch" fit></paper-ripple>
+			</div>
+		</div>
+	</template>
+</polymer-element>
