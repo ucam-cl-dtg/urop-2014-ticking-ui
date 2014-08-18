@@ -1,4 +1,4 @@
-<!-- Element representing user information card. -->
+<!-- Element representing ssh information card. -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
@@ -6,13 +6,14 @@
 <link rel="import" href="../bower_components/core-transition/core-transition.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
-<polymer-element name="ssh-card">
+<polymer-element name="ssh-card" noscript>
+
 	<template>
 		<style>
 			:host {
 				display: block;
 				position: relative;
-				background: linear-gradient(to bottom left, rgba(216, 255, 252, 0.39) , rgba(114, 250, 223, 0.20));	    
+				background: linear-gradient(to bottom left, rgba(253, 224, 220, 1.0) , rgba(249, 189, 187, 1.0));	    
 			    padding: 50px;
 			    height: 100%;
 			    font-size: 1.0rem;
@@ -47,14 +48,14 @@
 
 		</style>
 		
-		<div class="card-header" layout horizontal center end-justified>
+		<div class="card-header" layout horizontal center start-justified>
 				<h3>Warning</h3>
 		</div>
 		<div>
-			We've detected that you haven't yet added your public ssh key.\n
-			Without this you will not be able to use any of of the gitolite services.\n
+			<p>We've detected that you haven't yet added your public ssh key.<br>
+			Without this you won't be able to use any of the gitolite services.</p>
 			
-			Use 'ssh-add -L' to find your public keys with bash and copy your preferred choice into the field on the dashboard.
+			<p>Use 'ssh-add -L' to find your public keys with bash and copy your preferred choice into the field on the dashboard.</p>
 		</div>
 	</template>
 	

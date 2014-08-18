@@ -11,6 +11,7 @@
 <link rel="import" href="file-browser/file-browser-card.html">
 <link rel="import" href="are-you-sure.html">
 <link rel="import" href="delete-group.html">
+<link rel="import" href="edit-group.html">
 <link rel="import" href="export-status.html">
 <link rel="import" href="tick-session-list.html">
 <link rel="import" href="add-edit-session.html">
@@ -53,7 +54,7 @@
 							<template if="{{isAuthor || isAdmin}}">
 								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
 								<paper-icon-button id="groupCloneButton" icon="content-copy"></paper-icon-button>
-								<paper-icon-button id="groupEditButton" icon="create"></paper-icon-button>
+								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit group>
 							</template>
 							<template if="{{isOverview}}">
 								<export-status gid="{{gid}}"></export-status>
@@ -80,7 +81,7 @@
 
             <!-- Group Members Tab -->
             <span id="members" hidden>
-                <group-members gid="{{gid}}" allowAdd="{{isAuthor||isAdmin}}" rows="4"></group-members>
+                <group-members gid="{{gid}}" allowAdd="{{isAuthor||isAdmin}}" rows="5"></group-members>
             </span>
 
             <!-- Ticking Sessions Tab -->
@@ -249,7 +250,7 @@
 			},
 
 			sheetEdited: function () {
-				this.$.sheetListAPI.go();
+			this.$.sheetListAPI.go();
 				this.sheetCancelled();
 			}
 		});
