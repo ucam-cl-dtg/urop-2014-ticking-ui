@@ -20,7 +20,6 @@
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension' }}"
 			on-core-response="{{extensionResponse}}"
 			contentType="application/json"
-			
 			waitMessage="Adding extensions..."
             waitBeforeToast="1000"
             captureError
@@ -28,7 +27,7 @@
             errorMessage="Error adding extensions.">
 		</toast-ajax>
 
-		<!-- Member list Ajax call. -->
+		<!-- Extension list Ajax call. -->
 		<core-ajax id="listAjax"
 			auto
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension'}}"
@@ -118,6 +117,7 @@
 				var list = this.$.addMemberAjax.response;
 				this.number = list.length;
 				this.$.members.people = list;
+				this.$.listAjax.go();
 			},
 
 		});

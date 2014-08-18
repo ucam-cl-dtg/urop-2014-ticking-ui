@@ -2,7 +2,7 @@
 <link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
 <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="../bower_components/core-item/core-item.html">
-<link rel="import" href="../bower_components/core-ig/core-icons.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
@@ -78,11 +78,9 @@
 		<paper-toast id="groupDeletedToast" duration="3000" text="Successfully deleted group."></paper-toast>
 		
 		<template id="tickTemp" if="{{showTickCreator}}">
-			<template if="{{tickId}}">
-				<main-card animated>
-					<extension-card tid="{{tickId}}"></extension-card>
-				</main-card>
-			</template>
+			<main-card animated>
+				<extension-card tid="{{tickId}}"></extension-card>
+			</main-card>
 			<main-card animated>
 				<tick-creator-card tickId="{{tickId}}"></tick-creator-card>
 			</main-card>
