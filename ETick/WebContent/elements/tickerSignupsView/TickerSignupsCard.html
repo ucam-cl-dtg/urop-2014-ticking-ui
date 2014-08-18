@@ -9,7 +9,7 @@
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="TickerSignupsViewport.html">
 
-<polymer-element name="ticker-signups-card" attributes="kick reason refresh crsId tickId studentMode repoName ticker groupId sessionId sessionName slotId locationx descriptionx">
+<polymer-element name="ticker-signups-card" attributes="kick reason refresh crsId tickId studentMode repoName ticker groupId sessionId sessionName slotId location description">
     <template>
         <style>
             :host {
@@ -42,7 +42,7 @@
 
         <div layout horizontal>
             <div flex class="viewer-panel">
-                <ticker-signups-viewport studentMode={{studentMode}} on-show-report={{showReport}} location="{{locationx}}" description="{{descriptionx}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
+                <ticker-signups-viewport studentMode={{studentMode}} on-show-report={{showReport}} location="{{location}}" description="{{description}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
             </div>
         </div>
 
