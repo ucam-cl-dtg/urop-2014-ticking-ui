@@ -1,0 +1,438 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="overview-list.html">
+<link rel="import" href="overview-ticks-bar.html">
+<link rel="import" href="overview-users-bar.html">
+
+<link rel="import" href="../search-box.html">
+
+<polymer-element name="overview-card" attributes="gid">
+    <template>
+        <link rel="stylesheet" href="overview.css">
+
+        <core-ajax
+                id="ajaxLoadOverview"
+                auto
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/status/csv'}}"
+                handleAs="text"
+                on-core-response="{{overviewLoaded}}"
+                on-core-error="{{logError}}">
+        </core-ajax>
+
+        <div style="max-height: 600px; position: relative;" layout vertical>
+
+
+            <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
+                <!-- fixed bit -->
+
+                <div layout vertical style="min-width: 435px;">
+                    <div flex></div>
+
+                    <div id="headerBar" layout horizontal center style="height: 46px;">
+                        <span flex></span>
+                        <search-box id="overviewSearchBox" placeholder="Search..." query="{{query}}"></search-box>
+                    </div>
+                    
+                    
+                    <div layout horizontal>
+                    <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
+                        <div layout horizontal end class="user-label">
+                            <div on-tap="{{sort}}" class="{{'user-label unselectable' + (sortField == item ? ' sort-field-header' : '')}}">{{item}}</div>
+                        </div>
+                    </template>
+                    </div>
+                </div>
+
+
+
+                <div id="vShadowHeader" style="height: 144px;"></div>
+
+                <!-- Top bar -->
+                <div style="overflow-x: hidden;" layout horizontal class="overview-header-height">
+                    <div id="headings" style="overflow: hidden; margin-left: -6px;" class="overview-header-height">
+                        <overview-ticks-bar id="overviewTicksBar" style="height: 150px;" tickNames="{{tickNames}}" on-tick-selected="{{sortTick}}"></overview-ticks-bar>
+                    </div>
+                </div>
+            </div>
+            <div id="hShadow"></div>
+
+            <div layout horizontal style="margin-top: -6px">
+                <!-- user names and colleges -->
+                <div layout vertical>
+                    <div id="userHeadings" style="overflow: hidden;">
+                        <overview-users-bar sortField="{{sortField}}" users="{{displayUsers}}"></overview-users-bar>
+                        <div style="height: 30px;"></div>
+                    </div>
+                </div>
+
+                <div id="vShadow"></div>
+
+                <!-- Scrolling content -->
+                <div id="scrollArea" style="overflow-x: auto; margin-left: -6px;" on-scroll="{{scrolled}}" flex>
+                   <template repeat="{{user in displayUsers}}">
+                        <div id="template">
+                            <overview-list user="{{user}}" scrollAreaWidth="{{scrollAreaWidth}}"></overview-list>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer('overview-card', {
+            created: function() {
+                this.buildCollegeDictionary();
+            },
+
+            overviewLoaded: function() {
+                //load string of comma separated values
+                var csv = this.$.ajaxLoadOverview.response;
+
+                //split into rows
+                var split = csv.split("\n");
+
+                //split each row into columns
+                var arrayed = split.map(function(el) {
+                    return el.split(',');
+                });
+
+                console.log(this.collegeDict);
+
+                //build user objects from these columns
+                var that = this;
+                var users = arrayed.map(function(el) {
+                   return {
+                       foreNames: el[0].split(" ").slice(0, el[0].split(" ").length - 1).join(" "),
+                       lastName: el[0].split(" ").slice(el[0].split(" ").length - 1),
+                       crsId: el[1],
+                       college: el[2],
+                       collegeAbbr: that.collegeDict.hasOwnProperty(el[2]) ? that.collegeDict[el[2]] : "",
+                       displayStrings:
+                               el.splice(4, el.length - 1).map(function (el) {
+                                   var iconCode;
+                                   var tooltip;
+
+                                   if (el == "Unit failed") {
+                                       iconCode = "F";
+                                       tooltip = "Failed automated tests.";
+                                   } else if (el == "Unit passed") {
+                                       iconCode = "U";
+                                       tooltip = "Passed automated tests.";
+                                   } else if (el == "Initilialised") {
+                                       iconCode = "I";
+                                       tooltip = "Not submitted.";
+                                   } else if (el.lastIndexOf("PASSED by") > -1) {
+                                       iconCode = "P";
+                                       el = el.toLowerCase();
+                                       tooltip = el.charAt(0).toUpperCase() + el.slice(1);
+                                   } else if (el == "") {
+                                       iconCode = "-";
+                                       tooltip = "Not started.";
+                                   } else {
+                                       iconCode = el;
+                                   }
+
+                                   return {iconCode: iconCode, tooltip: tooltip};
+                               })
+                   }
+                });
+
+                console.log("just processed", users);
+
+                //build list of column titles
+                var colTitles = users[0].displayStrings.map(function(el) {
+                    return el.iconCode;
+                });
+
+                for (var i = 0; i < colTitles.length; i++) {
+                    colTitles[i] = {text: colTitles[i], index: i};
+                }
+
+                //remove the first two rows (column headings and a blank line)
+                users = users.slice(2, users.length - 1 );
+
+//                users = users.concat(users);
+//                users = users.concat(users);
+
+                /* users = users.map(function(el) {
+                   if (el.college == "Girton") {
+                       el.college = "Gonville and Cauis"
+                   }
+                    return el;
+                });*/
+
+
+                //use the list of column titles to convert each user's tickComments into a dictionary
+//                console.log(users);
+//                console.log(colTitles);
+
+                this.users = users;
+                this.displayUsers = users;
+                this.tickNames = colTitles;
+
+//                console.log("tick names", this.tickNames);
+
+                this.sortLastNameAscending();
+
+                this.updateScrollAreas();
+            },
+
+            sort: function(a, b, sender) {
+                //Mark all tick headings as unselected
+                this.$.overviewTicksBar.selectedIndex = -1;
+
+                if (this.sortField == sender.innerHTML) {
+                    this.sortDir *= -1;
+                } else {
+                    this.sortField = sender.innerHTML;
+                    this.sortDir = 1;
+                }
+
+                switch (this.sortField) {
+                    case "Name":
+                        this.sortLastName(this.sortDir);
+                        break;
+                    case "Forename(s)":
+                        this.sortForeNames(this.sortDir);
+                        break;
+                    case "College":
+                        this.sortCollege(this.sortDir);
+                        break;
+                }
+            },
+
+
+
+            sortTick: function(e, params) {
+                this.sortField = "";
+
+                var comparisonDict = {};
+                comparisonDict["-"] = 0;
+                comparisonDict["I"] = 1;
+                comparisonDict["F"] = 2;
+                comparisonDict["U"] = 3;
+                comparisonDict["P"] = 4;
+
+                this.users.sort(function(a, b) {
+                    return params.mode * (comparisonDict[a.displayStrings[params.selectedIndex].iconCode] -
+                            comparisonDict[b.displayStrings[params.selectedIndex].iconCode]);
+                });
+
+                //ugly fix which enables searching and sorting at the same time
+//                var q = this.$.overviewSearchBox.query;
+//                this.$.overviewSearchBox.query = "";
+//                var that = this.$;
+//                this.job('sort', function() {
+//                    that.overviewSearchBox.query = q;
+//                });
+            },
+
+            sortLastNameAscending: function() {
+                this.sortField = "Name";
+                this.sortDir = "1";
+                this.sortLastName(1);
+            },
+
+            queryChanged: function() {
+                this.queryOrUsersChanged();
+            },
+
+            usersChanged: function() {
+                this.queryOrUsersChanged();
+            },
+
+            queryOrUsersChanged: function() {
+                var temp = this.overviewListFilter(this.users, this.query);
+
+                this.displayUsers = [];
+                for (var i = 0; i < temp.length; i++) {
+                    this.displayUsers[i] = {
+                        foreNames: temp[i].foreNames,
+                        lastName: temp[i].lastName,
+                        college: temp[i].college,
+                        displayStrings: temp[i].displayStrings,
+                        cssClass: i % 2 == 0 ? "overview-even" : "overview-odd"
+                    }
+                }
+
+                console.log(this.displayUsers);
+            },
+
+            /**
+             * This should only be called by sortLastNameAscending and sortLastNameDescending, to ensure correct usage
+             * of the mode parameter
+             */
+            sortLastName: function(mode) {
+                this.users.sort(function(a, b) {
+                    if (a.lastName < b.lastName) {
+                        return -1 * mode;
+                    } else if (a.lastName > b.lastName) {
+                        return mode;
+                    } else {
+                        if (a.foreNames < b.foreNames) {
+                            return -1 * mode;
+                        } else if (a.foreNames > b.foreNames) {
+                            return mode;
+                        } else {
+                            if (a.college < b.college) {
+                                return -1 * mode;
+                            } else if (a.college > b.college) {
+                                return mode;
+                            } else {
+                                return 0;
+                            }
+                        }
+                    }
+                });
+            },
+
+            sortForeNames: function(mode) {
+                this.users.sort(function(a, b) {
+                    if (a.foreNames < b.foreNames) {
+                        return -1 * mode;
+                    } else if (a.foreNames > b.foreNames) {
+                        return mode;
+                    } else {
+                        if (a.lastName < b.lastName) {
+                            return -1 * mode;
+                        } else if (a.lastName > b.lastName) {
+                            return mode;
+                        } else {
+                            if (a.college < b.college) {
+                                return -1 * mode;
+                            } else if (a.college > b.college) {
+                                return mode;
+                            } else {
+                                return 0;
+                            }
+                        }
+                    }
+                });
+            },
+
+            sortCollege: function(mode) {
+                this.users.sort(function(a, b) {
+                    if (a.college < b.college) {
+                        return -1 * mode;
+                    } else if (a.college > b.college) {
+                        return mode;
+                    } else {
+                        if (a.lastName < b.lastName) {
+                            return -1 * mode;
+                        } else if (a.lastName > b.lastName) {
+                            return mode;
+                        } else {
+                            if (a.foreNames < b.foreNames) {
+                                return -1 * mode;
+                            } else if (a.foreNames > b.foreNames) {
+                                return mode;
+                            } else {
+                                return 0;
+                            }
+                        }
+                    }
+                });
+            },
+
+            buildCollegeDictionary: function() {
+                var college = {};
+
+                college["Christ's"]           = "CHRISTS";
+                college["Churchill"]          = "CHURCH";
+                college["Clare"]              = "CLARE";
+                college["Corpus Christi"]     = "CORPUS";
+                //Darwin
+                college["Downing"]            = "DOWN";
+                college["Emmanuel"]           = "EMM";
+                college["Fitzwilliam"]        = "FITZ";
+                college["Girton"]             = "GIRTON";
+                college["Gonville and Caius"] = "CAIUS";
+                college["Homerton"]           = "HOM";
+                college["Jesus"]              = "JESUS";
+                college["King's"]             = "KINGS";
+                college["Lucy Cavendish"]     = "";
+                college["Magdalene"]          = "MAGD";
+                college["Murray Edwards"]     = "";
+                college["Newnham"]            = "NEWH";
+                college["Pembroke"]           = "PEMB";
+                college["Peterhouse"]         = "PET";
+                college["Queens'"]            = "QUEENS";
+                college["Robinson"]           = "ROBIN";
+                college["Selwyn"]             = "SEL";
+                college["Sidney Sussex"]      = "SID";
+                college["St Catharine's"]     = "CATH";
+                college["St Edmund's"]        = "EDMUND";
+                college["St John's"]          = "JOHNS";
+                college["Trinity"]            = "";
+                //Westminster
+                //Wolfson
+
+                this.collegeDict = college;
+            },
+
+            overviewListFilter: function(items, q) {
+                if (items && q) {
+                    return items.filter(this.overviewFilter.bind(this));
+                }
+                return items;
+            },
+
+            overviewFilter: function(item) {
+                if (item == undefined || item == null || item == "") {
+                    return false;
+                }
+
+                var qs = this.$.overviewSearchBox.query.toLowerCase().split(" ");
+                return qs.filter(function(q) {
+                    if (q == "") {
+                        return false;
+                    }
+
+                    return (item.lastName[0].toLowerCase().indexOf(q) > -1 ||
+                            item.foreNames.toLowerCase().indexOf(q) > -1 ||
+                            item.college.toLowerCase().indexOf(q) > -1);
+                }).length > 0;
+            },
+
+            scrolled: function() {
+                this.$.headings.scrollLeft = this.$.scrollArea.scrollLeft;
+                this.$.userHeadings.scrollTop = this.$.scrollArea.scrollTop;
+
+                if (this.$.scrollArea.scrollTop > 0) {
+                    this.$.hShadow.classList.add('horizontalDropShadow');
+                } else {
+                    this.$.hShadow.classList.remove('horizontalDropShadow');
+                }
+
+                if (this.$.scrollArea.scrollLeft > 0) {
+                    this.$.vShadow.classList.add('verticalDropShadow');
+                    this.$.vShadowHeader.classList.add('verticalDropShadow');
+                } else {
+                    this.$.vShadow.classList.remove('verticalDropShadow');
+                    this.$.vShadowHeader.classList.remove('verticalDropShadow');
+                }
+
+                this.$.userHeadings.width = this.$.scrollArea.clientWidth;
+//                console.log(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
+
+//                this.updateScrollAreas();
+
+
+            },
+
+            updateScrollAreas: function() {
+                this.scrollAreaWidth = parseInt(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
+
+                this.job('update-again', function() {
+                    this.updateScrollAreas();
+                }, 300);
+            },
+
+            logError: function() {
+                console.log("there was an error!");
+            }
+        });
+    </script>
+</polymer-element>
