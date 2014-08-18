@@ -18,17 +18,19 @@
 			<template repeat="{{person in people | filter(query) }}">
 					<person-box
 						class="itemBox"
-						name="{{person.displayName}}"
-						crsid="{{person._id}}"
-						college="{{person.college == 'Unknown' ? '' : person.college}}"
-						isStudent="{{person.isStudent}}">
+						name="{{person.user.displayName}}"
+						crsid="{{person.user._id}}"
+						college="{{person.user.college == 'Unknown' ? '' : person.user.college}}"
+						isStudent="{{person.user.isStudent}}"
+						photo="{{person.user.photo === 'undefined' ? null : person.user.photo}}"
+						roles="{{person.roles}}">
 					</person-box>	
 			</template>	
 		</box-list>
 	</template>
 	<script>
 		Polymer('person-list', {
-
+			
 			listFilter: function(item) {
 				var q = this.query.toLowerCase();
 				return (item.displayName.toLowerCase().indexOf(q) > -1 ||

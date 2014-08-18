@@ -1,5 +1,6 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +18,7 @@ import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupingBean;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.UserRoleBean;
 import uk.ac.cam.cl.ticking.ui.auth.LdapManager;
 import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
@@ -112,7 +114,13 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		/* Return the sorted list of users for the group */
 		List<User> users = db.getUsers(groupId);
 		Collections.sort(users);
-		return Response.status(Status.CREATED).entity(users).build();
+		
+		List<UserRoleBean> userBeans = new ArrayList<>();
+		for (User user : users) {
+			userBeans.add(new UserRoleBean(user,db.getRoles(groupId, user.getCrsid())));
+		}
+		
+		return Response.status(Status.CREATED).entity(userBeans).build();
 	}
 
 	/**

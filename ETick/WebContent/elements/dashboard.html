@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="user-card.html">
+<link rel="import" href="ssh-card.html">
 <link rel="import" href="main-card.html">
 <link rel="import" href="upcoming-slots.html">
 
@@ -28,6 +29,12 @@
 			on-core-response="{{upcomingResponse}}">
 		</core-ajax>
 
+		<template if="{{data&&!data.ssh}}">
+			<main-card animated>
+				<ssh-card id="userCard"></ssh-card>
+			</main-card>
+		</template>
+		
 		<main-card animated>
 			<user-card id="userCard" ldap="{{data}}"></user-card>
 		</main-card>

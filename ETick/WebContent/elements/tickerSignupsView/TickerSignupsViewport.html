@@ -6,7 +6,7 @@
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
 <link rel="import" href="../are-you-sure.html">
 
-<polymer-element name="ticker-signups-viewport" attributes="kick sessionId studentMode description location crsId tickId repoName ticker slotId">
+<polymer-element name="ticker-signups-viewport" attributes="sessionId studentMode description location crsId tickId repoName ticker slotId">
   <template>
     <style>
     :host {
@@ -33,8 +33,7 @@
 		waitBeforeToast="500"
         handleAs="json"
 		contentType="application/json"
-        on-core-response="{{tickersDataLoaded}}"
-        on-core-error="{{alertError}}">
+        on-core-response="{{tickersDataLoaded}}">
 	</toast-ajax>
 
 	<!-- Get slots for this session and ticker -->
@@ -51,23 +50,20 @@
 	</toast-ajax>
 	
 	<!-- Kick someone out of a slot -->
-    <toast-ajax
+    <core-ajax
 		id="ajaxKick"
         url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/students/{{crsId}}/ticks/{{tickId}}"
 		method = "DELETE"
-		waitMessage="kicking {{crsId}}..."
-		responseMessage="kicked {{crsId}}"
-		captureError
-		waitBeforeToast="10"
 		contentType="application/json"
-	</toast-ajax>
+		handleAs="text"
+		on-core-response="{{kickDone}}" >
+	</core-ajax>
 	
 	<div layout vertical>
 		<div id="card-header" align="left">
 			<core-item icon="home" label="Location : {{locationDisplayed}}"></core-item>
 			<core-item icon="today" label="Date : {{date}}"></core-item>
 			<core-item icon="info" label="Description : {{descriptionDisplayed}}"></core-item>
-			<!-- would it be possible for class to contain date of session too? -->
 		</div>
 		<div id="ticker-select-panel" align="center">
 			<paper-radio-group selected="{{selected}}" on-change="{{tickerChange}}" layout horizontal flex>
@@ -98,7 +94,7 @@
 							</div>
 							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
 								<span>Remove {{slot.student}} from Slot</span>
-								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="right" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
+								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="left" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
 							</div>
 						</span>
 						<div>
@@ -207,7 +203,6 @@
 				this.fire("show-report");
 			},
 			kick : function(event) {
-				this.kick = false;
 				this.slotId = event.target.id;
 				var slotId = event.target.id;
 				for(i=0;i<this.slots.length;i++) {
@@ -217,15 +212,13 @@
 						break;
 					}
 				}
-				console.log("open are you sure dialog" + this.crsId);
-				this.fire("toggle-are-you-sure");
+				this.fire("open-are-you-sure");
 			},
-			kickChanged : function() {
-				if (this.kick) {
-					console.log("kick");
-					this.$.ajaxKick.go();
-					this.$.ajaxLoadSlots.go();
-				} 
+			kickForSure : function() {
+				this.$.ajaxKick.go();
+			},
+			kickDone : function() {
+				this.$.ajaxLoadSlots.go();
 			}
 		})
   </script>

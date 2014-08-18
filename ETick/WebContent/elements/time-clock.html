@@ -50,7 +50,11 @@
 				this.m1 = Math.floor(mins / 10);
 				this.m2 = mins % 10;
 
-			}
+			},
+
+            datetimeChanged: function() {
+                this.domReady();
+            }
 		});
 	</script>
 </polymer-element>
