@@ -124,14 +124,12 @@
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
-				console.log(oldValue, newValue);
 				if (!newValue || (oldValue && oldValue.id === "createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
 					this.$.groupsMenu.selected = oldValue ? oldValue.getAttribute('gid') : "-1";
 				}
 				else {
-					console.log('here');
 					this.showDash = false;
 					this.noTickCreator();
 
