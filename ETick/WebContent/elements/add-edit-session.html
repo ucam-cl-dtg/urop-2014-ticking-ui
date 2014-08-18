@@ -162,8 +162,7 @@
 		<div id="buttonsContainer" layout horizontal center end-justified>
 			<paper-button raisedButton id="resetButton" label="CANCEL" on-click="{{cancelClicked}}"></paper-button>
 			<paper-button raisedButton id="submitButton" 
-				label="{{sheet ? 'SAVE' : 'CREATE'}}" 
-				disabled="{{disableSubmit}}"
+				label="{{sheet ? 'SAVE' : 'CREATE'}}"
 				on-click="{{submitClicked}}">
 			</paper-button>
 		</div>
@@ -201,28 +200,22 @@
 						return item.name;
 					}) : [];
 
+
+				this.disableSubmit = false;
+
 				this.validate();
 			},
 
 			validate: function () {
-
-				console.log(this.$.titleInput.inputValue && !this.$.titleInput.invalid &&
-					this.tickers && this.tickers.length >= 1 &&
-					this.$.date.value &&
-					this.$.startTime.value && this.$.endTime.value &&
-					this.$.slotLengthInput.inputValue &&
-					!this.$.slotLengthInput.invalid);
-
 				if (this.$.titleInput.inputValue && !this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.value &&
 					this.$.startTime.value && this.$.endTime.value &&
-					this.$.slotLengthInput.inputValue &&
 					!this.$.slotLengthInput.invalid) {
-					this.disableSubmit = false;
+					this.$.submitButton.disabled = false;
 				}
 				else {
-					this.disableSubmit = true;
+					this.$.submitButton.disabled = true;
 				}
 			},
 
@@ -244,12 +237,15 @@
 			},
 
 			submitClicked: function () {
+
 				this.title = this.$.titleInput.inputValue;
 				this.description = this.$.descInput.inputValue;
 				this.location = this.$.locInput.inputValue;
 				this.subStartTime = Date.parse(this.$.date.value + "T" + this.$.startTime.value);
 				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
+
+				console.log((new Date(this.subStartTime)).toLocaleString(), (new Date(this.subEndTime)).toLocaleString());
 
 				if (this.sheet)  {
 					var call = this.$.editSessionAPI;
