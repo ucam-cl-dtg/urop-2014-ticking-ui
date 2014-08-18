@@ -1,62 +1,91 @@
 <!-- Element representing ssh information card. -->
 
-<link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/core-icons/core-icons.html">
-<link rel="import" href="../bower_components/core-transition/core-transition.html">
-<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/polymer/polymer.html"/>
 
 <polymer-element name="ssh-card" noscript>
 
-	<template>
-		<style>
-			:host {
-				display: block;
-				position: relative;
-				background: linear-gradient(to bottom left, rgba(253, 224, 220, 1.0) , rgba(249, 189, 187, 1.0));	    
-			    padding: 50px;
-			    height: 100%;
-			    font-size: 1.0rem;
-			}
-			.card-header {
-				margin-bottom: 10px;
-		    }
-		    .card-header h2 {
-		    	margin: 0;
-		    	font-size: 2.1rem;
-		    	font-weight: 300;
-		    }
-		    .card-header h3 {
-		    	margin: 0;
-		    	font-size: 1.8rem;
-		    	font-weight: 100;
-		    }
-		    .card-header img {
-		    	width: 80px;
-		    	border-radius: 50%;
-		    	margin: 10px;
-		    }	
+<template>
+<style>
+:host {
+  display: block;
+  position: relative;
+  background: linear-gradient(to bottom left, rgba(253, 224, 220, 1.0) , rgba(249, 189, 187, 1.0));       
+  padding: 50px;
+  height: 100%;
+  font-size: 1.0rem;
+}
+            .card-header {
+              margin-bottom: 10px;
+            }
+            .card-header h2 {
+              margin: 0;
+              font-size: 2.1rem;
+              font-weight: 300;
+            }
+            .card-header h3 {
+              margin: 0;
+              font-size: 1.8rem;
+              font-weight: 100;
+            }
+            .card-header img {
+              width: 80px;
+              border-radius: 50%;
+              margin: 10px;
+            }   
 
-		    tr > td {
-		    	vertical-align: top;
-		    	padding-bottom: 5px;
-		    }
+            tr > td {
+              vertical-align: top;
+              padding-bottom: 5px;
+            }
 
-		    #sshSubmit {
-		    	color: #259b24;
-		    }
+            #sshSubmit {
+              color: #259b24;
+            }
 
-		</style>
-		
-		<div class="card-header" layout horizontal center start-justified>
-				<h3>Warning</h3>
-		</div>
-		<div>
-			<p>We've detected that you haven't yet added your public ssh key.<br>
-			Without this you won't be able to use any of the gitolite services.</p>
-			
-			<p>Use 'ssh-add -L' to find your public keys with bash and copy your preferred choice into the field on the dashboard.</p>
-		</div>
-	</template>
-	
+            code.command {
+              font-weight: 600;
+            }
+
+            code.path {
+              font-weight: 300;
+            }
+
+            span.placeholder {
+              color: #757575;
+            }
+
+</style>
+
+<div class="card-header" layout horizontal center start-justified>
+  <h3>Warning</h3>
+</div>
+<div>
+  <p>
+  We've detected that you haven't yet added your public ssh key.<br>
+  Without this you won't be able to use any of the gitolite services.
+  </p>
+
+  <h4>Generating keys</h4>
+  <span>
+  To generate keys, run the <code class="command">ssh-keygen</code>
+  command. This will by default generate the private key as 
+  <code class="path">.ssh/id_rsa</code> and the public
+  key as <code class="path">.ssh/id_rsa.pub</code> in your home directory.
+  </span>
+  <h4>Accessing your key</h4>
+  <span>
+  To copy the public key (never give out the private key), just copy the
+  first line of <code class="path">.ssh/id_rsa.pub</code> into the
+  <span class="placeholder">Public SSH key...</span> field below, then
+  click the tick icon to submit.
+  </span>
+  <span>
+  Alternatively, if you have <code class="command">ssh-agent</code>
+  running (you do on the university machines), you can just copy one
+  (full, now wrapped) line from the output of the
+  <code class="command">ssh-add -L</code> command.
+  </span>
+</div>
+</template>
+
 </polymer-element>

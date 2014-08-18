@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="person-list.html">
+<link rel="import" href="export-members.html">
 <link rel="import" href="dialog.html">
 <link rel="import" href="search-box.html">
 
@@ -50,6 +51,7 @@
 				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
 				<paper-icon-button icon="add" on-click="{{addMemberClicked}}"></paper-icon-button>
 			</template>
+			<export-members gid="{{gid}}"></export-members>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
