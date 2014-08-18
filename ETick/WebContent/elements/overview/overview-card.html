@@ -47,7 +47,7 @@
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
                 <!-- fixed bit -->
 
-                <div layout vertical>
+                <div layout vertical style="min-width: 435px;">
                     <div flex></div>
 
                     <div id="headerBar" layout horizontal center style="height: 46px;">
@@ -173,8 +173,8 @@
                 //remove the first two rows (column headings and a blank line)
                 users = users.slice(2, users.length - 1 );
 
-//                users = users.concat(users);
-//                users = users.concat(users);
+                users = users.concat(users);
+                users = users.concat(users);
 
                 /* users = users.map(function(el) {
                    if (el.college == "Girton") {
