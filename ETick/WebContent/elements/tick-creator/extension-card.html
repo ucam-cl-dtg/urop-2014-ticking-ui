@@ -18,7 +18,8 @@
 		<toast-ajax id="extensionAPI"
 			method="PUT"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension' }}"
-			on-core-response="{{extensionResponse}}"
+			on-core-response="{{addExtensionResponse}}"
+			handleAs="json"
 			contentType="application/json"
 			waitMessage="Adding extensions..."
             waitBeforeToast="1000"
@@ -114,10 +115,10 @@
 			},
 
 			addExtensionResponse: function() {
-				var list = this.$.addMemberAjax.response;
+				var list = this.$.extensionAPI.response;
+				console.log(list);
 				this.number = list.length;
 				this.$.members.people = list;
-				this.$.listAjax.go();
 			},
 
 		});
