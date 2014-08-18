@@ -42,14 +42,14 @@
 				label="Group name..."
 				error="Required."
 				on-input="{{handleNameInput}}"
-				value="{{name}}">
+				value="{{newName}}">
 			</paper-input>
 			<h2 class="subtitle">Group Info:</h2>
 			<paper-input id="editGroupInfo"
 				multiline
 				maxRows="5"
 				label=""
-				value="{{info}}"
+				value="{{newInfo}}"
 				error="Invalid group name.">
 			</paper-input>
 			
@@ -61,6 +61,10 @@
 	</template>
 	<script>
 	Polymer('edit-group', {
+		newInfo: this.info;
+	
+		newName: this.name;
+		
 		handleNameInput: function () {
 			if (this.$.editGroupName.inputValue === "") {
 				this.showSubmit = false;

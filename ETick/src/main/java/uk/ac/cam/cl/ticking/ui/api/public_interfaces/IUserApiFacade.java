@@ -35,7 +35,7 @@ public interface IUserApiFacade {
 	 * @return the user
 	 */
 	@GET
-	@Path("/{crsid}")
+	@Path("/crsid/{crsid}")
 	@Produces("application/json")
 	public abstract Response getUserFromCrsid(
 			@Context HttpServletRequest request,
