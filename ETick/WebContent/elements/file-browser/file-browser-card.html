@@ -68,9 +68,7 @@
           <div class="ticker-comments">
             Ticker comments:
             <!-- Indentation due to marked element considering spaces -->
-            <marked-element
-                class="ticker-comments">
-  {{comments}}
+            <marked-element text="{{comments}}">
             </marked-element>
           </div>
         </template>
@@ -148,7 +146,7 @@
               crsid = this.crsid;
             }
 
-            return window.location.href + "standalone_tick_view.html" +
+            return standalone_tick_view +
               "?repoName=" + encodeURIComponent(this.repoName) +
               "&crsid=" + encodeURIComponent(crsid) +
               "&tickId=" + encodeURIComponent(this.tickId) +
@@ -165,7 +163,9 @@
                 "You have failed the automatic tests." +
                 " See below for more detailed information."
             }
-            else if (this.tickerResult == "FAIL")
+            else if (this.tickerResult == "FAIL"
+                   &&typeof this.lastTickedBy != typeof undefined
+                   &&typeof this.lastTickedOn != typeof undefined)
             {
               this.$.resultString.innerHTML =
                 "You have been failed by ticker " +
@@ -183,6 +183,11 @@
                   "</a>" +
                 " at " + new Date(this.lastTickedOn).toLocaleString() +
                 ".";
+            }
+            else if (this.tickerResult == "FAIL")
+            {
+              this.$.resultString.innerHTML =
+                "You have been failed by a ticker";
             }
             else
             {
