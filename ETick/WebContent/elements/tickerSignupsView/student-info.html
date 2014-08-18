@@ -1,0 +1,63 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="student-info" attributes="crsId opened">
+    <template>
+        <style>
+            :host {
+                width: 100%;
+                font-size: 1.2rem;
+                font-weight: 300;
+            }
+        </style>
+		
+		<!-- Get further student info -->
+		<toast-ajax
+			id="ajaxLoadStudent"
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/crsid/{{crsId}}"
+			waitMessage="loading student data..."
+			responseMessage="student data loaded"
+			captureError
+			waitBeforeToast="500"
+			handleAs="json"
+			contentType="application/json"
+			on-core-response="{{studentLoaded}}">
+		</toast-ajax>
+		
+		<div layout horizontal center>
+			<div flex>
+				<template if="{{photo}}">
+					<img class="profilePhoto" src="data:image/jpeg;base64,{{photo}}"/>
+				</template>
+				<template if="{{!photo}}">
+					<core-icon class="big" icon="{{isStudent ? 'social:school' : 'social:person'}}"></core-icon>
+				</template>
+			</div>
+			
+			<div flex align="center">
+				<span> name : {{name}} </span>
+			</div>
+			
+			<div flex align="center">
+				<span> college : {{college}} </span>
+			</div>
+			
+		</div>
+    </template>
+    <script>
+        Polymer( 'ticker-signups-card', {
+            openedChanged : function() {
+				if(this.opened) {
+					this.$.ajaxLoadStudent.go();
+				}
+			},
+			studentLoaded: function() {
+				var loadedData = this.$.ajaxLoadStudent.response.slice(0);
+				this.name = loadedData.displayName;
+				this.college = loadedData.college;
+				this.photo = loadedData.photo;
+			}
+        })
+    </script>
+</polymer-element>

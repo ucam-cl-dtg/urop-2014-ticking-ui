@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
 <link rel="import" href="../are-you-sure.html">
+<link rel="import" href="student-info.html">
 
 <polymer-element name="ticker-signups-viewport" attributes="sessionId studentMode description location crsId tickId repoName ticker slotId">
   <template>
@@ -100,8 +101,7 @@
 						<div>
 							<core-collapse opened?="{{slot.collapse}}">
 								<div style="background-color:#AFEEEE">
-									<!-- todo: fill with info ticker might want -->
-									<span> put student data/photo here for student with crsid {{slot.student}} </span>
+									<student-info crsId="{{slot.student}}" opened="{{slot.collapse}}"></student-info>
 								</div>
 							</core-collapse>
 						</div>
