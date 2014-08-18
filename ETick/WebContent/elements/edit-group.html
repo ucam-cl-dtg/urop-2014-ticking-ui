@@ -39,7 +39,8 @@
 				floatingLabel
 				label="Group name..."
 				error="Required."
-				on-input="{{handleNameInput}}">
+				on-input="{{handleNameInput}}"
+				value="{{name}}">
 			</paper-input>
 			<h2 class="subtitle">Group Info:</h2>
 			<paper-input id="editGroupInfo"
@@ -59,7 +60,7 @@
 	<script>
 	Polymer('edit-group', {
 		handleNameInput: function () {
-			if (this.$.newGroupName.inputValue === "") {
+			if (this.$.editGroupName.inputValue === "") {
 				this.showSubmit = false;
 			}
 			else {
@@ -79,7 +80,7 @@
 		editButtonClicked: function () {
 			this.resetAPI();
 
-			var name = this.$.newGroupName.inputValue;
+			var name = this.$.editGroupName.inputValue;
 			var info = encodeURI(this.$.editGroupInfo.inputValue);
 			var api = this.$.editAPI;
 
