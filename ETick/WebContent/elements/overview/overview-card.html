@@ -13,12 +13,12 @@
         <link rel="stylesheet" href="overview.css">
 
         <style>
-            #template:nth-child(odd){
-                background: #f6f6f6;
-            }
-            #template:nth-child(even) {
-                background: #e9e9e9;
-            }
+            /*#template:nth-child(odd){*/
+                /*background: #f6f6f6;*/
+            /*}*/
+            /*#template:nth-child(even) {*/
+                /*background: #e9e9e9;*/
+            /*}*/
         </style>
 
         <!--<core-ajax-->
@@ -93,7 +93,7 @@
                 <div id="scrollArea" style="overflow-x: auto; margin-left: -6px;" on-scroll="{{scrolled}}" flex>
                    <template repeat="{{user in displayUsers}}">
                         <div id="template">
-                            <overview-list user="{{user}}"></overview-list>
+                            <overview-list user="{{user}}" scrollAreaWidth="{{scrollAreaWidth}}"></overview-list>
                         </div>
                     </template>
                 </div>
@@ -256,7 +256,20 @@
             },
 
             usersChanged: function() {
-                this.displayUsers = this.overviewListFilter(this.users, this.query);
+                var temp = this.overviewListFilter(this.users, this.query);
+
+                this.displayUsers = [];
+                for (var i = 0; i < temp.length; i++) {
+                    this.displayUsers[i] = {
+                        foreNames: temp[i].foreNames,
+                        lastName: temp[i].lastName,
+                        college: temp[i].college,
+                        displayStrings: temp[i].displayStrings,
+                        cssClass: i % 2 == 0 ? "overview-even" : "overview-odd"
+                    }
+                }
+
+                console.log(this.displayUsers);
             },
 
             /**
@@ -414,6 +427,11 @@
                 }
 
                 this.$.userHeadings.width = this.$.scrollArea.clientWidth;
+
+//                console.log(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
+
+                this.scrollAreaWidth = parseInt(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
+                console.log("saw", this.scrollAreaWidth);
             }
         });
     </script>

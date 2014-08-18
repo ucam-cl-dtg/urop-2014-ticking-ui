@@ -1,10 +1,19 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
 
-<polymer-element name="overview-list" attributes="user">
+<polymer-element name="overview-list" attributes="user scrollAreaWidth">
     <template>
         <link rel="stylesheet" href="overview.css">
-        <div layout horizontal on-mouseover="{{pointerOver}}">
+        <style>
+            .overview-odd{
+                background: #f6f6f6;
+            }
+            .overview-even {
+                background: #e9e9e9;
+            }
+        </style>
+
+        <div id="listContainer" layout horizontal on-mouseover="{{pointerOver}}" class="{{user.cssClass}}" style="{{listContainerStyle}}" >
             <template repeat="{{displayString in user.displayStrings}}">
                 <!-- Generating a tooltip seems to be a bit time-consuming, especially when an overview page is likely
                      to have several hundred. To improve load performance, tooltips are generated lazily -->
@@ -29,6 +38,29 @@
         Polymer('overview-list', {
             created: function() {
                 this.enableTooltip = false;
+            },
+
+            userChanged: function() {
+                this.updateListWidth();
+            },
+
+            scrollAreaWidthChanged: function() {
+                this.updateListWidth();
+            },
+
+            updateListWidth: function() {
+                this.listContainerStyle = "width: " + this.max(50 * (this.user.displayStrings.length + 1), this.scrollAreaWidth) + "px;";
+                console.log(this.listContainerStyle);
+            },
+
+            max: function(a, b) {
+                if (a == null || a == undefined) {
+                    return b;
+                } else if (b == null || b == undefined) {
+                    return a;
+                } else {
+                    return a > b ? a : b;
+                }
             },
 
             pointerOver: function() {
