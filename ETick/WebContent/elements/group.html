@@ -52,7 +52,7 @@
                         <p class="creator">
                         	Created by: {{creator}}
                         	<template if="{{editedOn}}">
-                        		Edited by: {{editedBy}} on {{editedOn}}
+                        	     Edited by: {{editedBy}} on {{formattedEditedOn}}
                         	</template>
                         </p>
 						<span layout horizontal end end-justified flex>
@@ -157,6 +157,8 @@
 		Polymer('x-group', {  
 
 			domReady: function () {
+				this.formattedEditedOn = this.formatDate(editedOn);
+				
 				this.$.roleAjax.go();
 				this.$.sheetListAPI.go();
 
@@ -174,6 +176,11 @@
                     that.members.hidden = this.tabIndex != 3;
                 });
 			},
+			
+			formatDate: function (datum) {
+				var date = new Date(datum);
+			    return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
+			}
 
 			roleResponse: function() {
 				this.roles = this.$.roleAjax.response;
