@@ -4,6 +4,7 @@
 <link rel="import" href="box-list.html">
 <link rel="import" href="add-session.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 
 <polymer-element name="tick-session-list" attributes="gid sheets isAuthor">
 	<template>
@@ -30,7 +31,9 @@
 		<div id="headerBar" layout horizontal center end-justified>
 			<!-- <h1 flex>Ticking Sessions ({{sheets ? sheets.length : 0}})</h1> -->
 			<template if="{{isAuthor}}">
-				<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
+				<core-tooltip label="Add">
+					<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
+				</core-tooltip>
 				<paper-icon-button id="editSessionButton" icon="create" on-click="{{editClicked}}"></paper-icon-button>
 				<paper-icon-button id="deleteSessionButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
  			</template>
