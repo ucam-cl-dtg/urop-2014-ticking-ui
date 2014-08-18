@@ -17,6 +17,7 @@
 <link rel="import" href="add-edit-session.html">
 
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
 
 <polymer-element name="x-group" attributes="gid name info creator editedBy editedOn">
@@ -142,6 +143,7 @@
 				on-sheet-edited="{{sheetCreated}}"></add-edit-session>
 			</main-card>
 		</template>
+		<paper-toast id="addEditResponseToast" duration="8000"></paper-toast>
 
 
         <!-- Marker card for ticking sessions. -->
@@ -211,9 +213,13 @@
                 console.log(detail);
 			},
 
-			sheetCreated: function () {				
+			sheetCreated: function (e, detail) {
 				this.$.sheetListAPI.go();
 				this.sheetCancelled();
+				if (detail && detail.message) {
+					this.$.addEditResponseToast.text = detail.message;
+					this.$.addEditResponseToast.show();
+				}
 			},
 
 			addSheetHandler: function () {

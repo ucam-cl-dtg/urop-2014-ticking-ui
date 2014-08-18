@@ -44,7 +44,6 @@
 		</box-list>
 
 		<!-- Response toasts. -->
-		<paper-toast id="deleteSessionSuccess" duration="8000"></paper-toast>
 		<paper-toast id="deleteSessionError" duration="8000"></paper-toast>
 	</template>
 	<script>
@@ -91,10 +90,9 @@
 			},
 
 			deleteSessionResponse: function () {
-				var toast = this.$.deleteSessionSuccess;
-				toast.text = 'Successfully deleted session "' + this.selectedSheet.title + '".';
-				toast.show();
-				this.fire('sheet-deleted');
+				this.fire('sheet-deleted', {
+					message: 'Successfully deleted session "' + this.selectedSheet.title + '".'
+				});
 			},
 
 			deleteSessionError: function(e, detail) {
