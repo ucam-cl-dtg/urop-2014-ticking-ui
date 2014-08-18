@@ -63,13 +63,7 @@
 			<template if="{{!photo}}">
 				<core-icon class="big" icon="{{isStudent ? 'social:school' : 'social:person'}}"></core-icon>
 			</template>
-
-			<div id="rolesContainer" layout vertical>
-				<template repeat="{{role in roles}}">
-					{{role}}
-				</template>
-			</div>
-
+			
 			<div flex></div>
 			<div id="container" layout vertical>
 				<h1>{{name}}</h1>
