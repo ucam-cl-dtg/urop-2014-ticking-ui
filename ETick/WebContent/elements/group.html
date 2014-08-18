@@ -52,7 +52,7 @@
                         <p class="creator">
                         	Created by: {{creator}}
                         	<template if="{{editedOn}}">
-                        	     Edited by: {{editedBy}} on {{formattedEditedOn}}
+                        		, Edited by: {{editedBy}} on {{formattedEditedOn}}
                         	</template>
                         </p>
 						<span layout horizontal end end-justified flex>
@@ -157,7 +157,7 @@
 		Polymer('x-group', {  
 
 			domReady: function () {
-				this.formattedEditedOn = this.formatDate(editedOn);
+				this.formattedEditedOn = this.formatDate(this.editedOn);
 				
 				this.$.roleAjax.go();
 				this.$.sheetListAPI.go();
