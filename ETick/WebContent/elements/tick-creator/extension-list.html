@@ -31,9 +31,9 @@
 			
 			listFilter: function(item) {
 				var q = this.query.toLowerCase();
-				return (item.displayName.toLowerCase().indexOf(q) > -1 ||
-						item._id.toLowerCase().indexOf(q) > -1 ||
-						item.college.toLowerCase().indexOf(q) > -1);
+				return (item.user.displayName.toLowerCase().indexOf(q) > -1 ||
+						item.user._id.toLowerCase().indexOf(q) > -1 ||
+						item.user.college.toLowerCase().indexOf(q) > -1);
 			},
 
 			filter: function(items, q) {
