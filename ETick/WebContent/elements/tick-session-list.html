@@ -34,8 +34,12 @@
 				<core-tooltip label="Add">
 					<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
 				</core-tooltip>
-				<paper-icon-button id="editSessionButton" icon="create" on-click="{{editClicked}}"></paper-icon-button>
-				<paper-icon-button id="deleteSessionButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
+				<core-tooltip label="Edit">
+					<paper-icon-button id="editSessionButton" icon="create" on-click="{{editClicked}}"></paper-icon-button>
+				</core-tooltip>
+				<core-tooltip label="Delete">
+					<paper-icon-button id="deleteSessionButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
+				</core-tooltip>
  			</template>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
