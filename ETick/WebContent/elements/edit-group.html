@@ -75,7 +75,6 @@
 		},
 
 		editButtonClicked: function () {
-
 			var name = this.$.editGroupName.inputValue;
 			var info = encodeURI(this.$.editGroupInfo.value);
 			var api = this.$.editAPI;
@@ -85,10 +84,11 @@
 		}, 
 		
 		editResponse: function () {
+			console.log('edit response');
 			var group = this.$.editAPI.response;
 			this.async(function () {
 				this.fire('group-edited', group);
-			}, 500);
+			}, null, 500);
 		}
 
 	});

@@ -120,12 +120,14 @@
 			},
 
 			groupSelectionChanged: function (oldValue, newValue) {
+				console.log(oldValue, newValue);
 				if (!newValue || (oldValue && oldValue.id === "createGroupItem")) return;
 				if (newValue.id === "createGroupItem") {
 					this.$.createGroup.toggleDialog();
 					this.$.groupsMenu.selected = oldValue ? oldValue.getAttribute('gid') : "-1";
 				}
 				else {
+					console.log('here');
 					this.showDash = false;
 					this.noTickCreator();
 
@@ -143,16 +145,17 @@
 			},
 
 			groupCreatedHandler: function (e, detail) {
-				this.$.loginAPIs.$.sidebarAjax.go();
 				this.toSelect = detail._id;
-
+				this.$.loginAPIs.$.sidebarAjax.go();
 				this.showDash = false;
 			},
 
-			groupEditedHandler: function (e, detail) {
+			groupEditedHandler: function(e, detail) {
+				this.noGroup();
 				detail.gid = detail._id;
-				this.$.groupTemp.model = {gid: null};
+				this.toSelect = detail._id;
 				this.$.groupTemp.model = detail;
+				this.$.loginAPIs.$.sidebarAjax.go();
 			},
 
 			groupItemsChanged: function (oldValue, newValue) {
@@ -160,7 +163,7 @@
 
 				// No idea why this works, but it's here for browser compatability with Firefox.
 				setTimeout(function () {
-					this.$.groupsMenu.selected = this.toSelect
+					this.$.groupsMenu.selected = this.toSelect;
 				}.bind(this), 0);
 			},
 
