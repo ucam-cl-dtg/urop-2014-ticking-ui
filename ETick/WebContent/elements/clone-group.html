@@ -1,10 +1,114 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 
-</body>
-</html>
+<polymer-element name="clone-group" attributes="gid name">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+		<style>
+			:host {
+				display: inherit;
+			}
+		</style>
+		<!-- Clone group API. -->
+		<toast-ajax id="cloneAPI"
+			method="POST"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid }}"
+			on-core-response="{{cloneResponse}}"
+			contentType="application/json"
+			
+			waitMessage="Cloning group..."
+            waitBeforeToast="1000"
+            captureError
+            popUpError
+            errorMessage="Error cloning group.">
+		</toast-ajax>
+
+		<!-- Edit button. -->
+		<paper-icon-button id="cloneButton"
+			icon="content-copy"
+			on-click="{{toggleDialog}}">
+		</paper-icon-button>
+
+		<!-- Edit dialog -->
+		<paper-dialog id="cloneGroupDialog" heading="Clone Group:" backdrop	
+				transition="core-transition-top">
+			<paper-input id="cloneGroupName"
+				required
+				floatingLabel
+				label="Group name..."
+				error="Required."
+				on-input="{{handleNameInput}}"
+				value="{{newName}}">
+			</paper-input>
+			<h2 class="subtitle">Group Info:</h2>
+			<paper-input id="cloneGroupInfo"
+				multiline
+				maxRows="5"
+				label=""
+				error="Invalid group name.">
+			</paper-input>
+			
+			<h2 class="subtitle">Copy across:</h2>
+			<div layout horizontal center style="width: 100%;">
+				<paper-checkbox checked id="memberBox"></paper-checkbox>
+				<div flex>Members</div>
+				<paper-checkbox checked id="tickBox"></paper-checkbox>
+				<div flex>Ticks</div>
+			</div>
+			
+			<template if="{{showSubmit}}">
+				<paper-button id="cloneSubmit" class="dialogSubmit" label="CLONE" on-click="{{cloneButtonClicked}}" affirmative></paper-button>
+			</template>
+		</paper-dialog>
+
+	</template>
+	<script>
+	Polymer('clone-group', {
+		domReady: function() {
+			this.newName = this.name+' (Clone)';
+			
+		},
+		
+		handleNameInput: function () {
+			if (this.$.cloneGroupName.inputValue === "") {
+				this.showSubmit = false;
+			}
+			else {
+				this.showSubmit = true;
+			}
+		},
+
+		toggleDialog: function () {
+			this.$.cloneGroupDialog.toggle();
+		},
+
+		resetAPI: function () {
+			var api = this.$.cloneAPI;
+			api.body = "";
+		},
+
+		cloneButtonClicked: function () {
+			this.resetAPI();
+
+			var name = this.$.cloneGroupName.inputValue;
+			var info = encodeURI(this.$.cloneGroupInfo.inputValue);
+			var api = this.$.cloneAPI;
+
+			api.body = '{"name":"' + name + '", "info":"' + info + '"}';
+			
+			api.url += (this.$.memberBox.checked) ? "?members=true" : "?members=false";
+			api.url += (this.$.tickBox.checked) ? "?ticks=true" : "?ticks=false";
+			api.go();
+		}, 
+		
+		cloneResponse: function () {
+			this.name = this.newName;
+		}
+
+	});
+	</script>
+</polymer-element>
