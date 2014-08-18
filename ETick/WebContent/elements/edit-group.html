@@ -86,7 +86,9 @@
 		
 		editResponse: function () {
 			var group = this.$.editAPI.response;
-			console.log(group);
+			this.async(function () {
+				this.fire('group-edited', group);
+			}, 500);
 		}
 
 	});

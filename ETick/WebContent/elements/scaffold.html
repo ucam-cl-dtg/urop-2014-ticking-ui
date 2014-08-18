@@ -71,7 +71,8 @@
 			<x-group gid="{{gid}}" name="{{name}}" info="{{info}}" creator="{{creator}}" editedBy="{{editedBy}}"
 				editedOn="{{editedOn}}"
 				on-group-deleted="{{groupDeletedHandler}}"
-				on-group-cloned="{{groupCreatedHandler}}"></x-group>
+				on-group-cloned="{{groupCreatedHandler}}"
+				on-group-edited="{{groupEditedHandler}}"></x-group>
 		</template>
 		<paper-toast id="groupDeletedToast" duration="3000" text="Successfully deleted group."></paper-toast>
 		
@@ -142,11 +143,16 @@
 			},
 
 			groupCreatedHandler: function (e, detail) {
-				console.log(detail.name);
 				this.$.loginAPIs.$.sidebarAjax.go();
 				this.toSelect = detail._id;
 
 				this.showDash = false;
+			},
+
+			groupEditedHandler: function (e, detail) {
+				detail.gid = detail._id;
+				this.$.groupTemp.model = {gid: null};
+				this.$.groupTemp.model = detail;
 			},
 
 			groupItemsChanged: function (oldValue, newValue) {
