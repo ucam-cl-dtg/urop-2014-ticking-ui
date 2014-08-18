@@ -62,27 +62,27 @@
 <div>
   <p>
   We've detected that you haven't yet added your public ssh key.<br>
-  Without this you won't be able to use any of the gitolite services.
+  Without this you won't be able to use any of the git services.
   </p>
 
   <h4>Generating keys</h4>
   <span>
   To generate keys, run the <code class="command">ssh-keygen</code>
-  command. This will by default generate the private key as 
-  <code class="path">.ssh/id_rsa</code> and the public
+  command. This will, by default, generate and save private key as 
+  <code class="path">.ssh/id_rsa</code> and a public
   key as <code class="path">.ssh/id_rsa.pub</code> in your home directory.
   </span>
   <h4>Accessing your key</h4>
   <span>
-  To copy the public key (never give out the private key), just copy the
+  To register the public key (never give out the private key), just copy the
   first line of <code class="path">.ssh/id_rsa.pub</code> into the
   <span class="placeholder">Public SSH key...</span> field below, then
   click the tick icon to submit.
   </span>
   <span>
   Alternatively, if you have <code class="command">ssh-agent</code>
-  running (you do on the university machines), you can just copy one
-  (full, now wrapped) line from the output of the
+  running (you do on the UCS machines), you can just copy one
+  (possibly wrapped) line from the output of the
   <code class="command">ssh-add -L</code> command.
   </span>
 </div>

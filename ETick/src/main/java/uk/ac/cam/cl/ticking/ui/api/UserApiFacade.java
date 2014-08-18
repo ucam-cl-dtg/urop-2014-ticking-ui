@@ -220,17 +220,19 @@ public class UserApiFacade implements IUserApiFacade {
 
 			if (s.getClassName().equals(
 					KeyException.class.getName())) {
-				if (s.getMessage().contains(crsid)) {
-					log.error("User " + crsid + " tried adding ssh key for " + crsid,
-							s.getCause(), s.getStackTrace());
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(Strings.BADKEY).build();
-				}
+				log.error("User " + crsid + " tried adding ssh key for " + crsid,
+						s.getCause(), s.getStackTrace());
 				String[] badkeys = s.getMessage().split(" ");
 				for (String badkey: badkeys) {
 					User badUser = db.getUser(badkey.split(".")[0]);
 					badUser.setSsh(null);
 				}
+				if (s.getMessage().contains(crsid)) {
+					return Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity(Strings.BADKEY).build();
+				}
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
 
 			} else {
 				log.error("User " + crsid + " tried adding ssh key for " + crsid,
