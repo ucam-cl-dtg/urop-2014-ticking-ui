@@ -15,6 +15,12 @@
 			paper-button {
 				width: 100%;
 			}
+			#cloneGroupInfo {
+				width: 100%;
+				outline: none;
+				border-bottom: 1px solid #000;
+			}
+
 		</style>
 		<!-- Clone group API. -->
 		<toast-ajax id="cloneAPI"
@@ -46,12 +52,8 @@
 				value="{{newName}}">
 			</paper-input>
 			<h2 class="subtitle">Group Info:</h2>
-			<paper-input id="cloneGroupInfo"
-				multiline
-				maxRows="5"
-				label=""
-				error="Invalid group name.">
-			</paper-input>
+
+			<textarea id="cloneGroupInfo" rows="3"></textarea>
 			
 			<h2 class="subtitle">Copy across:</h2>
 			<div layout horizontal center style="width: 100%;">
@@ -70,7 +72,7 @@
 	<script>
 	Polymer('clone-group', {
 		domReady: function() {
-			this.newName = this.name+' (Clone)';
+			this.newName = this.name + ' (Clone)';
 			
 		},
 
@@ -81,7 +83,7 @@
 		cloneButtonClicked: function () {
 
 			var name = this.$.cloneGroupName.inputValue;
-			var info = encodeURI(this.$.cloneGroupInfo.inputValue);
+			var info = encodeURI(this.$.cloneGroupInfo.value);
 			var api = this.$.cloneAPI;
 
 			api.body = '{"name":"' + name + '", "info":"' + info + '"}';
