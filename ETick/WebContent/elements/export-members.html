@@ -1,0 +1,41 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
+<script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+<script src="../js/jquery.fileDownload.js" type="text/javascript"></script>
+
+<polymer-element name="export-members" attributes="gid">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+		<style>
+			:host {
+				display: inherit;
+			}
+			paper-button {
+				width: 100%;
+			}
+		</style>
+
+		<!-- Export. -->
+		<paper-icon-button id="exportButton"
+			icon="file-download"
+			on-click="{{exportMembers}}">
+		</paper-icon-button>
+
+		<!-- Response toasts. -->
+		<paper-toast id="exportError" duration="3000" text="Error serving file."></paper-toast>
+
+	</template>
+	<script>
+		Polymer('export-members', {
+
+			exportMembers: function () {
+				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid)
+		        .done(function () {})
+		        .fail(function () { this.$.exportError.show(); });
+			}
+
+		});
+	</script>
+</polymer-element>
