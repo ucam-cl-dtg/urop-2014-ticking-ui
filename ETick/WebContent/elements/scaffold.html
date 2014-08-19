@@ -84,7 +84,9 @@
 				</main-card>
 			</template>
 			<main-card animated>
-				<tick-creator-card tickId="{{tickId}}"></tick-creator-card>
+				<tick-creator-card tickId="{{tickId}}"
+					on-tick-created="{{tickCreatedHandler}}"
+					on-tick-deleted="{{tickDeletedHandler}}"></tick-creator-card>
 			</main-card>
 		</template>
 
@@ -197,6 +199,15 @@
 				this.tickId = newValue.getAttribute('tickId');
 				this.$.tickTemp.model = { showTickCreator: true, tickId: this.tickId };
 			},
+
+			tickCreatedHandler: function (e, detail) {
+				console.log(e, detail);
+			},
+
+			tickDeletedHandler: function (e, detail) {
+				console.log(e, detail);
+			}
+
 		});
 	</script>
 </polymer-element>
