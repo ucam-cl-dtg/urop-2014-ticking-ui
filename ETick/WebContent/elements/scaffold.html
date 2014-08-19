@@ -172,6 +172,7 @@
 			},
 
 			groupDeletedHandler: function () {
+				this.toSelect = "-1";
 				this.$.loginAPIs.$.sidebarAjax.go();
 				var groupName = this.$.groupTemp.model.name;
 				this.$.groupDeletedToast.text = 'Successfully deleted group "' + groupName + '".';
@@ -207,7 +208,7 @@
 			tickDeletedHandler: function (e, detail) {
 				console.log(e, detail);
 			}
-			
+
 		});
 	</script>
 </polymer-element>
