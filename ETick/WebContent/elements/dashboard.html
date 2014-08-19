@@ -35,13 +35,18 @@
 			</main-card>
 		</template>
 		
-		<main-card animated>
-			<user-card id="userCard" ldap="{{data}}"></user-card>
-		</main-card>
+		<template if="{{data&&!data.ssh}}">
+			<main-card animated>
+				<user-card id="userCard" ldap="{{data}}"></user-card>
+			</main-card>
+		</template>
 
-		<main-card animated>
-			<upcoming-slots slots="{{slots}}"></upcoming-slots>
-		</main-card>
+		<template if="{{data&&!data.ssh}}">
+			<main-card animated>
+				<upcoming-slots slots="{{slots}}"></upcoming-slots>
+			</main-card>
+		</template>
+		
 	</template>
 
 	<script>

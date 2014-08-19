@@ -236,7 +236,7 @@ public class ForkApiFacade implements IForkApiFacade {
 
 				/* Merge the forkBean and fetched fork */
 				fork.setHumanPass(forkBean.getHumanPass());
-				fork.setLastTickedBy(crsid);
+				fork.setLastTickedBy(myCrsid);
 				fork.setLastTickedOn(DateTime.now());
 
 				/*

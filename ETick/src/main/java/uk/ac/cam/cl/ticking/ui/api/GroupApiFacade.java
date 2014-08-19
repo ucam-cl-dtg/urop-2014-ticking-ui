@@ -512,7 +512,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		if (ticks) {
 			for (String tickId : prevGroup.getTicks()) {
 				Tick tick = db.getTick(tickId);
-				tick.addGroup(groupId);
+				tick.addGroup(group.getGroupId());
 				db.saveTick(tick);
 			}
 			group.setTicks(prevGroup.getTicks());
