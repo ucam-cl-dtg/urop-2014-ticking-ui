@@ -222,7 +222,8 @@ public class UserApiFacade implements IUserApiFacade {
 					KeyException.class.getName())) {
 				log.error("User " + crsid + " tried adding ssh key for " + crsid,
 						s.getCause(), s.getStackTrace());
-				String[] badkeys = s.getMessage().split(" ");
+				
+				String[] badkeys = s.getMessage().trim().split(" ");
 				for (String badkey: badkeys) {
 					User badUser = db.getUser(badkey.split(".")[0]);
 					badUser.setSsh(null);
