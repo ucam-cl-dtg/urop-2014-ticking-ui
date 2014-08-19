@@ -56,8 +56,12 @@
 			<h1 flex>Extensions ({{number}})</h1>
             <span flex></span>
             <search-box id="searchBox" placeholder="Search..."></search-box>
-			<paper-icon-button icon="add" on-click="{{addExtensionClicked}}"></paper-icon-button>
-            <paper-icon-button icon="delete" on-click="{{deleteExtensionClicked}}"></paper-icon-button>
+            <core-tooltip label="Add">
+				<paper-icon-button icon="add" on-click="{{addExtensionClicked}}"></paper-icon-button>
+			</core-tooltip>
+			<core-tooltip label="Delete">
+            	<paper-icon-button icon="delete" on-click="{{deleteExtensionClicked}}"></paper-icon-button>
+            </core-tooltip>
 		</div>
 
 		<!-- Member list. -->
@@ -150,7 +154,7 @@
 
 			deleteExtensionResponse: function () {
 				this.$.members.people = this.$.deleteAPI.response;
-			}
+			},
 
 		});
 	</script>
