@@ -53,8 +53,12 @@
 				<export-members gid="{{gid}}"></export-members>
 			</core-tooltip>
 			<template if="{{allowAdd}}">
-				<paper-icon-button icon="add" on-click="{{addMemberClicked}}"></paper-icon-button>
-				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
+				<core-tooltip label="Add">
+					<paper-icon-button icon="add" on-click="{{addMemberClicked}}"></paper-icon-button>
+				</core-tooltip>
+				<core-tooltip label="Delete">
+					<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
+				</core-tooltip>
 			</template>
 		</div>
 
