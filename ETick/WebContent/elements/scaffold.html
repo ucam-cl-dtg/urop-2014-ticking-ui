@@ -79,7 +79,9 @@
 		
 		<template id="tickTemp" if="{{showTickCreator}}">
 			<main-card animated>
-				<extension-card tid="{{tickId}}"></extension-card>
+				<template if="{{tickId}}">
+					<extension-card tid="{{tickId}}"></extension-card>
+				</template>
 			</main-card>
 			<main-card animated>
 				<tick-creator-card tickId="{{tickId}}"></tick-creator-card>
