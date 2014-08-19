@@ -16,8 +16,8 @@ function prettyDate(date)
 
 function prettyTime(time)
 {
-    return date.getUTCHours() + ":" +
-        date.getUTCMinutes();
+    return time.getUTCHours() + ":" +
+        time.getUTCMinutes();
 }
 
 function prettyDateTime (datetime)
