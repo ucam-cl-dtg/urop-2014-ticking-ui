@@ -213,9 +213,9 @@
 			},
 
 			orderBy: function (items, key) {
-                if (typeof items == typeof undefined
-				  &&typeof items.sort == typeof undefined)
-                    return items;
+				if (typeof items == typeof undefined
+				  ||typeof items.sort == typeof undefined)
+					return items;
 
 				return items.sort(function (a, b) {
 					return a[key].toLowerCase() -
