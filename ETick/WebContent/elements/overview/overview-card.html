@@ -451,7 +451,9 @@
 
             refresh: function() {
                 this.$.ajaxLoadOverview.waitBeforeToast = "1";
-                this.$.ajaxLoadOverview.waitMessage = "Refreshing..."
+                this.$.ajaxLoadOverview.waitMessage = "Refreshing overview...";
+                this.$.ajaxLoadOverview.responseMessage = "Overview refreshed.";
+                this.$.ajaxLoadOverview.popUpResponse = true;
                 this.$.ajaxLoadOverview.go();
             }
         });
