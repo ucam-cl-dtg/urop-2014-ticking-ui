@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="../status-icon/status-icon.html">
 
-<polymer-element name="overview-list" attributes="user scrollAreaWidth">
+<polymer-element name="overview-list" attributes="user scrollAreaWidth scrollLeft scrollTop">
     <template>
         <link rel="stylesheet" href="overview.css">
         <style>
@@ -53,7 +53,6 @@
 
             updateListWidth: function() {
                 this.listContainerStyle = "width: " + this.max(60 * (this.user.displayStrings.length + 1), this.scrollAreaWidth) + "px;";
-                console.log(this.listContainerStyle);
             },
 
             max: function(a, b) {
@@ -64,6 +63,14 @@
                 } else {
                     return a > b ? a : b;
                 }
+            },
+
+            scrollLeftChanged: function() {
+                console.log(this.scrollLeft);
+            },
+
+            scrollTopChanged: function() {
+                console.log(this.scrollTop);
             },
 
             pointerOver: function() {
