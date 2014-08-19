@@ -170,7 +170,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 			 * Do not delete the group creator and alert the user that they
 			 * tried to do this. However still continue with all other members
 			 */
-			if (crsid.equals(group.getCreator())&&!permissions.isAdmin(crsid)) {
+			if (crsid.equals(group.getCreator())&&!permissions.isAdmin(myCrsid)) {
 				output = Strings.REMOVECREATOR;
 			} else {
 				/*
