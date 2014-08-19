@@ -10,6 +10,7 @@
 <link rel="import" href="export-members.html">
 <link rel="import" href="dialog.html">
 <link rel="import" href="search-box.html">
+<link rel="import" href="are-you-sure.html">
 
 <polymer-element name="group-members" attributes="gid allowAdd rows">
 	<template>
@@ -105,6 +106,7 @@
 		<paper-toast id="deleteErrorToast" text="Error removing member." duration="3000"></paper-toast>
 		<paper-toast id="deleteSuccessToast" text="Successfully removed member(s)." duration="3000"></paper-toast>
 
+        <are-you-sure id="deleteDialog" heading="Delete selected members?" on-yes="{{deleteMembers}}"></are-you-sure>
 	</template>
 	<script>
 		Polymer('group-members', {
@@ -174,13 +176,21 @@
 			// Delete member(s) funcitonality:
 
 			deleteMemberClicked: function () {
-				var p = this.selectedPeople
+				var p = this.selectedPeople;
 				if (p && p.length) {
-					var jsonSelectedPeople = JSON.stringify(p);
-					this.$.deleteAjax.body = '{ "crsids" : ' + jsonSelectedPeople + ', "roles" : [] }';
-					this.$.deleteAjax.go();
+                    //this.$.deleteDialog.heading = "Delete " + p.length + " members?";
+                    this.$.deleteDialog.toggle();
 				}
 			},
+
+            deleteMembers: function() {
+                var p = this.selectedPeople;
+                if (p && p.length) {
+                    var jsonSelectedPeople = JSON.stringify(p);
+                    this.$.deleteAjax.body = '{ "crsids" : ' + jsonSelectedPeople + ', "roles" : [] }';
+                    this.$.deleteAjax.go();
+                }
+            },
 
 			deleteResponse: function (e, detail) {
 				this.$.deleteSuccessToast.text = detail.xhr.responseText;

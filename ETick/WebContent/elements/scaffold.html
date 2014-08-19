@@ -65,7 +65,7 @@
 
 		<!-- Page content cards. -->
 		<template id="dashTemp" if="{{showDash}}">
-			<user-dash id="dash"></user-dash>
+			<user-dash id="dash" data="{{$.loginAPIs.ldap}}"></user-dash>
 		</template>
 
 		<template id="groupTemp" if="{{gid}}">
