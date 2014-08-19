@@ -69,17 +69,25 @@ code ol li
   padding: 8px;
 }
 
+code:hover .tooltip
+{
+  display: none;
+}
+
 span.tooltip-container:hover .tooltip
 {
   visibility: visible !important;
+  display: block;
 }
 
 span.tooltip-container:active .tooltip
 {
   visibility: visible !important;
+  display: block;
 }
 
 span.tooltip-container:focus .tooltip
 {
   visibility: visible !important;
+  display: block;
 }
