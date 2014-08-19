@@ -53,7 +53,11 @@
 			contentType="text/plain"
 			handleAs="json"
 			on-core-response="{{addSSHResponse}}"
-			on-core-error="{{addSSHError}}">
+			waitMessage="Adding key..."
+            waitBeforeToast="1000"
+            captureError
+            popUpError
+            errorMessage="Error adding key.">
 		</core-ajax>
 		
 		<div class="card-header" layout horizontal center end-justified>
@@ -79,7 +83,7 @@
 		<div layout horizontal center>
 			<paper-input id="sshInput"
 						floatingLabel
-						value="{{ldap.ssh}}"
+						value="{{newSsh}}"
 						label="Public SSH key..."
 						pattern="^\s*(ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|ssh-ed25519|ssh-dss|ssh-rsa)\s+[0-9A-Za-z+/]+=*(\s+.*)?$"
 						error="Invalid Key."
@@ -104,8 +108,8 @@
 	</template>
 	<script>
 		Polymer('user-card', {
-			ready: function() {
-
+			domReady: function() {
+				this.newSsh = this.ldap.ssh;
 			},
 			handleAddInput: function () {
 				if (this.$.sshInput.invalid || this.$.sshInput.inputValue === "") {
@@ -120,13 +124,9 @@
 				this.$.addSSHAjax.go();
 			},
 			addSSHResponse: function() {
-				this.$.addSuccessToast.show();
-			},
-
-			addSSHError: function(e, detail) {
-				this.$.addErrorToast.text = detail.xhr.responseText;
-				this.$.addErrorToast.show();
+				this.ldap.ssh = this.newSsh;
 			}
+
 		});
 	</script>
 </polymer-element>

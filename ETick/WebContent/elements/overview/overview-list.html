@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="../status-icon/status-icon.html">
 
-<polymer-element name="overview-list" attributes="user scrollAreaWidth">
+<polymer-element name="overview-list" attributes="user scrollAreaWidth scrollAreaLeft scrollAreaTop">
     <template>
         <link rel="stylesheet" href="overview.css">
         <style>
@@ -20,7 +20,7 @@
                      to have several hundred. To improve load performance, tooltips are generated lazily -->
 
                 <template if="{{enableTooltip}}">
-                    <core-tooltip label="{{displayString.tooltip}}" style="min-width: 60px; outline: none;">
+                    <core-tooltip label="{{displayString.tooltip}}" position="{{displayString.index < leftMostIndex + 3 ? 'right' : 'left'}}" style="min-width: 60px; outline: none;">
                         <div class="tick-label" vertical layout center>
                             <!--<div>{{displayString.iconCode}}</div>-->
                             <status-icon mode="{{displayString.iconCode}}"></status-icon>
@@ -53,7 +53,6 @@
 
             updateListWidth: function() {
                 this.listContainerStyle = "width: " + this.max(60 * (this.user.displayStrings.length + 1), this.scrollAreaWidth) + "px;";
-                console.log(this.listContainerStyle);
             },
 
             max: function(a, b) {
@@ -64,6 +63,14 @@
                 } else {
                     return a > b ? a : b;
                 }
+            },
+
+            scrollAreaLeftChanged: function() {
+                this.leftMostIndex = this.scrollAreaLeft / 60;
+            },
+
+            scrollAreaTopChanged: function() {
+                console.log("scroll top", this.scrollAreaTop);
             },
 
             pointerOver: function() {
