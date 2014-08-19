@@ -12,7 +12,7 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
-import uk.ac.cam.cl.ticking.ui.auth.LdapManager;
+import uk.ac.cam.cl.ticking.ui.auth.AuthManager;
 import uk.ac.cam.cl.ticking.ui.injection.GuiceConfigurationModule;
 
 import com.google.inject.Guice;
@@ -40,7 +40,7 @@ public class ApplicationRegister extends Application {
 	public final Set<Object> getSingletons() {
 		Injector injector = Guice
 				.createInjector(new GuiceConfigurationModule());
-		this.singletons.add(injector.getInstance(LdapManager.class));
+		this.singletons.add(injector.getInstance(AuthManager.class));
 		this.singletons.add(injector.getInstance(ITickApiFacade.class));
 		this.singletons.add(injector.getInstance(IUserApiFacade.class));
 		this.singletons.add(injector.getInstance(IGroupingApiFacade.class));

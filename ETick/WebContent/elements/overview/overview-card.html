@@ -54,10 +54,10 @@
                     </div>
                 </div>
 
-                <div id="vShadowHeader" style="height: 144px;"></div>
+                <div id="vShadowHeader" style="height: 144px; z-index: 200000"></div>
 
                 <!-- Top bar -->
-                <div flex style="overflow-x: hidden;" layout horizontal class="overview-header-height">
+                <div flex style="overflow-x: hidden; margin-left: -6px;" layout horizontal class="overview-header-height">
                     <div id="headings" style="overflow: hidden; margin-left: -6px;" class="overview-header-height">
                         <overview-ticks-bar id="overviewTicksBar" style="height: 150px;" tickNames="{{tickNames}}" on-tick-selected="{{sortTick}}"></overview-ticks-bar>
                     </div>
@@ -265,6 +265,7 @@
                     this.displayUsers[i] = {
                         foreNames: temp[i].foreNames,
                         lastName: temp[i].lastName,
+                        crsId: temp[i].crsId,
                         college: temp[i].college,
                         displayStrings: temp[i].displayStrings,
                         cssClass: i % 2 == 0 ? "overview-even" : "overview-odd"

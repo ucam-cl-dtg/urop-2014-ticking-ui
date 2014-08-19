@@ -177,6 +177,8 @@
                     this.deadlinePassed = this.datetime < new Date();
                     console.log("deadline Passed?", this.deadlinePassed);
                 }
+
+                this.forking = false;
             },
 
             createFork: function() {
