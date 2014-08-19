@@ -33,10 +33,6 @@
 				margin-top: 8px;
 			}
 
-			core-icon.center {
-				margin-top: 0;
-			}
-
 			paper-input.datetime {
 				width: initial;
 				margin-right: 20px;
@@ -55,7 +51,8 @@
 				width: 100%;
 				outline: none;
 				font: inherit;
-				margin: 0.5rem 0;
+				margin-bottom: 1.5rem;
+				padding: 0.5rem 0;
 				border: none;
 				border-bottom: 1px solid #757575;
 			}
@@ -94,9 +91,9 @@
 					on-input="{{validate}}"></paper-input>
 			</div>
 
-			<div layout horizontal center>
-				<core-icon class="big center" icon="info-outline"></core-icon>
-				<textarea id="descInput" rows="3">{{desc}}</textarea>
+			<div layout horizontal start>
+				<core-icon class="big" icon="info-outline"></core-icon>
+				<textarea id="descInput" rows="1" placeholder="Description...">{{desc}}</textarea>
 			</div>
 
 			<div layout horizontal start>
@@ -184,6 +181,7 @@
 		<paper-toast id="editSessionError" duration="8000"></paper-toast>
 
 	</template>
+    <script src="../js/prettyDate.js"></script>
 	<script>
 		Polymer('add-edit-session', {
 
@@ -258,7 +256,8 @@
 				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
-				console.log((new Date(this.subStartTime)).toLocaleString(), (new Date(this.subEndTime)).toLocaleString());
+				console.log(prettyDateTime(new Date(this.subStartTime)),
+                            prettyDateTime(new Date(this.subEndTime)));
 
 				if (this.sheet)  {
 					var call = this.$.editSessionAPI;

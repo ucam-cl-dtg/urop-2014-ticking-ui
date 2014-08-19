@@ -142,7 +142,7 @@ this to happen.
             }
           }
 
-        , popUpToast:
+        , waitComplete:
           function (text, show)
           {
             "use strict";
@@ -153,11 +153,12 @@ this to happen.
               this.timeOut = null;
             }
 
+            this.$.waitToastElement.dismiss();
+
             if (show)
             {
               if (text != null)
               {
-                this.$.waitToastElement.dismiss();
                 this.$.responseToastElement.text = text;
                 this.$.responseToastElement.show();
               }
@@ -175,12 +176,12 @@ this to happen.
 
             if (this.captureResponse)
             {
-              this.popUpToast(e.detail.response,
+              this.waitComplete(e.detail.response,
                 this.waitShown || this.popUpResponse);
             }
             else
             {
-              this.popUpToast(this.responseMessage,
+              this.waitComplete(this.responseMessage,
                 this.waitShown || this.popUpResponse);
             }
           }
@@ -200,13 +201,13 @@ this to happen.
               {
                 if (this.errorMessage != null)
                 {
-                  this.popUpToast(this.errorMessage +
+                  this.waitComplete(this.errorMessage +
                       " See log for further details",
                     this.waitShown || this.popUpError);
                 }
                 else
                 {
-                  this.popUpToast("Something went wrong." +
+                  this.waitComplete("Something went wrong." +
                       " See log for further details",
                     this.waitShown || this.popUpError);
                 }
@@ -214,13 +215,13 @@ this to happen.
               }
               else
               {
-                this.popUpToast(e.detail.response,
+                this.waitComplete(e.detail.response,
                   this.waitShown || this.popUpError);
               }
             }
             else
             {
-              this.popUpToast(this.errorMessage,
+              this.waitComplete(this.errorMessage,
                 this.waitShown || this.popUpError);
             }
           }
@@ -234,12 +235,12 @@ this to happen.
 
             if (this.captureComplete)
             {
-              this.popUpToast(e.detail.response,
+              this.waitComplete(e.detail.response,
                 this.waitShown || this.popUpComplete);
             }
             else
             {
-              this.popUpToast(this.completeMessage,
+              this.waitComplete(this.completeMessage,
                 this.waitShown || this.popUpComplete);
             }
           }
