@@ -91,8 +91,19 @@ public class ForkApiFacade implements IForkApiFacade {
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
-
-		return Response.ok(fork).build();
+		
+		boolean signedUp = fork.isSignedUp();
+		boolean serviceSignedUp = tickSignupService
+				.studentHasBookingForTick(crsid, tickId);
+		if (signedUp == serviceSignedUp) {
+			return Response.ok(fork).build();
+		} else {
+			log.warn("User " + crsid + " requested fork for tick " + tickId
+					+ " and had to update signup consistency");
+			fork.setSignedUp(signedUp);
+			db.saveFork(fork);
+			return Response.status(Status.CREATED).entity(fork).build();
+		}
 	}
 
 	/**
@@ -107,7 +118,19 @@ public class ForkApiFacade implements IForkApiFacade {
 
 		/* Does it already exist? */
 		if (fork != null) {
-			return Response.ok(fork).build();
+			boolean signedUp = fork.isSignedUp();
+			boolean serviceSignedUp = tickSignupService
+					.studentHasBookingForTick(crsid, tickId);
+			if (signedUp == serviceSignedUp) {
+				return Response.ok(fork).build();
+			} else {
+				log.warn("User " + crsid + " requested fork for tick " + tickId
+						+ " and had to update signup consistency");
+				fork.setSignedUp(signedUp);
+				db.saveFork(fork);
+				return Response.status(Status.CREATED).entity(fork).build();
+			}
+
 		}
 
 		/* Check permissions */
@@ -285,8 +308,8 @@ public class ForkApiFacade implements IForkApiFacade {
 
 		/* Check permissions */
 
-		if (!(permissions.tickRole(myCrsid, tickId, Role.MARKER)
-				|| permissions.forkCreator(myCrsid, myCrsid, tickId))) {
+		if (!(permissions.tickRole(myCrsid, tickId, Role.MARKER) || permissions
+				.forkCreator(myCrsid, myCrsid, tickId))) {
 			log.warn("User " + crsid + " tried to get files for "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
