@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/core-overlay/core-overlay.html">
 <link rel="import" href="user-card.html">
 <link rel="import" href="ssh-card.html">
 <link rel="import" href="main-card.html">
@@ -36,9 +37,11 @@
 			</main-card>
 		</template>
 		
-		<main-card animated>
-			<user-card id="userCard" ldap="{{data}}"></user-card>
-		</main-card>
+		<template if="{{data}}">
+			<main-card animated>
+				<user-card id="userCard" ldap="{{data}}"></user-card>
+			</main-card>
+		</template>
 
 		<template if="{{slots}}">
 			<main-card animated>
@@ -50,6 +53,7 @@
 
 	<script>
 		Polymer('user-dash', {
+
 			loginResponse: function() {
 				this.data = this.$.loginAjax.response;
 			},
