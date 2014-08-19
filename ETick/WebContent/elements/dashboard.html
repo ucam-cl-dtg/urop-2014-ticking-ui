@@ -11,6 +11,7 @@
 			:host {
 				display: block;
 			}
+			
 		</style>
 
 		<!-- Logging in API call. -->
@@ -29,7 +30,7 @@
 			on-core-response="{{upcomingResponse}}">
 		</core-ajax>
 
-		<template if="{{data&&!data.ssh}}">
+		<template if="{{data && !data.ssh}}">
 			<main-card animated>
 				<ssh-card id="userCard"></ssh-card>
 			</main-card>
@@ -51,6 +52,7 @@
 
 	<script>
 		Polymer('user-dash', {
+
 			loginResponse: function() {
 				this.data = this.$.loginAjax.response;
 			},
