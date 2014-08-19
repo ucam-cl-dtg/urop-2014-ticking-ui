@@ -9,7 +9,8 @@
 			<core-ajax id="loginAjax"
 				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
 				handleAs="json"
-				on-core-response="{{loginResponse}}">
+				on-core-response="{{loginResponse}}"
+				on-core-error="{{loginError}}">
 			</core-ajax>
 
 			<!-- API call to populate sidebar menu. -->
@@ -45,6 +46,10 @@
 				// Do somthing with this.$.loginAjax.response if needed.
 				this.$.sidebarAjax.go();
 				this.$.sidebarTickAjax.go();
+			},
+			
+			loginError: function() {
+				location.reload(forceGet);
 			},
 			
 			sidebarResponse: function() {

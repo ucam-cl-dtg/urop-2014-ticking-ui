@@ -19,7 +19,7 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.remote.GitApi;
 import uk.ac.cam.cl.ticking.ui.api.remote.SignupApi;
 import uk.ac.cam.cl.ticking.ui.api.remote.TestApi;
-import uk.ac.cam.cl.ticking.ui.auth.LdapManager;
+import uk.ac.cam.cl.ticking.ui.auth.AuthManager;
 import uk.ac.cam.cl.ticking.ui.configuration.AcademicTemplate;
 import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
@@ -54,7 +54,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	private static SubmissionApiFacade submissionApiFacade = null;
 	private static ForkApiFacade forkApiFacade = null;
 	private static TickSignups tickSignups = null;
-	private static LdapManager ldapManager = null;
+	private static AuthManager authManager = null;
 
 	/**
 	 * {@inheritDoc}
@@ -150,7 +150,7 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static GroupingApiFacade getGroupingApiSingleton(IDataManager db,
-			ConfigurationLoader<Configuration> config, LdapManager raven,
+			ConfigurationLoader<Configuration> config, AuthManager raven,
 			PermissionsManager permissions) {
 		if (groupingApiFacade == null) {
 			groupingApiFacade = new GroupingApiFacade(db, config, raven,
@@ -210,13 +210,13 @@ public class GuiceConfigurationModule extends AbstractModule {
 
 	@Inject
 	@Provides
-	private static LdapManager getLdapManager(IDataManager db,
+	private static AuthManager getAuthManager(IDataManager db,
 			ConfigurationLoader<AcademicTemplate> academicConfig,
 			ConfigurationLoader<Admins> adminConfig) {
-		if (ldapManager == null) {
-			ldapManager = new LdapManager(db, academicConfig, adminConfig);
+		if (authManager == null) {
+			authManager = new AuthManager(db, academicConfig, adminConfig);
 		}
-		return ldapManager;
+		return authManager;
 	}
 
 }
