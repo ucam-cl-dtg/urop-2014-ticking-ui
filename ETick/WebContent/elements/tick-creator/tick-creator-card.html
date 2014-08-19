@@ -325,6 +325,7 @@
 
 
             //TODO: fire some event
+            this.fire('tick-created', {tickId: this.tickId});
         },
         tickDataUpdated: function() {
             /* when a user clicks save, they shouldn't be able to click again until the update is complete, so the SAVE
@@ -524,6 +525,7 @@
 
         deleteTickSuccess: function() {
             //TODO: fire some event
+            this.fire('tick-deleted');
         },
 
         deleteTickError: function() {
