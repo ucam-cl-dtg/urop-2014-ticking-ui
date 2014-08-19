@@ -17,7 +17,7 @@
 <link rel="import" href="tick-session-list.html">
 <link rel="import" href="add-edit-session.html">
 <link rel="import" href="overview/overview-card.html">
-
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
@@ -60,9 +60,15 @@
                         </p>
 						<span layout horizontal end end-justified flex>
 							<template if="{{isAuthor || isAdmin}}">
-								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
-								<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
-								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
+								<core-tooltip label="Edit">
+									<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
+								</core-tooltip>
+								<core-tooltip label="Clone">
+									<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
+								</core-tooltip>
+								<core-tooltip label="Delete">
+									<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
+								</core-tooltip>
 							</template>
 						</span>
                     </div>
