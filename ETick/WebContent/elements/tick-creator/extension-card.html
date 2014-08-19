@@ -14,18 +14,32 @@
 		<link rel="stylesheet" type="text/css" href="../../css/elements/group-members.css">
 		<link rel="stylesheet" type="text/css" href="../../css/shared-styles.css">
 
-		<!-- Extension API. -->
+		<!-- Add Extension API. -->
 		<toast-ajax id="extensionAPI"
 			method="PUT"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension' }}"
 			on-core-response="{{addExtensionResponse}}"
 			handleAs="json"
 			contentType="application/json"
-			waitMessage="Adding extensions..."
+			waitMessage="Adding extension(s)..."
             waitBeforeToast="1000"
             captureError
             popUpError
-            errorMessage="Error adding extensions.">
+            errorMessage="Error adding extension(s).">
+		</toast-ajax>
+
+		<!-- Delete Extension API. -->
+		<toast-ajax id="extensionAPI"
+			method="DELETE"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension' }}"
+			on-core-response="{{deleteExtensionResponse}}"
+			handleAs="json"
+			contentType="application/json"
+			waitMessage="Deleting extension(s)..."
+            waitBeforeToast="1000"
+            captureError
+            popUpError
+            errorMessage="Error deleting extension(s).">
 		</toast-ajax>
 
 		<!-- Extension list Ajax call. -->
@@ -40,13 +54,14 @@
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>Extensions ({{number}})</h1>
             <span flex></span>
+            <paper-icon-button icon="delete" on-click="{{deleteExtensionClicked}}"></paper-icon-button>
 			<paper-icon-button icon="add" on-click="{{addExtensionClicked}}"></paper-icon-button>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
 		<!-- Member list. -->
 		<div id="personListContainer">
-			<extension-list id="members" query="{{searchQuery}}" on-core-select="{{personSelectionChanged}}"></person-list>
+			<extension-list id="list" query="{{searchQuery}}" on-core-select="{{extensionSelectionChanged}}"></person-list>
 		</div>
 
 		<!-- Extension dialog -->
@@ -81,7 +96,7 @@
 			listResponse: function() {
 				var list = this.$.listAjax.response;
 				this.number = list.length;
-				this.$.members.people = list;
+				this.$.list.people = list;
 			},
 
 			addExtension: function() {
@@ -116,10 +131,23 @@
 
 			addExtensionResponse: function() {
 				var list = this.$.extensionAPI.response;
-				console.log(list);
 				this.number = list.length;
-				this.$.members.people = list;
+				this.$.list.people = list;
 			},
+
+			extensionSelectionChanged: function () {
+				this.selectedExtension = this.$.list.$.selector.selected;
+			},
+
+			deleteExtensionClicked: function () {
+				if (this.selectedExtension) {
+					this.$.deleteAPI.go();
+				}
+			},
+
+			deleteExtensionResponse: function () {
+				this.$.list.people = this.$.deleteAPI.response;
+			}
 
 		});
 	</script>
