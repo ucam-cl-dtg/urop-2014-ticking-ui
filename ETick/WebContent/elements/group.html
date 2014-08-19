@@ -152,7 +152,7 @@
         </span>
 
         <span id="deepOverview">
-            <template if="{{isOverview}}">
+            <template if="{{isOverview||isAdmin}}">
                 <main-card animated>
                     <overview-card gid="{{gid}}"></overview-card>
                 </main-card>

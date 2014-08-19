@@ -114,13 +114,14 @@ public class TickSignups {
         }
         log.debug("Attempting to book slot for user " + crsid + " for tickID " + bean.getTickID() +
                 " at time " + new Date(bean.getStartTime()) + " on sheet " + sheetID + " in group " + groupID);
+        Date now = new Date();
         for (Slot slot : service.listUserSlots(crsid)) {
             if (slot.getStartTime().equals(bean.getStartTime())) {
                 log.debug("The user already had a slot booked at the given time");
                 return Response.status(Status.FORBIDDEN)
                         .entity(Strings.EXISTINGTIMEBOOKING).build();
             }
-            if (slot.getComment().equals(bean.getTickID())) {
+            if (slot.getStartTime().after(now) && slot.getComment().equals(bean.getTickID())) {
                 log.debug("The user already had a slot booked for the given tick");
                 return Response.status(Status.FORBIDDEN)
                         .entity(Strings.EXISTINGTICKBOOKING).build();

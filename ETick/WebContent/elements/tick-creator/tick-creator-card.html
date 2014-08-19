@@ -125,7 +125,7 @@
                 <br>
             </div>
             <paper-input hidden?="{{inputDisplayNameHidden}}" id="inputDisplayName" flex label="e.g. 1A-Java-Tick-1"
-                         inputValue="{{tickName}}" required error="Required; can't have spaces" validate="^[0-9a-zA-Z][0-9a-zA-Z_-]*$"
+                         inputValue="{{tickName}}" required error="Required; can't have spaces" pattern="^[0-9a-zA-Z][0-9a-zA-Z_-]*$"
                          on-keyup="{{validateDisplayName}}">
             </paper-input>
         </div>
@@ -325,6 +325,7 @@
 
 
             //TODO: fire some event
+            this.fire('tick-created', {tickId: this.tickId});
         },
         tickDataUpdated: function() {
             /* when a user clicks save, they shouldn't be able to click again until the update is complete, so the SAVE
@@ -524,6 +525,7 @@
 
         deleteTickSuccess: function() {
             //TODO: fire some event
+            this.fire('tick-deleted');
         },
 
         deleteTickError: function() {

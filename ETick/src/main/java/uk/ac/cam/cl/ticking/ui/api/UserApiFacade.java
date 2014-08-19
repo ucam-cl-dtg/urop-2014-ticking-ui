@@ -223,8 +223,10 @@ public class UserApiFacade implements IUserApiFacade {
 				log.error("User " + crsid + " tried adding ssh key for " + crsid,
 						s.getCause(), s.getStackTrace());
 				
+				log.error(s.getMessage());
 				String[] badkeys = s.getMessage().trim().split(" ");
 				for (String badkey: badkeys) {
+					log.error(badkey);
 					User badUser = db.getUser(badkey.split(".")[0]);
 					badUser.setSsh(null);
 				}
