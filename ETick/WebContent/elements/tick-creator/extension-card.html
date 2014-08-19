@@ -61,7 +61,7 @@
 
 		<!-- Member list. -->
 		<div id="personListContainer">
-			<extension-list id="list" query="{{searchQuery}}" on-core-select="{{extensionSelectionChanged}}"></person-list>
+			<extension-list id="members" query="{{searchQuery}}" on-core-select="{{extensionSelectionChanged}}"></person-list>
 		</div>
 
 		<!-- Extension dialog -->
@@ -96,7 +96,13 @@
 			listResponse: function() {
 				var list = this.$.listAjax.response;
 				this.number = list.length;
-				this.$.list.people = list;
+				this.$.members.people = list;
+			},
+
+			addExtensionResponse: function() {
+				var list = this.$.extensionAPI.response;
+				this.number = list.length;
+				this.$.members.people = list;
 			},
 
 			addExtension: function() {
@@ -129,14 +135,8 @@
 				this.$.extensionDialog.toggle();
 			},
 
-			addExtensionResponse: function() {
-				var list = this.$.extensionAPI.response;
-				this.number = list.length;
-				this.$.list.people = list;
-			},
-
 			extensionSelectionChanged: function () {
-				this.selectedExtensions = this.$.list.$.selector.selected;
+				this.selectedExtensions = this.$.members.$.list.$.selector.selected;
 			},
 
 			deleteExtensionClicked: function () {
@@ -148,7 +148,7 @@
 			},
 
 			deleteExtensionResponse: function () {
-				this.$.list.people = this.$.deleteAPI.response;
+				this.$.members.people = this.$.deleteAPI.response;
 			}
 
 		});
