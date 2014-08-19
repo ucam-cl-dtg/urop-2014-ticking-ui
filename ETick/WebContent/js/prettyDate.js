@@ -20,8 +20,8 @@ function prettyTime(time)
         date.getUTCMinutes();
 }
 
-function prettyDateTime (date)
+function prettyDateTime (datetime)
 {
-    return prettyDate(date) + " " +
-        prettyTime(time);
+    return prettyDate(datetime) + " " +
+        prettyTime(datetime);
 }
