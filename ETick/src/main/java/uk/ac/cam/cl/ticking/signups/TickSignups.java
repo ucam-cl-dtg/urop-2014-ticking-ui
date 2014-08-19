@@ -288,12 +288,16 @@ public class TickSignups {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         log.debug("Listing the future bookings for user" + crsid);
         List<BookingInfo> toReturn = new ArrayList<BookingInfo>();
+        Date now = new Date();
         for (Slot s :service.listUserSlots(crsid)) {
             Date endTime = new Date(s.getStartTime().getTime() + s.getDuration());
-            if (endTime.after(new Date())) {
+            if (endTime.after(now)) {
                 String groupName;
                 try {
-                    groupName = db.getGroup(getGroupID(s.getSheetID())).getName();
+                    String sheetID = s.getSheetID();
+                    String groupID = getGroupID(sheetID);
+                    uk.ac.cam.cl.ticking.ui.actors.Group group = db.getGroup(groupID);
+                    groupName = group.getName();
                 } catch (ItemNotFoundException e) {
                     log.error("A booking appears to exist in a sheet that doesn't", e);
                     return Response.status(Status.INTERNAL_SERVER_ERROR)

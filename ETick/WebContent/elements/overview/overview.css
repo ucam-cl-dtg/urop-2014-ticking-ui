@@ -94,7 +94,7 @@
 polyfill-next-selector {shadow: 'overviewSearchBox core-input';}
 #overviewSearchBox::shadow core-input {
     color: white;
-    width: 345px;
+    width: 385px;
 }
 
 #overviewSearchBox {
