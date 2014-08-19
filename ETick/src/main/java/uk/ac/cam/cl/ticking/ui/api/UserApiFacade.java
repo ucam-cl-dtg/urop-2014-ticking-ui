@@ -229,7 +229,12 @@ public class UserApiFacade implements IUserApiFacade {
 				for (String badkey: badkeys) {
 					log.error(badkey);
 					User badUser = db.getUser(badkey.split("\\.")[0]);
-					badUser.setSsh(null);
+					try {
+						gitServiceProxy.addSSHKey(badUser.getSsh(), crsid);
+					} catch (IOException | KeyException e1) {
+						badUser.setSsh(null);
+						db.saveUser(badUser);
+					}
 				}
 				if (s.getMessage().contains(crsid)) {
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
