@@ -16,12 +16,12 @@ function prettyDate(date)
 
 function prettyTime(time)
 {
-    return date.getUTCHours() + ":" +
-        date.getUTCMinutes();
+    return time.getUTCHours() + ":" +
+        time.getUTCMinutes();
 }
 
-function prettyDateTime (date)
+function prettyDateTime (datetime)
 {
-    return prettyDate(date) + " " +
-        prettyTime(time);
+    return prettyDate(datetime) + " " +
+        prettyTime(datetime);
 }
