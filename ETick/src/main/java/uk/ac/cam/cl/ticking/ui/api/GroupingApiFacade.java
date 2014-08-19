@@ -20,7 +20,7 @@ import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IGroupingApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.GroupingBean;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.UserRoleBean;
-import uk.ac.cam.cl.ticking.ui.auth.LdapManager;
+import uk.ac.cam.cl.ticking.ui.auth.AuthManager;
 import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
@@ -43,13 +43,13 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 	// remove if not
 	private ConfigurationLoader<Configuration> config;
 
-	private LdapManager raven;
+	private AuthManager raven;
 	
 	private PermissionsManager permissions;
 
 	@Inject
 	public GroupingApiFacade(IDataManager db,
-			ConfigurationLoader<Configuration> config, LdapManager raven, PermissionsManager permissions) {
+			ConfigurationLoader<Configuration> config, AuthManager raven, PermissionsManager permissions) {
 		this.db = db;
 		this.config = config;
 		this.raven = raven;
