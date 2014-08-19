@@ -310,16 +310,19 @@
             /* when a user clicks save, they shouldn't be able to click again until the update is complete, so the SAVE
              button is disabled while saving. However, if the SAVE operation is really fast, this creates a jarring UX,
              so this artificial day smooths the UX */
+            var that = this;
             this.job('complete-saving', function() {
-                this.saving = false;
-                this.newTick = false;
+                that.saving = false;
+                that.newTick = false;
+                that.tickData = that.$.ajaxPostTickData.response;
+                that.tickId = that.tickData._id;
+                that.processLoadedTickData();
             }, 500);
 
 
             this.tickData = this.$.ajaxPostTickData.response;
-
             this.tickId = this.tickData._id;
-            this.processLoadedTickData();
+
 
             //TODO: fire some event
         },
