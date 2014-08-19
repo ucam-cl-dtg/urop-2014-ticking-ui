@@ -471,6 +471,16 @@ public class TickSignups {
         return Response.ok().build();
     }
     
+    public boolean studentHasBookingForTick(String crsid, String tickID) {
+        Date now = new Date();
+        for (Slot slot : service.listUserSlots(crsid)) {
+            if (slot.getStartTime().after(now) && slot.getComment().equals(tickID)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * Ensures that the given student is assigned the given ticker
      * (if possible) in the future for the specified tick.
