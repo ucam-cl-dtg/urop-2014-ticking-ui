@@ -218,8 +218,12 @@
 					return items;
 
 				return items.sort(function (a, b) {
-					return a[key].toLowerCase() -
-						b[key].toLowerCase();
+					if (a[key].toLowerCase() < b[key].toLowerCase())
+						return -1;
+					else if (a[key].toLowerCase() > b[key].toLowerCase())
+						return 1;
+					else
+						return 0;
 				});
 			}
             
