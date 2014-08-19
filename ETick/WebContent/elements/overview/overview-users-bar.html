@@ -22,9 +22,9 @@
         <template repeat="{{user in users}}">
             <!--<core-tooltip position="right" label="{{user.foreNames + ' ' + user.lastName + ' (' + user.crsId + ')' + ', ' + user.college}}">-->
             <div id="user-div" layout horizontal>
-                <div class="{{'user-label' + (sortField == 'Name'        ? ' sort-field' : '')}}">{{user.lastName}}</div>
+                <div class="{{'user-label' + (sortField == 'Name'        ? ' sort-field' : '')}}">{{user.lastName == 'null' ? user.crsId : user.lastName}}</div>
                 <div class="{{'user-label' + (sortField == 'Forename(s)' ? ' sort-field' : '')}}">{{user.foreNames}}</div>
-                <div class="{{'user-label' + (sortField == 'College'     ? ' sort-field' : '')}}">{{user.college}}</div>
+                <div class="{{'user-label' + (sortField == 'College'     ? ' sort-field' : '')}}">{{user.college == 'null' ? '' : user.college}}</div>
             </div>
             <!--</core-tooltip>-->
         </template>
