@@ -58,6 +58,7 @@
             waitBeforeToast="1000"
             captureError
             popUpError
+            responseMessage="Successfully added key"
             errorMessage="Error adding key.">
 		</toast-ajax>
 		
@@ -125,7 +126,7 @@
 				this.$.addSSHAjax.go();
 			},
 			addSSHResponse: function() {
-				this.ldap.ssh = this.newSsh;
+				this.ldap.ssh = this.$.addSSHAjax.response.ssh;
 			}
 
 		});

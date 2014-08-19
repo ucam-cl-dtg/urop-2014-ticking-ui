@@ -231,7 +231,7 @@ public class UserApiFacade implements IUserApiFacade {
 					User badUser = db.getUser(badkey.split("\\.")[0]);
 					try {
 						gitServiceProxy.addSSHKey(badUser.getSsh(), crsid);
-					} catch (IOException | KeyException e1) {
+					} catch (InternalServerErrorException | IOException | KeyException e1) {
 						badUser.setSsh(null);
 						db.saveUser(badUser);
 					}
