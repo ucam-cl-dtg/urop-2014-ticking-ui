@@ -7,22 +7,22 @@
         <link rel="stylesheet" type="text/css" href="tick-components.css">
 
         <div layout horizontal>
-            <div class="spacer"></div>
-            <div flex></div>
-            <div class="spacer"></div>
+            <!--<div class="spacer"></div>-->
+            <!--<div flex></div>-->
+            <!--<div class="spacer"></div>-->
 
             <div flex>
                 <core-collapse opened?="{{!initialising}}">
-                <paper-button class="tick-component" label="Initialise" on-tap="{{createFork}}"></paper-button>
+                <paper-button class="tick-component" label="Start" on-tap="{{createFork}}"></paper-button>
                 </core-collapse>
                 <core-collapse opened?="{{initialising}}">
-                <div class="error">Initialising...</div>
+                <div class="error">Creating your repository...</div>
                 </core-collapse>
             </div>
 
-            <div class="spacer"></div>
-            <div flex></div>
-            <div class="spacer"></div>
+            <!--<div class="spacer"></div>-->
+            <!--<div flex></div>-->
+            <!--<div class="spacer"></div>-->
         </div>
     </template>
     <script>
