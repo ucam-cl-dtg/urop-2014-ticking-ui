@@ -68,6 +68,9 @@
 	</core-ajax>
 	
 	<div layout vertical>
+		<div id="current" align="left">
+			<p style="color:gray;font-size:11px">currently it is {{hours<10 ? '0' + hours : hours}}:{{minutes<10 ? '0' + minutes : minutes}}:{{seconds<10 ? '0' + seconds : seconds}} on {{day<10 ? '0' + day : day}}/{{month<10 ? '0' + month : month}}/{{year}}</p>
+		</div>
 		<div id="card-header" align="left">
 			<core-item icon="home" label="{{locationDisplayed}}"></core-item>
 			<core-item icon="today" label="Date : {{date}}"></core-item>
@@ -88,7 +91,7 @@
 								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
 								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"></core-icon>
 							</div>
-							<div align="left" layout horizontal center flex three>
+							<div align="left" style="color:{{slot.inPast ? 'gray' : (slot.currentSlot ? '#9c27b0' : 'black')}}" layout horizontal center flex three>
 									<div hidden?="{{slot.outcome != 'null'}}">
 											<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
 									</div>
@@ -100,7 +103,7 @@
 								<span>View Report</span>
 								<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
 							</div>
-							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
+							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast))}}" flex>
 								<span>Remove {{slot.student}} from Slot</span>
 								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="left" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
 							</div>
@@ -120,6 +123,24 @@
   </template>
   <script>
   Polymer('ticker-signups-viewport', {
+			ready : function() {
+				this.refresh();
+			},
+			runClock : function() {
+				this.job("clock",function() {
+					this.displayDate();
+				},1000);
+			},
+			displayDate : function() {
+				var currentDate = new Date();
+				this.seconds = currentDate.getSeconds();
+				this.minutes = currentDate.getMinutes();
+				this.hours = currentDate.getHours();
+				this.day = currentDate.getUTCDate();
+				this.month = currentDate.getUTCMonth() + 1;
+				this.year = currentDate.getUTCFullYear();
+				this.runClock();
+			},
 			refresh: function() {
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
@@ -149,12 +170,21 @@
 			slotsDataLoaded: function() {
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
 				this.slots = [];
+				var date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
+				this.slotsDay = date.split("-")[2];
+				var slotsDay = parseInt(date.split("-")[2]);
+				this.slotsMonth = date.split("-")[1];
+				var slotsMonth = parseInt(date.split("-")[1]);
+				this.slotsYear = date.split("-")[0];
+				var slotsYear = parseInt(date.split("-")[0]);
+				var durationInMinutes = loadedSlots[0].duration/60000;
+				this.duration = durationInMinutes;
+				this.date = this.slotsDay + '/' + this.slotsMonth + '/' + this.slotsYear;
 				for (var i = 0; i < loadedSlots.length; i++) {
 					var hour = loadedSlots[i].startTime.split(":")[0].split("T")[1];
 					var min = loadedSlots[i].startTime.split(":")[1];
 					var timeSlot = hour + ":" + min;
 					<!-- check this conversion is right -->
-					var durationInMinutes = loadedSlots[i].duration/60000;
 					var student = loadedSlots[i].bookedUser;
 					var comment = loadedSlots[i].comment;
 					var hidden = false;
@@ -174,28 +204,50 @@
 					if (endMin < 10) {
 						leadingZero = "0";
 					}
+					var past = false;
+					var current = false;
+					if (slotsYear < this.year) {
+						past = true;
+					}
+					else if (slotsYear === this.year) {
+						if(slotsMonth < this.month) {
+							past = true;
+						}
+						else if (slotsMonth === this.month) {
+							if(slotsDay < this.day) {
+								past = true;
+							}
+							else if(slotsDay === this.day) {
+								if( endHour < this.hours ){
+									past = true;
+								}
+								else if (endHour === this.hours) {
+									if (endMin <= this.minutes) {
+										past = true;
+									}
+									else if ((this.minutes >= parseInt(min)) && (this.minutes < endMin)) {
+										current = true;
+									}
+								}
+								else if((endHour === (this.hours + 1)) && endMin===0) {
+									current = true;
+								}
+							}
+						}
+					}
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
 					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
-									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null", collapse: false});
+									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null", collapse: false, inPast : past, currentSlot : current});
 				}
-				this.date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
 			},
 			tickerChange: function(event) {
 				if(event.target.checked) {
+					this.displayDate();
 					this.ticker = event.target.label;
 					this.pathLoadSlots = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId + "/tickers/" + this.ticker;
 					this.$.ajaxLoadSlots.go();
 					this.fire("hide-report");
 				}
-			},
-			updateViewConsole: function(newResult) {
-				if(newResult != undefined) {
-					//Wait for signups API to allow update
-					console.log(newResult + " " + this.slotId);
-					this.$.ajaxLoadSlots.go();
-					this.slotId = undefined;
-				}
-				//else already passed/failed and something went wrong - can hide buttons once API is up to date
 			},
 			toggleInfo: function(event) {
 				var slotId = event.target.id;
@@ -236,6 +288,13 @@
 			},
 			kickDone : function() {
 				this.$.ajaxLoadSlots.go();
+			},
+			minutesChanged: function() {
+				<!-- I'm assuming here sessions will start and have durations that this will work with e.g. 5/10 mins starting on a minute divisible by those units -->
+				<!-- if not there will be a refresh delay. Only refresh during a session. -->
+				if((this.minutes % (this.duration)) === 0 && !this.slots[this.slots.length - 1].inPast){
+					this.$.ajaxLoadSlots.go();
+				}
 			}
 		})
   </script>
