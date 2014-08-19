@@ -183,6 +183,7 @@ public class UserApiFacade implements IUserApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		List<Tick> ticks = db.getAuthorTicks(crsid);
+		Collections.sort(ticks);
 		return Response.ok(ticks).build();
 	}
 

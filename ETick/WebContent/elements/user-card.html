@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-transition/core-transition.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 
 <polymer-element name="user-card" attributes="ldap">
 	<template>
@@ -47,7 +48,7 @@
 
 		</style>
 		<!-- Add Ssh Ajax call. -->
-		<core-ajax id="addSSHAjax"
+		<toast-ajax id="addSSHAjax"
 			method="PUT"
 			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ssh"
 			contentType="text/plain"
@@ -58,7 +59,7 @@
             captureError
             popUpError
             errorMessage="Error adding key.">
-		</core-ajax>
+		</toast-ajax>
 		
 		<div class="card-header" layout horizontal center end-justified>
 				<template if="{{ldap.admin}}">
