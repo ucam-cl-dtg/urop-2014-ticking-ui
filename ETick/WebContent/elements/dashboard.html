@@ -11,6 +11,7 @@
 			:host {
 				display: block;
 			}
+			
 		</style>
 
 		<!-- Logging in API call. -->
@@ -29,7 +30,7 @@
 			on-core-response="{{upcomingResponse}}">
 		</core-ajax>
 
-		<template if="{{data&&!data.ssh}}">
+		<template if="{{data && !data.ssh}}">
 			<main-card animated>
 				<ssh-card id="userCard"></ssh-card>
 			</main-card>
@@ -39,9 +40,12 @@
 			<user-card id="userCard" ldap="{{data}}"></user-card>
 		</main-card>
 
-		<main-card animated>
-			<upcoming-slots slots="{{slots}}"></upcoming-slots>
-		</main-card>
+		<template if="{{slots}}">
+			<main-card animated>
+				<upcoming-slots slots="{{slots}}"></upcoming-slots>
+			</main-card>
+		</template>
+
 	</template>
 
 	<script>
