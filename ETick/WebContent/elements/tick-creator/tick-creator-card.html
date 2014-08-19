@@ -202,7 +202,7 @@
         <span layout horizontal>
             <span flex></span>
             <paper-button raisedButton id="save" class="tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
-                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
+                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving || deleting}}">
             </paper-button>
             <div style="width: 20px"></div>
             <paper-button raisedButton id="delete" class="tick-creator" label="{{deleting ? 'DELETING...' : 'DELETE'}}" on-tap="{{alertDeleteTick}}"
