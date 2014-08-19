@@ -102,6 +102,7 @@
     </div>
 
   </template>
+  <script src="../js/prettyDate.js"></script>
   <script>
     Polymer('file-browser-card'
       , {   selectedFileIdChanged:
@@ -181,7 +182,7 @@
                   "\">" +
                     this.lastTickedBy +
                   "</a>" +
-                " at " + new Date(this.lastTickedOn).toLocaleString() +
+                " at " + prettyDateTime(new Date(this.lastTickedOn)) +
                 ".";
             }
             else if (this.tickerResult == "FAIL")
@@ -208,7 +209,7 @@
                   {
                     return "Commit " + obj.commit.slice(0,7) +
                       ", report generated " +
-                      new Date(obj.date).toLocaleString();
+                      prettyDateTime(new Date(obj.date));
                   });
             this.$.reportSelector.selected =
               this.reportsListString.length - 1;

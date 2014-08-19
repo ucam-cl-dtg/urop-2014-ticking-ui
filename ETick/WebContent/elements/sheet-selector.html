@@ -59,6 +59,7 @@
 		<paper-toast id="bookingErrorToast" duration="3000"></paper-toast>
 
 	</template>
+    <script src="../js/prettyDate.js"></script>
 	<script>
 		Polymer('sheet-selector', {
 			toggle: function () {
@@ -94,11 +95,12 @@
 			},
 
 			dateFilter: function(item) {
-				return item.toLocaleString();
+				return prettyDateTime(item);
 			},
 
 			bookingsResponse: function () {
-				this.$.bookingSucessfulToast.text = "Booking created for " + (new Date(this.slotSelection)).toLocaleString() + ".";
+				this.$.bookingSucessfulToast.text = "Booking created for " +
+                    prettyDateTime(new Date(this.slotSelection)) + ".";
 				this.$.bookingSucessfulToast.show();
 
 				this.fire('slot-booked', {
