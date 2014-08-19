@@ -54,24 +54,15 @@
             alertError: function() {
                 alert("Sorry, something went wrong");
             },
-			updateTickerViewer: function(detail) {
-                this.$.view.updateViewConsole(detail.result);
-            },
 			sessionIdChanged: function() {
 				this.$.view.refresh();
-			},
-			refreshChanged: function() {
-				if(this.refresh) {
-					this.$.view.updateViewConsole(this.reason);
-					this.refresh = !this.refresh;
-				}
 			},
 			kickChanged : function() {
 				if (this.kick) {
 					this.$.view.kickForSure();
 					this.kick = false;
 				} 
-			},
+			}
         })
     </script>
 </polymer-element>
