@@ -85,7 +85,7 @@
                 <div id="scrollArea" style="overflow-x: auto; margin-left: -6px;" on-scroll="{{scrolled}}" flex>
                    <template repeat="{{user in displayUsers}}">
                         <div id="template">
-                            <overview-list user="{{user}}" scrollAreaWidth="{{scrollAreaWidth}}"></overview-list>
+                            <overview-list user="{{user}}" scrollAreaLeft="{{scrollAreaLeft}}" scrollAreaTop="{{scrollAreaTop}}" scrollAreaWidth="{{scrollAreaWidth}}"></overview-list>
                         </div>
                     </template>
                 </div>
@@ -96,6 +96,8 @@
         Polymer('overview-card', {
             created: function() {
                 this.buildCollegeDictionary();
+                this.scrollAreaLeft = 0;
+                this.scrollAreaTop = 0;
             },
 
             overviewLoaded: function() {
@@ -122,7 +124,7 @@
                        college: el[2],
                        collegeAbbr: that.collegeDict.hasOwnProperty(el[2]) ? that.collegeDict[el[2]] : "",
                        displayStrings:
-                               el.splice(4, el.length - 1).map(function (el) {
+                               el.splice(4, el.length - 1).map(function (el, index) {
                                    var iconCode;
                                    var tooltip;
 
@@ -146,7 +148,7 @@
                                        iconCode = el;
                                    }
 
-                                   return {iconCode: iconCode, tooltip: tooltip};
+                                   return {iconCode: iconCode, tooltip: tooltip, index: index};
                                })
                    }
                 });
@@ -431,7 +433,8 @@
 
 //                this.updateScrollAreas();
 
-
+                this.scrollAreaLeft = this.$.scrollArea.scrollLeft;
+                this.scrollAreaTop = this.$.scrollArea.scrollTop;
             },
 
             updateScrollAreas: function() {
