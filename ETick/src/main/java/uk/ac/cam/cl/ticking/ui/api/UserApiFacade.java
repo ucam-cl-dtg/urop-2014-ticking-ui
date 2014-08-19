@@ -227,7 +227,7 @@ public class UserApiFacade implements IUserApiFacade {
 				String[] badkeys = s.getMessage().trim().split(" ");
 				for (String badkey: badkeys) {
 					log.error(badkey);
-					User badUser = db.getUser(badkey.split(".")[0]);
+					User badUser = db.getUser(badkey.split("\\.")[0]);
 					badUser.setSsh(null);
 				}
 				if (s.getMessage().contains(crsid)) {
