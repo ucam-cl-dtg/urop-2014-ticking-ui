@@ -1,3 +1,4 @@
+
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -525,6 +526,7 @@
 
         deleteTickSuccess: function() {
             //TODO: fire some event
+            console.log(this.tickId + ": deleted.");
             this.fire('tick-deleted');
         },
 

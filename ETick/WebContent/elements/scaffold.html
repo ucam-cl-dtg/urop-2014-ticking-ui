@@ -32,7 +32,7 @@
 				flex layout horizontal end-justified>
 
 				<template if="{{!$.loginAPIs.ldap.isStudent}}">
-	                <menu-button id="ticksMenu" label="Ticks" valueattr="label">
+	                <menu-button id="ticksMenu" label="Ticks" valueattr="tickId">
 	                    <template repeat="{{tick in ticks}}">
 	                        <core-item icon="check-box" label="{{tick.name}}" tickId="{{tick._id}}"></core-item>
 	                    </template>
@@ -182,12 +182,14 @@
 			// Tick menu handlers:
 
 			noTickCreator: function () {
+				this.tickToSelect = "-1";
 				this.$.ticksMenu.selected = "-1";
 				this.$.tickTemp.model = { showTickCreator: false };
 			},
 
 			tickItemsChanged: function (oldValue, newValue) {
 				this.ticks = newValue;
+				this.$.ticksMenu.selected = this.tickToSelect;
 			},
 
 			tickSelectionChanged: function (oldValue, newValue) {
@@ -201,11 +203,13 @@
 			},
 
 			tickCreatedHandler: function (e, detail) {
-				console.log(e, detail);
+				this.tickToSelect = detail.tickId;
+				this.$.loginAPIs.$.sidebarTickAjax.go();
 			},
 
 			tickDeletedHandler: function (e, detail) {
-				console.log(e, detail);
+				this.$.loginAPIs.$.sidebarTickAjax.go();
+				this.$.navMenu.selected = "dashButton";
 			}
 
 		});
