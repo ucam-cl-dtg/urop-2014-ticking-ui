@@ -78,9 +78,11 @@
 		<paper-toast id="groupDeletedToast" duration="3000" text="Successfully deleted group."></paper-toast>
 		
 		<template id="tickTemp" if="{{showTickCreator}}">
-			<main-card animated>
-				<extension-card tid="{{tickId}}"></extension-card>
-			</main-card>
+			<template if="{{tickId}}">
+				<main-card animated>
+					<extension-card tid="{{tickId}}"></extension-card>
+				</main-card>
+			</template>
 			<main-card animated>
 				<tick-creator-card tickId="{{tickId}}"></tick-creator-card>
 			</main-card>
