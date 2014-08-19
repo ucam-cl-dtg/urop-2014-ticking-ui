@@ -228,7 +228,9 @@
 									else if ((endMin != 0) && (this.minutes >= parseInt(min)) && (this.minutes < endMin)) {
 										current = true;
 									}
-									else if (endMin === 0) {
+								}
+								else if (endHour === this.hours+1) {
+									if (endMin === 0) {
 										if ((this.minutes >= parseInt(min)) && (this.minutes < 60)) {
 											current = true;
 										}
