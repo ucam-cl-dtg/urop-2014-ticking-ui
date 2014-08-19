@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/core-transition/core-transition.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="extension-list.html">
 <link rel="import" href="../dialog.html">
 <link rel="import" href="../search-box.html">
@@ -54,9 +55,9 @@
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>Extensions ({{number}})</h1>
             <span flex></span>
-            <paper-icon-button icon="delete" on-click="{{deleteExtensionClicked}}"></paper-icon-button>
+            <search-box id="searchBox" placeholder="Search..."></search-box>
 			<paper-icon-button icon="add" on-click="{{addExtensionClicked}}"></paper-icon-button>
-			<search-box id="searchBox" placeholder="Search..."></search-box>
+            <paper-icon-button icon="delete" on-click="{{deleteExtensionClicked}}"></paper-icon-button>
 		</div>
 
 		<!-- Member list. -->
