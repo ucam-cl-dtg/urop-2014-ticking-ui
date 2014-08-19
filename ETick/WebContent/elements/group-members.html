@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/core-transition/core-transition.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="export-members.html">
 <link rel="import" href="dialog.html">
@@ -47,12 +48,14 @@
 		<div id="headerBar" layout horizontal center>
 			<!--<h1 flex>Members ({{number}})</h1>-->
             <span flex></span>
-			<template if="{{allowAdd}}">
-				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
-				<paper-icon-button icon="add" on-click="{{addMemberClicked}}"></paper-icon-button>
-			</template>
-			<export-members gid="{{gid}}"></export-members>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
+			<core-tooltip label="Export">
+				<export-members gid="{{gid}}"></export-members>
+			</core-tooltip>
+			<template if="{{allowAdd}}">
+				<paper-icon-button icon="add" on-click="{{addMemberClicked}}"></paper-icon-button>
+				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
+			</template>
 		</div>
 
 		<!-- Member list. -->

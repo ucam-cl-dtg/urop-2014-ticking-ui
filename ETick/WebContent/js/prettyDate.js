@@ -9,8 +9,8 @@ function prettyDate(date)
                   "October", "November", "December"];
 
     return days[date.getUTCDay()] + ", " +
-        date.getUTCDate() +
-        months[date.getUTCMonth()]  +
+        date.getUTCDate() + " " +
+        months[date.getUTCMonth()] + " " +
         date.getUTCFullYear();
 }
 
