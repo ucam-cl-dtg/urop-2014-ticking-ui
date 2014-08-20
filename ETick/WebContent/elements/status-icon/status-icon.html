@@ -1,39 +1,44 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
 
-<polymer-element name="status-icon" attributes="mode">
+<polymer-element name="status-icon" attributes="mode big showText">
     <template>
-        <core-icon icon="{{iconName}}"></core-icon>
+        <link rel="import" href="../tick-card/tick-components.css">
+        <style>
+            .small {
+                width: 24px;
+                height: 24px;
+            }
+            .big{
+                width: 48px;
+                height: 48px;
+            }
+            .status-icon-label {
+                margin-right: 10px;
+                color: #757575;
+            }
+        </style>
+
+        <div layout horizontal>
+            <template if="{{showText}}">
+                <div layout vertical>
+                    <div flex></div>
+                    <div class="status-icon-label error">
+                        {{mode == '-' ? 'Not started' : mode == 'I' ? 'Not submitted' : mode == 'F' ? 'Failed automated tests' : mode == 'U' ? 'Passed automated tests' : mode == 'P' ? 'Passed' : 'Unknown status code'}}
+                    </div>
+                    <div flex></div>
+                </div>
+            </template>
+
+            <!-- When core-icon is created, if icon="", then it displays no icon. However, if icon is set to a non-empty
+                 string, then set back to "", a blank icon is not displayed.-->
+            <core-icon class="{{big ? 'big' : 'small'}}"
+                       icon="{{mode == '-' ? '' : mode == 'I' ? 'create' : mode == 'F' ? 'clear' : mode == 'U' ? 'done' : mode == 'P' ? 'done-all' : ''}}"
+                       hidden?="{{mode == '' || mode == '-'}}">
+            </core-icon>
+        </div>
     </template>
     <script>
-        Polymer('status-icon', {
-            created: function() {
-                this.iconName = "";
-            },
-
-            modeChanged: function() {
-                switch (this.mode) {
-                    case "-": //not started
-                        this.iconName = "";
-                        break;
-                    case "I": //initialised (i.e. started but not submitted)
-                        this.iconName = "create"; //"more-horiz";
-                        break;
-                    case "F": //failed automated tester
-                        this.iconName = "clear";
-                        break;
-                    case "U": //passed automated tester
-                        this.iconName = "done";
-                        break;
-                    case "P": //passed human tests
-                        this.iconName = "done-all";
-                        break;
-                    default:
-                        this.iconName = "";
-                        console.log("Error: invalid icon code");
-                        break;
-                }
-            }
-        });
+        Polymer('status-icon', {});
     </script>
 </polymer-element>
