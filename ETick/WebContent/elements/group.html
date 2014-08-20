@@ -152,7 +152,7 @@
 
         <!-- Marker card for ticking sessions. -->
         <span id="deepTickingSessions" hidden>
-        	<template if="{{sheet}}">
+        	<template if="{{showTickerSignup}}">
             	<ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.title}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
             </template>            	
         </span>
@@ -229,13 +229,9 @@
 				this.selectedTickId = detail.tickId;
 				this.selectedTickName = detail.tickName;
                 this.selectedTickObj = detail.tickObj;
-
-                console.log(detail);
 			},
 
-			sheetChanged: function (o, n) {
-				console.log(o, n);
-			},
+			// Ticking sheet cards handlers:
 
 			sheetCreated: function (e, detail) {
 				this.$.sheetListAPI.go();
@@ -244,6 +240,7 @@
 					this.$.addEditResponseToast.text = detail.message;
 					this.$.addEditResponseToast.show();
 				}
+				this.showTickerSignup = false;
 			},
 
 			addSheetHandler: function () {
@@ -252,26 +249,29 @@
 					gid: this.gid,
 					sheet: null
 				}
+				this.showTickerSignup = false;
 			},			
 			
 			editSheetHandler: function (e, detail) {
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: true,
 					gid: this.gid,
-					sheet: this.sheet
+					sheet: detail.sheet
 				};
+				this.showTickerSignup = false;
 			},
 
 			sheetCancelled: function () {
-				this.$.tickingSessionList.clearSelection();
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: false,
 					gid: null,
 					sheet: null
-				}
+				};
+				this.showTickerSignup = true;
 			},
 
 			sheetSelectedHandler: function (e, detail) {
+				this.showTickerSignup = true;
 				this.sheet = detail.sheet;
 			},
 		});
