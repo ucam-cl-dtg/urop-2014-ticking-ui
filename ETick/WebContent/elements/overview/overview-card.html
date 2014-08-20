@@ -124,7 +124,6 @@
                        lastName: el[0].split(" ").slice(el[0].split(" ").length - 1),
                        crsId: el[1],
                        college: el[2],
-                       collegeAbbr: that.collegeDict.hasOwnProperty(el[2]) ? that.collegeDict[el[2]] : "",
                        displayStrings:
                                el.splice(4, el.length - 1).map(function (el, index) {
                                    var iconCode;
