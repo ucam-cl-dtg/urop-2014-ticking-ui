@@ -1,5 +1,7 @@
 package uk.ac.cam.cl.ticking.signups;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -21,6 +24,8 @@ import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
+import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.signups.api.Column;
 import uk.ac.cam.cl.signups.api.Group;
 import uk.ac.cam.cl.signups.api.Sheet;
@@ -43,6 +48,19 @@ import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
 import com.google.inject.Inject;
+
+/*
+ * VERY IMPORTANT
+ * If you want to understand the code, it will be MUCH easier if you simply ignore
+ * all blocks which begin by catching an InternalServerErrorException, and the
+ * execution will run as intended. Catching InternalServerErrorExceptions is
+ * necessary because of a bug with the exception-chains, which forces me to get
+ * the InternalServerErrorException and work out what kind of exception it actually
+ * is. Although I handle the different cases within the InternalServerErrorException
+ * block, this handling is replicated outside the block, both to satisfy the compiler
+ * and in case the bug is fixed.
+ */
+
 
 @Path("/signups")
 public class TickSignups {
@@ -82,6 +100,22 @@ public class TickSignups {
             log.info("groupID: " + groupID);
             log.info("sheetID: " + sheetID);
             return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.info("Either the sheet was not found or something has gone very wrong", e1);
+                return Response.status(Status.NOT_FOUND).entity("Not Found Error: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.info("Either the sheet was not found or something has gone very wrong", e);
             return Response.status(Status.NOT_FOUND).entity("Not Found Error: " + e.getMessage()).build();
@@ -106,6 +140,24 @@ public class TickSignups {
         String groupID = null;
         try {
             groupID = getGroupID(sheetID);
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.info("User " + crsid + " tried to book a slot but the sheet given was " +
+                        "not found in the signups database");
+                return Response.status(Status.NOT_FOUND)
+                        .entity("The sheet was not found in the signups database").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e1) {
             log.info("User " + crsid + " tried to book a slot but the sheet given was " +
                     "not found in the signups database");
@@ -149,6 +201,27 @@ public class TickSignups {
                         .entity("Error: you do not have permission to book this slot - perhaps you have not " +
                                 "passed the unit tests").build();
             }
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.info("Something was not found the in database", e1);
+                return Response.status(Status.NOT_FOUND)
+                        .entity("Not found error: " + e1.getMessage()).build();
+            } catch (NotAllowedException e1) {
+                log.info("Permission to book the slot was denied", e1);
+                return Response.status(Status.FORBIDDEN)
+                        .entity("Not allowed: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.info("Something was not found the in database", e);
             return Response.status(Status.NOT_FOUND)
@@ -186,6 +259,29 @@ public class TickSignups {
             db.saveFork(f);
             log.info("The slot was successfully unbooked");
             return Response.ok().build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.error("The booking for the tick was found to simultaneously exist and not exist", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: The booking for this tick was found to exist and "
+                                + "then not found to exist. Seek help, something went very wrong.").build();
+            } catch (NotAllowedException e1) {
+                log.error("The unbooking should have been allowed but was not", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: The removal of the booking should have been allowed but "
+                                + "for some reason was not. Seek help.").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.error("The booking for the tick was found to simultaneously exist and not exist", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -195,8 +291,7 @@ public class TickSignups {
             log.error("The unbooking should have been allowed but was not", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity("Server Error: The removal of the booking should have been allowed but "
-                            + "for some reason was not. Seek help."
-                            + e).build();
+                            + "for some reason was not. Seek help.").build();
         }
     }
     
@@ -229,6 +324,29 @@ public class TickSignups {
             db.saveFork(f);
             log.info("The slot was successfully unbooked");
             return Response.ok().build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.error("The booking for the tick was found to simultaneously exist and not exist", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: There was an inconsistency in the signups database. "
+                                + "See the logs for details.").build();
+            } catch (NotAllowedException e1) {
+                log.error("The unbooking should have been allowed but was not", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: There was a problem in removing the student. "
+                                + "See the logs for details.").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.error("The booking for the tick was found to simultaneously exist and not exist", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -261,6 +379,29 @@ public class TickSignups {
             db.saveFork(f);
             log.info("The slot was successfully unbooked");
             return Response.ok().build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.error("The booking for the tick was found to simultaneously exist and not exist", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: There was an inconsistency in the signups database. "
+                                + "See the logs for details.").build();
+            } catch (NotAllowedException e1) {
+                log.error("The unbooking should have been allowed but was not", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: There was a problem in removing the student. "
+                                + "See the logs for details.").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.error("The booking for the tick was found to simultaneously exist and not exist", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -294,6 +435,24 @@ public class TickSignups {
                     String groupID = getGroupID(sheetID);
                     uk.ac.cam.cl.ticking.ui.actors.Group group = db.getGroup(groupID);
                     groupName = group.getName();
+                } catch(InternalServerErrorException e) {
+                    try {
+                        throwRealException(e);
+                        log.error("Something went wrong when processing the InternalServerErrorException", e);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                                .build();
+                    } catch (ItemNotFoundException e1) {
+                        log.error("A booking appears to exist in a sheet that doesn't", e1);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("Server Error: You appear to have a booking in a sheet"
+                                        + " that doesn't exist").build();
+                    } catch (Throwable t) {
+                        log.error("Something went wrong when processing the InternalServerErrorException", t);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                                .build();
+                    }
                 } catch (ItemNotFoundException e) {
                     log.error("A booking appears to exist in a sheet that doesn't", e);
                     return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -317,6 +476,22 @@ public class TickSignups {
     public Response listSheets(@PathParam("groupID") String groupID) {
         try {
             return Response.ok(service.listSheets(groupID)).build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.warn("Probably the group was not found", e1);
+                return Response.status(Status.NOT_FOUND).entity("Not found error: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.warn("Probably the group was not found", e);
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
@@ -332,6 +507,22 @@ public class TickSignups {
     public Response listTickers(@PathParam("sheetID") String sheetID) {
         try {
             return Response.ok(service.listColumns(sheetID)).build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.warn("Probably the sheet was not found", e1);
+                return Response.status(Status.NOT_FOUND).entity("Not found error: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.warn("Probably the sheet was not found", e);
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
@@ -347,6 +538,22 @@ public class TickSignups {
     public Response listSlots(@PathParam("sheetID") String sheetID, @PathParam("ticker") String tickerName) {
         try {
             return Response.ok(service.listColumnSlots(sheetID, tickerName)).build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.warn("Probably either the sheet or column was not found", e1);
+                return Response.status(Status.NOT_FOUND).entity("Not found error: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.warn("Probably either the sheet or column was not found", e);
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
@@ -365,6 +572,22 @@ public class TickSignups {
             @PathParam("startTime") Date startTime) {
         try {
             return Response.ok(service.showBooking(sheetID, tickerName, startTime.getTime())).build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.warn("The booking was not found", e1);
+                return Response.status(Status.NOT_FOUND).entity("Not found error: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.warn("The booking was not found", e);
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
@@ -386,8 +609,25 @@ public class TickSignups {
         String groupID;
         try {
             groupID = getGroupID(sheetID);
-        } catch (ItemNotFoundException e1) {
-            log.info("The sheet of ID " + sheetID + " was not found", e1);
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.info("The sheet of ID " + sheetID + " was not found", e1);
+                return Response.status(Status.NOT_FOUND)
+                        .entity("Not found error: the sheet " + sheetID + "was not found").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
+        } catch (ItemNotFoundException e) {
+            log.info("The sheet of ID " + sheetID + " was not found", e);
             return Response.status(Status.NOT_FOUND)
                     .entity("Not found error: the sheet " + sheetID + "was not found").build();
         }
@@ -404,6 +644,25 @@ public class TickSignups {
             service.removeAllUserBookings(sheetID, crsid, db.getAuthCode(sheetID));
             log.info("All future bookings of submitter " + crsid + " for sheet " + sheetID + " have been removed");
             return Response.ok().build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (NotAllowedException e1) {
+                log.info("Action was not allowed", e1);
+                return Response.status(Status.FORBIDDEN).entity("Error: " + e1.getMessage()).build();
+            } catch (ItemNotFoundException e1) {
+                log.info("Something was not found", e1);
+                return Response.status(Status.NOT_FOUND).entity("Not found error: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (NotAllowedException e) {
             log.info("Action was not allowed", e);
             return Response.status(Status.FORBIDDEN).entity("Error: " + e.getMessage()).build();
@@ -412,19 +671,80 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
     }
-    
-  
-    
-    public Response allowSignup(String crsid, String groupID, String tickID) {
+        
+    public Response allowSignup(String crsid, String groupID, String tickID) { // TODO: only if they haven't already passed...
         log.info("Attempting to allow submitter " + crsid +
                 " to sign up for the tick " + tickID + " in group " + groupID);
         try {
             service.listSheets(groupID); // to see if group exists
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException f) { // if it doesn't, create it
+                log.info("The group for some reason does not exist in the signups database - " + 
+                        "attempting to create it");
+                try {
+                    createGroup(groupID);
+                } catch(InternalServerErrorException e1) { // this means stuff has gone seriously wrong
+                    try {
+                        throwRealException(e1);
+                        log.error("Something went wrong when processing the InternalServerErrorException", e1);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                                .build();
+                    } catch (DuplicateNameException e2) {
+                        log.error("When creating the group because it doesn't exist, it was " +
+                                "found to exist", e2);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("The group was found to both exist and not exist "
+                                        + "in the signups database, sorry.\n"+e2).build();
+                    } catch (Throwable t) {
+                        log.error("Something went wrong when processing the InternalServerErrorException", t);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                                .build();
+                    }
+                } catch (DuplicateNameException e1) {
+                    log.error("When creating the group because it doesn't exist, it was " +
+                            "found to exist", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("The group was found to both exist and not exist "
+                                    + "in the signups database, sorry.\n"+e1).build();
+                }
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) { // if it doesn't, create it
             log.info("The group for some reason does not exist in the signups database - " + 
                     "attempting to create it");
             try {
                 createGroup(groupID);
+            } catch(InternalServerErrorException e1) {
+                try {
+                    throwRealException(e1);
+                    log.error("Something went wrong when processing the InternalServerErrorException", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                            .build();
+                } catch (DuplicateNameException e2) {
+                    log.error("When creating the group because it doesn't exist, it was " +
+                            "found to exist", e2);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("The group was found to both exist and not exist "
+                                    + "in the signups database, sorry.\n"+e2).build();
+                } catch (Throwable t) {
+                    log.error("Something went wrong when processing the InternalServerErrorException", t);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                            .build();
+                }
             } catch (DuplicateNameException e1) {
                 log.error("When creating the group because it doesn't exist, it was " +
                         "found to exist", e1);
@@ -440,6 +760,27 @@ public class TickSignups {
             service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
             log.info(crsid + " is now allowed to sign up for " + tickID + " in group " + groupID);
             return Response.ok().build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (NotAllowedException e1) {
+                log.info("Permission was denied", e1);
+                return Response.status(Status.FORBIDDEN)
+                        .entity("Not allowed error: " + e1.getMessage()).build();
+            } catch (ItemNotFoundException e1) {
+                log.info("Something was not found", e1);
+                return Response.status(Status.NOT_FOUND)
+                        .entity("Not found error: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (NotAllowedException e) {
             log.info("Permission was denied", e);
             return Response.status(Status.FORBIDDEN)
@@ -458,6 +799,27 @@ public class TickSignups {
         map.put(tickID, null);
         try {
             service.removePermissions(groupID, crsid, new PermissionsBean(map, db.getAuthCode(groupID)));
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (NotAllowedException e1) {
+                log.error("Permission was denied - it shouldn't be", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Permission was denied - it shouldn't be.").build();
+            } catch (ItemNotFoundException e1) {
+                log.error("Something was not found that should have been", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Internal server error: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (NotAllowedException e) {
             log.error("Permission was denied - it shouldn't be", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -507,6 +869,27 @@ public class TickSignups {
             service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
             log.info("Permissions updated");
             return Response.ok().build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (NotAllowedException e1) {
+                log.info("Permission denied", e1);
+                return Response.status(Status.FORBIDDEN)
+                        .entity("Not allowed error: " + e1.getMessage()).build();
+            } catch (ItemNotFoundException e1) {
+                log.info("Something was not found", e1);
+                return Response.status(Status.NOT_FOUND)
+                        .entity("Not found error: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (NotAllowedException e) {
             log.info("Permission denied", e);
             return Response.status(Status.FORBIDDEN)
@@ -529,6 +912,27 @@ public class TickSignups {
             service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
             log.info("Permissions updated");
             return Response.ok().build();
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (NotAllowedException e1) {
+                log.info("Permission denied", e1);
+                return Response.status(Status.FORBIDDEN)
+                        .entity("Not allowed: " + e1.getMessage()).build();
+            } catch (ItemNotFoundException e1) {
+                log.info("Something was not found", e1);
+                return Response.status(Status.NOT_FOUND)
+                        .entity("Not found error: " + e1.getMessage()).build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (NotAllowedException e) {
             log.info("Permission denied", e);
             return Response.status(Status.FORBIDDEN)
@@ -584,6 +988,22 @@ public class TickSignups {
             id = info.getSheetID();
             auth = info.getAuthCode();
             db.addAuthCode(id, auth);
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (DuplicateNameException e1) {
+                log.info("The sheet seems to already exist");
+                return Response.serverError().entity("This sheet already seems to exist").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (DuplicateNameException e) {
             log.info("The sheet seems to already exist");
             return Response.serverError().entity("This sheet already seems to exist").build();
@@ -593,6 +1013,32 @@ public class TickSignups {
             try {
                 service.createColumn(id, new CreateColumnBean(ticker, auth, new Date(bean.getStartTime()),
                         new Date(bean.getEndTime()), bean.getSlotLengthInMinutes()));
+            } catch(InternalServerErrorException e) {
+                try {
+                    throwRealException(e);
+                    log.error("Something went wrong when processing the InternalServerErrorException", e);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                            .build();
+                } catch (ItemNotFoundException e1) {
+                    log.error("The sheet or column was not found, but we are creating them", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: The sheet or column was not found, but we are creating them").build();
+                } catch (NotAllowedException e1) {
+                    log.error("Permission was denied, it should not have been", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: Permission to the sheet was denied, it should not have been").build();
+                } catch (DuplicateNameException e1) {
+                    log.warn("A duplicate name exception was encountered when creating a sheet" +
+                            "and ignored because " +
+                            "two identical columns were probably entered. If it was a duplicate " +
+                            "slot, there's some problem.", e1);
+                } catch (Throwable t) {
+                    log.error("Something went wrong when processing the InternalServerErrorException", t);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                            .build();
+                }
             } catch (ItemNotFoundException e) {
                 log.error("The sheet or column was not found, but we are creating them", e);
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -612,12 +1058,116 @@ public class TickSignups {
         try {
             service.addSheetToGroup(bean.getGroupID(),
                     new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException ee) { // group doesn't yet exist: create and retry
+                log.info("The given group was not found in the signups database - attempting to create it");
+                try {
+                    createGroup(bean.getGroupID());
+                    service.addSheetToGroup(bean.getGroupID(),
+                            new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
+                } catch(InternalServerErrorException e0) {
+                    try {
+                        throwRealException(e0);
+                        log.error("Something went wrong when processing the InternalServerErrorException", e0);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                                .build();
+                    } catch (DuplicateNameException e1) {
+                        log.error("The group was found to not exist and then immediately exist " +
+                                "in the signups database", e1);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("Server Error: The group was found to both exist and not exist "
+                                        + "in the signups database").build();
+                    } catch (ItemNotFoundException e1) {
+                        log.error("Group still not found, even after attempted creation", e1);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("Server Error: The group was not found in the signups database, we "
+                                        + "attempted to create it, but it still wasn't found.").build();
+                    } catch (NotAllowedException e1) {
+                        log.error("The auth codes were found to be incorrect", e1);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("Server Error: The group was not found in the signups database, "
+                                        + "we attempted to create it, but permission was not "
+                                        + "given - it should have been").build();
+                    } catch (Throwable t) {
+                        log.error("Something went wrong when processing the InternalServerErrorException", t);
+                        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                                .build();
+                    }
+                } catch (DuplicateNameException e1) {
+                    log.error("The group was found to not exist and then immediately exist " +
+                            "in the signups database", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: The group was found to both exist and not exist "
+                                    + "in the signups database").build();
+                } catch (ItemNotFoundException e1) {
+                    log.error("Group still not found, even after attempted creation", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: The group was not found in the signups database, we "
+                                    + "attempted to create it, but it still wasn't found."
+                                    + "\n"+e1).build();
+                } catch (NotAllowedException e1) {
+                    log.error("The auth codes were found to be incorrect", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: The group was not found in the signups database, "
+                                    + "we attempted to create it, but permission was not "
+                                    + "given - it should have been").build();
+                }
+            } catch (NotAllowedException e1) {
+                log.error("The auth codes stored in the " +
+                        "database were not found to match those in the signups database", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: The authorisation codes stored in the " +
+                                "database were not found to match those in the signups database").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) { // group doesn't yet exist: create and retry
             log.info("The given group was not found in the signups database - attempting to create it");
             try {
                 createGroup(bean.getGroupID());
                 service.addSheetToGroup(bean.getGroupID(),
                         new GroupSheetBean(id, db.getAuthCode(bean.getGroupID()), auth));
+            } catch(InternalServerErrorException e0) {
+                try {
+                    throwRealException(e0);
+                    log.error("Something went wrong when processing the InternalServerErrorException", e0);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                            .build();
+                } catch (DuplicateNameException e1) {
+                    log.error("The group was found to not exist and then immediately exist " +
+                            "in the signups database", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: The group was found to both exist and not exist "
+                                    + "in the signups database").build();
+                } catch (ItemNotFoundException e1) {
+                    log.error("Group still not found, even after attempted creation", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: The group was not found in the signups database, we "
+                                    + "attempted to create it, but it still wasn't found.").build();
+                } catch (NotAllowedException e1) {
+                    log.error("The auth codes were found to be incorrect", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: The group was not found in the signups database, "
+                                    + "we attempted to create it, but permission was not "
+                                    + "given - it should have been").build();
+                } catch (Throwable t) {
+                    log.error("Something went wrong when processing the InternalServerErrorException", t);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                            .build();
+                }
             } catch (DuplicateNameException e1) {
                 log.error("The group was found to not exist and then immediately exist " +
                         "in the signups database", e1);
@@ -672,6 +1222,22 @@ public class TickSignups {
                 return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
             }
             sheet = service.getSheet(sheetID);
+        } catch(InternalServerErrorException e0) {
+            try {
+                throwRealException(e0);
+                log.error("Something went wrong when processing the InternalServerErrorException", e0);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e) {
+                log.info("Sheet not found", e);
+                return Response.status(Status.NOT_FOUND).entity("The sheet was not found").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.info("Sheet not found", e);
             return Response.status(Status.NOT_FOUND).entity("The sheet was not found").build();
@@ -720,6 +1286,33 @@ public class TickSignups {
             sheet.setDescription(bean.getDescription());
             sheet.setLocation(bean.getLocation());
             service.updateSheet(sheetID, new UpdateSheetBean(sheet, db.getAuthCode(sheetID)));
+        } catch(InternalServerErrorException e0) {
+            try {
+                throwRealException(e0);
+                log.error("Something went wrong when processing the InternalServerErrorException", e0);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e) {
+                log.error("The sheet was not found, while earlier in this method it was", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Internal Server Error: some changes not made").build();
+            } catch (NotAllowedException e) {
+                log.error("The auth code stored was for some reason not correct", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Internal Server Error: some changes not made").build();
+            } catch (DuplicateNameException e) {
+                log.error("A new ticker was found to have the same name as an old ticker, " +
+                        "even though new tickers are only created when there are no old ones" +
+                        "with that name", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Internal Server Error: some changes not made").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
         } catch (ItemNotFoundException e) {
             log.error("The sheet was not found, while earlier in this method it was", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -753,6 +1346,32 @@ public class TickSignups {
             if (bean.getEndTime() < sheet.getEndTime().getTime()) { // need to delete slots from end
                 service.deleteSlotsAfter(sheetID,
                         new BatchDeleteBean(bean.getEndTime(), db.getAuthCode(sheetID)));
+            }
+        } catch(InternalServerErrorException e0) {
+            try {
+                throwRealException(e0);
+                log.error("Something went wrong when processing the InternalServerErrorException", e0);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e) {
+                log.error("The sheet was not found, while earlier in this method it was, " +
+                        "or something else that should have been found wasn't", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Internal Server Error: some changes not made").build();
+            } catch (NotAllowedException e) {
+                log.error("The auth code stored was for some reason not correct", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Internal Server Error: some changes not made").build();
+            } catch (DuplicateNameException e) {
+                log.error("Slots that should not already exist were found to exist", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Internal Server Error").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
             }
         } catch (ItemNotFoundException e) {
             log.error("The sheet was not found, while earlier in this method it was, " +
@@ -793,154 +1412,37 @@ public class TickSignups {
             service.deleteSheet(sheetID, db.getAuthCode(sheetID));
             log.info("Sheet deleted");
             return Response.ok().build();
-        } catch (ItemNotFoundException e) {
-            log.info("The sheet of ID " + sheetID + " was not found", e);
+        } catch(InternalServerErrorException e) {
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.info("The sheet of ID " + sheetID + " was not found", e1);
+                return Response.status(Status.NOT_FOUND).entity("The given sheet was not found.").build();
+            } catch (NotAllowedException e1) {
+                log.error("The auth code for the sheet was found to be incorrect", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Server Error: "
+                        + "the authCode seems to be wrong, but it never should be.").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
+        } catch (ItemNotFoundException e1) {
+            log.info("The sheet of ID " + sheetID + " was not found", e1);
             return Response.status(Status.NOT_FOUND).entity("The given sheet was not found.").build();
-        } catch (NotAllowedException e) {
-            log.error("The auth code for the sheet was found to be incorrect", e);
+        } catch (NotAllowedException e1) {
+            log.error("The auth code for the sheet was found to be incorrect", e1);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Server Error: "
                     + "the authCode seems to be wrong, but it never should be.").build();
         }
+        
     }
-    
-    /**
-     * Adds a new column to the sheet, filled with regularly spaced
-     * empty slots. TODO: change bean - we want this column to conform to the others
-     * @param sheetID
-     * @param authCode
-     * @param name
-     * @param startTime Time of first slot
-     * @param numberOfSlots
-     * @param slotLength In minutes
-     */
-    @POST
-    @Path("/sheets/{sheetID}/tickers")
-    @Consumes("application/json")
-    @Produces("application/json")
-    public Response addColumn(@Context HttpServletRequest request,
-            @PathParam("sheetID") String sheetID,
-            AddColumnBean bean) {
-        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
-        log.info("The user " + crsid + " wants to add a ticker to the sheet " + sheetID);
-        try {
-            if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.MARKER)) {
-                log.info("The user " + crsid + " does not have permission to do this (is not a marker)");
-                return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
-            }
-        } catch (ItemNotFoundException e1) {
-            log.info("The sheet was not found", e1);
-            return Response.status(Status.NOT_FOUND).entity("The given signup "
-                    + "sheet was not found").build();
-        }
-        long sheetLengthInMinutes = (bean.getEndTime() - bean.getStartTime())/60000;
-        if (bean.getEndTime() <= bean.getStartTime()) {
-            log.info("The end time was not after the start time");
-            return Response.status(Status.BAD_REQUEST).entity("The end time must be after "
-                    + "the start time").build();
-        }
-        if (sheetLengthInMinutes % bean.getSlotLengthInMinutes() != 0) {
-            log.info("An integer number of slots is required");
-            return Response.status(Status.BAD_REQUEST).entity("The difference in minutes "
-                    + "between the start and end times should be an integer multiple of "
-                    + "the length of the slots").build();
-        }
-        if (sheetLengthInMinutes/bean.getSlotLengthInMinutes() > 500) {
-            log.info("Too many slots");
-            return Response.status(Status.BAD_REQUEST).entity("This sheet would have a silly "
-                    + "number of slots if created.").build();
-        }
-        try {
-            service.createColumn(sheetID, new CreateColumnBean(bean.getName(),
-                    db.getAuthCode(sheetID), new Date(bean.getStartTime()), new Date(bean.getEndTime()),
-                    bean.getSlotLengthInMinutes()));
-            log.info("Ticker added");
-            return Response.ok().build();
-        } catch (ItemNotFoundException e) {
-            log.info("Something was not found", e);
-            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
-        } catch (NotAllowedException e) {
-            log.info("Permission was denied for some reason", e);
-            return Response.status(Status.FORBIDDEN).entity("Not allowed: " + e.getMessage()).build();
-        } catch (DuplicateNameException e) {
-            log.info("Duplicate column or slot", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Server Error: "
-                    + e.getMessage()).build();
-        }
-    }
-    
-    /**
-     * Deletes the specified column from the sheet. This also deletes
-     * all the bookings made for that column. TODO: update fork objects
-     */
-    @DELETE
-    @Path("/sheets/{sheetID}/tickers/{ticker}")
-    public Response deleteColumn(@Context HttpServletRequest request,
-            @PathParam("sheetID") String sheetID,
-            @PathParam("ticker") String ticker) {
-        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
-        log.info("The user " + crsid + " has requested deletion of the ticker " + ticker +
-                "from the sheet of ID " + sheetID);
-        try {
-            if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.MARKER)) {
-                log.info("The user " + crsid + " is not a marker and so permission was denied");
-                return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
-            }
-        } catch (ItemNotFoundException e1) {
-            log.info("The sheet was not found", e1);
-            return Response.status(Status.NOT_FOUND).entity("Error: The given signup "
-                    + "sheet was not found").build();
-        }
-        try {
-            service.deleteColumn(sheetID, ticker, db.getAuthCode(sheetID));
-            log.info("Ticker deleted");
-            return Response.ok().build();
-        } catch (NotAllowedException e) {
-            log.info("Permission denied", e);
-            return Response.status(Status.FORBIDDEN).entity("Not allowed: " + e.getMessage()).build();
-        } catch (ItemNotFoundException e) {
-            log.info("Something was not found", e);
-            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
-        }
-    }
-    
-    
-    
-    /**
-     * Modifies bookings no matter what.
-     * Commented out for now because not currently used and needs attention if it is to be used.
-     */
-    /*
-    @POST
-    @Path("/sheets/{sheetID}/bookings/{startTime}")
-    @Consumes("application/json")
-    // TODO: check arguments 
-    // TODO: unify with normal modify booking and even perhaps make booking TODO: maybe not
-    public Response forceModifyBooking(@PathParam("sheetID") String sheetID, String authCode, String tickID,
-            @PathParam("sheetID") Long startTime, String currentlyBookedUser, String userToBook) {
-        String ticker = null;
-        for (Slot slot : service.listUserSlots(currentlyBookedUser)) {
-            if (slot.getStartTime().getTime() == startTime &&
-                    slot.getComment().equals(tickID) &&
-                    slot.getSheetID().equals(sheetID)) {
-                ticker = slot.getColumnName();
-            }
-        }
-        if (ticker == null) {
-            return Response.status(Status.NOT_FOUND).entity("The slot was not found").build();
-        }
-        try {
-            service.book(sheetID, ticker, startTime, new SlotBookingBean(currentlyBookedUser, userToBook, tickID, authCode));
-        } catch (ItemNotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
-        } catch (NotAllowedException e) {
-            e.printStackTrace();
-            return Response.status(Status.FORBIDDEN).entity("Not allowed: " + e.getMessage()).build();
-        }
-        return Response.ok().build();
-    }
-    */
-    
+
     public void createGroup(String groupID) throws DuplicateNameException {
         log.info("Creating new group in signups database with ID " + groupID);
         String groupAuthCode = service.addGroup(new Group(groupID));
@@ -957,6 +1459,15 @@ public class TickSignups {
                             + "with this sheet, but there seems to be " + groupIDs.size());
         }
         return groupIDs.get(0);
+    }
+    
+    private void throwRealException(InternalServerErrorException e) throws Throwable {
+        RemoteFailureHandler h = new RemoteFailureHandler();
+        SerializableException s = h.readException(e);
+        Class<? extends Throwable> clazz = (Class<? extends Throwable>) Class.forName(s.getClassName());
+        Constructor<? extends Throwable> ctor = clazz.getConstructor(String.class);
+        Throwable toThrow = ctor.newInstance(new Object[] { s.getMessage() });
+        throw toThrow;
     }
     
 }
