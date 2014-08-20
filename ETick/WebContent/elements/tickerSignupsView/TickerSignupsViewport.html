@@ -148,6 +148,7 @@
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
 				this.slots = [];
 				for (var i = 0; i < loadedSlots.length; i++) {
+					
 					var hour = loadedSlots[i].startTime.split(":")[0].split("T")[1];
 					var min = loadedSlots[i].startTime.split(":")[1];
 					var timeSlot = hour + ":" + min;
