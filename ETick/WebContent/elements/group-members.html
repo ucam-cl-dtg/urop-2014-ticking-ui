@@ -163,7 +163,7 @@
 				var list = this.$.addMemberAjax.response;
 				this.number = list.length;
 				this.$.members.people = list;
-
+				this.$.members.$.list.$.selector.selected = undefined;
 				this.$.addSuccessToast.show();
 			},
 
