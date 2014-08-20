@@ -84,7 +84,9 @@
 
 			editClicked: function () {
 				if (this.selectedSheet) {
-					this.fire('edit-sheet-clicked');
+					this.fire('edit-sheet-clicked', {
+						sheet: this.selectedSheet
+					});
 				}
 			},
 
