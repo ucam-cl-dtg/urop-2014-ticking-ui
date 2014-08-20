@@ -50,6 +50,7 @@
     </div>
     <div class="bottom">
       <confirm-button yesBgColor="#455ede"
+                      id="confirmElement"
                       noBgColor="#91a7ff">
         <paper-button raisedButton
                       id="pass"
@@ -119,41 +120,50 @@
           , passTick:
             function (e)
             {
-              var confirmElement = e.srcElement.parentElement;
-              if (confirmElement.sure &&
-                  confirmElement.currentConfirm == e.srcElement)
+              if (this.$.confirmElement.sure &&
+                  this.$.confirmElement.currentConfirm == this.$.pass)
               {
                 this.sendTick(true,  this.$.tickerComment.value);
                 this.tickStatus = "passed";
                 this.fire("tick-passed",{});
+              }
+              else
+              {
+                this.$.confirmElement.currentConfirm = this.$.pass;
               }
             }
 
           , failTick:
             function (e)
             {
-              var confirmElement = e.srcElement.parentElement;
-              if (confirmElement.sure &&
-                  confirmElement.currentConfirm == e.srcElement)
+              if (this.$.confirmElement.sure &&
+                  this.$.confirmElement.currentConfirm == this.$.fail)
               {
                 this.sendTick(false, this.$.tickerComment.value);
                 this.tickStatus = "failed";
                 this.fire("tick-failed",{});
+              }
+              else
+              {
+                this.$.confirmElement.currentConfirm = this.$.fail;
               }
             }
 
           , noShow:
             function (e)
             {
-              var confirmElement = e.srcElement.parentElement;
-              if (confirmElement.sure &&
-                  confirmElement.currentConfirm == e.srcElement)
+              if (this.$.confirmElement.sure &&
+                  this.$.confirmElement.currentConfirm == this.$.noShow)
               {
                 this.$.setNoShow.url = ticking_service +
                       "/signups/students/" + this.crsid
                       + "/bookings/" + this.sheetId;
                 this.$.setNoShow.go();
                 this.fire("tick-no-show",{});
+              }
+              else
+              {
+                this.$.confirmElement.currentConfirm = this.$.noShow;
               }
             }
         });

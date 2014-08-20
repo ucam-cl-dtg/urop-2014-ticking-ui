@@ -7,7 +7,7 @@
   (NOTE: For this to make sense, you need more than one paper-button,
   otherwise there will only be a "YES" button!)
 
-      <confirm-button>
+      <confirm-button id="confirmElement">
         <paper-button raisedButton
                       id="pass"
                       class="spaced wide green"
@@ -28,27 +28,34 @@
             passTick:
             function (e)
             {
-              var confirmElement = e.srcElement.parentElement;
-              if (confirmElement.sure &&
-                  confirmElement.currentConfirm == e.srcElement)
+              if (this.$.confirmElement.sure &&
+                  this.$.confirmElement.currentConfirm == this.$.pass)
               {
-                // Whatever passTick should do
+                // Do what the pass button should do.
+              }
+              else
+              {
+                this.$.confirmElement.currentConfirm = this.$.pass;
               }
             }
 
           , failTick:
             function (e)
             {
-              var confirmElement = e.srcElement.parentElement;
-              if (confirmElement.sure &&
-                  confirmElement.currentConfirm == e.srcElement)
+              if (this.$.confirmElement.sure &&
+                  this.$.confirmElement.currentConfirm == this.$.fail)
               {
-                // Whatever failTick should do
+                // Do what the fail button should do.
+              }
+              else
+              {
+                this.$.confirmElement.currentConfirm = this.$.fail;
               }
             }
 -->
 <polymer-element name="confirm-button" attributes="yesBgColor yesFgColor
-                                                    noBgColor  noFgColor">
+                                                    noBgColor  noFgColor
+                                                    currentConfirm sure">
   <template>
     <span on-tap="{{tapEvent}}">
       <content>
@@ -90,6 +97,8 @@
               var buttons =
                 this.querySelectorAll('paper-button');
 
+              console.log(e);
+
               var i;
               var len = buttons.length;
               if (this.sure)
@@ -111,7 +120,7 @@
                 {
                   var current = buttons.item(i);
 
-                  if (e.srcElement == current)
+                  if (this.currentConfirm == current)
                   {
                     current.label = "yes";
                     current.style.backgroundColor = this.yesBgColor;
