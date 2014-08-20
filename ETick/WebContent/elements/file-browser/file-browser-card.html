@@ -164,6 +164,12 @@
                 "You have failed the automatic tests." +
                 " See below for more detailed information."
             }
+            else if (this.tickerResult == "UNDEFINED")
+            {
+              this.$.resultString.innerHTML =
+                "You have passed the automatic tests." +
+                " Time to get this ticked!";
+            }
             else if (this.tickerResult == "FAIL"
                    &&typeof this.lastTickedBy != typeof undefined
                    &&typeof this.lastTickedOn != typeof undefined)
@@ -184,7 +190,7 @@
                   "</a>" +
                 " at " + prettyDateTime(new Date(
                       /* Make it a UTC date */
-                      this.lastTickedOn.split("+")+"Z")) +
+                      this.lastTickedOn.split("+")[0]+"Z")) +
                 ".";
             }
             else if (this.tickerResult == "FAIL")
