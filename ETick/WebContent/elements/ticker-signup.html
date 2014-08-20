@@ -6,23 +6,27 @@
 
 <polymer-element name="ticker-signup" attributes="groupId isMarker isAdmin sessionId sessionName location description">
 	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
-		<div class="container">
-			<are-you-sure id="confirm" on-yes="{{yes}}" on-no="{{no}}" heading="Remove {{crsId}} from this slot?"></are-you-sure>
-			<template if="{{((isMarker||isAdmin)&&(sessionId))}}">
-				<main-card animated>
-					<ticker-signups-card on-open-are-you-sure="{{openAreYouSure}}" on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" kick="{{kick}}" reason="{{reason}}" refresh="{{!viewReport}}" studentMode="{{false}}" location="{{location}}" description="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
-				</main-card>
-				<main-card hidden?="{{!viewReport}}">
-					<file-browser-card id="filebrowser" on-hide-report="{{hideReport}}" slotId="{{slotId}}" sheetId="{{sessionId}}" crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
-				</main-card>
-			</template>
-			<template if="{{(!(isMarker||isAdmin)&&(sessionId))}}">
-				<main-card animated>
-					<ticker-signups-card studentMode="{{true}}" location="{{location}}" description="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId="{{slotId}}" crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
-				</main-card>
-			</template>
-		</div>
+		<are-you-sure id="confirm" on-yes="{{yes}}" on-no="{{no}}" heading="Remove {{crsId}} from this slot?"></are-you-sure>
+		<template if="{{((isMarker||isAdmin)&&(sessionId))}}">
+			<main-card animated>
+				<ticker-signups-card on-open-are-you-sure="{{openAreYouSure}}" on-hide-report="{{hideReport}}" on-show-report="{{showReport}}" kick="{{kick}}" reason="{{reason}}" refresh="{{!viewReport}}" studentMode="{{false}}" location="{{location}}" description="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId={{slotId}} crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
+			</main-card>
+			<main-card hidden?="{{!viewReport}}">
+				<file-browser-card id="filebrowser" on-hide-report="{{hideReport}}" slotId="{{slotId}}" sheetId="{{sessionId}}" crsid="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}"></file-browser-card>
+			</main-card>
+		</template>
+		<template if="{{(!(isMarker||isAdmin)&&(sessionId))}}">
+			<main-card animated>
+				<ticker-signups-card studentMode="{{true}}" location="{{location}}" description="{{description}}" sessionName="{{sessionName}}" sessionId="{{sessionId}}" slotId="{{slotId}}" crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" groupId="{{groupId}}" id="tickerSignupsCard"></ticker-signups-card>
+			</main-card>
+		</template>
 	</template>
 	<script>
 	Polymer('ticker-signup', {

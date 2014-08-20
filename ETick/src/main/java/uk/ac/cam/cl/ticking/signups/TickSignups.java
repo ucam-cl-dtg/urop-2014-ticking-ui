@@ -1,7 +1,6 @@
 package uk.ac.cam.cl.ticking.signups;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +20,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +100,15 @@ public class TickSignups {
             log.info("tickID: " + tickID);
             log.info("groupID: " + groupID);
             log.info("sheetID: " + sheetID);
-            return Response.ok(service.listAllFreeStartTimes(crsid, tickID, groupID, sheetID)).build();
+            
+            /* Convert all of the datetimes out of UTC before passing them on */
+            List<Date> slots = service.listAllFreeStartTimes(crsid, tickID,
+                    groupID, sheetID);
+            List<Date> convertedSlots = new ArrayList<>();
+            for (Date date : slots) {
+                convertedSlots.add(convertToAssumedGMTXFromUTC(date));
+            }
+            return Response.ok(convertedSlots).build();
         } catch(InternalServerErrorException e) {
             try {
                 throwRealException(e);
@@ -138,6 +147,10 @@ public class TickSignups {
             @PathParam("sheetID") String sheetID, MakeBookingBean bean) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         String groupID = null;
+        
+        /* Convert the bean starttime to UTC */
+        bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
+        
         try {
             groupID = getGroupID(sheetID);
         } catch(InternalServerErrorException e) {
@@ -459,7 +472,11 @@ public class TickSignups {
                             .entity("Server Error: You appear to have a booking in a sheet"
                                     + " that doesn't exist").build();
                 }
-                toReturn.add(new BookingInfo(s, groupName));
+                /* Convert the starttime to GMTX */
+                BookingInfo info = new BookingInfo(s, groupName);
+                info.setStartTime(convertToAssumedGMTXFromUTC(info
+                        .getStartTime()));
+                toReturn.add(info);
             }
         }
         return Response.ok(toReturn).build();
@@ -475,7 +492,14 @@ public class TickSignups {
     @Produces("application/json")
     public Response listSheets(@PathParam("groupID") String groupID) {
         try {
-            return Response.ok(service.listSheets(groupID)).build();
+            List<Sheet> sheets = service.listSheets(groupID);
+            for (Sheet sheet : sheets) {
+                /* Convert the starttime to GMTX */
+                sheet.setStartTime(convertToAssumedGMTXFromUTC(sheet
+                        .getStartTime()));
+                sheet.setEndTime(convertToAssumedGMTXFromUTC(sheet.getEndTime()));
+            }
+            return Response.ok(sheets).build();
         } catch(InternalServerErrorException e) {
             try {
                 throwRealException(e);
@@ -537,7 +561,17 @@ public class TickSignups {
     @Produces("application/json")
     public Response listSlots(@PathParam("sheetID") String sheetID, @PathParam("ticker") String tickerName) {
         try {
-            return Response.ok(service.listColumnSlots(sheetID, tickerName)).build();
+            List<Slot> slots = service.listColumnSlots(sheetID, tickerName);
+            List<Slot> convertedSlots = new ArrayList<>();
+            for (Slot slot : slots) {
+                /*Convert to GMTX*/
+                Slot converted = new Slot(slot.getSheetID(),
+                        slot.getColumnName(),
+                        convertToAssumedGMTXFromUTC(slot.getStartTime()),
+                        slot.getDuration(), slot.getBookedUser(), slot.getComment());
+                convertedSlots.add(converted);
+            }
+            return Response.ok(convertedSlots).build();
         } catch(InternalServerErrorException e) {
             try {
                 throwRealException(e);
@@ -570,6 +604,8 @@ public class TickSignups {
     public Response getBooking(@PathParam("sheetID") String sheetID,
             @PathParam("ticker") String tickerName,
             @PathParam("startTime") Date startTime) {
+        /*Convert to UTC*/
+        startTime = convertToUTCViaAssumedGMTX(startTime);
         try {
             return Response.ok(service.showBooking(sheetID, tickerName, startTime.getTime())).build();
         } catch(InternalServerErrorException e) {
@@ -959,6 +995,11 @@ public class TickSignups {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         log.info("User " + crsid + " has requested the creation of a sheet for " +
                 "the group of ID " + bean.getGroupID());
+        
+        /*Convert to UTC*/
+        bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
+        bean.setEndTime(convertToUTCViaAssumedGMTX(bean.getEndTime()));
+        
         if (!db.getRoles(bean.getGroupID(), crsid).contains(Role.AUTHOR)) {
             log.info("The user " + crsid + " in not an author in the group");
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
@@ -1215,6 +1256,11 @@ public class TickSignups {
             @PathParam("sheetID") String sheetID, SheetBean bean) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         log.info("User " + crsid + " is attempting to edit the sheet of ID " + sheetID);
+        
+        /*Convert to UTC*/
+        bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
+        bean.setEndTime(convertToUTCViaAssumedGMTX(bean.getEndTime()));
+        
         Sheet sheet;
         try {
             if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.AUTHOR)) {
@@ -1459,6 +1505,38 @@ public class TickSignups {
                             + "with this sheet, but there seems to be " + groupIDs.size());
         }
         return groupIDs.get(0);
+    }
+    
+    private Date convertToUTCViaAssumedGMTX(Date date) {
+        DateTime input = new DateTime(date);
+        DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
+        DateTime utc = gmtx.withZone(DateTimeZone.UTC);
+
+        return utc.toDate();
+
+    }
+
+    private Date convertToAssumedGMTXFromUTC(Date date) {
+        DateTime input = new DateTime(date);
+        DateTime gmtx = input.withZone(DateTimeZone.getDefault());
+
+        return gmtx.toDate();
+    }
+
+    private Long convertToUTCViaAssumedGMTX(Long date) {
+        DateTime input = new DateTime(date);
+        DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
+        DateTime utc = gmtx.withZone(DateTimeZone.UTC);
+
+        return utc.getMillis();
+
+    }
+
+    private Long convertToAssumedGMTXFromUTC(Long date) {
+        DateTime input = new DateTime(date);
+        DateTime gmtx = input.withZone(DateTimeZone.getDefault());
+
+        return gmtx.getMillis();
     }
     
     private void throwRealException(InternalServerErrorException e) throws Throwable {
