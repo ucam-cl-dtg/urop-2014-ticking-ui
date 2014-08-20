@@ -12,6 +12,10 @@
             .overview-even {
                 background: #e9e9e9;
             }
+            .overview-status-icon {
+                min-height: 24px;
+                height: 24px;
+            }
         </style>
 
         <div id="listContainer" layout horizontal on-mouseover="{{pointerOver}}" class="{{user.cssClass}}" style="{{listContainerStyle}}" >
@@ -25,14 +29,14 @@
                          TODO: too many ticks to fit on the screen -->
                     <core-tooltip label="{{displayString.tooltip}}" position="{{displayString.index < leftMostIndex + 3 ? 'right' : 'left'}}" style="min-width: 60px; outline: none;">
                         <div class="tick-label" vertical layout center>
-                            <status-icon mode="{{displayString.iconCode}}"></status-icon>
+                            <status-icon class="overview-status-icon" mode="{{displayString.iconCode}}"></status-icon>
                         </div>
                     </core-tooltip>
                 </template>
 
                 <template if="{{!enableTooltip}}">
                         <div class="tick-label" vertical layout center>
-                            <status-icon mode="{{displayString.iconCode}}"></status-icon>
+                            <status-icon class="overview-status-icon" mode="{{displayString.iconCode}}"></status-icon>
                         </div>
                 </template>
             </template>
