@@ -1,5 +1,8 @@
 function padLeft(input, width, padChar)
 {
+    if (typeof input != typeof "")
+        input = input.toString();
+
     while (input.length < width)
     {
         input = padChar.toString() +
