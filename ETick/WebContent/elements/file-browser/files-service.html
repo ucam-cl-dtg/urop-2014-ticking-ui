@@ -93,7 +93,8 @@
                   function (report)
                   {
                     return  {   "date"   :
-                      report.creationDate.split("+")[0] + "Z"
+                      new Date(
+                        report.creationDate.split("+")[0] + "Z")
                               , "commit" : report.commitId
                             };
                   });
