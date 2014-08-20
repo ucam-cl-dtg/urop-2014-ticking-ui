@@ -89,7 +89,8 @@ this to happen.
                 this.timeOut = window.setTimeout(
                   function ()
                   {
-                    if (this.waitMessage != null)
+                    if (this.waitMessage != null
+                      ||this.waitMessage == "")
                     {
                       this.waitShown = true;
                       this.$.waitToastElement.show();
@@ -157,7 +158,7 @@ this to happen.
 
             if (show)
             {
-              if (text != null)
+              if (text != null || text == "")
               {
                 this.$.responseToastElement.text = text;
                 this.$.responseToastElement.show();
