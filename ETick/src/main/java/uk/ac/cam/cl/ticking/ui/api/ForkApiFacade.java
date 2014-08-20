@@ -100,7 +100,7 @@ public class ForkApiFacade implements IForkApiFacade {
 		} else {
 			log.warn("User " + crsid + " requested fork for tick " + tickId
 					+ " and had to update signup consistency");
-			fork.setSignedUp(signedUp);
+			fork.setSignedUp(serviceSignedUp);
 			db.saveFork(fork);
 			return Response.status(Status.CREATED).entity(fork).build();
 		}
