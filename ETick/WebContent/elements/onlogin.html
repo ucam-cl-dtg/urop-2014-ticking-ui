@@ -43,7 +43,6 @@
 
 			loginResponse: function() {
 				this.ldap = this.$.loginAjax.response;
-				console.log(this.ldap);
 				if (this.ldap==null) {
 					location.reload(forceGet);
 					return;
