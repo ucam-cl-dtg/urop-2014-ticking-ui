@@ -105,7 +105,7 @@
 	        		on-add-sheet-clicked="{{addSheetHandler}}"
 	        		on-edit-sheet-clicked="{{editSheetHandler}}"
 	        		on-sheet-selected="{{sheetSelectedHandler}}"
-	        		on-sheet-deleted="{{sheetCreated}}">
+	        		on-sheet-deleted="{{sheetCreatedEdited}}">
 	        	</tick-session-list>
 	        </span>
 
@@ -144,7 +144,8 @@
 			<main-card animated>
 				<add-edit-session gid="{{gid}}" sheet="{{sheet}}"
 				on-sheet-cancel="{{sheetCancelled}}"
-				on-sheet-edited="{{sheetCreated}}"></add-edit-session>
+				on-sheet-created="{{sheetCreatedEdited}}"
+				on-sheet-edited="{{sheetCreatedEdited}}"></add-edit-session>
 			</main-card>
 		</template>
 		<paper-toast id="addEditResponseToast" duration="8000"></paper-toast>
@@ -223,6 +224,7 @@
 			},
 			sheetListResponse: function () {
 				this.sheets = this.$.sheetListAPI.response;
+				this.$.tickingSessionList.clearSelection();
 			},
 
 			forkClickedHandler: function (e, detail) {
@@ -233,7 +235,8 @@
 
 			// Ticking sheet cards handlers:
 
-			sheetCreated: function (e, detail) {
+			sheetCreatedEdited: function (e, detail) {
+				console.log(e);
 				this.$.sheetListAPI.go();
 				this.sheetCancelled();
 				if (detail && detail.message) {
@@ -271,8 +274,8 @@
 			},
 
 			sheetSelectedHandler: function (e, detail) {
-				this.showTickerSignup = true;
 				this.sheet = detail.sheet;
+				this.showTickerSignup = this.sheet ? true : false;
 			},
 		});
 	</script>
