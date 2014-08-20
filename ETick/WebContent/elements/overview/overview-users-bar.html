@@ -20,19 +20,19 @@
         </style>
 
         <template repeat="{{user in users}}">
-            <!--<core-tooltip position="right" label="{{user.foreNames + ' ' + user.lastName + ' (' + user.crsId + ')' + ', ' + user.college}}">-->
             <div id="user-div" layout horizontal>
+                <!-- If the user hasn't logged into the system yet then their LDAP info is unavailable, so their names
+                     and college are null. The databindings in the innerHTML display their crsId in this instance instead-->
                 <div class="{{'user-label' + (sortField == 'Name'        ? ' sort-field' : '')}}">{{user.lastName == 'null' ? user.crsId : user.lastName}}</div>
                 <div class="{{'user-label' + (sortField == 'Forename(s)' ? ' sort-field' : '')}}">{{user.foreNames}}</div>
                 <div class="{{'user-label' + (sortField == 'College'     ? ' sort-field' : '')}}">{{user.college == 'null' ? '' : user.college}}</div>
             </div>
-            <!--</core-tooltip>-->
         </template>
     </template>
     <script>
         Polymer('overview-users-bar', {
             created: function() {
-                this.sortField = 'Name';
+                this.sortField = 'Name'; //When card is loaded it should be sorted by last name
             }
         });
     </script>
