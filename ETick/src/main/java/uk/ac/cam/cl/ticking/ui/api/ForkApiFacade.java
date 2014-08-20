@@ -261,6 +261,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				fork.setHumanPass(forkBean.getHumanPass());
 				fork.setLastTickedBy(myCrsid);
 				fork.setLastTickedOn(DateTime.now());
+				log.info(DateTime.now().toString());
 
 				/*
 				 * If the ticker failed us, require us to resubmit to the unit

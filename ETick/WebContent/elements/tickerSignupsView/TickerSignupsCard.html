@@ -51,9 +51,9 @@
                 this.$.panel.toggle();
             },
             alertError: function() {
-                alert("Sorry, something went wrong");
+                alert("Sorry, something went wrong.");
             },
-			sessionIdChanged: function() {
+			sessionIdChanged: function(oldValue, newValue) {
 				this.$.view.refresh();
 			},
 			kickChanged : function() {
