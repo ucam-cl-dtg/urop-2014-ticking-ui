@@ -107,6 +107,7 @@ public class TickApiFacade implements ITickApiFacade {
 		/* Call the git service to delete the repository */
 		try {
 			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId));
+			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId)+"/correctness");
 			db.removeTick(tickId);
 			/*Remove dangling group references*/
 			for (String groupId : tick.getGroups()) {

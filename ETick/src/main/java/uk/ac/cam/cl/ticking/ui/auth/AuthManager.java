@@ -136,7 +136,12 @@ public class AuthManager {
 		User user = db.getUser(crsid);
 		if (user == null || user.getLdap() == null
 				|| user.getLdap().plusDays(1).isBeforeNow()) {
+			String ssh = null;
+			if (user!=null) {
+				ssh = user.getSsh();
+			}
 			user = ldapProduceUser(crsid);
+			user.setSsh(ssh);
 			db.saveUser(user);
 			return Response.status(Status.CREATED).entity(user).build();
 		}
