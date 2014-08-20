@@ -24,48 +24,17 @@
                 <div layout vertical>
                     <div flex></div>
                     <div class="status-icon-label error">
-                        <!-- Unfortunately if this expression is split onto multiple lines Polymer can't process it -->
                         {{mode == '-' ? 'Not started' : mode == 'I' ? 'Not submitted' : mode == 'F' ? 'Failed automated tests' : mode == 'U' ? 'Passed automated tests' : mode == 'P' ? 'Passed' : 'Unknown status code'}}
                     </div>
                     <div flex></div>
                 </div>
             </template>
-            <core-icon class="{{big == false ? 'big' : 'small'}}" icon="{{iconName}}"></core-icon>
+            <core-icon class="{{big == false ? 'big' : 'small'}}"
+                       icon="{{mode == '-' ? '' : mode == 'I' ? 'create' : mode == 'F' ? 'clear' : mode == 'U' ? 'done' : mode == 'P' ? 'done-all' : ''}}">
+            </core-icon>
         </div>
     </template>
     <script>
-        Polymer('status-icon', {
-            created: function() {
-                this.iconName = "";
-            },
-
-            showTextChanged: function() {
-                console.log("showText", this.showText);
-            },
-
-            modeChanged: function() {
-                switch (this.mode) {
-                    case "-": //not started
-                        this.iconName = "";
-                        break;
-                    case "I": //initialised (i.e. started but not submitted)
-                        this.iconName = "create"; //"more-horiz";
-                        break;
-                    case "F": //failed automated tester
-                        this.iconName = "clear";
-                        break;
-                    case "U": //passed automated tester
-                        this.iconName = "done";
-                        break;
-                    case "P": //passed human tests
-                        this.iconName = "done-all";
-                        break;
-                    default:
-                        this.iconName = "";
-                        console.log("Error: invalid icon code", this.mode);
-                        break;
-                }
-            }
-        });
+        Polymer('status-icon', {});
     </script>
 </polymer-element>
