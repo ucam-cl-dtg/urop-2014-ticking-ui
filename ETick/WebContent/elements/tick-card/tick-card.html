@@ -89,7 +89,7 @@
 
                     <div layout vertical>
                         <div flex></div>
-                        <status-icon style="vertical-align: middle" mode="I" showText="true" big></status-icon>
+                        <status-icon style="vertical-align: middle" mode="{{statusCode}}" showText="true" big="true"></status-icon>
                         <div flex></div>
                     </div>
 
@@ -169,6 +169,13 @@
                 this.deadlinePassed = null;
             },
 
+            observe: {
+                forked: 'computeStatusCode',
+                reportAvailable: 'computeStatusCode',
+                unitPass: 'computeStatusCode',
+                humanPass: 'computeStatusCode'
+            },
+
             domReady: function() {
                 var that = this.$;
                 this.$.forkService.addEventListener('test-running', function() {
@@ -220,6 +227,28 @@
                     var regex = /urop2014\.dtg\.cl\.cam\.ac\.uk\/(.*)\.git/;
                     this.repoName = this.repo.match(regex)[1];
                 }, 500);
+            },
+
+            computeStatusCode: function() {
+                if (!this.forked) {
+                    //Not started.
+                    this.statusCode = "-";
+                } else if (!this.reportAvailable) {
+                    //Not submitted.
+                    this.statusCode = "I";
+                } else if (!this.unitPass) {
+                    //Failed automated tests.
+                    this.statusCode = "F";
+                } else if (!this.humanPass) {
+                    //Passed automated tests.
+                    this.statusCode = "U";
+                } else if (this.humanPass) {
+                    //Passed by ticker
+                    this.statusCode = "P";
+                } else {
+                    //invalid fork object state
+                    this.statusCode = "?";
+                }
             }
 
             /* testRunningChanged: function() {

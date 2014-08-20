@@ -29,8 +29,12 @@
                     <div flex></div>
                 </div>
             </template>
-            <core-icon class="{{big == false ? 'big' : 'small'}}"
-                       icon="{{mode == '-' ? '' : mode == 'I' ? 'create' : mode == 'F' ? 'clear' : mode == 'U' ? 'done' : mode == 'P' ? 'done-all' : ''}}">
+
+            <!-- When core-icon is created, if icon="", then it displays no icon. However, if icon is set to a non-empty
+                 string, then set back to "", a blank icon is not displayed.-->
+            <core-icon class="{{big ? 'big' : 'small'}}"
+                       icon="{{mode == '-' ? '' : mode == 'I' ? 'create' : mode == 'F' ? 'clear' : mode == 'U' ? 'done' : mode == 'P' ? 'done-all' : ''}}"
+                       hidden?="{{mode == '' || mode == '-'}}">
             </core-icon>
         </div>
     </template>
