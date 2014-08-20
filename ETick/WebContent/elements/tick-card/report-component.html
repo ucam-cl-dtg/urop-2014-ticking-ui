@@ -29,24 +29,12 @@
     </template>
     <script>
         Polymer('report-component', {
-            ready: function() {
-                this.testRan = null;
-            },
-
             showReport: function() {
                 var regex = /urop2014\.dtg\.cl\.cam\.ac\.uk\/(.*)\.git/;
                 this.repoName = this.repo.match(regex)[1];
-            }
 
-            /*testRunningChanged: function() {
-                if (this.testRunning) {
-                    this.testRan = true;
-                } else {
-                    if (this.testRan) {
-                        this.showReport();
-                    }
-                }
-            }*/
+                //having set repoName, databinding awesomeness will cause the report to automatically animate up
+            }
         });
     </script>
 </polymer-element>

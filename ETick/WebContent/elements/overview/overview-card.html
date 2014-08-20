@@ -29,22 +29,18 @@
         </toast-ajax>
 
         <div style="max-height: 600px; position: relative;" layout vertical>
-
-
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
-                <!-- fixed bit -->
-
-
+                <!-- Top left fixed area -->
                 <div layout vertical style="min-width: 435px;">
                     <div flex></div>
 
+                    <!-- Search Box -->
                     <div id="headerBar" layout horizontal center style="height: 46px;">
                         <span flex></span>
                         <search-box id="overviewSearchBox" placeholder="Search..." query="{{query}}"></search-box>
-                        <!--<paper-icon-button icon="file-download" style="margin-top: 20px;"></paper-icon-button>-->
-
                     </div>
 
+                    <!-- User details column headers -->
                     <div layout horizontal>
                     <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
                         <div layout horizontal end class="user-label">
@@ -54,22 +50,28 @@
                     </div>
                 </div>
 
+                <!-- Vertical shadow in the header -->
                 <div id="vShadowHeader" style="height: 144px; z-index: 200000"></div>
 
-                <!-- Top bar -->
+                <!-- Tick headings -->
                 <div flex style="overflow-x: hidden; margin-left: -6px;" layout horizontal class="overview-header-height">
                     <div id="headings" style="overflow: hidden; margin-left: -6px;" class="overview-header-height">
-                        <overview-ticks-bar id="overviewTicksBar" style="height: 150px;" tickNames="{{tickNames}}" on-tick-selected="{{sortTick}}"></overview-ticks-bar>
+                        <overview-ticks-bar id="overviewTicksBar" style="height: 150px;" tickNames="{{tickNames}}"
+                                            on-tick-selected="{{sortTick}}"
+                        ></overview-ticks-bar>
                     </div>
                 </div>
 
+                <!-- Refresh and export buttons -->
                 <div end style="height: 50px; position: absolute; right: 0; top: -10px;" layout horizontal>
                     <paper-icon-button icon="refresh" on-tap="{{refresh}}"></paper-icon-button>
                     <export-status gid="{{gid}}"></export-status>
                 </div>
             </div>
+
             <div id="hShadow"></div>
 
+            <!-- Compents below blue bar -->
             <div layout horizontal style="margin-top: -6px">
                 <!-- user names and colleges -->
                 <div layout vertical>
@@ -85,7 +87,9 @@
                 <div id="scrollArea" style="overflow-x: auto; margin-left: -6px;" on-scroll="{{scrolled}}" flex>
                    <template repeat="{{user in displayUsers}}">
                         <div id="template">
-                            <overview-list user="{{user}}" scrollAreaLeft="{{scrollAreaLeft}}" scrollAreaTop="{{scrollAreaTop}}" scrollAreaWidth="{{scrollAreaWidth}}"></overview-list>
+                            <overview-list user="{{user}}" scrollAreaLeft="{{scrollAreaLeft}}"
+                                           scrollAreaWidth="{{scrollAreaWidth}}">
+                            </overview-list>
                         </div>
                     </template>
                 </div>
@@ -95,9 +99,8 @@
     <script>
         Polymer('overview-card', {
             created: function() {
-                this.buildCollegeDictionary();
-                this.scrollAreaLeft = 0;
-                this.scrollAreaTop = 0;
+                this.scrollAreaLeft = 0;    //used by overview list to determine if the tooltips should be pointing left
+                                            //or right in order to not be cut off screnn
             },
 
             overviewLoaded: function() {
@@ -108,11 +111,10 @@
                 var split = csv.split("\n");
 
                 //split each row into columns
+                //assert that tick names do not contain commas (otherwise everything will be screwed up)
                 var arrayed = split.map(function(el) {
                     return el.split(',');
                 });
-
-                //console.log(this.collegeDict);
 
                 //build user objects from these columns
                 var that = this;
@@ -122,7 +124,6 @@
                        lastName: el[0].split(" ").slice(el[0].split(" ").length - 1),
                        crsId: el[1],
                        college: el[2],
-                       collegeAbbr: that.collegeDict.hasOwnProperty(el[2]) ? that.collegeDict[el[2]] : "",
                        displayStrings:
                                el.splice(4, el.length - 1).map(function (el, index) {
                                    var iconCode;
@@ -134,7 +135,7 @@
                                    } else if (el == "Unit passed") {
                                        iconCode = "U";
                                        tooltip = "Passed automated tests.";
-                                   } else if (el == "Initilialised") {
+                                   } else if (el == "Initilialised") { //spelt wrongly because the .csv is spelt wrongly.
                                        iconCode = "I";
                                        tooltip = "Not submitted.";
                                    } else if (el.lastIndexOf("PASSED by") > -1) {
@@ -153,9 +154,7 @@
                    }
                 });
 
-//                console.log("just processed", users);
-
-                //build list of column titles
+                //build list of column titles. These are the display strings of the first user
                 var colTitles = users[0].displayStrings.map(function(el) {
                     return el.iconCode;
                 });
@@ -164,34 +163,17 @@
                     colTitles[i] = {text: colTitles[i], index: i};
                 }
 
-                //remove the first two rows (column headings and a blank line)
+                //remove the first two rows (column headings and a blank line) from users
                 users = users.slice(2, users.length - 1 );
-
-//                users = users.concat(users);
-//                users = users.concat(users);
-
-                /* users = users.map(function(el) {
-                   if (el.college == "Girton") {
-                       el.college = "Gonville and Cauis"
-                   }
-                    return el;
-                });*/
-
-
-                //use the list of column titles to convert each user's tickComments into a dictionary
-//                console.log(users);
-//                console.log(colTitles);
 
                 this.users = users;
                 this.displayUsers = users;
                 this.tickNames = colTitles;
 
-//                console.log("tick names", this.tickNames);
-
                 this.sortLastNameAscending();
-
                 this.updateScrollAreas();
             },
+
 
             sort: function(a, b, sender) {
                 //Mark all tick headings as unselected
@@ -217,8 +199,6 @@
                 }
             },
 
-
-
             sortTick: function(e, params) {
                 this.sortField = "";
 
@@ -234,13 +214,7 @@
                             comparisonDict[b.displayStrings[params.selectedIndex].iconCode]);
                 });
 
-                //ugly fix which enables searching and sorting at the same time
-//                var q = this.$.overviewSearchBox.query;
-//                this.$.overviewSearchBox.query = "";
-//                var that = this.$;
-//                this.job('sort', function() {
-//                    that.overviewSearchBox.query = q;
-//                });
+                //TODO: should probably subsort by either last name or number of attempts made (when this becomes available)
             },
 
             sortLastNameAscending: function() {
@@ -271,8 +245,6 @@
                         cssClass: i % 2 == 0 ? "overview-even" : "overview-odd"
                     }
                 }
-
-//                console.log(this.displayUsers);
             },
 
             /**
@@ -351,42 +323,6 @@
                 });
             },
 
-            buildCollegeDictionary: function() {
-                var college = {};
-
-                college["Christ's"]           = "CHRISTS";
-                college["Churchill"]          = "CHURCH";
-                college["Clare"]              = "CLARE";
-                college["Corpus Christi"]     = "CORPUS";
-                //Darwin
-                college["Downing"]            = "DOWN";
-                college["Emmanuel"]           = "EMM";
-                college["Fitzwilliam"]        = "FITZ";
-                college["Girton"]             = "GIRTON";
-                college["Gonville and Caius"] = "CAIUS";
-                college["Homerton"]           = "HOM";
-                college["Jesus"]              = "JESUS";
-                college["King's"]             = "KINGS";
-                college["Lucy Cavendish"]     = "";
-                college["Magdalene"]          = "MAGD";
-                college["Murray Edwards"]     = "";
-                college["Newnham"]            = "NEWH";
-                college["Pembroke"]           = "PEMB";
-                college["Peterhouse"]         = "PET";
-                college["Queens'"]            = "QUEENS";
-                college["Robinson"]           = "ROBIN";
-                college["Selwyn"]             = "SEL";
-                college["Sidney Sussex"]      = "SID";
-                college["St Catharine's"]     = "CATH";
-                college["St Edmund's"]        = "EDMUND";
-                college["St John's"]          = "JOHNS";
-                college["Trinity"]            = "";
-                //Westminster
-                //Wolfson
-
-                this.collegeDict = college;
-            },
-
             overviewListFilter: function(items, q) {
                 if (items && q) {
                     return items.filter(this.overviewFilter.bind(this));
@@ -412,9 +348,11 @@
             },
 
             scrolled: function() {
+                //scroll the tick headers and user details with the tick status scroll area
                 this.$.headings.scrollLeft = this.$.scrollArea.scrollLeft;
                 this.$.userHeadings.scrollTop = this.$.scrollArea.scrollTop;
 
+                //Apply shadows if necessary to give users a sense of place
                 if (this.$.scrollArea.scrollTop > 0) {
                     this.$.hShadow.classList.add('horizontalDropShadow');
                 } else {
@@ -430,12 +368,8 @@
                 }
 
                 this.$.userHeadings.width = this.$.scrollArea.clientWidth;
-//                console.log(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
-
-//                this.updateScrollAreas();
 
                 this.scrollAreaLeft = this.$.scrollArea.scrollLeft;
-                this.scrollAreaTop = this.$.scrollArea.scrollTop;
             },
 
             updateScrollAreas: function() {
@@ -446,11 +380,9 @@
                 }, 300);
             },
 
-            logError: function() {
-                console.log("there was an error!");
-            },
-
             refresh: function() {
+                //This requires calling the same end point as loading, so I use the same toast-ajax, but in a different
+                //context, which is why some attributes are changed
                 this.$.ajaxLoadOverview.waitBeforeToast = "1";
                 this.$.ajaxLoadOverview.waitMessage = "Refreshing overview...";
                 this.$.ajaxLoadOverview.responseMessage = "Overview refreshed.";
