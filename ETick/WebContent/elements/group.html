@@ -152,9 +152,9 @@
 
         <!-- Marker card for ticking sessions. -->
         <span id="deepTickingSessions" hidden>
-	        <!-- moved template to ticker-signup -->
-            <ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.title}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
-            
+        	<template if="{{sheet}}">
+            	<ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.title}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
+            </template>            	
         </span>
 
         <span id="deepOverview">
@@ -231,6 +231,10 @@
                 this.selectedTickObj = detail.tickObj;
 
                 console.log(detail);
+			},
+
+			sheetChanged: function (o, n) {
+				console.log(o, n);
 			},
 
 			sheetCreated: function (e, detail) {
