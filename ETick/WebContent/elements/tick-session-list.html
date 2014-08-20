@@ -8,6 +8,7 @@
 
 <polymer-element name="tick-session-list" attributes="gid sheets isAuthor">
 	<template>
+        <link rel="stylesheet" href="../css/shared-styles.css">
 		<style>
 			:host {
 				display: block;
@@ -30,6 +31,7 @@
 
 		<div id="headerBar" layout horizontal center end-justified>
 			<!-- <h1 flex>Ticking Sessions ({{sheets ? sheets.length : 0}})</h1> -->
+            <search-box id="searchBox" placeholder="Search..."></search-box>
 			<template if="{{isAuthor}}">
 				<core-tooltip label="Add">
 					<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
@@ -37,11 +39,10 @@
 				<core-tooltip label="Edit">
 					<paper-icon-button id="editSessionButton" icon="create" on-click="{{editClicked}}"></paper-icon-button>
 				</core-tooltip>
-				<core-tooltip label="Delete">
+				<core-tooltip label="Delete" class="delete-tooltip">
 					<paper-icon-button id="deleteSessionButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
 				</core-tooltip>
  			</template>
-			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
 		<box-list selector id="list" on-core-select="{{sheetSelected}}">
