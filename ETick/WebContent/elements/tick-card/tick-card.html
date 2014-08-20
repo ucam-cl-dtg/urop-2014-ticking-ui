@@ -7,6 +7,7 @@
 <link rel="import" href="fork-service.html">
 <link rel="import" href="fork-component.html">
 <link rel="import" href="../date-calendar.html">
+<link rel="import" href="../status-icon/status-icon.html">
 
 <polymer-element name="tick-card" attributes="tickName tickId sheets
                                               repoName tickObj
@@ -82,6 +83,10 @@
             <div flex>
                 <div layout horizontal style="margin-right: 10px;">
                     <h1 flex vertical center>{{tickName}}</h1>
+
+                    <!-- STATUS IS HERE TODO: remove this comment -->
+                    <status-icon mode="P" showText="true" big></status-icon>
+
                     <span layout vertical>
                         <div flex></div>
                         <div class="error">{{datetime == null ? 'No deadline' : 'Deadline:&nbsp;'}}</div>

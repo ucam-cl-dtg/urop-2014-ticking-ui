@@ -1,14 +1,43 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
 
-<polymer-element name="status-icon" attributes="mode">
+<polymer-element name="status-icon" attributes="mode big showText">
     <template>
-        <core-icon icon="{{iconName}}"></core-icon>
+        <style>
+            .small {
+                width: 24px;
+                height: 24px;
+            }
+            .big{
+                width: 48px;
+                height: 48px;
+            }
+        </style>
+
+        <div layout horizontal>
+            <core-icon class="{{big == false ? 'big' : 'small'}}" icon="{{iconName}}"></core-icon>
+        <template if="{{showText}}">
+            <div>
+                Hi
+                <!--{{-->
+                    <!--mode == '-' ? 'Not started' :-->
+                    <!--mode == 'I' ? 'Not submitted' :-->
+                    <!--mode == 'F' ? 'Failed automated tests' :-->
+                    <!--mode == 'U' ? 'Passed automated tests' :-->
+                    <!--mode == 'P' ? 'Passed' : 'Error displaying status'-->
+                <!--}}-->
+            </div>
+        </template>
+        </div>
     </template>
     <script>
         Polymer('status-icon', {
             created: function() {
                 this.iconName = "";
+            },
+
+            showTextChanged: function() {
+                console.log("showText", this.showText);
             },
 
             modeChanged: function() {
@@ -30,7 +59,7 @@
                         break;
                     default:
                         this.iconName = "";
-                        console.log("Error: invalid icon code");
+                        console.log("Error: invalid icon code", this.mode);
                         break;
                 }
             }
