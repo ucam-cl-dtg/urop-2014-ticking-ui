@@ -85,13 +85,19 @@
                     <h1 flex vertical center>{{tickName}}</h1>
 
                     <!-- STATUS IS HERE TODO: remove this comment -->
-                    <status-icon mode="P" showText="true" big></status-icon>
 
-                    <span layout vertical>
+
+                    <div layout vertical>
+                        <div flex></div>
+                        <status-icon style="vertical-align: middle" mode="I" showText="true" big></status-icon>
+                        <div flex></div>
+                    </div>
+
+                    <div style="margin-left: 15px;" layout vertical>
                         <div flex></div>
                         <div class="error">{{datetime == null ? 'No deadline' : 'Deadline:&nbsp;'}}</div>
                         <div flex></div>
-                    </span>
+                    </div>
 
                     <core-collapse style="margin-right: -10px;" opened?="{{datetime != null}}" horizontal>
                         <div style="padding: 3px;">
