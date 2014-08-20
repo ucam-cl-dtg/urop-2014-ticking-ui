@@ -1,3 +1,4 @@
+
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -55,8 +56,8 @@
             captureError
             popUpError
             errorMessage="Error updating tick."
-            completeMessage="Tick updated."
-            popUpComplete>
+            responseMessage="Tick updated."
+            popUpResponse>
     </toast-ajax>
     <toast-ajax
             id="ajaxPostTickData"
@@ -72,8 +73,8 @@
             captureError
             popUpError
             errorMessage="Error saving tick."
-            completeMessage="Tick saved."
-            popUpComplete>
+            responseMessage="Tick saved."
+            popUpResponse>
     </toast-ajax>
 
     <!-- get and update stylistic data -->
@@ -109,8 +110,8 @@
 
             waitMessage="Deleting tick..."
             waitBeforeToats="500"
-            completeMessage="Tick deleted."
-            popUpComplete
+            responseMessage="Tick deleted."
+            popUpResponse
             captureError
             popUpError
             errorMessage="Error deleting tick.">
@@ -202,7 +203,7 @@
         <span layout horizontal>
             <span flex></span>
             <paper-button raisedButton id="save" class="tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
-                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
+                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving || deleting}}">
             </paper-button>
             <div style="width: 20px"></div>
             <paper-button raisedButton id="delete" class="tick-creator" label="{{deleting ? 'DELETING...' : 'DELETE'}}" on-tap="{{alertDeleteTick}}"
@@ -524,7 +525,6 @@
         },
 
         deleteTickSuccess: function() {
-            //TODO: fire some event
             this.fire('tick-deleted');
         },
 

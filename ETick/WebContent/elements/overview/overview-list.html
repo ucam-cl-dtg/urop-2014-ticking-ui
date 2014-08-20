@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="../status-icon/status-icon.html">
 
-<polymer-element name="overview-list" attributes="user scrollAreaWidth">
+<polymer-element name="overview-list" attributes="user scrollAreaWidth scrollAreaLeft scrollAreaTop">
     <template>
         <link rel="stylesheet" href="overview.css">
         <style>
@@ -18,11 +18,13 @@
             <template repeat="{{displayString in user.displayStrings}}">
                 <!-- Generating a tooltip seems to be a bit time-consuming, especially when an overview page is likely
                      to have several hundred. To improve load performance, tooltips are generated lazily -->
-
                 <template if="{{enableTooltip}}">
-                    <core-tooltip label="{{displayString.tooltip}}" style="min-width: 60px; outline: none;">
+                    <!-- Databinding in the position attribute ensures the tooltip is never underneath other content
+                         TODO: default to point right instead of left. Reason: default left will always require some
+                         TODO: ticks to point right, but default right will only require left tooltips if there are
+                         TODO: too many ticks to fit on the screen -->
+                    <core-tooltip label="{{displayString.tooltip}}" position="{{displayString.index < leftMostIndex + 3 ? 'right' : 'left'}}" style="min-width: 60px; outline: none;">
                         <div class="tick-label" vertical layout center>
-                            <!--<div>{{displayString.iconCode}}</div>-->
                             <status-icon mode="{{displayString.iconCode}}"></status-icon>
                         </div>
                     </core-tooltip>
@@ -30,7 +32,6 @@
 
                 <template if="{{!enableTooltip}}">
                         <div class="tick-label" vertical layout center>
-                            <!--<div>{{displayString.iconCode}}</div>-->
                             <status-icon mode="{{displayString.iconCode}}"></status-icon>
                         </div>
                 </template>
@@ -53,7 +54,6 @@
 
             updateListWidth: function() {
                 this.listContainerStyle = "width: " + this.max(60 * (this.user.displayStrings.length + 1), this.scrollAreaWidth) + "px;";
-                console.log(this.listContainerStyle);
             },
 
             max: function(a, b) {
@@ -64,6 +64,14 @@
                 } else {
                     return a > b ? a : b;
                 }
+            },
+
+            scrollAreaLeftChanged: function() {
+                this.leftMostIndex = this.scrollAreaLeft / 60;
+            },
+
+            scrollAreaTopChanged: function() {
+                console.log("scroll top", this.scrollAreaTop);
             },
 
             pointerOver: function() {

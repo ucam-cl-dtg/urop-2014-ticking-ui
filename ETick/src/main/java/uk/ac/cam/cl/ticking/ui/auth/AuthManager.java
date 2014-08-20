@@ -26,7 +26,7 @@ import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import com.google.inject.Inject;
 
 @Path("/raven")
-public class LdapManager {
+public class AuthManager {
 
 	private IDataManager db;
 	private ConfigurationLoader<AcademicTemplate> academicConfig;
@@ -36,12 +36,23 @@ public class LdapManager {
 	 * @param db
 	 */
 	@Inject
-	public LdapManager(IDataManager db,
+	public AuthManager(IDataManager db,
 			ConfigurationLoader<AcademicTemplate> academicConfig,
 			ConfigurationLoader<Admins> adminConfig) {
 		this.db = db;
 		this.academicConfig = academicConfig;
 		this.adminConfig = adminConfig;
+	}
+	
+	@GET
+	@Path("/")
+	public Response session(@Context HttpServletRequest request) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		if (crsid == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		return Response.ok().build();
 	}
 
 	/**
@@ -118,10 +129,19 @@ public class LdapManager {
 
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+		if (crsid == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}		
+		
 		User user = db.getUser(crsid);
 		if (user == null || user.getLdap() == null
 				|| user.getLdap().plusDays(1).isBeforeNow()) {
+			String ssh = null;
+			if (user!=null) {
+				ssh = user.getSsh();
+			}
 			user = ldapProduceUser(crsid);
+			user.setSsh(ssh);
 			db.saveUser(user);
 			return Response.status(Status.CREATED).entity(user).build();
 		}

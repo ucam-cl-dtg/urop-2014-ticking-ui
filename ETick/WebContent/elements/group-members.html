@@ -5,10 +5,12 @@
 <link rel="import" href="../bower_components/core-transition/core-transition.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="export-members.html">
 <link rel="import" href="dialog.html">
 <link rel="import" href="search-box.html">
+<link rel="import" href="are-you-sure.html">
 
 <polymer-element name="group-members" attributes="gid allowAdd rows">
 	<template>
@@ -47,12 +49,18 @@
 		<div id="headerBar" layout horizontal center>
 			<!--<h1 flex>Members ({{number}})</h1>-->
             <span flex></span>
-			<template if="{{allowAdd}}">
-				<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
-				<paper-icon-button icon="add" on-click="{{addMemberClicked}}"></paper-icon-button>
-			</template>
-			<export-members gid="{{gid}}"></export-members>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
+			<core-tooltip label="Export">
+				<export-members gid="{{gid}}"></export-members>
+			</core-tooltip>
+			<template if="{{allowAdd}}">
+				<core-tooltip label="Add">
+					<paper-icon-button icon="add" on-click="{{addMemberClicked}}"></paper-icon-button>
+				</core-tooltip>
+				<core-tooltip label="Delete">
+					<paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
+				</core-tooltip>
+			</template>
 		</div>
 
 		<!-- Member list. -->
@@ -98,6 +106,7 @@
 		<paper-toast id="deleteErrorToast" text="Error removing member." duration="3000"></paper-toast>
 		<paper-toast id="deleteSuccessToast" text="Successfully removed member(s)." duration="3000"></paper-toast>
 
+        <are-you-sure id="deleteDialog" heading="Delete selected members?" on-yes="{{deleteMembers}}"></are-you-sure>
 	</template>
 	<script>
 		Polymer('group-members', {
@@ -167,13 +176,21 @@
 			// Delete member(s) funcitonality:
 
 			deleteMemberClicked: function () {
-				var p = this.selectedPeople
+				var p = this.selectedPeople;
 				if (p && p.length) {
-					var jsonSelectedPeople = JSON.stringify(p);
-					this.$.deleteAjax.body = '{ "crsids" : ' + jsonSelectedPeople + ', "roles" : [] }';
-					this.$.deleteAjax.go();
+                    //this.$.deleteDialog.heading = "Delete " + p.length + " members?";
+                    this.$.deleteDialog.toggle();
 				}
 			},
+
+            deleteMembers: function() {
+                var p = this.selectedPeople;
+                if (p && p.length) {
+                    var jsonSelectedPeople = JSON.stringify(p);
+                    this.$.deleteAjax.body = '{ "crsids" : ' + jsonSelectedPeople + ', "roles" : [] }';
+                    this.$.deleteAjax.go();
+                }
+            },
 
 			deleteResponse: function (e, detail) {
 				this.$.deleteSuccessToast.text = detail.xhr.responseText;

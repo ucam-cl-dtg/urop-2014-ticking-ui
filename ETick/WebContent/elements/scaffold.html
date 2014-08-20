@@ -65,7 +65,7 @@
 
 		<!-- Page content cards. -->
 		<template id="dashTemp" if="{{showDash}}">
-			<user-dash id="dash"></user-dash>
+			<user-dash id="dash" data="{{$.loginAPIs.ldap}}"></user-dash>
 		</template>
 
 		<template id="groupTemp" if="{{gid}}">
@@ -182,12 +182,14 @@
 			// Tick menu handlers:
 
 			noTickCreator: function () {
+				this.tickToSelect = "-1";
 				this.$.ticksMenu.selected = "-1";
 				this.$.tickTemp.model = { showTickCreator: false };
 			},
 
 			tickItemsChanged: function (oldValue, newValue) {
 				this.ticks = newValue;
+				this.$.ticksMenu.selected = this.tickToSelect;
 			},
 
 			tickSelectionChanged: function (oldValue, newValue) {
@@ -201,13 +203,30 @@
 			},
 
 			tickCreatedHandler: function (e, detail) {
-				console.log(e, detail);
+				this.tickToSelect = detail.tickId;
+				this.$.loginAPIs.$.sidebarTickAjax.go();
 			},
 
 			tickDeletedHandler: function (e, detail) {
-				console.log(e, detail);
-			}
+				this.$.loginAPIs.$.sidebarTickAjax.go();
+				this.$.navMenu.selected = "dashButton";
+			},
 
+			orderBy: function (items, key) {
+				if (typeof items == typeof undefined
+				  ||typeof items.sort == typeof undefined)
+					return items;
+
+				return items.sort(function (a, b) {
+					if (a[key].toLowerCase() < b[key].toLowerCase())
+						return -1;
+					else if (a[key].toLowerCase() > b[key].toLowerCase())
+						return 1;
+					else
+						return 0;
+				});
+			}
+            
 		});
 	</script>
 </polymer-element>

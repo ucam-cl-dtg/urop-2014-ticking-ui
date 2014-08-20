@@ -5,7 +5,7 @@
 <link rel="import" href="main-card.html">
 <link rel="import" href="upcoming-slots.html">
 
-<polymer-element name="user-dash" attributes="">
+<polymer-element name="user-dash" attributes="data">
 	<template>
 		<style>
 			:host {
@@ -13,14 +13,6 @@
 			}
 			
 		</style>
-
-		<!-- Logging in API call. -->
-		<core-ajax id="loginAjax"
-			auto
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user"
-			handleAs="json"
-			on-core-response="{{loginResponse}}">
-		</core-ajax>
 
 		<!-- Upcoming events API call. -->
 		<core-ajax id="upcomingAPI"
@@ -52,11 +44,6 @@
 
 	<script>
 		Polymer('user-dash', {
-
-			loginResponse: function() {
-				this.data = this.$.loginAjax.response;
-			},
-
 			upcomingResponse: function() {
 				this.slots = this.$.upcomingAPI.response;
 			}

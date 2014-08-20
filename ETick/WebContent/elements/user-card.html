@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/core-transition/core-transition.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 
 <polymer-element name="user-card" attributes="ldap">
 	<template>
@@ -47,14 +48,19 @@
 
 		</style>
 		<!-- Add Ssh Ajax call. -->
-		<core-ajax id="addSSHAjax"
+		<toast-ajax id="addSSHAjax"
 			method="PUT"
 			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ssh"
 			contentType="text/plain"
 			handleAs="json"
 			on-core-response="{{addSSHResponse}}"
-			on-core-error="{{addSSHError}}">
-		</core-ajax>
+			waitMessage="Adding key..."
+            waitBeforeToast="1000"
+            captureError
+            popUpError
+            responseMessage="Successfully added key"
+            errorMessage="Error adding key.">
+		</toast-ajax>
 		
 		<div class="card-header" layout horizontal center end-justified>
 				<template if="{{ldap.admin}}">
@@ -79,7 +85,7 @@
 		<div layout horizontal center>
 			<paper-input id="sshInput"
 						floatingLabel
-						value="{{ldap.ssh}}"
+						value="{{newSsh}}"
 						label="Public SSH key..."
 						pattern="^\s*(ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|ssh-ed25519|ssh-dss|ssh-rsa)\s+[0-9A-Za-z+/]+=*(\s+.*)?$"
 						error="Invalid Key."
@@ -104,8 +110,8 @@
 	</template>
 	<script>
 		Polymer('user-card', {
-			ready: function() {
-
+			domReady: function() {
+				this.newSsh = this.ldap.ssh;
 			},
 			handleAddInput: function () {
 				if (this.$.sshInput.invalid || this.$.sshInput.inputValue === "") {
@@ -120,13 +126,9 @@
 				this.$.addSSHAjax.go();
 			},
 			addSSHResponse: function() {
-				this.$.addSuccessToast.show();
-			},
-
-			addSSHError: function(e, detail) {
-				this.$.addErrorToast.text = detail.xhr.responseText;
-				this.$.addErrorToast.show();
+				this.ldap.ssh = this.$.addSSHAjax.response.ssh;
 			}
+
 		});
 	</script>
 </polymer-element>

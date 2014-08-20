@@ -181,6 +181,7 @@
 		<paper-toast id="editSessionError" duration="8000"></paper-toast>
 
 	</template>
+    <script src="../js/prettyDate.js"></script>
 	<script>
 		Polymer('add-edit-session', {
 
@@ -189,7 +190,7 @@
 					this.titleName = this.sheet.title;
 					this.desc = this.sheet.description;
 					this.loc = this.sheet.location;
-					this.slotLengthDisplay = this.sheet.slotLength;
+					this.slotLengthDisplay = this.sheet.slotLengthInMinutes;
 
 					var startDT = new Date(this.sheet.startTime).toJSON();
 					var endDT = new Date(this.sheet.endTime).toJSON();
@@ -255,7 +256,8 @@
 				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
-				console.log((new Date(this.subStartTime)).toLocaleString(), (new Date(this.subEndTime)).toLocaleString());
+				console.log(prettyDateTime(new Date(this.subStartTime)),
+                            prettyDateTime(new Date(this.subEndTime)));
 
 				if (this.sheet)  {
 					var call = this.$.editSessionAPI;

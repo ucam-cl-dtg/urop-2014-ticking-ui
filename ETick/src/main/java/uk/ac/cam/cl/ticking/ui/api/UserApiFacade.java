@@ -183,6 +183,7 @@ public class UserApiFacade implements IUserApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		List<Tick> ticks = db.getAuthorTicks(crsid);
+		Collections.sort(ticks);
 		return Response.ok(ticks).build();
 	}
 
@@ -227,8 +228,13 @@ public class UserApiFacade implements IUserApiFacade {
 				String[] badkeys = s.getMessage().trim().split(" ");
 				for (String badkey: badkeys) {
 					log.error(badkey);
-					User badUser = db.getUser(badkey.split(".")[0]);
-					badUser.setSsh(null);
+					User badUser = db.getUser(badkey.split("\\.")[0]);
+					try {
+						gitServiceProxy.addSSHKey(badUser.getSsh(), crsid);
+					} catch (InternalServerErrorException | IOException | KeyException e1) {
+						badUser.setSsh(null);
+						db.saveUser(badUser);
+					}
 				}
 				if (s.getMessage().contains(crsid)) {
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
