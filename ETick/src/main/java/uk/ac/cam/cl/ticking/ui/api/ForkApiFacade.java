@@ -166,7 +166,7 @@ public class ForkApiFacade implements IForkApiFacade {
 					DuplicateRepoNameException.class.getName())) {
 				/*
 				 * The repo has been forked previously and the exception carries
-				 * the URI as it's message so just carry on with this
+				 * the URI as its message so just carry on with this
 				 */
 				log.warn("User " + crsid + " tried to fork repository for "
 						+ tickId, s.getCause(), s.getStackTrace());
@@ -261,6 +261,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				fork.setHumanPass(forkBean.getHumanPass());
 				fork.setLastTickedBy(myCrsid);
 				fork.setLastTickedOn(DateTime.now());
+				log.info(DateTime.now().toString());
 
 				/*
 				 * If the ticker failed us, require us to resubmit to the unit
