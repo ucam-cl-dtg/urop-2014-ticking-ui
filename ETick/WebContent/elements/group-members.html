@@ -49,6 +49,7 @@
 		<div id="headerBar" layout horizontal center>
 			<!--<h1 flex>Members ({{number}})</h1>-->
             <span flex></span>
+            <search-box id="searchBox" placeholder="Search..."></search-box>
 			<template if="{{allowAdd}}">
 				<core-tooltip label="Add">
 					<paper-icon-button icon="add" on-click="{{addMemberClicked}}"></paper-icon-button>
@@ -58,11 +59,10 @@
                 <export-members gid="{{gid}}"></export-members>
             </core-tooltip>
             <template if="{{allowAdd}}">
-                <core-tooltip label="Delete">
+                <core-tooltip class="delete-tooltip" label="Delete">
                     <paper-icon-button icon="delete" on-click="{{deleteMemberClicked}}"></paper-icon-button>
                 </core-tooltip>
             </template>
-            <search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
 		<!-- Member list. -->
