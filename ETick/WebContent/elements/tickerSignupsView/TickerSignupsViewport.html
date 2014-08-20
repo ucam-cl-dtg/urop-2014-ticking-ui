@@ -15,10 +15,10 @@
 	    :host {
 	      background-color: white;
 	      padding: 10px;
-	      width: 100%;
 	      font-size: 1.2rem;
 		  color: black;
 	      font-weight: 300;
+	      display: block;
 	    }
 	    #card-header {
 	    	margin-bottom: 10px;
@@ -34,6 +34,10 @@
 		}
 		.infoFieldContainer {
 			margin-bottom: 10px;
+		}
+		#slots-view-panel {
+			border: black solid 1px;
+			border-bottom-style: none;
 		}
     </style>
 	
@@ -85,9 +89,6 @@
 				<core-icon icon="info-outline"></core-icon>
 				<span flex>{{descriptionDisplayed}}</span>
 			</div>
-			<!-- <core-item icon="home" label="{{locationDisplayed}}"></core-item>
-			<core-item icon="today" label="Date : {{date}}"></core-item>
-			<core-item icon="info" label="{{descriptionDisplayed}}"></core-item> -->
 		</div>
 		<div id="ticker-select-panel" align="center">
 			<paper-radio-group selected="{{selected}}" on-change="{{tickerChange}}" layout horizontal flex>
@@ -96,9 +97,9 @@
 				</template>
 			</paper-radio-group>
 		</div>
-		<div id="slots-view-panel" align="center" style="border:black solid 1px;border-bottom-style:none">
+		<div id="slots-view-panel">
 				<template repeat="{{slot in slots}}">
-					<span layout vertical id="listTemplate" style="border-bottom:black solid 1px">
+					<span layout vertical id="listTemplate" style="border-bottom: black solid 1px;">
 						<span layout horizontal flex>
 							<div align="center" style="min-width:60px">
 								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
