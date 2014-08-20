@@ -92,7 +92,8 @@
               this.$.report.response.map(
                   function (report)
                   {
-                    return  {   "date"   : report.creationDate
+                    return  {   "date"   :
+                      report.creationDate.split("+")[0] + "Z"
                               , "commit" : report.commitId
                             };
                   });
@@ -133,7 +134,8 @@
             this.comments     = selReport.tickerComments;
             this.commitId     = selReport.commitId;
             this.testCount    = selReport.noOfTests;
-            this.date         = new Date(selReport.creationDate);
+            this.date         = new Date(
+                selReport.creationDate.split("+")[0]);
             this.errors       =
               selReport.items.reduce(
                   function (prev, curr)

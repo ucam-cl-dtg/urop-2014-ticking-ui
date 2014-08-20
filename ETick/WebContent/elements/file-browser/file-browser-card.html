@@ -182,7 +182,9 @@
                   "\">" +
                     this.lastTickedBy +
                   "</a>" +
-                " at " + prettyDateTime(new Date(this.lastTickedOn)) +
+                " at " + prettyDateTime(new Date(
+                      /* Make it a UTC date */
+                      this.lastTickedOn.split("+")+"Z")) +
                 ".";
             }
             else if (this.tickerResult == "FAIL")
@@ -209,7 +211,7 @@
                   {
                     return "Commit " + obj.commit.slice(0,7) +
                       ", report generated " +
-                      prettyDateTime(new Date(obj.date));
+                      prettyDateTime(obj.date);
                   });
             this.$.reportSelector.selected =
               this.reportsListString.length - 1;
