@@ -26,6 +26,10 @@
 	</template>
 	<script>
 	Polymer('ticker-signup', {
+			sessionIdChanged: function () {
+				console.log(this.sessionId);
+			},
+
             hideReport: function(e, detail) {
 				this.reason = detail.reason;
 				this.viewReport = false;
