@@ -1,3 +1,13 @@
+function padLeft(input, width, padChar)
+{
+    while (input.length < width)
+    {
+        input = padChar.toString() +
+                  input.toString();
+    }
+    return input;
+}
+
 function prettyDate(date)
 {
     var days = ["Sun", "Mon", "Tue", "Wed",
@@ -11,13 +21,13 @@ function prettyDate(date)
     return days[date.getUTCDay()] + ", " +
         date.getUTCDate() + " " +
         months[date.getUTCMonth()] + " " +
-        date.getUTCFullYear();
+        padLeft(date.getUTCFullYear(), 4, "0");
 }
 
 function prettyTime(time)
 {
-    return time.getUTCHours() + ":" +
-        time.getUTCMinutes();
+    return padLeft(time.getUTCHours(), 2, "0") + ":" +
+           padLeft(time.getUTCMinutes(), 2, "0");
 }
 
 function prettyDateTime (datetime)
