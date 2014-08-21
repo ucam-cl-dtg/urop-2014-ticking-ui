@@ -418,7 +418,6 @@ public class TickSignups {
                 try {
                     /* Gets the name of the group that the sheet belongs to */
                     groupName = db.getGroup(getGroupID(s.getSheetID())).getName();
-                    // TODO: add location?
                 } catch(InternalServerErrorException e) { // Ignore this block
                     try {
                         throwRealException(e);
@@ -1301,48 +1300,33 @@ public class TickSignups {
     }
     
     private Date convertToUTCViaAssumedGMTX(Date date) {
-        log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date, DateTimeZone.UTC);
-        log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
-        log.info("JODA gtmx: " + gmtx.toString());
         DateTime utc = gmtx.withZone(DateTimeZone.UTC);
-        log.info("JODA utc: " + utc.toString());
 
         return utc.toDate();
 
     }
 
     private Date convertToAssumedGMTXFromUTC(Date date) {
-        log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date);
-        log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZone(DateTimeZone.getDefault());
-        log.info("JODA gtmx: " + gmtx.toString());
 
         return gmtx.toDate();
     }
 
     private Long convertToUTCViaAssumedGMTX(Long date) {
-    	log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date, DateTimeZone.UTC);
-        log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
-        log.info("JODA gtmx: " + gmtx.toString());
         DateTime utc = gmtx.withZone(DateTimeZone.UTC);
-        log.info("JODA utc: " + utc.toString());
 
         return utc.getMillis();
 
     }
 
     private Long convertToFakedGMTXFromUTC(Long date) {
-        log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date);
-        log.info("JODA input: " + input.toString());
         DateTime utc = input.withZone(DateTimeZone.UTC);
-
-        log.info("JODA utc: " + utc.toString());
         
         return utc.getMillis();
     }
