@@ -249,9 +249,11 @@ public class ForkApiFacade implements IForkApiFacade {
 									+ " tried to set ticker result for "
 									+ Fork.generateForkId(crsid, tickId),
 							s.getCause(), s.getStackTrace());
+					String error = "";
 					for (SerializableStackTraceElement st : s.getStackTrace()) {
-						log.error(st.toString());
+						error+=st.toString()+"\n";
 					}
+					log.error(error);
 					
 					return Response.status(Status.NOT_FOUND)
 							.entity(Strings.MISSING).build();
