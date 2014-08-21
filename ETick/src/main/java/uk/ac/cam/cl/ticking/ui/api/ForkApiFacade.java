@@ -250,6 +250,8 @@ public class ForkApiFacade implements IForkApiFacade {
 							s.getCause(), s.getStackTrace());
 					log.error(s.getCause().toString());
 					log.error(s.getStackTrace().toString());
+					log.error(s.toString());
+					log.error("foo");
 					
 					return Response.status(Status.NOT_FOUND)
 							.entity(Strings.MISSING).build();
