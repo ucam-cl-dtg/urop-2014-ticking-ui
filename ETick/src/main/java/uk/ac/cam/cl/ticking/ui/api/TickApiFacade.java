@@ -96,7 +96,7 @@ public class TickApiFacade implements ITickApiFacade {
 		/* Check permissions */
 		if (!permissions.tickCreator(crsid, tick)) {
 			log.warn("User " + crsid
-					+ " tried to delete a tick but was denied permission");
+					+ " failed to delete a tick but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
@@ -118,8 +118,9 @@ public class TickApiFacade implements ITickApiFacade {
 			SerializableException s = h.readException(e);
 
 			if (s.getClassName().equals(IOException.class.getName())) {
-				log.error("User " + crsid + " tried deleting repository for "
-						+ tickId, s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed deleting repository for "
+						+ tickId + "\nCause: "
+								+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -135,18 +136,20 @@ public class TickApiFacade implements ITickApiFacade {
 					db.saveGroup(group);
 				}
 
-				log.warn("User " + crsid + " tried deleting repository for "
-						+ tickId, s.getCause(), s.getStackTrace());
+				log.warn("User " + crsid + " failed deleting repository for "
+						+ tickId + "\nCause: "
+								+ s.toString());
 
 			} else {
-				log.error("User " + crsid + " tried deleting repository for "
-						+ tickId, s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed deleting repository for "
+						+ tickId + "\nCause: "
+								+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | RepositoryNotFoundException e) {
-			log.error("User " + crsid + " tried deleting repository for "
+			log.error("User " + crsid + " failed deleting repository for "
 					+ tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
@@ -186,7 +189,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickBeanGroupPermissions(crsid, tickBean)) {
-			log.warn("User " + crsid + " tried to create a tick in groups "
+			log.warn("User " + crsid + " failed to create a tick in groups "
 					+ tickBean.getGroups().toString()
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -202,14 +205,14 @@ public class TickApiFacade implements ITickApiFacade {
 		Tick failed = db.getTick(tick.getTickId());
 		if (failed != null && failed.getStubRepo() != null
 				&& failed.getCorrectnessRepo() != null) {
-			log.error("User " + crsid + " tried creating tick with id "
+			log.error("User " + crsid + " failed creating tick with id "
 					+ tick.getTickId());
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(Strings.EXISTS).build();
 		}
 
 		/*
-		 * If we haven't failed previously or we did and the failure was
+		 * If we haven't tried previously or we did and the failure was
 		 * creating the stub repo
 		 */
 		if (failed == null || failed.getStubRepo() == null) {
@@ -226,9 +229,9 @@ public class TickApiFacade implements ITickApiFacade {
 
 					log.error(
 							"User " + crsid
-									+ " tried creating stub repository for "
-									+ tick.getTickId(), s.getCause(),
-							s.getStackTrace());
+									+ " failed creating stub repository for "
+									+ tick.getTickId() + "\nCause: "
+											+ s.toString());
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
 							.entity(Strings.IDEMPOTENTRETRY).build();
 				}
@@ -237,18 +240,18 @@ public class TickApiFacade implements ITickApiFacade {
 						DuplicateRepoNameException.class.getName())) {
 					log.error(
 							"User " + crsid
-									+ " tried creating stub repository for "
-									+ tick.getTickId(), s.getCause(),
-							s.getStackTrace());
+									+ " failed creating stub repository for "
+									+ tick.getTickId() + "\nCause: "
+											+ s.toString());
 					return Response.status(Status.NOT_FOUND)
 							.entity(Strings.IDEMPOTENTRETRY).build();
 
 				} else {
 					log.error(
 							"User " + crsid
-									+ " tried creating stub repository for "
-									+ tick.getTickId(), s.getCause(),
-							s.getStackTrace());
+									+ " failed creating stub repository for "
+									+ tick.getTickId() + "\nCause: "
+											+ s.toString());
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
 							.entity(Strings.IDEMPOTENTRETRY).build();
 				}
@@ -256,7 +259,7 @@ public class TickApiFacade implements ITickApiFacade {
 			} catch (IOException | DuplicateRepoNameException e) {
 				log.error(
 						"User " + crsid
-								+ " tried to create stub repository for "
+								+ " failed to create stub repository for "
 								+ tick.getTickId(), e.getCause());
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 						.build();
@@ -270,7 +273,7 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 
 		/*
-		 * If we haven't failed previously or we did and the failure was
+		 * If we haven't tried previously or we did and the failure was
 		 * creating the correctness repo
 		 */
 		if (failed == null || failed.getCorrectnessRepo() == null) {
@@ -287,7 +290,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 					log.error("User " + crsid
 							+ " tied creating correctness repository for "
-							+ tick.getTickId(), s.getCause(), s.getStackTrace());
+							+ tick.getTickId() + "\nCause: "
+									+ s.toString());
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
 							.entity(Strings.IDEMPOTENTRETRY).build();
 				}
@@ -295,15 +299,17 @@ public class TickApiFacade implements ITickApiFacade {
 				if (s.getClassName().equals(
 						DuplicateRepoNameException.class.getName())) {
 					log.error("User " + crsid
-							+ " tried creating correctness repository for "
-							+ tick.getTickId(), s.getCause(), s.getStackTrace());
+							+ " failed creating correctness repository for "
+							+ tick.getTickId() + "\nCause: "
+									+ s.toString());
 					return Response.status(Status.NOT_FOUND)
 							.entity(Strings.IDEMPOTENTRETRY).build();
 
 				} else {
 					log.error("User " + crsid
-							+ " tried creating correctness repository for "
-							+ tick.getTickId(), s.getCause(), s.getStackTrace());
+							+ " failed creating correctness repository for "
+							+ tick.getTickId() + "\nCause: "
+									+ s.toString());
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
 							.entity(Strings.IDEMPOTENTRETRY).build();
 				}
@@ -312,7 +318,7 @@ public class TickApiFacade implements ITickApiFacade {
 				log.error(
 						"User "
 								+ crsid
-								+ " tried to create correctness repository for "
+								+ " failed to create correctness repository for "
 								+ tick.getTickId(), e.getCause());
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 						.build();
@@ -356,7 +362,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickBeanGroupPermissions(crsid, tickBean)) {
-			log.warn("User " + crsid + " tried to update tick " + tickId
+			log.warn("User " + crsid + " failed to update tick " + tickId
 					+ " in groups " + tickBean.getGroups().toString()
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -371,7 +377,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 			/* Check for author permissions */
 			if (!crsid.equals(prevTick.getAuthor())) {
-				log.warn("User " + crsid + " tried to update tick " + tickId
+				log.warn("User " + crsid + " failed to update tick " + tickId
 						+ " but was denied permission");
 				return Response.status(Status.FORBIDDEN)
 						.entity(Strings.INVALIDROLE).build();
@@ -450,14 +456,14 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!(permissions.hasRole(crsid, groupId, Role.AUTHOR)||(permissions.tickCreator(crsid, tick)))) {
-			log.warn("User " + crsid + " tried to add tick " + tickId
+			log.warn("User " + crsid + " failed to add tick " + tickId
 					+ " to group " + groupId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 		
 		if (tick.getGroups().contains(groupId)) {
-			log.warn("User " + crsid + " tried to add tick " + tickId
+			log.warn("User " + crsid + " failed to add tick " + tickId
 					+ " to group " + groupId + " but it was already past of the group");
 			return Response.status(Status.BAD_REQUEST)
 					.entity(Strings.TICKISINGROUP).build();
@@ -492,7 +498,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickCreator(crsid, tick)) {
-			log.warn("User " + crsid + " tried to add an extension to tick "
+			log.warn("User " + crsid + " failed to add an extension to tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
@@ -532,7 +538,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickCreator(crsid, tick)) {
-			log.warn("User " + crsid + " tried to add an extension to tick "
+			log.warn("User " + crsid + " failed to add an extension to tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
@@ -572,7 +578,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickCreator(crsid, tick)) {
-			log.warn("User " + crsid + " tried get the extensions of tick "
+			log.warn("User " + crsid + " failed get the extensions of tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
@@ -606,7 +612,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickCreator(myCrsid, tick)) {
-			log.warn("User " + myCrsid + " tried to get the files of tick "
+			log.warn("User " + myCrsid + " failed to get the files of tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
@@ -624,8 +630,8 @@ public class TickApiFacade implements ITickApiFacade {
 			if (s.getClassName().equals(IOException.class.getName())) {
 
 				log.error("User " + myCrsid
-						+ " tried to get repository files for " + tickId,
-						s.getCause(), s.getStackTrace());
+						+ " failed to get repository files for " + tickId + "\nCause: "
+								+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -633,21 +639,21 @@ public class TickApiFacade implements ITickApiFacade {
 			if (s.getClassName().equals(
 					RepositoryNotFoundException.class.getName())) {
 				log.error("User " + myCrsid
-						+ " tried to get repository files for " + tickId,
-						s.getCause(), s.getStackTrace());
+						+ " failed to get repository files for " + tickId + "\nCause: "
+								+ s.toString());
 				return Response.status(Status.NOT_FOUND)
 						.entity(Strings.MISSING).build();
 
 			} else {
 				log.error("User " + myCrsid
-						+ " tried to get repository files for " + tickId,
-						s.getCause(), s.getStackTrace());
+						+ " failed to get repository files for " + tickId + "\nCause: "
+								+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | RepositoryNotFoundException e) {
-			log.error("User " + myCrsid + " tried to get repository files for "
+			log.error("User " + myCrsid + " failed to get repository files for "
 					+ tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();

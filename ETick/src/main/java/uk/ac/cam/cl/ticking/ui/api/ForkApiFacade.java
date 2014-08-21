@@ -183,12 +183,12 @@ public class ForkApiFacade implements IForkApiFacade {
 				 * the URI as its message so just carry on with this
 				 */
 				log.warn("User " + crsid + " failed to fork repository for "
-						+ tickId, s.getCause(), s.getStackTrace());
+						+ tickId + "\nCause: " + s.toString());
 				repo = s.getMessage();
 
 			} else {
 				log.error("User " + crsid + " failed to fork repository for "
-						+ tickId, s.getCause(), s.getStackTrace());
+						+ tickId + "\nCause: " + s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -246,7 +246,7 @@ public class ForkApiFacade implements IForkApiFacade {
 
 					log.error("User " + myCrsid
 							+ " failed to set ticker result for "
-							+ Fork.generateForkId(crsid, tickId) + "cause: "
+							+ Fork.generateForkId(crsid, tickId) + "\nCause: "
 							+ s.toString());
 
 					return Response.status(Status.NOT_FOUND)
@@ -335,31 +335,28 @@ public class ForkApiFacade implements IForkApiFacade {
 			SerializableException s = h.readException(e);
 
 			if (s.getClassName().equals(IOException.class.getName())) {
-				log.error(
-						"User " + myCrsid
-								+ " failed to get repository files for "
-								+ Fork.generateForkId(crsid, tickId),
-						s.getCause(), s.getStackTrace());
+				log.error("User " + myCrsid
+						+ " failed to get repository files for "
+						+ Fork.generateForkId(crsid, tickId) + "\nCause: "
+						+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 			if (s.getClassName().equals(
 					RepositoryNotFoundException.class.getName())) {
-				log.error(
-						"User " + myCrsid
-								+ " failed to get repository files for "
-								+ Fork.generateForkId(crsid, tickId),
-						s.getCause(), s.getStackTrace());
+				log.error("User " + myCrsid
+						+ " failed to get repository files for "
+						+ Fork.generateForkId(crsid, tickId) + "\nCause: "
+						+ s.toString());
 				return Response.status(Status.NOT_FOUND)
 						.entity(Strings.MISSING).build();
 
 			} else {
-				log.error(
-						"User " + myCrsid
-								+ " failed to get repository files for "
-								+ Fork.generateForkId(crsid, tickId),
-						s.getCause(), s.getStackTrace());
+				log.error("User " + myCrsid
+						+ " failed to get repository files for "
+						+ Fork.generateForkId(crsid, tickId) + "\nCause: "
+						+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}

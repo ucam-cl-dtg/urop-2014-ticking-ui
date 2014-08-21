@@ -210,16 +210,16 @@ public class UserApiFacade implements IUserApiFacade {
 			SerializableException s = h.readException(e);
 
 			if (s.getClassName().equals(IOException.class.getName())) {
-				log.error("User " + crsid + " tried adding ssh key for " + crsid,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed adding ssh key for " + crsid + "\nCause: "
+						+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 			if (s.getClassName().equals(
 					KeyException.class.getName())) {
-				log.error("User " + crsid + " tried adding ssh key for " + crsid,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed adding ssh key for " + crsid + "\nCause: "
+						+ s.toString());
 				
 				log.error(s.getMessage());
 				String[] badkeys = s.getMessage().trim().split(" ");
@@ -241,13 +241,13 @@ public class UserApiFacade implements IUserApiFacade {
 						.entity(Strings.IDEMPOTENTRETRY).build();
 
 			} else {
-				log.error("User " + crsid + " tried adding ssh key for " + crsid,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed adding ssh key for " + crsid + "\nCause: "
+						+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 		} catch (IOException | KeyException e) {
-			log.error("User " + crsid + " tried adding ssh key for " + crsid, e);
+			log.error("User " + crsid + " failed adding ssh key for " + crsid, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
