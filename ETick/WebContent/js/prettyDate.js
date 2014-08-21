@@ -11,6 +11,21 @@ function padLeft(input, width, padChar)
     return input;
 }
 
+function prettyParse(dateString)
+{
+    var match = dateString.match(/\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(.\d{3})?/);
+
+    if (match.length != 1)
+    {
+        throw "Invalid date format, expected something" +
+           " like 2000-12-25T09:00:00.000, got " + dateString;
+    }
+    else
+    {
+        return new Date(match[0] + "Z");
+    }
+}
+
 function prettyDate(date)
 {
     var days = ["Sun", "Mon", "Tue", "Wed",
