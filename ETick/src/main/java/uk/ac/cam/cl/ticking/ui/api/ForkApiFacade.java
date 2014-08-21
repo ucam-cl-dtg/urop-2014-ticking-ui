@@ -185,6 +185,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				 */
 				log.warn("User " + crsid + " tried to fork repository for "
 						+ tickId, s.getCause(), s.getStackTrace());
+				log.warn(s.getMessage());
 				repo = s.getMessage();
 
 			} else {
