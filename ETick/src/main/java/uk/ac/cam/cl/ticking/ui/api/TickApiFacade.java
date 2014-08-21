@@ -44,9 +44,6 @@ public class TickApiFacade implements ITickApiFacade {
 			.getLogger(TickApiFacade.class.getName());
 
 	private IDataManager db;
-	// not currently used but could quite possibly be needed in the future, will
-	// remove if not
-	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
 	private ITestService testServiceProxy;
@@ -106,8 +103,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Call the git service to delete the repository */
 		try {
-			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId));
-			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId)+"/correctness");
+			gitServiceProxy.deleteRepository(config.getConfig().getSecurityToken(), Tick.replaceDelimeter(tickId));
+			gitServiceProxy.deleteRepository(config.getConfig().getSecurityToken(), Tick.replaceDelimeter(tickId)+"/correctness");
 			db.removeTick(tickId);
 			/*Remove dangling group references*/
 			for (String groupId : tick.getGroups()) {
@@ -218,7 +215,7 @@ public class TickApiFacade implements ITickApiFacade {
 		if (failed == null || failed.getStubRepo() == null) {
 			String repo;
 			try {
-				repo = gitServiceProxy.addRepository(new RepoUserRequestBean(
+				repo = gitServiceProxy.addRepository(config.getConfig().getSecurityToken(), new RepoUserRequestBean(
 						crsid + "/" + tickBean.getName(), crsid));
 
 			} catch (InternalServerErrorException e) {
@@ -280,7 +277,7 @@ public class TickApiFacade implements ITickApiFacade {
 			String correctnessRepo;
 			try {
 				correctnessRepo = gitServiceProxy
-						.addRepository(new RepoUserRequestBean(crsid + "/"
+						.addRepository(config.getConfig().getSecurityToken(), new RepoUserRequestBean(crsid + "/"
 								+ tickBean.getName() + "/correctness", crsid));
 			} catch (InternalServerErrorException e) {
 				RemoteFailureHandler h = new RemoteFailureHandler();
@@ -577,7 +574,7 @@ public class TickApiFacade implements ITickApiFacade {
 		/* Call the git service to get the files */
 		List<FileBean> files;
 		try {
-			files = gitServiceProxy.getAllFiles(Tick.replaceDelimeter(tickId),
+			files = gitServiceProxy.getAllFiles(config.getConfig().getSecurityToken(), Tick.replaceDelimeter(tickId),
 					commitId);
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
