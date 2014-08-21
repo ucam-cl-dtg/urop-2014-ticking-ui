@@ -50,7 +50,7 @@ public class ForkStatusXls {
 		List<String> tickIds = group.getTicks();
 		List<User> submitters = db.getUsers(groupId, Role.SUBMITTER);
 		
-		DateTimeFormatter dtf = DateTimeFormat.forPattern("dd/MM/yyyy");
+		DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd");
 		
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		
