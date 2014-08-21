@@ -265,6 +265,10 @@ public class Fork {
 		humanFails++;
 	}
 	
+	public String stats() {
+		return humanFails+"/"+unitPasses+"/"+unitFails;
+	}
+	
 
 	/**
 	 * 

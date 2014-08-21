@@ -201,9 +201,9 @@ public class GuiceConfigurationModule extends AbstractModule {
 	@Inject
 	@Provides
 	private static TickSignups getTickSignupsSingleton(IDataManager db,
-			SignupsWebInterface signupServiceProxy) {
+			SignupsWebInterface signupServiceProxy, PermissionsManager permissions) {
 		if (tickSignups == null) {
-			tickSignups = new TickSignups(db, signupServiceProxy);
+			tickSignups = new TickSignups(db, signupServiceProxy, permissions);
 		}
 		return tickSignups;
 	}

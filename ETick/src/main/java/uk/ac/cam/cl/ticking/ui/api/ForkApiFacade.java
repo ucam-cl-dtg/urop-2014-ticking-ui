@@ -183,7 +183,6 @@ public class ForkApiFacade implements IForkApiFacade {
 				 */
 				log.warn("User " + crsid + " tried to fork repository for "
 						+ tickId, s.getCause(), s.getStackTrace());
-				log.warn(s.getMessage());
 				repo = s.getMessage();
 
 			} else {
@@ -249,6 +248,9 @@ public class ForkApiFacade implements IForkApiFacade {
 									+ " tried to set ticker result for "
 									+ Fork.generateForkId(crsid, tickId),
 							s.getCause(), s.getStackTrace());
+					log.error(s.getCause().toString());
+					log.error(s.getStackTrace().toString());
+					
 					return Response.status(Status.NOT_FOUND)
 							.entity(Strings.MISSING).build();
 

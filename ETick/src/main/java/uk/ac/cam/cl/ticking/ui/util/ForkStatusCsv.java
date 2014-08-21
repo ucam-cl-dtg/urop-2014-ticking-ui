@@ -89,23 +89,23 @@ public class ForkStatusCsv {
 									+ fork.getLastTickedOn().toString(dtf)+")");
 						} else {
 							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
-								writer.append(","+Strings.FAILED+" ("+Strings.UNITPASSED+")");
+								writer.append(","+Strings.FAILED+" ("+Strings.UNITPASSED+" "+fork.stats()+")");
 							} else {
-								writer.append(","+Strings.UNITPASSEDCODE+" ("+Strings.UNITPASSED+")");
+								writer.append(","+Strings.UNITPASSEDCODE+" ("+Strings.UNITPASSED+" "+fork.stats()+")");
 							}
 						}
 					} else {
 						if (fork.isReportAvailable()) {
 							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
-								writer.append(","+Strings.FAILED+" ("+Strings.UNITFAILED+")");
+								writer.append(","+Strings.FAILED+" ("+Strings.UNITFAILED+" "+fork.stats()+")");
 							} else {
-								writer.append(","+Strings.UNITFAILEDCODE+" ("+Strings.UNITFAILED+")");
+								writer.append(","+Strings.UNITFAILEDCODE+" ("+Strings.UNITFAILED+" "+fork.stats()+")");
 							}
 						} else {
 							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
-								writer.append(","+Strings.FAILED+" ("+Strings.INITIALISED+")");
+								writer.append(","+Strings.FAILED+" ("+Strings.INITIALISED+" "+fork.stats()+")");
 							} else {
-								writer.append(","+Strings.INITCODE+" ("+Strings.INITIALISED+")");
+								writer.append(","+Strings.INITCODE+" ("+Strings.INITIALISED+" "+fork.stats()+")");
 							}
 						}
 					}
