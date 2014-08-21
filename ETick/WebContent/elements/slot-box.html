@@ -6,34 +6,7 @@
 
 <polymer-element name="slot-box" attributes="datetime tickName ticker groupName" noscript>
 	<template>
-		<style>
-			:host {
-				display:   block;
-				border-radius: 2px;
-				position: relative;
-			}
-			h1 {
-				margin: 0;
-				font-size: 1.4rem;
-				font-weight: 100;
-			}
-
-			h2 {
-				margin: 0;
-				font-size: 0.7rem;
-				color: #808080;
-				font-weight: 300;
-			}
-			h3 {
-				margin: 0;
-				font-size: 1rem;
-				color: #464646;
-				font-weight: 200;
-			}
-			#container {
-				padding: 10px;
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" href="../css/box-element.css">
 		<div layout horizontal center id="container">
 			<date-calendar hexColorPrimary="#FF8000" hexColorSecondary="#fff" datetime="{{datetime}}"></date-calendar>
 			<time-clock datetime="{{datetime}}"></time-clock>
