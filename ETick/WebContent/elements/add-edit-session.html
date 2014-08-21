@@ -252,8 +252,8 @@
 				this.title = this.$.titleInput.inputValue;
 				this.description = this.$.descInput.value;
 				this.location = this.$.locInput.inputValue;
-				this.subStartTime = Date.parse(this.$.date.value + "T" + this.$.startTime.value);
-				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value);
+				this.subStartTime = Date.parse(this.$.date.value + "T" + this.$.startTime.value + "Z");
+				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value + "Z");
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
 				console.log(prettyDateTime(new Date(this.subStartTime)),
