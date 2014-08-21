@@ -24,7 +24,7 @@
                 <div layout vertical>
                     <div flex></div>
                     <div class="status-icon-label error">
-                        {{mode == '-' ? 'Not started' : mode == 'I' ? 'Not submitted' : mode == 'F' ? 'Failed automated tests' : mode == 'U' ? 'Passed automated tests' : mode == 'P' ? 'Passed' : 'Unknown status code'}}
+                        {{mode == '-' ? 'Not started' : mode == 'I' ? 'Not submitted' : mode == 'UF' ? 'Failed automated tests' : mode == 'UP' ? 'Passed automated tests' : mode == 'P' ? 'Passed' : mode == 'F' ? 'Failed' : 'Unknown status code'}}
                     </div>
                     <div flex></div>
                 </div>
@@ -33,8 +33,8 @@
             <!-- When core-icon is created, if icon="", then it displays no icon. However, if icon is set to a non-empty
                  string, then set back to "", a blank icon is not displayed.-->
             <core-icon class="{{big ? 'big' : 'small'}}"
-                       icon="{{mode == '-' ? '' : mode == 'I' ? 'create' : mode == 'F' ? 'clear' : mode == 'U' ? 'done' : mode == 'P' ? 'done-all' : ''}}"
-                       hidden?="{{mode == '' || mode == '-'}}">
+                       icon="{{mode == '-' ? '' : mode == 'I' ? 'create' : mode == 'UF' ? 'clear' : mode == 'UP' ? 'done' : mode == 'P' ? 'done-all' : mode == 'F' ? 'close' : ''}}"
+                       hidden?="{{!(mode == 'I' || mode == 'UF' || mode == 'UP' || mode == 'F' || mode == 'P')}}">
             </core-icon>
         </div>
     </template>
