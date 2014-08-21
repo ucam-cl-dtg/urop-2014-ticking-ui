@@ -457,6 +457,13 @@ public class TickApiFacade implements ITickApiFacade {
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
+		
+		if (tick.getGroups().contains(groupId)) {
+			log.warn("User " + crsid + " tried to add tick " + tickId
+					+ " to group " + groupId + " but it was already past of the group");
+			return Response.status(Status.BAD_REQUEST)
+					.entity(Strings.TICKISINGROUP).build();
+		}
 
 		/* Add the references and save */
 		group.addTick(tickId);
