@@ -142,6 +142,21 @@ public class ForkApiFacade implements IForkApiFacade {
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
+		
+		/* Create and save fork object */
+		try {
+			fork = new Fork(crsid, tickId, "");
+			fork.setForking(true);
+			db.insertFork(fork);
+
+		} catch (DuplicateDataEntryException e) {
+			log.error(
+					"User " + crsid
+							+ " tried to insert fork into database with id "
+							+ fork.getForkId(), e);
+			throw new RuntimeException("Schrodinger's fork");
+			// The fork simultaneously does and doesn't exist
+		}
 
 		/* Call the git service */
 		String repo = null;
@@ -187,19 +202,9 @@ public class ForkApiFacade implements IForkApiFacade {
 			// Due to exception chaining this shouldn't happen
 		}
 
-		/* Create and save fork object */
-		try {
-			fork = new Fork(crsid, tickId, repo);
-			db.insertFork(fork);
-
-		} catch (DuplicateDataEntryException e) {
-			log.error(
-					"User " + crsid
-							+ " tried to insert fork into database with id "
-							+ fork.getForkId(), e);
-			throw new RuntimeException("Schrodinger's fork");
-			// The fork simultaneously does and doesn't exist
-		}
+		fork.setRepo(repoName);
+		fork.setForking(false);
+		db.saveFork(fork);
 
 		return Response.status(Status.CREATED).entity(fork).build();
 	}
