@@ -256,7 +256,7 @@ public class TickSignups {
         log.info("The user " + crsid + " is trying to unbook their slot for tick " + tickID);
         Slot booking = null;
         for (Slot slot : service.listUserSlots(crsid)) {
-            if (slot.getComment().equals(tickID)) {
+            if (slot.getComment().equals(tickID)) { // the comment stored in the slot in the generic signups database is the tickID
                 booking = slot;
             }
         }
@@ -1289,14 +1289,14 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity("The sheet was not found").build();
         }
         if ((sheet.getStartTime().getTime() - bean.getStartTime()) % sheet.getSlotLengthInMinutes() != 0) {
-            log.info("The new start time but be an integer multiple of slot lengths away from the " +
+            log.info("The new start time must be an integer multiple of slot lengths away from the " +
                     "old start time of " + sheet.getStartTime().toString());
             return Response.status(Status.FORBIDDEN).entity("The new start time but be an integer "
                     + "multiple of slot lengths away from the " +
                     "old start time of " + sheet.getStartTime().toString()).build();
         }
         if ((sheet.getEndTime().getTime() - bean.getEndTime()) % sheet.getSlotLengthInMinutes() != 0) {
-            log.info("The new end time but be an integer multiple of slot lengths away from the " +
+            log.info("The new end time must be an integer multiple of slot lengths away from the " +
                     "old end time of " + sheet.getEndTime().toString());
             return Response.status(Status.FORBIDDEN).entity("The new end time but be an integer "
                     + "multiple of slot lengths away from the " +
@@ -1375,23 +1375,35 @@ public class TickSignups {
                     .entity("Internal Server Error: some changes not made").build();
         }
         try {
-            if (bean.getStartTime() < sheet.getStartTime().getTime()) { //  need to add slots to start
-                service.createSlotsForAllColumns(sheetID,
-                        new BatchCreateBean(bean.getStartTime(), sheet.getStartTime().getTime(),
-                                sheet.getSlotLengthInMinutes(), db.getAuthCode(sheetID)));
-            }
-            if (bean.getEndTime() > sheet.getEndTime().getTime()) { // need to add slots to end
-                service.createSlotsForAllColumns(sheetID,
-                        new BatchCreateBean(sheet.getEndTime().getTime(), bean.getEndTime(),
-                                sheet.getSlotLengthInMinutes(), db.getAuthCode(sheetID)));
-            }
-            if (bean.getStartTime() > sheet.getStartTime().getTime()) { // need to delete slots from start
-                service.deleteSlotsBefore(sheetID,
-                        new BatchDeleteBean(bean.getStartTime(), db.getAuthCode(sheetID)));
-            }
-            if (bean.getEndTime() < sheet.getEndTime().getTime()) { // need to delete slots from end
-                service.deleteSlotsAfter(sheetID,
-                        new BatchDeleteBean(bean.getEndTime(), db.getAuthCode(sheetID)));
+            Date newStart = new Date(bean.getStartTime());
+            Date newEnd = new Date(bean.getEndTime());
+            Date currStart = sheet.getStartTime();
+            Date currEnd = sheet.getEndTime();
+            String authCode = db.getAuthCode(sheetID);
+            if (newStart.after(currEnd) || newEnd.before(currStart)) { /* No existing slots will remain */
+                service.deleteSlotsAfter(sheetID, new BatchDeleteBean(0L, authCode)); // Delete all slots
+                service.createSlotsForAllColumns(sheetID, // And create the new ones
+                        new BatchCreateBean(newStart.getTime(), newEnd.getTime(),
+                                sheet.getSlotLengthInMinutes(), authCode));
+            } else { /* Some slots will remain - preserve them */
+                if (newStart.after(currStart)) { // need to delete slots from start
+                    service.deleteSlotsBefore(sheetID,
+                            new BatchDeleteBean(newStart.getTime(), authCode));
+                }
+                if (newEnd.before(currEnd)) { // need to delete slots from end
+                    service.deleteSlotsAfter(sheetID,
+                            new BatchDeleteBean(newEnd.getTime(), authCode));
+                }
+                if (newStart.before(currStart)) { //  need to add slots to start
+                    service.createSlotsForAllColumns(sheetID,
+                            new BatchCreateBean(newStart.getTime(), currStart.getTime(),
+                                    sheet.getSlotLengthInMinutes(), authCode));
+                }
+                if (newEnd.after(currEnd)) { // need to add slots to end
+                    service.createSlotsForAllColumns(sheetID,
+                            new BatchCreateBean(currEnd.getTime(), newEnd.getTime(),
+                                    sheet.getSlotLengthInMinutes(), authCode));
+                }
             }
         } catch(InternalServerErrorException e0) {
             try {
