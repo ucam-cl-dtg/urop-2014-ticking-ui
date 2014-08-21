@@ -16,7 +16,7 @@ function prettyParse(dateString)
     if (typeof dateString != typeof "")
         return dateString; /* In case we get a Date passed */
 
-    var match = dateString.match(/\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(.\d{3})?/);
+    var match = dateString.match(/\d{4}-\d\d-\d\d(T\d\d:\d\d:\d\d(.\d{3})?)?/);
 
     if (match.length === 0)
     {
