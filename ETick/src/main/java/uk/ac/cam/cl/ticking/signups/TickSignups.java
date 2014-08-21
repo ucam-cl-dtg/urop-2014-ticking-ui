@@ -1524,7 +1524,7 @@ public class TickSignups {
     
     private Date convertToUTCViaAssumedGMTX(Date date) {
         log.info("JODA raw argument: " + date.toString());
-        DateTime input = new DateTime(date);
+        DateTime input = new DateTime(date, DateTimeZone.UTC);
         log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
         log.info("JODA gtmx: " + gmtx.toString());
