@@ -39,12 +39,13 @@
 			</div>
 		</div>
 	</template>
+    <script src="../js/prettyDate.js"></script>
 	<script>
 		Polymer('time-clock', {
 			domReady: function () {
-				var d = new Date(this.datetime);
-				var hour = d.getHours();
-				var mins = d.getMinutes();
+				var d = prettyParse(this.datetime);
+				var hour = d.getUTCHours();
+				var mins = d.getUTCMinutes();
 				this.h1 = Math.floor(hour / 10);
 				this.h2 = hour % 10;
 				this.m1 = Math.floor(mins / 10);

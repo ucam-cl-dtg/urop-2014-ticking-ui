@@ -135,6 +135,7 @@
 	</div>
 	
   </template>
+  <script src="../../js/prettyDate.js"></script>
   <script>
   Polymer('ticker-signups-viewport', {
 			refresh: function() {
@@ -167,11 +168,14 @@
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
 				this.slots = [];
 				for (var i = 0; i < loadedSlots.length; i++) {
-					
-					var hour = loadedSlots[i].startTime.split(":")[0].split("T")[1];
-					var min = loadedSlots[i].startTime.split(":")[1];
+
+                    var slotTime = prettyParse(loadedSlots[i].startTime);
+                    var hour = prettyTime(slotTime).split(":")[0];
+					var min =  prettyTime(slotTime).split(":")[1];
+
 					var timeSlot = hour + ":" + min;
-					<!-- check this conversion is right -->
+
+					/* check this conversion is right */
 					var durationInMinutes = loadedSlots[i].duration/60000;
 					var student = loadedSlots[i].bookedUser;
 					var comment = loadedSlots[i].comment;
@@ -181,22 +185,27 @@
 						comment = "Empty Slot";
 						hidden = true;
 					}
-					<!-- sort out leading zero -->
+
+					/* sort out leading zero */
 					var endMin = parseInt(min) + parseInt(durationInMinutes);
-					var endHour = parseInt(hour);
+					var endHour = parseInt(hour) +
+                        parseInt(Math.floor(durationInMinutes/60));
+
 					while (endMin >= 60) {
 						endMin = endMin%60;
 						endHour++;
 					}
+
 					var leadingZero = "";
 					if (endMin < 10) {
 						leadingZero = "0";
 					}
+
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
 					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
 									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null", collapse: false});
 				}
-				this.date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
+				this.date = prettyDate(prettyParse(loadedSlots[0].startTime));
 			},
 			tickerChange: function(event) {
 				if(event.target.checked) {
