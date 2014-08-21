@@ -18,6 +18,9 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -29,6 +32,7 @@ import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.GroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
+import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 import com.google.inject.Inject;
 
@@ -50,11 +54,11 @@ public class ForkStatusXls {
 		List<String> tickIds = group.getTicks();
 		List<User> submitters = db.getUsers(groupId, Role.SUBMITTER);
 		
-		DateTimeFormatter dtf = DateTimeFormat.forPattern("dd/MM/yyyy");
+		DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd");
 		
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		
-		CreationHelper factory = workbook.getCreationHelper();
+		
 		
 		HSSFSheet sheet = workbook.createSheet("Progress");
 		
@@ -64,6 +68,14 @@ public class ForkStatusXls {
 		int cellnum = 0;
 		
 		Row row = sheet.createRow(rownum++);
+		
+		CellStyle passStyle = workbook.createCellStyle();
+		passStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+		passStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		
+		CellStyle failStyle = workbook.createCellStyle();
+		failStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+		failStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		
 		CellStyle rowStyle = row.getRowStyle();
 		if (rowStyle == null) {
@@ -104,44 +116,66 @@ public class ForkStatusXls {
 			for (String tickId : tickIds) {
 				Fork fork = db.getFork(Fork.generateForkId(user.getCrsid(),
 						tickId));
+				Tick tick = db.getTick(tickId);
+				
+				DateTime extension = tick.getExtensions().get(user.getCrsid());
+				if (extension != null) {
+					tick.setDeadline(extension);
+				}
+				
 				if (fork == null) {
-					cellnum++;
+					
+					if (tick.getDeadline().isBeforeNow()) {
+						Cell cell = row.createCell(cellnum++);
+						cell.setCellValue("FAILED");
+						cell.setCellStyle(failStyle);
+					} else {
+						cellnum++;
+					}
 				} else {
 					if (fork.getUnitPass()) {
 						if (fork.getHumanPass()) {
 							Cell cell = row.createCell(cellnum++);
 							cell.setCellValue("PASSED");
-							CellStyle style = workbook.createCellStyle();
-							style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
-							style.setFillPattern(CellStyle.SOLID_FOREGROUND);
-							cell.setCellStyle(style);
 							
-							Drawing drawing = sheet.createDrawingPatriarch();
-
-						    // When the comment box is visible, have it show in a 1x3 space
-						    ClientAnchor anchor = factory.createClientAnchor();
-						    anchor.setCol1(cell.getColumnIndex());
-						    anchor.setCol2(cell.getColumnIndex()+1);
-						    anchor.setRow1(row.getRowNum());
-						    anchor.setRow2(row.getRowNum()+3);
-
-						    // Create the comment and set the text+author
-						    Comment comment = drawing.createCellComment(anchor);
-						    RichTextString str = factory.createRichTextString(fork.getLastTickedBy()+" "+fork.getLastTickedOn().toString(dtf));
-						    comment.setString(str);
-						    comment.setAuthor("System");
-
-						    // Assign the comment to the cell
-						    cell.setCellComment(comment);
+							cell.setCellStyle(passStyle);
+							
+							String comment =  fork.getLastTickedBy()+" "+fork.getLastTickedOn().toString(dtf);
+							
+							createComment(workbook, sheet, row, cell, comment);
 						    
 						} else {
-							row.createCell(cellnum++).setCellValue("Unit passed");
+							
+							if (tick.getDeadline().isBeforeNow()) {
+								Cell cell = row.createCell(cellnum++);
+								cell.setCellValue("FAILED");
+								cell.setCellStyle(failStyle);
+								createComment(workbook, sheet, row, cell, Strings.UNITPASSED);
+							} else {
+								row.createCell(cellnum++).setCellValue(Strings.UNITPASSED);
+							}
+							
 						}
 					} else {
 						if (fork.isReportAvailable()) {
-							row.createCell(cellnum++).setCellValue("Unit failed");
+							if (tick.getDeadline().isBeforeNow()) {
+								Cell cell = row.createCell(cellnum++);
+								cell.setCellValue("FAILED");
+								cell.setCellStyle(failStyle);
+								createComment(workbook, sheet, row, cell, Strings.UNITFAILED);
+							} else {
+								row.createCell(cellnum++).setCellValue(Strings.UNITFAILED);
+							}
+							
 						} else {
-							row.createCell(cellnum++).setCellValue("Initilialised");
+							if (tick.getDeadline().isBeforeNow()) {
+								Cell cell = row.createCell(cellnum++);
+								cell.setCellValue("FAILED");
+								cell.setCellStyle(failStyle);
+								createComment(workbook, sheet, row, cell, Strings.INITIALISED);
+							} else {
+								row.createCell(cellnum++).setCellValue(Strings.INITIALISED);
+							}
 						}
 					}
 				}
@@ -163,5 +197,28 @@ public class ForkStatusXls {
 		
 		return temp;
 
+	}
+	
+	private void createComment(Workbook workbook, Sheet sheet, Row row, Cell cell, String stringComment) {
+		
+		CreationHelper factory = workbook.getCreationHelper();
+		
+		Drawing drawing = sheet.createDrawingPatriarch();
+
+	    // When the comment box is visible, have it show in a 1x3 space
+	    ClientAnchor anchor = factory.createClientAnchor();
+	    anchor.setCol1(cell.getColumnIndex());
+	    anchor.setCol2(cell.getColumnIndex()+1);
+	    anchor.setRow1(row.getRowNum());
+	    anchor.setRow2(row.getRowNum()+3);
+
+	    // Create the comment and set the text+author
+	    Comment comment = drawing.createCellComment(anchor);
+	    RichTextString str = factory.createRichTextString(stringComment);
+	    comment.setString(str);
+	    comment.setAuthor("System");
+
+	    // Assign the comment to the cell
+	    cell.setCellComment(comment);
 	}
 }
