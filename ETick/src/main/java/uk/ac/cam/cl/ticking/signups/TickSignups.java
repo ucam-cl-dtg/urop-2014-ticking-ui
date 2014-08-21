@@ -254,8 +254,6 @@ public class TickSignups {
                     .entity("Not allowed: " + e.getMessage()).build();
         }
     }
-    
-    /* TODO: use the non-raven unbook method within the raven ones to avoid duplication */
 
     /**
      * Unbooks the current raven user from the slot they've booked for the specified tick.
@@ -265,67 +263,12 @@ public class TickSignups {
     public Response unbookSlot(@Context HttpServletRequest request, @PathParam("tickID") String tickID) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         log.info("The user " + crsid + " is trying to unbook their slot for tick " + tickID);
-        Slot booking = null;
-        Date now = new Date();
-        /* Find the slot the user has booked for that given tick */
-        for (Slot slot : service.listUserSlots(crsid)) {
-            if (slot.getComment().equals(tickID) // the comment stored in the slot in the generic signups database is the tickID
-                    && slot.getStartTime().after(now)) {
-                booking = slot;
-            }
-        }
-        if (booking == null) {
-            log.warn("No booking was found for user " + crsid + " for the tick " + tickID);
-            return Response.status(Status.NOT_FOUND).entity("Error: no booking was found for this tick").build();
-        }
-        try {
-            /* Unbook the user from the slot */
-            service.book(booking.getSheetID(), booking.getColumnName(),
-                    booking.getStartTime().getTime(), new SlotBookingBean(crsid, null, null));
-            /* Update the fork object - no longer strictly necessary */
-            Fork f = db.getFork(Fork.generateForkId(crsid, tickID));
-            f.setSignedUp(false);
-            db.saveFork(f);
-            log.info("The slot was successfully unbooked");
-            return Response.ok().build();
-        } catch(InternalServerErrorException e) { // Ignore this block
-            try {
-                throwRealException(e);
-                log.error("Something went wrong when processing the InternalServerErrorException", e);
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
-                        .build();
-            } catch (ItemNotFoundException e1) {
-                log.error("The booking for the tick was found to simultaneously exist and not exist", e1);
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Server Error: The booking for this tick was found to exist and "
-                                + "then not found to exist. Seek help, something went very wrong.").build();
-            } catch (NotAllowedException e1) {
-                log.error("The unbooking should have been allowed but was not", e1);
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Server Error: The removal of the booking should have been allowed but "
-                                + "for some reason was not. Seek help.").build();
-            } catch (Throwable t) {
-                log.error("Something went wrong when processing the InternalServerErrorException", t);
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
-                        .build();
-            }
-        } catch (ItemNotFoundException e) {
-            log.error("The booking for the tick was found to simultaneously exist and not exist", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("Server Error: The booking for this tick was found to exist and "
-                            + "then not found to exist. Seek help, something went very wrong.").build();
-        } catch (NotAllowedException e) {
-            log.error("The unbooking should have been allowed but was not", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("Server Error: The removal of the booking should have been allowed but "
-                            + "for some reason was not. Seek help.").build();
-        }
+        return unbookSlot(crsid, tickID);
     }
     
     /**
-     * Unbooks the student of the given crsid from the slot they've booked for the specified tick.
+     * Unbooks the student of the given crsid from the slot they've booked for the specified tick,
+     * if the current raven user is a marker in the group the slot is booked in.
      */
     @DELETE
     @Path("/students/{crsid}/ticks/{tickID}")
@@ -357,7 +300,7 @@ public class TickSignups {
             f.setSignedUp(false);
             db.saveFork(f);
             log.info("The slot was successfully unbooked (user: " + crsid + ", tick: " + tickID + ")");
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch(InternalServerErrorException e) { // Ignore this block
             try {
                 throwRealException(e);
@@ -394,10 +337,17 @@ public class TickSignups {
         }
     }
     
+    /**
+     * Unbooks the student of the given crsid from the slot they've booked for the specified tick.
+     * @param crsid
+     * @param tickID
+     */
     public Response unbookSlot(String crsid, String tickID) {
         Slot booking = null;
+        Date now = new Date();
         for (Slot slot : service.listUserSlots(crsid)) {
-            if (slot.getComment().equals(tickID)) {
+            if (slot.getComment().equals(tickID) // the comment stored in the slot in the generic signups database is the tickID
+                    && slot.getStartTime().after(now)) {
                 booking = slot;
             }
         }
@@ -406,13 +356,15 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity("No booking was found for this tick").build();
         }
         try {
+            /* Unbook user from slot */
             service.book(booking.getSheetID(), booking.getColumnName(),
                     booking.getStartTime().getTime(), new SlotBookingBean(crsid, null, null));
+            /* Update fork object - no longer strictly necessary */
             Fork f = db.getFork(Fork.generateForkId(crsid, tickID));
             f.setSignedUp(false);
             db.saveFork(f);
             log.info("The slot (user: " + crsid + ", tick: " + tickID + ") was successfully unbooked");
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch(InternalServerErrorException e) { // Ignore this block
             try {
                 throwRealException(e);
@@ -466,7 +418,6 @@ public class TickSignups {
                 try {
                     /* Gets the name of the group that the sheet belongs to */
                     groupName = db.getGroup(getGroupID(s.getSheetID())).getName();
-                    // TODO: add location?
                 } catch(InternalServerErrorException e) { // Ignore this block
                     try {
                         throwRealException(e);
@@ -617,14 +568,14 @@ public class TickSignups {
      * @return Response whose body is has booked the slot (null if no one) and the tick
      * they have booked to do.
      */
-    // TODO: is anyone actually using this method?
+    /* Commented out to see if anyone is actually using this method...
     @GET
     @Path("/sheets/{sheetID}/tickers/{ticker}/{startTime}")
     @Produces("application/json")
     public Response getBooking(@PathParam("sheetID") String sheetID,
             @PathParam("ticker") String tickerName,
             @PathParam("startTime") Date startTime) {
-        /*Convert to UTC*/
+        /*Convert to UTC*//*
         startTime = convertToUTCViaAssumedGMTX(startTime);
         try {
             return Response.ok(service.showBooking(sheetID, tickerName, startTime.getTime())).build();
@@ -649,6 +600,7 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
     }
+    */
     
     /**
      * Removes all bookings that haven't yet started for the given
@@ -700,7 +652,7 @@ public class TickSignups {
             }
             service.removeAllUserBookings(sheetID, crsid, db.getAuthCode(sheetID));
             log.info("All future bookings of submitter " + crsid + " for sheet " + sheetID + " have been removed");
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch(InternalServerErrorException e) { // Ignore this block
             try {
                 throwRealException(e);
@@ -736,9 +688,13 @@ public class TickSignups {
     /*
      * Allows the user of the given crsid to sign up for the given tick in the given group.
      */
-    public Response allowSignup(String crsid, String groupID, String tickID) { // TODO: only if they haven't already passed...
+    public Response allowSignup(String crsid, String groupID, String tickID) {
         String groupAuthCode = db.getAuthCode(groupID);
         try {
+            if (service.getPermissions(groupID, crsid).containsKey(tickID)) {
+                /* If they have already passed this tick, do nothing */
+                return Response.ok().build();
+            }
             Map<String, String> map = new HashMap<String, String>();
             map.put(tickID, null); // null means any ticker is allowed
             service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
@@ -820,7 +776,7 @@ public class TickSignups {
     }
     
     public boolean studentHasBookingForTick(String crsid, String tickID) {
-        Date now = new Date(); // TODO: check this is UTC and not local time
+        Date now = new Date();
         for (Slot slot : service.listUserSlots(crsid)) {
             if (slot.getStartTime().after(now) && slot.getComment().equals(tickID)) {
                 return true;
@@ -830,7 +786,7 @@ public class TickSignups {
     }
     
     /**
-     * Ensures that the given student is assigned the given ticker
+     * If the current raven user is a marker, ensures that the given student is assigned the given ticker
      * (if possible) in the future for the specified tick.
      */
     @POST
@@ -849,46 +805,14 @@ public class TickSignups {
                     + "was forbidden from changing signup permissions");
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
-        String groupAuthCode = db.getAuthCode(groupID);
-        try {
-            Map<String, String> map = new HashMap<String, String>();
-            map.put(tickID, ticker);
-            service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
-            log.info("Permissions updated");
-            return Response.ok().build();
-        } catch(InternalServerErrorException e) { // Ignore this block
-            try {
-                throwRealException(e);
-                log.error("Something went wrong when processing the InternalServerErrorException", e);
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
-                        .build();
-            } catch (NotAllowedException e1) {
-                log.error("The databases are inconsistent - the group authorisation code was rejected", e1);
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Server Error: The signups database is inconsistent with the main database").build();
-            } catch (ItemNotFoundException e1) {
-                log.error("The databases are inconsistent - the group should exist in the signups database", e1);
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Server Error: The signups database is inconsistent with the main database").build();
-            } catch (Throwable t) {
-                log.error("Something went wrong when processing the InternalServerErrorException", t);
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
-                        .build();
-            }
-        } catch (NotAllowedException e) {
-            log.error("The databases are inconsistent - the group authorisation code was rejected", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("Server Error: The signups database is inconsistent with the main database").build();
-        } catch (ItemNotFoundException e) {
-            log.error("The databases are inconsistent - the group should exist in the signups database", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("Server Error: The signups database is inconsistent with the main database").build();
-        }
+        return assignTickerForTickForUser(crsid, groupID, tickID, ticker);
+        
     }
     
-    // TODO: use this method in the above one?
+    /**
+     * Ensures that the given student is assigned the given ticker
+     * (if possible) in the future for the specified tick.
+     */
     public Response assignTickerForTickForUser(String crsid, String groupID, String tickID, String ticker) {
         log.info("Attempting to allow submitter " + crsid +
                 " to sign up for tick " + tickID + " in group " + groupID + " using " +
@@ -1318,7 +1242,7 @@ public class TickSignups {
             }
             service.deleteSheet(sheetID, db.getAuthCode(sheetID));
             log.info("Sheet deleted");
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch(InternalServerErrorException e) { // Ignore this block
             try {
                 throwRealException(e);
@@ -1376,48 +1300,33 @@ public class TickSignups {
     }
     
     private Date convertToUTCViaAssumedGMTX(Date date) {
-        log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date, DateTimeZone.UTC);
-        log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
-        log.info("JODA gtmx: " + gmtx.toString());
         DateTime utc = gmtx.withZone(DateTimeZone.UTC);
-        log.info("JODA utc: " + utc.toString());
 
         return utc.toDate();
 
     }
 
     private Date convertToAssumedGMTXFromUTC(Date date) {
-        log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date);
-        log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZone(DateTimeZone.getDefault());
-        log.info("JODA gtmx: " + gmtx.toString());
 
         return gmtx.toDate();
     }
 
     private Long convertToUTCViaAssumedGMTX(Long date) {
-    	log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date, DateTimeZone.UTC);
-        log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
-        log.info("JODA gtmx: " + gmtx.toString());
         DateTime utc = gmtx.withZone(DateTimeZone.UTC);
-        log.info("JODA utc: " + utc.toString());
 
         return utc.getMillis();
 
     }
 
     private Long convertToFakedGMTXFromUTC(Long date) {
-        log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date);
-        log.info("JODA input: " + input.toString());
         DateTime utc = input.withZone(DateTimeZone.UTC);
-
-        log.info("JODA utc: " + utc.toString());
         
         return utc.getMillis();
     }
@@ -1429,11 +1338,16 @@ public class TickSignups {
      * @throws Throwable The exception really desired
      */
     private void throwRealException(InternalServerErrorException e) throws Throwable {
+        /* Extract SerializableException from the InternalServerErrorException */
         RemoteFailureHandler h = new RemoteFailureHandler();
         SerializableException s = h.readException(e);
+        /* Extract class of the real exception */
         Class<? extends Throwable> clazz = (Class<? extends Throwable>) Class.forName(s.getClassName());
+        /* Get the constructor for the exception which takes a single string */
         Constructor<? extends Throwable> ctor = clazz.getConstructor(String.class);
+        /* Construct instance of exception using the constructor */
         Throwable toThrow = ctor.newInstance(new Object[] { s.getMessage() });
+        /* Throw the exception */
         throw toThrow;
     }
     

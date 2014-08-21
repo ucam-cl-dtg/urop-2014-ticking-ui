@@ -123,6 +123,7 @@ public class AuthManager {
 	 * 
 	 * @param request
 	 * @return response
+	 * @throws InterruptedException 
 	 */
 	@GET
 	@Path("/login")
