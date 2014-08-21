@@ -125,7 +125,7 @@ public class ForkStatusXls {
 				
 				if (fork == null) {
 					
-					if (tick.getDeadline().isBeforeNow()) {
+					if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 						Cell cell = row.createCell(cellnum++);
 						cell.setCellValue("FAILED");
 						cell.setCellStyle(failStyle);
@@ -146,7 +146,7 @@ public class ForkStatusXls {
 						    
 						} else {
 							
-							if (tick.getDeadline().isBeforeNow()) {
+							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								Cell cell = row.createCell(cellnum++);
 								cell.setCellValue("FAILED");
 								cell.setCellStyle(failStyle);
@@ -158,7 +158,7 @@ public class ForkStatusXls {
 						}
 					} else {
 						if (fork.isReportAvailable()) {
-							if (tick.getDeadline().isBeforeNow()) {
+							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								Cell cell = row.createCell(cellnum++);
 								cell.setCellValue("FAILED");
 								cell.setCellStyle(failStyle);
@@ -168,7 +168,7 @@ public class ForkStatusXls {
 							}
 							
 						} else {
-							if (tick.getDeadline().isBeforeNow()) {
+							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								Cell cell = row.createCell(cellnum++);
 								cell.setCellValue("FAILED");
 								cell.setCellStyle(failStyle);

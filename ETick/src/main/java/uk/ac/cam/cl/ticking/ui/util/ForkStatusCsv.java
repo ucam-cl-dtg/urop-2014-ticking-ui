@@ -76,7 +76,7 @@ public class ForkStatusCsv {
 				
 				if (fork == null) {
 					
-					if (tick.getDeadline().isBeforeNow()) {
+					if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 						writer.append(","+Strings.FAILED);
 					} else {
 						writer.append(',');
@@ -88,7 +88,7 @@ public class ForkStatusCsv {
 									+ fork.getLastTickedBy() + " on "
 									+ fork.getLastTickedOn().toString(dtf)+")");
 						} else {
-							if (tick.getDeadline().isBeforeNow()) {
+							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								writer.append(","+Strings.FAILED+" ("+Strings.UNITPASSED+")");
 							} else {
 								writer.append(","+Strings.UNITPASSEDCODE+" ("+Strings.UNITPASSED+")");
@@ -96,13 +96,13 @@ public class ForkStatusCsv {
 						}
 					} else {
 						if (fork.isReportAvailable()) {
-							if (tick.getDeadline().isBeforeNow()) {
+							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								writer.append(","+Strings.FAILED+" ("+Strings.UNITFAILED+")");
 							} else {
 								writer.append(","+Strings.UNITFAILEDCODE+" ("+Strings.UNITFAILED+")");
 							}
 						} else {
-							if (tick.getDeadline().isBeforeNow()) {
+							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								writer.append(","+Strings.FAILED+" ("+Strings.INITIALISED+")");
 							} else {
 								writer.append(","+Strings.INITCODE+" ("+Strings.INITIALISED+")");
