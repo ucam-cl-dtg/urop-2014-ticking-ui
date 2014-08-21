@@ -339,7 +339,7 @@ public class TickApiFacade implements ITickApiFacade {
 			db.saveGroup(g);
 		}
 
-		/* Ssave and return the tick */
+		/* Save and return the tick */
 		db.saveTick(tick);
 
 		return Response.status(Status.CREATED).entity(tick).build();
@@ -400,8 +400,9 @@ public class TickApiFacade implements ITickApiFacade {
 
 			prevTick.setGroups(tickBean.getGroups());
 
-			/* Update the deadline, save and return */
+			/* Update the deadline, external resource, save and return */
 			prevTick.setDeadline(tickBean.getDeadline());
+			prevTick.setExternalReference(tickBean.getExternalReference());
 			db.saveTick(prevTick);
 			return Response.status(Status.CREATED).entity(prevTick).build();
 		} else {
@@ -500,6 +501,46 @@ public class TickApiFacade implements ITickApiFacade {
 		/* Update the extensions, save and return */
 		for (String user : extensionBean.getCrsids()) {
 			tick.addExtension(user, extensionBean.getDeadline());
+		}
+		db.saveTick(tick);
+		
+		List<ExtensionReturnBean> extensions = new ArrayList<>();
+		for (Entry<String, DateTime> entry : tick.getExtensions().entrySet()) {
+			extensions.add(new ExtensionReturnBean(db.getUser(entry.getKey()), entry.getValue()));
+		}
+		
+		return Response.status(Status.CREATED).entity(extensions).build();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Response removeExtension(HttpServletRequest request, String tickId, ExtensionBean extensionBean) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+
+		/* Get the tick object and return if it doesn't exist */
+		Tick tick = db.getTick(tickId);
+
+		if (tick == null) {
+			log.error("User " + crsid + " requested tick " + tickId
+					+ " to add extensions, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Check permissions */
+		if (!permissions.tickCreator(crsid, tick)) {
+			log.warn("User " + crsid + " tried to add an extension to tick "
+					+ tickId + " but was denied permission");
+			return Response.status(Status.FORBIDDEN)
+					.entity(Strings.INVALIDROLE).build();
+		}
+
+		/* Update the extensions, save and return */
+		for (String user : extensionBean.getCrsids()) {
+			tick.removeExtension(user);
 		}
 		db.saveTick(tick);
 		

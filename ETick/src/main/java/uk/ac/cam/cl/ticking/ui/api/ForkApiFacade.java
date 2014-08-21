@@ -273,7 +273,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				 */
 				if (!forkBean.getHumanPass()) {
 					fork.setSignedUp(false);
-
+					fork.incrementHumanFails();
 					/* Call the tick signup service to set preferred ticker */
 					List<String> groupIds = db.getTick(tickId).getGroups();
 					for (String groupId : groupIds) {

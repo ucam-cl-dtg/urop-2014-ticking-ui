@@ -28,6 +28,10 @@ public class Fork {
 	private boolean signedUp = false;
 	private boolean testing = false;
 	private boolean reportAvailable = false;
+	
+	private int unitFails = 0;
+	private int unitPasses = 0;
+	private int humanFails = 0;
 
 	private String lastTickedBy;
 	private DateTime lastTickedOn;
@@ -224,6 +228,43 @@ public class Fork {
 	public void setLastTickedOn(DateTime lastTickedOn) {
 		this.lastTickedOn = lastTickedOn;
 	}
+
+	public int getUnitFails() {
+		return unitFails;
+	}
+
+	public void setUnitFails(int unitFails) {
+		this.unitFails = unitFails;
+	}
+
+	public int getUnitPasses() {
+		return unitPasses;
+	}
+
+	public void setUnitPasses(int unitPasses) {
+		this.unitPasses = unitPasses;
+	}
+
+	public int getHumanFails() {
+		return humanFails;
+	}
+
+	public void setHumanFails(int humanFails) {
+		this.humanFails = humanFails;
+	}
+	
+	public void incrementUnitFails() {
+		unitFails++;
+	}
+	
+	public void incrementUnitPasses() {
+		unitPasses++;
+	}
+	
+	public void incrementHumanFails() {
+		humanFails++;
+	}
+	
 
 	/**
 	 * 

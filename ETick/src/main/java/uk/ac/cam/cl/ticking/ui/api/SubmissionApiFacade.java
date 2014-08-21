@@ -228,10 +228,12 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 				for (String groupId : groupIds) {
 					tickSignupService.allowSignup(crsid, groupId, tickId);
 				}
+				fork.incrementUnitPasses();
 			} else {
 				for (String groupId : groupIds) {
 					tickSignupService.disallowSignup(crsid, groupId, tickId);
 				}
+				fork.incrementUnitFails();
 			}
 
 			/* Set whether the fork passed and save it */

@@ -126,13 +126,28 @@ public interface ITickApiFacade {
 	 * @param request
 	 * @param tickId
 	 * @param extensionBean
-	 * @return The updated tick object
+	 * @return The list of extensions for that tick
 	 */
 	@PUT
 	@Path("/{tickId}/extension")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public abstract Response setExtension(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId, ExtensionBean extensionBean);
+	
+	/**
+	 * Removes an extension to a tick in the database
+	 * 
+	 * @param request
+	 * @param tickId
+	 * @param extensionBean
+	 * @return The list of extensions for that tick
+	 */
+	@DELETE
+	@Path("/{tickId}/extension")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public abstract Response removeExtension(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId, ExtensionBean extensionBean);
 	
 	/**
