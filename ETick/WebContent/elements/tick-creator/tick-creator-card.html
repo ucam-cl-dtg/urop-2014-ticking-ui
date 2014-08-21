@@ -9,10 +9,11 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog-transition.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
-<link rel="import" href="static-list.html">
-<link rel="import" href="static-list-labels.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../date-entry.html">
+<link rel="import" href="static-list.html">
+<link rel="import" href="static-list-labels.html">
+<link rel="import" href="dynamic-tests-component.html">
 
 <polymer-element name="tick-creator-card" attributes="tickId">
 <template>
@@ -118,7 +119,7 @@
     </toast-ajax>
 
     <div id="mainContainer">
-        <h4>DISPLAY NAME</h4>
+        <h4>Display Name</h4>
         <br>
         <div layout horizontal>
             <div id="divDisplayName" flex>
@@ -132,7 +133,7 @@
         </div>
 
         <core-collapse id="collapseCodeTemplate" opened="false">
-            <h4>TEMPLATE REPOSITORY</h4>
+            <h4>Template Repository</h4>
             <br>
             <div layout horizontal>
                 <div id="codeTemplateAddress" flex>http://stuff</div>
@@ -141,7 +142,7 @@
         </core-collapse>
 
         <div layout horizontal>
-            <h4>MASTER DEADLINE</h4>
+            <h4>Master Deadline</h4>
             <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
         </div>
         <core-collapse id="collapseDeadline" opened="{{dateShown}}">
@@ -151,36 +152,25 @@
         <br>
 
         <div layout horizontal>
-            <h4 style="height: 19px;">ADD TO GROUPS</h4>
+            <h4>Add to Groups</h4>
             <paper-toggle-button id="groupsSwitch" on-change="{{toggleGroups}}"></paper-toggle-button>
         </div>
         <core-collapse id="collapseGroups">
-            <div layout horizontal wrap style="padding-left: 20px; padding-bottom: 20px;">
-            <template repeat="{{group in groups}}">
-                    <span layout horizontal style="margin-top: 20px;">
-                        <paper-checkbox checked="{{group.selected}}"></paper-checkbox>
-                        <span style="padding-left: 15px; margin-right: 20px; width: 250px;">{{group.text}}</span>
-                    </span>
-            </template>
+            <div layout horizontal wrap style="margin: 10px;">
+                <template repeat="{{group in groups}}">
+                        <span layout horizontal style="width: 250px; padding: 12px;">
+                            <paper-checkbox checked="{{group.selected}}"></paper-checkbox>
+                            <span style="padding-left: 20px;">{{group.text}}</span>
+                        </span>
+                </template>
             </div>
 
             <div hidden?="{{groups.length > 0}}">You don't have any groups!</div>
         </core-collapse>
 
-        <br>
+        <dynamic-tests-component></dynamic-tests-component>
 
-        <core-collapse id="collapseCorrectness" opened="false">
-            <h4>CORRECTNESS CHECKS REPOSITORY</h4>
-            <br>
-            <div layout horizontal>
-                <div id="correctnessAddress" flex>TODO</div>
-            </div>
-            <br>
-        </core-collapse>
-
-
-
-        <h4>STYLISTIC CHECKS</h4>
+        <h4>Stylistic Checks</h4>
         <div class="checkboxContainer" layout horizontal>
             <paper-checkbox checked="{{checkJava}}" on-tap="{{toggleStylistic}}"></paper-checkbox>
             <span flex style="padding-left: 15px; margin: 0; min-height: 35px;">Analyse .java files</span>
@@ -205,7 +195,7 @@
             <paper-button raisedButton id="save" class="tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
                           disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving || deleting}}">
             </paper-button>
-            <div style="width: 20px"></div>
+            <div style="width: 10px"></div>
             <paper-button raisedButton id="delete" class="tick-creator" label="{{deleting ? 'DELETING...' : 'DELETE'}}" on-tap="{{alertDeleteTick}}"
                           disabled?="{{newTick || deleting}}">
             </paper-button>

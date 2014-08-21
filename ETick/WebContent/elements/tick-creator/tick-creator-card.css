@@ -63,3 +63,7 @@ paper-dialog::shadow h1 {
     background: #4285f4;
     color: #fff;
 }
+
+dynamic-tests-component {
+    margin-left: 10px;
+}

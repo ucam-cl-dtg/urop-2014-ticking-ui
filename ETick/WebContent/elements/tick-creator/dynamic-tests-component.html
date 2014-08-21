@@ -1,10 +1,47 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
 
-<polymer-element name="dynamic-tests-component">
+<polymer-element name="dynamic-tests-component" attributes="dynamicOptions dynamicSelected">
     <template>
-        <h4>Correctness Tests</h4>
+        <link rel="stylesheet" href="tick-creator-card.css">
+
+        <toast-ajax id="ajaxLoadDynamic"
+                    auto
+                    url="http://localhost:8000/tick-creator.json"
+                    handleAs="json"
+                    on-core-response="{{dynamicOptionsLoaded}}">
+        </toast-ajax>
+
+        <!--<h4>Correctness Tests</h4>-->
+
+        <div layout horizontal>
+            <h4>Correctness Tests</h4>
+            <paper-toggle-button id="dynamicSwitch" on-change="{{toggleDynamic}}"></paper-toggle-button>
+        </div>
+        <core-collapse id="collapseDynamic">
+            <div layout horizontal wrap style="margin-left: 10px;">
+                <paper-radio-group>
+                    <template repeat="{{dynamicOption in dynamicOptions}}">
+                        <!-- TODO: init with checked property -->
+                        <paper-radio-button label="{{dynamicOption.testName}}" style="width: 250px;"></paper-radio-button>
+                        <!--<span style="padding-left: 15px; margin-right: 20px; width: 250px;">{{dynamicOption.testName}}</span>-->
+                    </template>
+                </paper-radio-group>
+            </div>
+        </core-collapse>
+
     </template>
     <script>
-        Polymer({});
+        Polymer('dynamic-tests-component', {
+            dynamicOptionsLoaded: function() {
+                this.dynamicOptions = this.$.ajaxLoadDynamic.response;
+            },
+
+            toggleDynamic: function() {
+                this.$.collapseDynamic.toggle();
+            }
+        });
     </script>
 </polymer-element>
