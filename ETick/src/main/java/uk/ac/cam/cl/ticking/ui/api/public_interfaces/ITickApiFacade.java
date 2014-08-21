@@ -112,7 +112,7 @@ public interface ITickApiFacade {
 	 * @throws DuplicateRepoNameException
 	 * 
 	 */
-	@POST
+	@PUT
 	@Path("/{tickId}/{groupId}")
 	@Produces("application/json")
 	public abstract Response addTick(@Context HttpServletRequest request,
