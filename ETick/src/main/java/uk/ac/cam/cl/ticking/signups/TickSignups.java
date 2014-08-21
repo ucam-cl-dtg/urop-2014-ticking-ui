@@ -347,7 +347,7 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity("No booking was found for this tick").build();
         }
         try {
-            if (!permissions.hasRole(callingCrsid, getGroupID(booking.getSheetID()), Role.MARKER)) { // TODO: change everything to permissions manager
+            if (!permissions.hasRole(callingCrsid, getGroupID(booking.getSheetID()), Role.MARKER)) {
                 log.warn("The user " + callingCrsid + " is not a marker in the group");
                 return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
             }
@@ -687,7 +687,7 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND)
                     .entity("Not found error: the sheet " + sheetID + "was not found").build();
         }
-        if (!db.getRoles(groupID, callingCRSID).contains(Role.MARKER)) {
+        if (!permissions.hasRole(callingCRSID, groupID, Role.MARKER)) {
             log.warn("The user " + callingCRSID + " does not have permission to remove these bookings");
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
@@ -844,7 +844,7 @@ public class TickSignups {
         log.info("User " + callerCRSID + " is requesting for user " + crsid + " to be allowed " +
                 "to sign up for tick " + tickID + " in group " + groupID + " using " +
                 (ticker == null ? "any ticker" : "ticker " + ticker + " only"));
-        if (!db.getRoles(groupID, callerCRSID).contains(Role.MARKER)) {
+        if (!permissions.hasRole(callerCRSID, groupID, Role.MARKER)) {
             log.warn("User " + callerCRSID + " is not a marker in this group and so "
                     + "was forbidden from changing signup permissions");
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
@@ -952,7 +952,7 @@ public class TickSignups {
         bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
         bean.setEndTime(convertToUTCViaAssumedGMTX(bean.getEndTime()));
         
-        if (!db.getRoles(bean.getGroupID(), crsid).contains(Role.AUTHOR)) {
+        if (!permissions.hasRole(crsid, bean.getGroupID(), Role.AUTHOR)) {
             log.warn("Sheet creation failed: The user " + crsid + " is not an author in the group");
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
@@ -1111,7 +1111,7 @@ public class TickSignups {
         
         Sheet sheet;
         try {
-            if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.AUTHOR)) {
+            if (!permissions.hasRole(crsid, getGroupID(sheetID), Role.AUTHOR)) {
                 log.warn("The user " + crsid + " is not an author in the group " + getGroupID(sheetID));
                 return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
             }
@@ -1312,7 +1312,7 @@ public class TickSignups {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         log.info("User " + crsid + " has requested the deletion of sheet of ID " + sheetID);
         try {
-            if (!db.getRoles(getGroupID(sheetID), crsid).contains(Role.AUTHOR)) {
+            if (!permissions.hasRole(crsid, getGroupID(sheetID), Role.AUTHOR)) {
                 log.warn("The user " + crsid + " is not an author in the group " + getGroupID(sheetID));
                 return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
             }
