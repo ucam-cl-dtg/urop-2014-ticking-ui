@@ -100,12 +100,12 @@
 
 			bookingsResponse: function () {
 				this.$.bookingSucessfulToast.text = "Booking created for " +
-                    prettyDateTime(new Date(this.slotSelection + " UTC")) + ".";
+                    prettyDateTime(new Date(this.slotSelection)) + ".";
 				this.$.bookingSucessfulToast.show();
 
 				this.fire('slot-booked', {
 					sheetId: this.sheetSelection,
-					slot: (new Date(this.slotSelection + " UTC"))
+					slot: (new Date(this.slotSelection))
 				})
 			},
 
