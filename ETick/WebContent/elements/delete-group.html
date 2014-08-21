@@ -10,9 +10,6 @@
 			:host {
 				display: inherit;
 			}
-			core-tooltip {
-				display: inherit;
-			}
 		</style>
 		<!-- Delete group API. -->
 		<core-ajax id="deleteAPI"
@@ -30,8 +27,9 @@
 
 		<!-- Confirmation dialog. -->
 		<are-you-sure id="confirm"
-                      heading="{{'Delete group ' + name + '?'}}"
-			on-yes="{{deleteConfirmed}}"></are-you-sure>
+			heading="Edit group:"
+			on-yes="{{deleteConfirmed}}">
+		</are-you-sure>
 
 		<!-- Response toasts. -->
 		<paper-toast id="deleteError" duration="3000" text="Error deleting group."></paper-toast>

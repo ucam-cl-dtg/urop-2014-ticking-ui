@@ -20,7 +20,7 @@
 		<core-ajax id="bookingsAPI"
 			url=""
 			contentType="application/json"
-			handleAs="json"
+			handleAs="text"
 			method="POST"
 			on-core-response="{{bookingsResponse}}"
 			on-core-error="{{bookingsError}}">
@@ -100,7 +100,7 @@
 
 			bookingsResponse: function () {
 				this.$.bookingSucessfulToast.text = "Booking created for " +
-                    prettyDateTime(new Date(this.slotSelection)) + ".";
+                    prettyDateTime(new Date(this.slotSelection)) + ' with "' + this.$.bookingsAPI.response + '".' ;
 				this.$.bookingSucessfulToast.show();
 
 				this.fire('slot-booked', {
