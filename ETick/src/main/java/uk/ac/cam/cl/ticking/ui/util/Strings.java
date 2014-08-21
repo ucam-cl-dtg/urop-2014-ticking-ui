@@ -46,6 +46,15 @@ public class Strings {
 	public static final String BADKEY = "The key you have entered is malformed";
 	
 	public static final String REMOVEDUSERS = "Successfully removed users";
+	
+	public static final String PASSED = "PASSED";
+	public static final String FAILED = "FAILED";
+	public static final String UNITPASSEDCODE = "UP";
+	public static final String UNITFAILEDCODE = "UF";
+	public static final String INITCODE = "I";
+	public static final String UNITPASSED = "Passed automated tests";
+	public static final String UNITFAILED = "Failed automated tests";
+	public static final String INITIALISED = "Not submitted";
 
 	/**
 	 * Private constructor to prevent this class being created
