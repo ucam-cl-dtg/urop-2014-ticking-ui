@@ -13,9 +13,12 @@ function padLeft(input, width, padChar)
 
 function prettyParse(dateString)
 {
-    var match = dateString.match(/\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(.\d{3})?/);
+    if (typeof dateString != typeof "")
+        return dateString; /* In case we get a Date passed */
 
-    if (match.length != 1)
+    var match = dateString.match(/\d{4}-\d\d-\d\d(T\d\d:\d\d:\d\d(.\d{3})?)?/);
+
+    if (match.length === 0)
     {
         throw "Invalid date format, expected something" +
            " like 2000-12-25T09:00:00.000, got " + dateString;

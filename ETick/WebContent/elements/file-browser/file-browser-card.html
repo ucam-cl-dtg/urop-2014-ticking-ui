@@ -188,9 +188,8 @@
                   "\">" +
                     this.lastTickedBy +
                   "</a>" +
-                " at " + prettyDateTime(new Date(
-                      /* Make it a UTC date */
-                      this.lastTickedOn.split("+")[0]+"Z")) +
+                " at " +
+                prettyDateTime(prettyParse(this.lastTickedOn)) +
                 ".";
             }
             else if (this.tickerResult == "FAIL")
