@@ -15,6 +15,7 @@
 <link rel="import" href="static-list-labels.html">
 <link rel="import" href="dynamic-tests-component.html">
 <link rel="import" href="tick-workbook-link.html">
+<link rel="import" href="required-files.html">
 
 <polymer-element name="tick-creator-card" attributes="tickId">
 <template>
@@ -173,6 +174,8 @@
         <tick-workbook-link flex></tick-workbook-link>
 
         <dynamic-tests-component dynamicSelectedIndex="{{dynamicSelectedIndex}}"></dynamic-tests-component>
+
+        <required-files requiredFiles="{{displayRequiredFiles}}"></required-files>
 
         <h4>Stylistic Checks</h4>
         <div class="checkboxContainer" layout horizontal>
@@ -400,13 +403,14 @@
             var tickData = this.buildTickData();
             var staticData = this.buildStaticData();
             //TODO: call function which builds dynamic data
+            //TODO: build required files
 
             var masterObject = {
                 name: tickData.name,
                 deadline: tickData.deadline,
                 groups: tickData.groups,
                 checkstyleOpts: staticData
-                //TODO: insert dynamic data into the master object
+                //TODO: insert dynamic data and required files into the master object
             };
 
             if (!this.newTick) {
@@ -480,6 +484,9 @@
             } else {
                 return this.dynamicOptions[this.dynamicSelectedIndex];
             }
+        },
+        bulidRequiredFiles: function() {
+            return this.displayRequiredFiles.split("\n");
         },
 
 
