@@ -1524,7 +1524,7 @@ public class TickSignups {
     
     private Date convertToUTCViaAssumedGMTX(Date date) {
         log.info("JODA raw argument: " + date.toString());
-        DateTime input = new DateTime(date);
+        DateTime input = new DateTime(date, DateTimeZone.UTC);
         log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
         log.info("JODA gtmx: " + gmtx.toString());
@@ -1546,8 +1546,8 @@ public class TickSignups {
     }
 
     private Long convertToUTCViaAssumedGMTX(Long date) {
-        log.info("JODA raw argument: " + date.toString());
-        DateTime input = new DateTime(date);
+    	log.info("JODA raw argument: " + date.toString());
+        DateTime input = new DateTime(date, DateTimeZone.UTC);
         log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
         log.info("JODA gtmx: " + gmtx.toString());
@@ -1558,14 +1558,15 @@ public class TickSignups {
 
     }
 
-    private Long convertToAssumedGMTXFromUTC(Long date) {
+    private Long convertToFakedGMTXFromUTC(Long date) {
         log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date);
         log.info("JODA input: " + input.toString());
-        DateTime gmtx = input.withZone(DateTimeZone.getDefault());
-        log.info("JODA gtmx: " + gmtx.toString());
+        DateTime utc = input.withZone(DateTimeZone.UTC);
+
+        log.info("JODA utc: " + utc.toString());
         
-        return gmtx.getMillis();
+        return utc.getMillis();
     }
     
     private void throwRealException(InternalServerErrorException e) throws Throwable {
