@@ -13,6 +13,7 @@
 <polymer-element name="overview-card" attributes="gid">
     <template>
         <link rel="stylesheet" href="overview.css">
+        <link rel="stylesheet" href="../../css/shared-styles.css">
 
         <toast-ajax
                 id="ajaxLoadOverview"
@@ -63,9 +64,13 @@
                 </div>
 
                 <!-- Refresh and export buttons -->
-                <div end style="height: 50px; position: absolute; right: 0; top: -10px;" layout horizontal>
-                    <paper-icon-button icon="refresh" on-tap="{{refresh}}"></paper-icon-button>
-                    <export-status gid="{{gid}}"></export-status>
+                <div end style="height: 50px; position: absolute; top: -5px; right: 0;" layout horizontal>
+                    <core-tooltip class="delete-tooltip" label="Refresh">
+                        <paper-icon-button icon="refresh" on-tap="{{refresh}}"></paper-icon-button>
+                    </core-tooltip>
+                    <core-tooltip class="delete-tooltip" label="Export">
+                        <export-status gid="{{gid}}"></export-status>
+                    </core-tooltip>
                 </div>
             </div>
 
