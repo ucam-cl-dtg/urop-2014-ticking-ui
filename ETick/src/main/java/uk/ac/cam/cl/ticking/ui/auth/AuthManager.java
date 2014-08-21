@@ -128,16 +128,13 @@ public class AuthManager {
 	@GET
 	@Path("/login")
 	@Produces("application/json")
-	public Response login(@Context HttpServletRequest request) throws InterruptedException {
+	public Response login(@Context HttpServletRequest request) {
 
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 		if (crsid == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		
-		//TODO remove me!
-		if (crsid.equals("rds46")) Thread.sleep(5000L);;
 
 		User user = db.getUser(crsid);
 		if (user == null || user.getLdap() == null
