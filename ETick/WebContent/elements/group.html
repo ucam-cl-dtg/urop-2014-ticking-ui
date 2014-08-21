@@ -25,6 +25,7 @@
 <polymer-element name="x-group" attributes="gid name info creator editedBy editedOn">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
+        <link rel="stylesheet" href="../css/shared-styles.css">
 
 		<!-- User roles API call. -->
 		<core-ajax id="roleAjax"
@@ -66,7 +67,7 @@
 								<core-tooltip label="Clone">
 									<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
 								</core-tooltip>
-								<core-tooltip label="Delete">
+								<core-tooltip label="Delete" class="delete-tooltip">
 									<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
 								</core-tooltip>
 							</template>
@@ -105,7 +106,7 @@
 	        		on-add-sheet-clicked="{{addSheetHandler}}"
 	        		on-edit-sheet-clicked="{{editSheetHandler}}"
 	        		on-sheet-selected="{{sheetSelectedHandler}}"
-	        		on-sheet-deleted="{{sheetCreated}}">
+	        		on-sheet-deleted="{{sheetCreatedEdited}}">
 	        	</tick-session-list>
 	        </span>
 
@@ -144,7 +145,8 @@
 			<main-card animated>
 				<add-edit-session gid="{{gid}}" sheet="{{sheet}}"
 				on-sheet-cancel="{{sheetCancelled}}"
-				on-sheet-edited="{{sheetCreated}}"></add-edit-session>
+				on-sheet-created="{{sheetCreatedEdited}}"
+				on-sheet-edited="{{sheetCreatedEdited}}"></add-edit-session>
 			</main-card>
 		</template>
 		<paper-toast id="addEditResponseToast" duration="8000"></paper-toast>
@@ -152,9 +154,9 @@
 
         <!-- Marker card for ticking sessions. -->
         <span id="deepTickingSessions" hidden>
-        	<template if="{{sheet}}">
-            	<ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.title}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
-            </template>            	
+        	<template if="{{showTickerSignup}}">
+            	<ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.title}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>     	
+            </template>
         </span>
 
         <span id="deepOverview">
@@ -223,27 +225,26 @@
 			},
 			sheetListResponse: function () {
 				this.sheets = this.$.sheetListAPI.response;
+				this.$.tickingSessionList.clearSelection();
 			},
 
 			forkClickedHandler: function (e, detail) {
 				this.selectedTickId = detail.tickId;
 				this.selectedTickName = detail.tickName;
                 this.selectedTickObj = detail.tickObj;
-
-                console.log(detail);
 			},
 
-			sheetChanged: function (o, n) {
-				console.log(o, n);
-			},
+			// Ticking sheet cards handlers:
 
-			sheetCreated: function (e, detail) {
+			sheetCreatedEdited: function (e, detail) {
+				console.log(e);
 				this.$.sheetListAPI.go();
 				this.sheetCancelled();
 				if (detail && detail.message) {
 					this.$.addEditResponseToast.text = detail.message;
 					this.$.addEditResponseToast.show();
 				}
+				this.showTickerSignup = false;
 			},
 
 			addSheetHandler: function () {
@@ -252,33 +253,31 @@
 					gid: this.gid,
 					sheet: null
 				}
+				this.showTickerSignup = false;
 			},			
 			
 			editSheetHandler: function (e, detail) {
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: true,
 					gid: this.gid,
-					sheet: this.sheet
+					sheet: detail.sheet
 				};
+				this.showTickerSignup = false;
 			},
 
 			sheetCancelled: function () {
-				this.$.tickingSessionList.clearSelection();
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: false,
 					gid: null,
 					sheet: null
-				}
+				};
+				this.showTickerSignup = true;
 			},
 
 			sheetSelectedHandler: function (e, detail) {
 				this.sheet = detail.sheet;
+				this.showTickerSignup = this.sheet ? true : false;
 			},
-
-			changeTab: function() { 
-				this.sheet = null;
-				this.$.tickingSessionList.clearSelection();
-			}
 		});
 	</script>
 </polymer-element>

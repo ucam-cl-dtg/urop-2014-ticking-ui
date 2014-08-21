@@ -49,3 +49,14 @@ paper-checkbox {
     color: #FFFFFF;
     margin-right: 5px;
 }
+
+
+.delete-tooltip /deep/ .polymer-tooltip {
+   left: -12px;
+}
+
+.delete-tooltip /deep/ .polymer-tooltip.bottom::after {
+   bottom: 100%;
+   left: calc(65% - 4px);
+   border-bottom-color: rgba(0,0,0,0.8);
+}

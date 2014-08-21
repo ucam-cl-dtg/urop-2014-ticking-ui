@@ -33,7 +33,7 @@ public class Strings {
 
 	public static final String EXISTS = "Error: You have already created a tick with this name.";
 
-	public static final String REMOVECREATOR = "Error: You may not remove the creator of the group.";
+	public static final String REMOVECREATOR = "Error: You may not remove the creator of the group. Any other users have been removed.";
 
 	public static final String MISSING = "Error: The resource you requested appears to be missing.";
 

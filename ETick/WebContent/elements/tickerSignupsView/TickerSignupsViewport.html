@@ -138,7 +138,6 @@
   <script>
   Polymer('ticker-signups-viewport', {
 			refresh: function() {
-				console.log('refreshing viewport');
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
 				if (this.location === "") {

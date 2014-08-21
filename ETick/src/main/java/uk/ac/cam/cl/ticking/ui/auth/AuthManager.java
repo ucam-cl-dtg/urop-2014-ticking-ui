@@ -43,7 +43,7 @@ public class AuthManager {
 		this.academicConfig = academicConfig;
 		this.adminConfig = adminConfig;
 	}
-	
+
 	@GET
 	@Path("/")
 	public Response session(@Context HttpServletRequest request) {
@@ -131,13 +131,13 @@ public class AuthManager {
 				"RavenRemoteUser");
 		if (crsid == null) {
 			return Response.status(Status.NOT_FOUND).build();
-		}		
-		
+		}
+
 		User user = db.getUser(crsid);
 		if (user == null || user.getLdap() == null
 				|| user.getLdap().plusDays(1).isBeforeNow()) {
 			String ssh = null;
-			if (user!=null) {
+			if (user != null) {
 				ssh = user.getSsh();
 			}
 			user = ldapProduceUser(crsid);
@@ -175,17 +175,22 @@ public class AuthManager {
 		LDAPUser u;
 		User user;
 		try {
-			//TODO async
+			// TODO async
 			u = LDAPQueryManager.getUser(crsid);
 			boolean notStudent = academicConfig.getConfig().represents(u);
 			boolean admin = adminConfig.getConfig().isAdmin(crsid);
-			user = new User(crsid,
-					u.getSurname(), u.getRegName(), u.getDisplayName(),
-					u.getEmail(), u.getInstitutions(), u.getCollegeName(),
-					!notStudent, admin);
+			user = new User(crsid, u.getSurname(), u.getRegName(),
+					u.getDisplayName(), u.getEmail(), u.getInstitutions(),
+					u.getCollegeName(), !notStudent, admin);
 			List<String> photos = u.getPhotos();
 			if (photos != null) {
 				user.setPhoto(photos.get(photos.size() - 1));
+			}
+			if (admin) {
+				for (Group group : db.getGroups()) {
+					db.saveGrouping(new Grouping(user.getCrsid(), group
+							.getGroupId(), Role.ADMIN));
+				}
 			}
 		} catch (LDAPObjectNotFoundException e) {
 			user = new User(crsid);
