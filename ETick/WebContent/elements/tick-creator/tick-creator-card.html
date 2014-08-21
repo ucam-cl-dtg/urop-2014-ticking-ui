@@ -14,6 +14,7 @@
 <link rel="import" href="static-list.html">
 <link rel="import" href="static-list-labels.html">
 <link rel="import" href="dynamic-tests-component.html">
+<link rel="import" href="tick-workbook-link.html">
 
 <polymer-element name="tick-creator-card" attributes="tickId">
 <template>
@@ -167,6 +168,9 @@
 
             <div hidden?="{{groups.length > 0}}">You don't have any groups!</div>
         </core-collapse>
+        <core-collapse opened?="{{!$.collapseGroups.opened}}"><br></core-collapse>
+
+        <tick-workbook-link flex></tick-workbook-link>
 
         <dynamic-tests-component></dynamic-tests-component>
 
