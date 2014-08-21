@@ -85,7 +85,7 @@
 			slotsResponse: function () {
 				var r = this.$.slotsAPI.response;
 				this.dates = r.map(function (obj) {
-					return new Date(obj);
+					return prettyParse(obj);
 				});
 			},
 
