@@ -68,7 +68,7 @@
 									<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
 								</core-tooltip>
 								<core-tooltip label="Delete" class="delete-tooltip">
-									<delete-group id="groupDeleteButton" gid="{{gid}}" name="{{name}}"></delete-group>
+									<paper-icon-button id="deleteButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
 								</core-tooltip>
 							</template>
 						</span>
@@ -84,6 +84,9 @@
                     </div>
                 </div>
             </span>
+
+            <!-- Delete group element. -->
+            <delete-group id="deleteGroup" gid="{{gid}}" name="{{name}}"></delete-group>
 
             <!-- Ticks Tab -->
             <span id="ticks" hidden>
@@ -279,6 +282,10 @@
 				this.sheet = detail.sheet;
 				this.showTickerSignup = this.sheet ? true : false;
 			},
+
+			deleteClicked: function () {
+				this.$.deleteGroup.$.confirm.toggle();
+			}
 		});
 	</script>
 </polymer-element>

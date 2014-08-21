@@ -19,17 +19,10 @@
 			on-core-error="{{deleteError}}">
 		</core-ajax>
 
-		<!-- Delete button. -->
-		<paper-icon-button id="deleteButton"
-			icon="delete"
-			on-click="{{deleteClicked}}">
-		</paper-icon-button>
-
 		<!-- Confirmation dialog. -->
 		<are-you-sure id="confirm"
-			heading="Edit group:"
-			on-yes="{{deleteConfirmed}}">
-		</are-you-sure>
+            heading="{{'Delete group ' + name + '?'}}"
+			on-yes="{{deleteConfirmed}}"></are-you-sure>
 
 		<!-- Response toasts. -->
 		<paper-toast id="deleteError" duration="3000" text="Error deleting group."></paper-toast>
