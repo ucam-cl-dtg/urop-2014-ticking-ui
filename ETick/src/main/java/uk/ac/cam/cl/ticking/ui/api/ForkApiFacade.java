@@ -268,7 +268,6 @@ public class ForkApiFacade implements IForkApiFacade {
 				 * tester
 				 */
 				if (!forkBean.getHumanPass()) {
-					fork.setUnitPass(false);
 					fork.setSignedUp(false);
 
 					/* Call the tick signup service to set preferred ticker */
