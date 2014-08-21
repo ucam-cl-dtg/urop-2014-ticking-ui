@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog-transition.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 
 <polymer-element name="sheet-selector" attributes="sheets tickId">
 	<template>
@@ -10,17 +11,20 @@
 		<link rel="stylesheet" type="text/css" href="../css/elements/sheet-selector.css">
 
 		<!-- Signup slots API. -->
-		<core-ajax id="slotsAPI"
+		<toast-ajax id="slotsAPI"
 			url=""
 			handleAs="json"
-			on-core-response="{{slotsResponse}}">
-		</core-ajax>
+			on-core-response="{{slotsResponse}}"
+
+			waitBeforeToast="200"
+			waitMessage="Loading ticking slots...">
+		</toast-ajax>
 
 		<!-- Signup make bookings API. -->
 		<core-ajax id="bookingsAPI"
 			url=""
 			contentType="application/json"
-			handleAs="json"
+			handleAs="text"
 			method="POST"
 			on-core-response="{{bookingsResponse}}"
 			on-core-error="{{bookingsError}}">
@@ -100,7 +104,7 @@
 
 			bookingsResponse: function () {
 				this.$.bookingSucessfulToast.text = "Booking created for " +
-                    prettyDateTime(new Date(this.slotSelection)) + ".";
+                    prettyDateTime(new Date(this.slotSelection)) + ' with "' + this.$.bookingsAPI.response + '".' ;
 				this.$.bookingSucessfulToast.show();
 
 				this.fire('slot-booked', {

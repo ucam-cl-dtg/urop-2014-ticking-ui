@@ -2,8 +2,7 @@
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html
 ">
 <link rel="import" href="../bower_components/core-dropdown/core-dropdown.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 
 <polymer-element name="add-tick" attributes="gid">
 	<template>
@@ -11,21 +10,31 @@
 		<link rel="stylesheet" type="text/css" href="../css/elements/sheet-selector.css">
 
 		<!-- All tick list API call. -->
-		<core-ajax id="listAPI"
+		<toast-ajax id="listAPI"
 			auto
 			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ticks"
 			handleAs="json"
-			on-core-response="{{listResponse}}">
-		</core-ajax>
+			on-core-response="{{listResponse}}"
+
+			waitBeforeToast="200"
+			waitMessage="Loading ticks...">
+		</toast-ajax>
 
 		<!-- Add tick to group API. -->
-		<core-ajax id="addTickAPI"
+		<toast-ajax id="addTickAPI"
 			method="PUT"
 			on-core-response="{{addTickResponse}}"
-			on-core-error="{{addTickError}}">
-		</core-ajax>
+			on-core-error="{{addTickError}}"
 
-		<paper-dialog id="addDialog"
+			popUpResponse
+			responseMessage="Successfully added tick to group."
+			waitBeforeToast="500"
+            waitMessage="Adding tick..."
+            popUpError
+            captureError>
+    	</toast-ajax>
+
+		<paper-dialog id="dialog"
 			backdrop
 			transition="core-transition-top"
 			heading="Add ticks to group:">
@@ -42,15 +51,11 @@
 
 			<paper-button id="addSubmit" class="dialogSubmit" label="ADD"
 				on-click="{{addSubmitClicked}}" affirmative></paper-button>
-
 		</paper-dialog>
 
 	</template>
 	<script>
 		Polymer('add-tick', {
-			addClicked: function () {
-				this.$.addDialog.toggle();
-			},
 
 			addSubmitClicked: function () {
 				var sel = this.$.selector;
@@ -69,11 +74,6 @@
 			addTickResponse: function () {
 				this.fire('tick-added');
 			},
-
-			addTickError: function () {
-
-			}
-
 		});
 	</script>
 </polymer-element>
