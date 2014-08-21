@@ -93,8 +93,7 @@
                   function (report)
                   {
                     return  {   "date"   :
-                      new Date(
-                        report.creationDate.split("+")[0] + "Z")
+                                  prettyParse(report.creationDate)
                               , "commit" : report.commitId
                             };
                   });
@@ -135,8 +134,7 @@
             this.comments     = selReport.tickerComments;
             this.commitId     = selReport.commitId;
             this.testCount    = selReport.noOfTests;
-            this.date         = new Date(
-                selReport.creationDate.split("+")[0]);
+            this.date         = prettyParse(selReport.creationDate)
             this.errors       =
               selReport.items.reduce(
                   function (prev, curr)

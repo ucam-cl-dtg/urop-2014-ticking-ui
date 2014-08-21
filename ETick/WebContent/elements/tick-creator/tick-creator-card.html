@@ -373,7 +373,7 @@
                     //By checking the deadline switch, the deadline entry fields will be shown
                     this.$.deadlineSwitch.checked = true;
 
-                    var deadline  = new Date(this.tickData.deadline);
+                    var deadline  = prettyParse(this.tickData.deadline);
 
                     var day = deadline.getUTCDate().toString();
                     var month = (deadline.getUTCMonth() + 1).toString();
