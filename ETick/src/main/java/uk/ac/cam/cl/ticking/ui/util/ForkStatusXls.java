@@ -127,7 +127,7 @@ public class ForkStatusXls {
 					
 					if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 						Cell cell = row.createCell(cellnum++);
-						cell.setCellValue("FAILED");
+						cell.setCellValue(Strings.FAILED);
 						cell.setCellStyle(failStyle);
 					} else {
 						cellnum++;
@@ -148,7 +148,7 @@ public class ForkStatusXls {
 							
 							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								Cell cell = row.createCell(cellnum++);
-								cell.setCellValue("FAILED");
+								cell.setCellValue(Strings.FAILED);
 								cell.setCellStyle(failStyle);
 								createComment(workbook, sheet, row, cell, Strings.UNITPASSED);
 							} else {
@@ -160,7 +160,7 @@ public class ForkStatusXls {
 						if (fork.isReportAvailable()) {
 							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								Cell cell = row.createCell(cellnum++);
-								cell.setCellValue("FAILED");
+								cell.setCellValue(Strings.FAILED);
 								cell.setCellStyle(failStyle);
 								createComment(workbook, sheet, row, cell, Strings.UNITFAILED);
 							} else {
@@ -170,7 +170,7 @@ public class ForkStatusXls {
 						} else {
 							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								Cell cell = row.createCell(cellnum++);
-								cell.setCellValue("FAILED");
+								cell.setCellValue(Strings.FAILED);
 								cell.setCellStyle(failStyle);
 								createComment(workbook, sheet, row, cell, Strings.INITIALISED);
 							} else {
