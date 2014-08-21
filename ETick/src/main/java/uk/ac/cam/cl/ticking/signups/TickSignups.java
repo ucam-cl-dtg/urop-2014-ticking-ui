@@ -1524,7 +1524,7 @@ public class TickSignups {
     }
 
     private Long convertToUTCViaAssumedGMTX(Long date) {
-        DateTime input = new DateTime(date);
+        DateTime input = new DateTime(date, DateTimeZone.UTC);
         DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
         DateTime utc = gmtx.withZone(DateTimeZone.UTC);
 
@@ -1536,7 +1536,7 @@ public class TickSignups {
         DateTime input = new DateTime(date);
         DateTime gmtx = input.withZone(DateTimeZone.getDefault());
 
-        return gmtx.getMillis();
+        return input.getMillis();
     }
     
     private void throwRealException(InternalServerErrorException e) throws Throwable {
