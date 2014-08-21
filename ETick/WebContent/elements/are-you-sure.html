@@ -10,10 +10,10 @@
 				width: 100%;
 			}
 		</style>
-		<paper-dialog id="deleteDialog"
+		<paper-dialog id="dialog"
 			opened="{{opened}}"
 			backdrop
-			heading="{{heading ? heading : 'Are You Sure?'}}"
+			heading="{{heading}}"
 			transition="core-transition-top">
 			<paper-button dismissive class="dialogNo" label="No" on-click="{{noClicked}}">
 			</paper-button>
@@ -26,8 +26,10 @@
 
 			opened: false,
 
+			heading: "Are you sure?",
+
 			toggle: function () {
-				this.$.deleteDialog.toggle();
+				this.$.dialog.toggle();
 			},
 
 			yesClicked: function () {

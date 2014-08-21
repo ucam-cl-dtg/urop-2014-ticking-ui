@@ -23,11 +23,10 @@
                 <!-- Generating a tooltip seems to be a bit time-consuming, especially when an overview page is likely
                      to have several hundred. To improve load performance, tooltips are generated lazily -->
                 <template if="{{enableTooltip}}">
-                    <!-- Databinding in the position attribute ensures the tooltip is never underneath other content
-                         TODO: default to point right instead of left. Reason: default left will always require some
-                         TODO: ticks to point right, but default right will only require left tooltips if there are
-                         TODO: too many ticks to fit on the screen -->
-                    <core-tooltip label="{{displayString.tooltip}}" position="{{displayString.index < leftMostIndex + 3 ? 'right' : 'left'}}" style="min-width: 60px; outline: none;">
+                    <!-- Databinding in the position attribute ensures the tooltip is never underneath other content -->
+                    <core-tooltip label="{{displayString.tooltip}}"
+                                  position="{{displayString.index + 4 > leftMostIndex + widthIndexes ? 'left' : 'right'}}"
+                                  style="min-width: 60px; outline: none;">
                         <div class="tick-label" vertical layout center>
                             <status-icon class="overview-status-icon" mode="{{displayString.iconCode}}"></status-icon>
                         </div>
@@ -54,10 +53,11 @@
 
             scrollAreaWidthChanged: function() {
                 this.updateListWidth();
+                this.widthIndexes = this.scrollAreaWidth / 60;
             },
 
             updateListWidth: function() {
-                this.listContainerStyle = "width: " + this.max(60 * (this.user.displayStrings.length + 1), this.scrollAreaWidth) + "px;";
+                this.listContainerStyle = "width: " + this.max(60 * (this.user.displayStrings.length), this.scrollAreaWidth) + "px;";
             },
 
             max: function(a, b) {

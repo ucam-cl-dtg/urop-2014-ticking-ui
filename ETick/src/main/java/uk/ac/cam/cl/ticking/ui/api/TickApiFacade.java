@@ -44,9 +44,6 @@ public class TickApiFacade implements ITickApiFacade {
 			.getLogger(TickApiFacade.class.getName());
 
 	private IDataManager db;
-	// not currently used but could quite possibly be needed in the future, will
-	// remove if not
-	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
 	private ITestService testServiceProxy;
@@ -106,8 +103,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Call the git service to delete the repository */
 		try {
-			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId));
-			gitServiceProxy.deleteRepository(Tick.replaceDelimeter(tickId)+"/correctness");
+			gitServiceProxy.deleteRepository(config.getConfig().getSecurityToken(), Tick.replaceDelimeter(tickId));
+			gitServiceProxy.deleteRepository(config.getConfig().getSecurityToken(), Tick.replaceDelimeter(tickId)+"/correctness");
 			db.removeTick(tickId);
 			/*Remove dangling group references*/
 			for (String groupId : tick.getGroups()) {
@@ -218,7 +215,7 @@ public class TickApiFacade implements ITickApiFacade {
 		if (failed == null || failed.getStubRepo() == null) {
 			String repo;
 			try {
-				repo = gitServiceProxy.addRepository(new RepoUserRequestBean(
+				repo = gitServiceProxy.addRepository(config.getConfig().getSecurityToken(), new RepoUserRequestBean(
 						crsid + "/" + tickBean.getName(), crsid));
 
 			} catch (InternalServerErrorException e) {
@@ -280,7 +277,7 @@ public class TickApiFacade implements ITickApiFacade {
 			String correctnessRepo;
 			try {
 				correctnessRepo = gitServiceProxy
-						.addRepository(new RepoUserRequestBean(crsid + "/"
+						.addRepository(config.getConfig().getSecurityToken(), new RepoUserRequestBean(crsid + "/"
 								+ tickBean.getName() + "/correctness", crsid));
 			} catch (InternalServerErrorException e) {
 				RemoteFailureHandler h = new RemoteFailureHandler();
@@ -342,7 +339,7 @@ public class TickApiFacade implements ITickApiFacade {
 			db.saveGroup(g);
 		}
 
-		/* Ssave and return the tick */
+		/* Save and return the tick */
 		db.saveTick(tick);
 
 		return Response.status(Status.CREATED).entity(tick).build();
@@ -403,8 +400,9 @@ public class TickApiFacade implements ITickApiFacade {
 
 			prevTick.setGroups(tickBean.getGroups());
 
-			/* Update the deadline, save and return */
+			/* Update the deadline, external resource, save and return */
 			prevTick.setDeadline(tickBean.getDeadline());
+			prevTick.setExternalReference(tickBean.getExternalReference());
 			db.saveTick(prevTick);
 			return Response.status(Status.CREATED).entity(prevTick).build();
 		} else {
@@ -457,6 +455,13 @@ public class TickApiFacade implements ITickApiFacade {
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
+		
+		if (tick.getGroups().contains(groupId)) {
+			log.warn("User " + crsid + " tried to add tick " + tickId
+					+ " to group " + groupId + " but it was already past of the group");
+			return Response.status(Status.BAD_REQUEST)
+					.entity(Strings.TICKISINGROUP).build();
+		}
 
 		/* Add the references and save */
 		group.addTick(tickId);
@@ -496,6 +501,46 @@ public class TickApiFacade implements ITickApiFacade {
 		/* Update the extensions, save and return */
 		for (String user : extensionBean.getCrsids()) {
 			tick.addExtension(user, extensionBean.getDeadline());
+		}
+		db.saveTick(tick);
+		
+		List<ExtensionReturnBean> extensions = new ArrayList<>();
+		for (Entry<String, DateTime> entry : tick.getExtensions().entrySet()) {
+			extensions.add(new ExtensionReturnBean(db.getUser(entry.getKey()), entry.getValue()));
+		}
+		
+		return Response.status(Status.CREATED).entity(extensions).build();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Response removeExtension(HttpServletRequest request, String tickId, ExtensionBean extensionBean) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+
+		/* Get the tick object and return if it doesn't exist */
+		Tick tick = db.getTick(tickId);
+
+		if (tick == null) {
+			log.error("User " + crsid + " requested tick " + tickId
+					+ " to add extensions, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Check permissions */
+		if (!permissions.tickCreator(crsid, tick)) {
+			log.warn("User " + crsid + " tried to add an extension to tick "
+					+ tickId + " but was denied permission");
+			return Response.status(Status.FORBIDDEN)
+					.entity(Strings.INVALIDROLE).build();
+		}
+
+		/* Update the extensions, save and return */
+		for (String user : extensionBean.getCrsids()) {
+			tick.removeExtension(user);
 		}
 		db.saveTick(tick);
 		
@@ -570,7 +615,7 @@ public class TickApiFacade implements ITickApiFacade {
 		/* Call the git service to get the files */
 		List<FileBean> files;
 		try {
-			files = gitServiceProxy.getAllFiles(Tick.replaceDelimeter(tickId),
+			files = gitServiceProxy.getAllFiles(config.getConfig().getSecurityToken(), Tick.replaceDelimeter(tickId),
 					commitId);
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();

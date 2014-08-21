@@ -68,7 +68,7 @@
 									<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
 								</core-tooltip>
 								<core-tooltip label="Delete" class="delete-tooltip">
-									<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
+									<paper-icon-button id="deleteButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
 								</core-tooltip>
 							</template>
 						</span>
@@ -85,10 +85,14 @@
                 </div>
             </span>
 
+            <!-- Delete group element. -->
+            <delete-group id="deleteGroup" gid="{{gid}}" name="{{name}}"></delete-group>
+
             <!-- Ticks Tab -->
             <span id="ticks" hidden>
-                <tick-list gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"
-                           canFork="{{isSubmitter||isAdmin}}"></tick-list>
+                <tick-list gid="{{gid}}" 
+                	on-fork-clicked="{{forkClickedHandler}}"
+                	canFork="{{isSubmitter||isAdmin}}"></tick-list>
             </span>
 
             <!-- Group Members Tab -->
@@ -278,6 +282,10 @@
 				this.sheet = detail.sheet;
 				this.showTickerSignup = this.sheet ? true : false;
 			},
+
+			deleteClicked: function () {
+				this.$.deleteGroup.$.confirm.toggle();
+			}
 		});
 	</script>
 </polymer-element>

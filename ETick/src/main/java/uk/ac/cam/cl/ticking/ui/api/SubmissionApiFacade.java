@@ -228,10 +228,12 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 				for (String groupId : groupIds) {
 					tickSignupService.allowSignup(crsid, groupId, tickId);
 				}
+				fork.incrementUnitPasses();
 			} else {
 				for (String groupId : groupIds) {
 					tickSignupService.disallowSignup(crsid, groupId, tickId);
 				}
+				fork.incrementUnitFails();
 			}
 
 			/* Set whether the fork passed and save it */
@@ -247,7 +249,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response getLast(HttpServletRequest request, String tickId,
+	public Response getLastReport(HttpServletRequest request, String tickId,
 			String crsid) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
@@ -313,7 +315,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response getAll(HttpServletRequest request, String tickId,
+	public Response getAllReports(HttpServletRequest request, String tickId,
 			String crsid) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");

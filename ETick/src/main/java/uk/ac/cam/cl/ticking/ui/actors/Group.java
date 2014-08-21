@@ -9,7 +9,8 @@ import org.joda.time.DateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This class stores the name and identifier for a group
+ * This class stores the name, identifier, creator and info for a group as well
+ * as stamps whenever editing takes place.
  * 
  * @author tl364
  *

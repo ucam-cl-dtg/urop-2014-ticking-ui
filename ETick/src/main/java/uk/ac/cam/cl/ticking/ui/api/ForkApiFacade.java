@@ -45,9 +45,6 @@ public class ForkApiFacade implements IForkApiFacade {
 			.getLogger(ForkApiFacade.class.getName());
 
 	private IDataManager db;
-	// not currently used but could quite possibly be needed in the future, will
-	// remove if not
-	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
 	private WebInterface gitServiceProxy;
@@ -91,10 +88,10 @@ public class ForkApiFacade implements IForkApiFacade {
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
-		
+
 		boolean signedUp = fork.isSignedUp();
-		boolean serviceSignedUp = tickSignupService
-				.studentHasBookingForTick(crsid, tickId);
+		boolean serviceSignedUp = tickSignupService.studentHasBookingForTick(
+				crsid, tickId);
 		if (signedUp == serviceSignedUp) {
 			return Response.ok(fork).build();
 		} else {
@@ -142,7 +139,7 @@ public class ForkApiFacade implements IForkApiFacade {
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
+
 		/* Create and save fork object */
 		try {
 			fork = new Fork(crsid, tickId, "");
@@ -163,8 +160,9 @@ public class ForkApiFacade implements IForkApiFacade {
 		String repoName = Tick.replaceDelimeter(tickId);
 
 		try {
-			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null,
-					crsid, repoName, null));
+			repo = gitServiceProxy.forkRepository(config.getConfig()
+					.getSecurityToken(), new ForkRequestBean(null, crsid,
+					repoName, null));
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
@@ -275,7 +273,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				 */
 				if (!forkBean.getHumanPass()) {
 					fork.setSignedUp(false);
-
+					fork.incrementHumanFails();
 					/* Call the tick signup service to set preferred ticker */
 					List<String> groupIds = db.getTick(tickId).getGroups();
 					for (String groupId : groupIds) {
@@ -327,7 +325,8 @@ public class ForkApiFacade implements IForkApiFacade {
 		List<FileBean> files;
 
 		try {
-			files = gitServiceProxy.getAllFiles(
+			files = gitServiceProxy.getAllFiles(config.getConfig()
+					.getSecurityToken(),
 					crsid + "/" + Tick.replaceDelimeter(tickId), commitId);
 
 		} catch (InternalServerErrorException e) {

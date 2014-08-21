@@ -5,10 +5,11 @@
 <link rel="import" href="search-box.html">
 <link rel="import" href="tick-box.html">
 <link rel="import" href="box-list.html">
+<link rel="import" href="add-tick.html">
 
 <polymer-element name="tick-list" attributes="gid canFork">
 	<template>
-		<style shim-shadowdom>
+		<style>
 			:host {
 				display: block;
 			}
@@ -26,12 +27,15 @@
 			on-core-response="{{tickListResponse}}">
 		</core-ajax>
 
+		<!-- Add Tick Element -->
+		<add-tick id="tickAdder" gid="{{gid}}" on-tick-added="{{tickAddedHandler}}"></add-tick>
 
 		<!-- Tick list card header. -->
 		<div id="headerBar" layout horizontal center>
 			<!--<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>-->
             <span flex></span>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
+			<paper-icon-button id="addTickButton" icon="add" on-click="{{addTickClicked}}"></paper-icon-button>
 		</div>
 
 		<!-- Tick list. -->
@@ -79,6 +83,14 @@
 						tickName: this.selectedTickIdName,
                         tickObj: this.selectedTickObj
 					});
+			},
+
+			tickAddedHandler: function () {
+				this.$.tickListAPI.go();
+			},
+
+			addTickClicked: function () {
+				this.$.tickAdder.$.dialog.toggle();
 			}
 		});
 	</script>

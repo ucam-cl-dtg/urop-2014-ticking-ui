@@ -56,17 +56,20 @@
 			<h1 flex>Extensions ({{number}})</h1>
             <span flex></span>
             <search-box id="searchBox" placeholder="Search..."></search-box>
-            <core-tooltip label="Add">
+
+            <core-tooltip label="Add" position="{{number > 0 ? 'bottom' : 'left'}}">
 				<paper-icon-button icon="add" on-click="{{addExtensionClicked}}"></paper-icon-button>
 			</core-tooltip>
-			<core-tooltip label="Delete">
+
+			<!-- DELTE API NOT READY --
+			<!-- <core-tooltip label="Delete" position="left">
             	<paper-icon-button icon="delete" on-click="{{deleteExtensionClicked}}"></paper-icon-button>
-            </core-tooltip>
+            </core-tooltip> -->
 		</div>
 
 		<!-- Member list. -->
 		<div id="personListContainer">
-			<extension-list id="members" query="{{searchQuery}}" on-core-select="{{extensionSelectionChanged}}"></person-list>
+			<extension-list id="members" query="{{searchQuery}}" on-core-select="{{extensionSelectionChanged}}"></extension-list>
 		</div>
 
 		<!-- Extension dialog -->

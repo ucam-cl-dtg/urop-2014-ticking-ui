@@ -3,6 +3,7 @@
 <link rel="import" href="tick-session-box.html">
 <link rel="import" href="box-list.html">
 <link rel="import" href="add-session.html">
+<link rel="import" href="are-you-sure.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 
@@ -51,6 +52,9 @@
 			</template>
 		</box-list>
 
+		<!-- Delete session confirmation dialog. -->
+		<are-you-sure id="deleteConfirmDialog" on-yes="{{deleteConfirmed}}"></are-you-sure>
+
 		<!-- Response toasts. -->
 		<paper-toast id="deleteSessionError" duration="8000"></paper-toast>
 	</template>
@@ -93,10 +97,15 @@
 
 			deleteClicked: function () {
 				if (this.selectedSheet) {
-					var call = this.$.deleteSessionAPI;
-					call.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.selectedSheet._id
-					call.go();
+					this.$.deleteConfirmDialog.heading = 'Delete session "' + this.selectedSheet.title + '".';
+					this.$.deleteConfirmDialog.toggle();
 				}
+			},
+
+			deleteConfirmed: function () {
+				var call = this.$.deleteSessionAPI;
+				call.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.selectedSheet._id
+				call.go();
 			},
 
 			deleteSessionResponse: function () {

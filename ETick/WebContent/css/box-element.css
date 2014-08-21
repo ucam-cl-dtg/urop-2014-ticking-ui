@@ -21,6 +21,13 @@ h2 {
 	font-weight: 300;
 }
 
+h3 {
+	margin: 0;
+	font-size: 1rem;
+	color: #464646;
+	font-weight: 200;
+}
+
 .textContainer {
 	margin-left: 10px;
 	white-space: nowrap;
