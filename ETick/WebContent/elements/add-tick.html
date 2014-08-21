@@ -20,12 +20,10 @@
 
 		<!-- Add tick to group API. -->
 		<core-ajax id="addTickAPI"
-			method="POST"
+			method="PUT"
 			on-core-response="{{addTickResponse}}"
 			on-core-error="{{addTickError}}">
 		</core-ajax>
-
-		<paper-icon-button id="addButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
 
 		<paper-dialog id="addDialog"
 			backdrop
@@ -59,7 +57,7 @@
 				var selectedTick = sel.options[sel.selectedIndex].value;
 				console.log(selectedTick);
 
-				this.$.addTickAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/tick/" + selectedTick + "/" + this.gid;
+				this.$.addTickAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + selectedTick + "/" + this.gid;
 				this.$.addTickAPI.go();
 			},
 
@@ -71,6 +69,10 @@
 			addTickResponse: function () {
 				this.fire('tick-added');
 			},
+
+			addTickError: function () {
+
+			}
 
 		});
 	</script>
