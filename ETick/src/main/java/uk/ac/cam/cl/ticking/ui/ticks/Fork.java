@@ -23,6 +23,8 @@ public class Fork {
 	private String repo;
 
 	private String tickId;
+	
+	private boolean forking = false;
 
 	private boolean unitPass = false;
 	private boolean humanPass = false;
@@ -154,6 +156,14 @@ public class Fork {
 	 */
 	public void setLastTickedBy(String lastTickedBy) {
 		this.lastTickedBy = lastTickedBy;
+	}
+
+	public boolean isForking() {
+		return forking;
+	}
+
+	public void setForking(boolean forking) {
+		this.forking = forking;
 	}
 
 	/**
