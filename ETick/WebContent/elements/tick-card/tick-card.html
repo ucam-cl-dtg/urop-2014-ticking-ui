@@ -75,7 +75,8 @@
                 repo="{{repo}}"
                 forked="{{forked}}"
                 lastTickedBy="{{lastTickedBy}}"
-                lastTickedOn="{{lastTickedOn}}">
+                lastTickedOn="{{lastTickedOn}}"
+                forking="{{forking}}">
         </fork-service>
 
         <div id="mainContainer" layout horizontal>
@@ -83,9 +84,6 @@
             <div flex>
                 <div layout horizontal style="margin-right: 10px;">
                     <h1 flex vertical center>{{tickName}}</h1>
-
-                    <!-- STATUS IS HERE TODO: remove this comment -->
-
 
                     <div layout vertical>
                         <div flex></div>
@@ -101,6 +99,7 @@
 
                     <core-collapse style="margin-right: -10px;" opened?="{{datetime != null}}" horizontal>
                         <div style="padding: 3px;">
+                            <!-- If deadline passed then MD Red 500 else MD green 500 -->
                             <date-calendar datetime="{{datetime}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>
                         </div>
                     </core-collapse>
@@ -118,7 +117,8 @@
                 <core-collapse opened?="{{!forked}}">
                     <fork-component
                             on-create-fork="{{createFork}}"
-                            repo="{{repo}}">
+                            repo="{{repo}}"
+                            initialising="{{forking}}">
                     </fork-component>
                 </core-collapse>
 
