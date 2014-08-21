@@ -995,10 +995,13 @@ public class TickSignups {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         log.info("User " + crsid + " has requested the creation of a sheet for " +
                 "the group of ID " + bean.getGroupID());
+        log.info("The received start time is " + bean.getStartTime());
         
         /*Convert to UTC*/
         bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
         bean.setEndTime(convertToUTCViaAssumedGMTX(bean.getEndTime()));
+        
+        log.info("The converted start time is " + bean.getStartTime());
         
         if (!db.getRoles(bean.getGroupID(), crsid).contains(Role.AUTHOR)) {
             log.info("The user " + crsid + " in not an author in the group");
@@ -1520,34 +1523,48 @@ public class TickSignups {
     }
     
     private Date convertToUTCViaAssumedGMTX(Date date) {
+        log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date);
+        log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
+        log.info("JODA gtmx: " + gmtx.toString());
         DateTime utc = gmtx.withZone(DateTimeZone.UTC);
+        log.info("JODA utc: " + utc.toString());
 
         return utc.toDate();
 
     }
 
     private Date convertToAssumedGMTXFromUTC(Date date) {
+        log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date);
+        log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZone(DateTimeZone.getDefault());
+        log.info("JODA gtmx: " + gmtx.toString());
 
         return gmtx.toDate();
     }
 
     private Long convertToUTCViaAssumedGMTX(Long date) {
+        log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date);
+        log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
+        log.info("JODA gtmx: " + gmtx.toString());
         DateTime utc = gmtx.withZone(DateTimeZone.UTC);
+        log.info("JODA utc: " + utc.toString());
 
         return utc.getMillis();
 
     }
 
     private Long convertToAssumedGMTXFromUTC(Long date) {
+        log.info("JODA raw argument: " + date.toString());
         DateTime input = new DateTime(date);
+        log.info("JODA input: " + input.toString());
         DateTime gmtx = input.withZone(DateTimeZone.getDefault());
-
+        log.info("JODA gtmx: " + gmtx.toString());
+        
         return gmtx.getMillis();
     }
     
