@@ -67,7 +67,7 @@
 				<paper-icon-button icon="add" on-click="{{addExtensionClicked}}"></paper-icon-button>
 			</core-tooltip>
 
-			<core-tooltip label="Delete" class="delete-tooltip" position="{{number > 0 ? 'bottom' : 'left'}}" >
+			<core-tooltip label="Delete" class="{{number > 0 ? 'delete-tooltip' : ''}}" position="{{number > 0 ? 'bottom' : 'left'}}" >
             	<paper-icon-button icon="delete" on-click="{{deleteExtensionClicked}}"></paper-icon-button>
             </core-tooltip>
 		</div>
@@ -116,6 +116,7 @@
 				var list = this.$.extensionAPI.response;
 				this.number = list.length;
 				this.$.members.people = list;
+				this.$.members.clearSelection();
 			},
 
 			addExtension: function() {
@@ -154,7 +155,6 @@
 
 			deleteExtensionClicked: function () {
 				if (this.selectedExtensions) {
-					console.log(this.selectedExtensions);
 					this.$.deleteAPI.body = '{ "crsids" : ' + JSON.stringify(this.selectedExtensions) + '}';
 					this.$.deleteAPI.go();
 				}
@@ -164,6 +164,7 @@
 				var list = this.$.deleteAPI.response;
 				this.number = list.length;
 				this.$.members.people = list;
+				this.$.members.clearSelection();
 			},
 
 		});

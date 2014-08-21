@@ -1,9 +1,11 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/core-overlay/core-overlay.html">
 <link rel="import" href="user-card.html">
 <link rel="import" href="ssh-card.html">
 <link rel="import" href="main-card.html">
 <link rel="import" href="upcoming-slots.html">
+<link rel="import" href="loading-spinner.html">
 
 <polymer-element name="user-dash" attributes="data">
 	<template>
@@ -11,9 +13,11 @@
 			:host {
 				display: block;
 			}
-			
 		</style>
 
+		<core-overlay opened="{{!data}}" backdrop>
+			<loading-spinner></loading-spinner>
+		</core-overlay>
 		<!-- Upcoming events API call. -->
 		<core-ajax id="upcomingAPI"
 			auto
