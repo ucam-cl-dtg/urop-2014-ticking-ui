@@ -77,7 +77,7 @@
 			signUpClicked: function () {
 				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
 					this.sheetSelection + "/bookings";
-				var parseDate = Date.parse(this.slotSelection);
+				var parseDate = Date.parse(this.slotSelection + " UTC");
 				this.$.bookingsAPI.body = '{ "tickID" : "' + this.tickId + '", "startTime" : "' + parseDate + '" }';
 				this.$.bookingsAPI.go();
 			},
@@ -85,7 +85,7 @@
 			slotsResponse: function () {
 				var r = this.$.slotsAPI.response;
 				this.dates = r.map(function (obj) {
-					return new Date(obj);
+					return prettyParse(obj);
 				});
 			},
 
@@ -100,12 +100,12 @@
 
 			bookingsResponse: function () {
 				this.$.bookingSucessfulToast.text = "Booking created for " +
-                    prettyDateTime(new Date(this.slotSelection)) + ".";
+                    prettyDateTime(new Date(this.slotSelection + " UTC")) + ".";
 				this.$.bookingSucessfulToast.show();
 
 				this.fire('slot-booked', {
 					sheetId: this.sheetSelection,
-					slot: (new Date(this.slotSelection))
+					slot: (new Date(this.slotSelection + " UTC"))
 				})
 			},
 
