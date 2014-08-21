@@ -57,7 +57,7 @@ public interface ISubmissionApiFacade {
 	@GET
 	@Path("/{tickId}/last")
 	@Produces("application/json")
-	public abstract Response getLast(@Context HttpServletRequest request,
+	public abstract Response getLastReport(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId,
 			@DefaultValue("") @QueryParam("crsid") String crsid);
 
@@ -69,7 +69,7 @@ public interface ISubmissionApiFacade {
 	@GET
 	@Path("/{tickId}")
 	@Produces("application/json")
-	public abstract Response getAll(@Context HttpServletRequest request,
+	public abstract Response getAllReports(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId,
 			@DefaultValue("") @QueryParam("crsid") String crsid);
 

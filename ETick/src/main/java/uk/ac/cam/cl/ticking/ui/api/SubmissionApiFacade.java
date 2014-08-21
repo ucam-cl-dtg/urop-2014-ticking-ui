@@ -247,7 +247,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response getLast(HttpServletRequest request, String tickId,
+	public Response getLastReport(HttpServletRequest request, String tickId,
 			String crsid) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
@@ -313,7 +313,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response getAll(HttpServletRequest request, String tickId,
+	public Response getAllReports(HttpServletRequest request, String tickId,
 			String crsid) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
