@@ -203,7 +203,7 @@ public class ForkApiFacade implements IForkApiFacade {
 			// Due to exception chaining this shouldn't happen
 		}
 
-		fork.setRepo(repoName);
+		fork.setRepo(repo);
 		fork.setForking(false);
 		db.saveFork(fork);
 
