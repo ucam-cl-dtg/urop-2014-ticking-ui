@@ -84,7 +84,7 @@
 				<paper-input id="titleInput" 
 					floatingInput
 					required
-					value="{{titleName}}"
+					value="{{sheet ? sheet.title : ''}}"
 					placeholder="Ticking session title..."
 					pattern="^[^/]+$"
 					error="Invalid session title."
@@ -93,14 +93,14 @@
 
 			<div layout horizontal start>
 				<core-icon class="big" icon="info-outline"></core-icon>
-				<textarea id="descInput" rows="1" placeholder="Description...">{{desc}}</textarea>
+				<textarea id="descInput" rows="1" placeholder="Description...">{{sheet ? sheet.description : ''}}</textarea>
 			</div>
 
 			<div layout horizontal start>
 				<core-icon class="big" icon="communication:location-on">
 				</core-icon>
 				<paper-input id="locInput"
-					value="{{loc}}"
+					value="{{sheet ? sheet.location : ''}}"
 					floatingInput
 					placeholder="Location..."></paper-input>
 			</div>
@@ -113,7 +113,7 @@
 				required
 				disabled?="{{sheet}}"
 				on-input="{{validate}}"
-				value="{{slotLengthDisplay}}"
+				value="{{sheet ? sheet.slotLengthInMinutes : ''}}"
 				placeholder="In minutes..."
 				pattern="^[0-9]+$"
 				error="Invalid slot length.">
@@ -187,11 +187,6 @@
 
 			domReady: function () {
 				if (this.sheet) {
-					this.titleName = this.sheet.title;
-					this.desc = this.sheet.description;
-					this.loc = this.sheet.location;
-					this.slotLengthDisplay = this.sheet.slotLengthInMinutes;
-
 					var startDT = new Date(this.sheet.startTime).toJSON();
 					var endDT = new Date(this.sheet.endTime).toJSON();
 					var startT = startDT.indexOf('T');
@@ -211,14 +206,12 @@
 				this.disableSubmit = false;
 
 				this.validate();
-
-				
-				this.$.locInput.$.input.list = "browsers";
-				console.log(this.$.locInput.$.input);
 			},
 
 			validate: function () {
-				if (this.$.titleInput.inputValue && !this.$.titleInput.invalid &&
+				console.log(this.$.titleInput.invalid);
+
+				if (!this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.value &&
 					this.$.startTime.value && this.$.endTime.value &&
