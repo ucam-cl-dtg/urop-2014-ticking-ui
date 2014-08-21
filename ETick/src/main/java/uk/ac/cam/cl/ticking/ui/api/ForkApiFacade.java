@@ -19,6 +19,7 @@ import publicinterfaces.TickNotInDBException;
 import publicinterfaces.UserNotInDBException;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
+import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableStackTraceElement;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.FileBean;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
@@ -248,10 +249,9 @@ public class ForkApiFacade implements IForkApiFacade {
 									+ " tried to set ticker result for "
 									+ Fork.generateForkId(crsid, tickId),
 							s.getCause(), s.getStackTrace());
-					log.error("error",e);
-					log.error(s.getStackTrace().toString());
-					log.error(s.toString());
-					log.error("foo");
+					for (SerializableStackTraceElement st : s.getStackTrace()) {
+						log.error(st.toString());
+					}
 					
 					return Response.status(Status.NOT_FOUND)
 							.entity(Strings.MISSING).build();
