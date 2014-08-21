@@ -137,7 +137,7 @@ public class AuthManager {
 		}
 		
 		//TODO remove me!
-		if (crsid.equals("rds46")) this.wait(5000L);;
+		if (crsid.equals("rds46")) Thread.sleep(5000L);;
 
 		User user = db.getUser(crsid);
 		if (user == null || user.getLdap() == null
