@@ -5,7 +5,7 @@
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 
-<polymer-element name="dynamic-tests-component" attributes="dynamicOptions dynamicSelected">
+<polymer-element name="dynamic-tests-component" attributes="dynamicOptions dynamicSelectedIndex">
     <template>
         <link rel="stylesheet" href="tick-creator-card.css">
 
@@ -23,9 +23,12 @@
         <core-collapse id="collapseDynamic">
             <div layout horizontal wrap style="margin-left: 10px;">
                 <paper-radio-group>
-                    <template repeat="{{dynamicOption in dynamicOptions}}">
+                    <template repeat="{{dynamicOption in options}}">
                         <!-- TODO: init with checked property -->
-                        <paper-radio-button label="{{dynamicOption.testName}}" style="width: 250px;"></paper-radio-button>
+                        <paper-radio-button id="{{'correctnessIndex-' + dynamicOption.index}}"
+                                            on-change="{{selectedChanged}}" label="{{dynamicOption.testName}}"
+                                            style="width: 250px;">
+                        </paper-radio-button>
                     </template>
                 </paper-radio-group>
             </div>
@@ -37,8 +40,31 @@
                 this.dynamicOptions = this.$.ajaxLoadDynamic.response;
             },
 
+            dynamicOptionsChanged: function() {
+                this.options = this.dynamicOptions.map(function(el, index) {
+                    return {
+                        testName: el.testName,
+                        containerID: el.containerID,
+                        testID: el.testID,
+                        index: index
+                    };
+                });
+            },
+
             toggleDynamic: function() {
                 this.$.collapseDynamic.toggle();
+                if (!this.$.collapseDynamic.checked) {
+                    this.oldSelected = this.dynamicSelectedIndex;
+                    this.dynamicSelectedIndex = null;
+                } else {
+                    this.dynamicSelectedIndex = this.oldSelected;
+                }
+            },
+
+            selectedChanged: function(a, b, sender) {
+                if (sender.checked) {
+                    this.dynamicSelectedIndex = sender.id.split("-")[1];
+                }
             }
         });
     </script>
