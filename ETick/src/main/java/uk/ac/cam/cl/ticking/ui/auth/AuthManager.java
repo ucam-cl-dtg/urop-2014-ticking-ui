@@ -188,8 +188,7 @@ public class AuthManager {
 			}
 			if (admin) {
 				for (Group group : db.getGroups()) {
-					db.saveGrouping(new Grouping(user.getCrsid(), group
-							.getGroupId(), Role.ADMIN));
+					db.saveGrouping(new Grouping(group.getGroupId(), user.getCrsid(), Role.ADMIN));
 				}
 			}
 		} catch (LDAPObjectNotFoundException e) {
