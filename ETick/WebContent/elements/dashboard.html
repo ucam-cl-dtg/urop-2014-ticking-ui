@@ -15,9 +15,10 @@
 			}
 		</style>
 
-		<core-overlay opened="{{!data}}" backdrop>
+		<core-overlay id="loadingOverlay" backdrop autoCloseDisabled>
 			<loading-spinner></loading-spinner>
 		</core-overlay>
+
 		<!-- Upcoming events API call. -->
 		<core-ajax id="upcomingAPI"
 			auto
@@ -48,6 +49,20 @@
 
 	<script>
 		Polymer('user-dash', {
+			ready: function () {
+				if (!this.data) {
+					this.$.loadingOverlay.open();
+				}
+			},
+
+			dataChanged: function (oldValue, newValue) {
+				if (newValue && this.$.loadingOverlay.opened) {
+					this.async(function () {
+						this.$.loadingOverlay.close();
+					}, null, 500);
+				}
+			},
+
 			upcomingResponse: function() {
 				this.slots = this.$.upcomingAPI.response;
 			}
