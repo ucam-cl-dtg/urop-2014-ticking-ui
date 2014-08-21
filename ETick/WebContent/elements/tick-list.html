@@ -33,7 +33,7 @@
 			<!--<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>-->
             <span flex></span>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
-			<add-tick gid="{{gid}}" on-tick-added="{{$.tickListAPI.go}}"></add-tick>
+			<add-tick gid="{{gid}}" on-tick-added="{{tickAddedHandler}}"></add-tick>
 		</div>
 
 		<!-- Tick list. -->
@@ -81,6 +81,10 @@
 						tickName: this.selectedTickIdName,
                         tickObj: this.selectedTickObj
 					});
+			},
+
+			tickAddedHandler: function () {
+				this.$.tickListAPI.go();
 			}
 		});
 	</script>
