@@ -22,6 +22,9 @@
 			on-core-response="{{addExtensionResponse}}"
 			handleAs="json"
 			contentType="application/json"
+
+			popUpResponse
+			responseMessage="Extension(s) added."
 			waitMessage="Adding extension(s)..."
             waitBeforeToast="1000"
             captureError
@@ -36,6 +39,9 @@
 			on-core-response="{{deleteExtensionResponse}}"
 			handleAs="json"
 			contentType="application/json"
+
+			popUpResponse
+			responseMessage="Deleted extension(s)."
 			waitMessage="Deleting extension(s)..."
             waitBeforeToast="1000"
             captureError
@@ -61,10 +67,9 @@
 				<paper-icon-button icon="add" on-click="{{addExtensionClicked}}"></paper-icon-button>
 			</core-tooltip>
 
-			<!-- DELTE API NOT READY --
-			<!-- <core-tooltip label="Delete" position="left">
+			<core-tooltip label="Delete" class="delete-tooltip" position="{{number > 0 ? 'bottom' : 'left'}}" >
             	<paper-icon-button icon="delete" on-click="{{deleteExtensionClicked}}"></paper-icon-button>
-            </core-tooltip> -->
+            </core-tooltip>
 		</div>
 
 		<!-- Member list. -->
@@ -151,12 +156,14 @@
 				if (this.selectedExtensions) {
 					console.log(this.selectedExtensions);
 					this.$.deleteAPI.body = '{ "crsids" : ' + JSON.stringify(this.selectedExtensions) + '}';
-					// this.$.deleteAPI.go();
+					this.$.deleteAPI.go();
 				}
 			},
 
 			deleteExtensionResponse: function () {
-				this.$.members.people = this.$.deleteAPI.response;
+				var list = this.$.deleteAPI.response;
+				this.number = list.length;
+				this.$.members.people = list;
 			},
 
 		});
