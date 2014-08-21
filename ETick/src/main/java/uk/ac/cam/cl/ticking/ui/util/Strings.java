@@ -47,6 +47,8 @@ public class Strings {
 	
 	public static final String REMOVEDUSERS = "Successfully removed users";
 	
+	public static final String TICKISINGROUP = "Error: That tick is already associated with the group.";
+	
 	public static final String PASSED = "PASSED";
 	public static final String FAILED = "FAILED";
 	public static final String UNITPASSEDCODE = "UP";
