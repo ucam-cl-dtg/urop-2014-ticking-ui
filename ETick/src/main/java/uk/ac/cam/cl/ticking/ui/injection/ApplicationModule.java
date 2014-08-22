@@ -2,8 +2,8 @@ package uk.ac.cam.cl.ticking.ui.injection;
 
 import uk.ac.cam.cl.dtg.teaching.exceptions.ExceptionHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
+import uk.ac.cam.cl.ticking.ui.api.JodaDateConfig;
 import uk.ac.cam.cl.ticking.ui.api.overview.APIOverviewResource;
-import uk.ac.cam.cl.ticking.ui.api.util.JodaDateConfig;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;

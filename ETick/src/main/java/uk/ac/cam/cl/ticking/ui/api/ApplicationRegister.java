@@ -1,4 +1,4 @@
-package uk.ac.cam.cl.ticking.ui.api.util;
+package uk.ac.cam.cl.ticking.ui.api;
 
 import java.util.HashSet;
 import java.util.Set;
