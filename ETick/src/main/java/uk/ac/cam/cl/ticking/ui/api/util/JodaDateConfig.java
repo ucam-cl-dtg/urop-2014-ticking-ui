@@ -1,4 +1,4 @@
-package uk.ac.cam.cl.ticking.ui.api;
+package uk.ac.cam.cl.ticking.ui.api.util;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.ext.ContextResolver;
