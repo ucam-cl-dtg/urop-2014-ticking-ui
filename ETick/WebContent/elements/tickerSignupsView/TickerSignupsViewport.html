@@ -105,7 +105,7 @@
 								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
 								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"></core-icon>
 							</div>
-							<div align="left" layout horizontal center flex three>
+							<div align="left" style="color:{{slot.inPast ? 'gray' : (slot.currentSlot ? '#9c27b0' : 'black')}}" layout horizontal center flex three>
 									<div hidden?="{{slot.outcome != 'null'}}">
 											<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
 									</div>
@@ -113,7 +113,7 @@
 										<core-item label="{{slot.timeStamp}}  crsid : {{slot.student}}  ,  tick :  {{slot.comment}} , outcome : {{slot.outcome}}" style="min-height:20px" span></core-item>
 									</div>
 							</div>
-							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
+							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast))}}" flex>
 								<span>View Report</span>
 								<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
 							</div>
@@ -202,41 +202,11 @@
 						leadingZero = "0";
 					}
 
-					var past = false;
-					var current = false;
-					if (slotsYear < this.year) {
-						past = true;
-					}
-					else if (slotsYear === this.year) {
-						if(slotsMonth < this.month) {
-							past = true;
-						}
-						else if (slotsMonth === this.month) {
-							if(slotsDay < this.day) {
-								past = true;
-							}
-							else if(slotsDay === this.day) {
-								if( endHour < this.hours ){
-									past = true;
-								}
-								else if (endHour === this.hours) {
-									if (endMin <= this.minutes) {
-										past = true;
-									}
-									else if ((endMin != 0) && (this.minutes >= parseInt(min)) && (this.minutes < endMin)) {
-										current = true;
-									}
-								}
-								else if (endHour === this.hours+1) {
-									if (endMin === 0) {
-										if ((this.minutes >= parseInt(min)) && (this.minutes < 60)) {
-											current = true;
-										}
-									}
-								}
-							}
-						}
-					}
+					var past = slotTime.isBefore(moment());
+					/* Start time in past, end time in future */
+					var current = past && moment().isBefore(slotTime.add('m', durationInMinutes));
+                    past = past && !current;
+
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
 					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
 									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null", collapse: false, inPast: past, currentSlot: current});
