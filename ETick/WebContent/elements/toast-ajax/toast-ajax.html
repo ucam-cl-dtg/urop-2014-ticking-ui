@@ -181,8 +181,10 @@ this to happen.
           function (e)
           {
             "use strict";
-            if (!e.bubbles)
-              this.fire('core-response', e.detail);
+
+            /* Otherwise the firing happens after this */
+            e.stopPropagation();
+            this.fire('core-response', e.detail);
 
             if (this.captureResponse)
             {
@@ -201,8 +203,9 @@ this to happen.
           {
             "use strict";
 
-            if (!e.bubbles)
-              this.fire('core-error', e.detail);
+            /* Otherwise the firing happens after this */
+            e.stopPropagation();
+            this.fire('core-error', e.detail);
 
             if (this.captureError && e.detail.response != null)
             {
@@ -240,8 +243,8 @@ this to happen.
           function (e)
           {
             "use strict";
-            if (!e.bubbles)
-              this.fire('core-complete', e.detail);
+            e.stopPropagation();
+            this.fire('core-complete', e.detail);
 
             if (this.captureComplete)
             {
