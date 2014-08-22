@@ -11,6 +11,7 @@ public class Configuration implements ConfigurationFile {
 	private String gitApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_GIT/rest/";
 	private String secureGitApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_GIT_SECURED/rest/";
 	private String testApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/";
+	private String secureTestApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem-secured/rest/";
 	private String signupsApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP_SIGNUPS/rest/";
 	private String uiMongoBroadcast = "localhost";
 	private int uiMongoPort = 27017;
@@ -117,6 +118,14 @@ public class Configuration implements ConfigurationFile {
 
 	public void setSecureGitApiLocation(String secureGitApiLocation) {
 		this.secureGitApiLocation = secureGitApiLocation;
+	}
+
+	public String getSecureTestApiLocation() {
+		return secureTestApiLocation;
+	}
+
+	public void setSecureTestApiLocation(String secureTestApiLocation) {
+		this.secureTestApiLocation = secureTestApiLocation;
 	}
 
 }

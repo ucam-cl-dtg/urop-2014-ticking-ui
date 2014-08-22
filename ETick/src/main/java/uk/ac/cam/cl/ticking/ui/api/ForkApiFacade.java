@@ -236,7 +236,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				ReportResult result = forkBean.getHumanPass() ? ReportResult.PASS
 						: ReportResult.FAIL;
 				try {
-					testServiceProxy.setTickerResult(crsid, tickId, result,
+					testServiceProxy.setTickerResult(config.getConfig().getSecurityToken(), crsid, tickId, result,
 							forkBean.getTickerComments(), forkBean
 									.getCommitId(), forkBean.getReportDate()
 									.getMillis());
