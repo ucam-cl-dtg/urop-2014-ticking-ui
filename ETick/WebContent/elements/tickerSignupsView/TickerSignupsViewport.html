@@ -106,11 +106,9 @@
 								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"></core-icon>
 							</div>
 							<div align="left" style="color:{{slot.inPast ? 'gray' : (slot.currentSlot ? '#9c27b0' : 'black')}}" layout horizontal center flex three>
-									<div hidden?="{{slot.outcome != 'null'}}">
-											<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
-									</div>
-									<div hidden?="{{slot.outcome == 'null'}}">
-										<core-item label="{{slot.timeStamp}}  crsid : {{slot.student}}  ,  tick :  {{slot.comment}} , outcome : {{slot.outcome}}" style="min-height:20px" span></core-item>
+									<div>
+													<core-item label="{{slot.timeStamp + (slot.student=='' ? ' Empty Slot' : ' crsid : ' + slot.student + ' ,  tick : ' + slot.comment + (slot.outcome==null?'':', outcome: ' + slot.outcome))}}" style="min-height:20px" span>
+											</core-item>
 									</div>
 							</div>
 							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
@@ -197,6 +195,12 @@
 							.subtract(now)
 							.asMilliseconds();
 					}
+					else if (i === 0 && !past)
+					{
+						timeToNextSlot = moment.duration(startTime)
+							.subtract(now)
+							.asMilliseconds();
+					}
 
 					var timeStamp = startTime.format("HH:mm") +
 						" - " + endTime.format("HH:mm");
@@ -221,7 +225,8 @@
 					clearInterval(this.reloadInterval);
 					this.reloadInterval = null;
 				}
-				if (timeToNextSlot < Number.POSITIVE_INFINITY)
+				if (0 < timeToNextSlot
+						&& timeToNextSlot < Number.POSITIVE_INFINITY)
 				{
 					this.reloadInterval = window.setInterval(
 							function ()
