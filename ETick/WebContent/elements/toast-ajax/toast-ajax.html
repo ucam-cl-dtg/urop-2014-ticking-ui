@@ -243,8 +243,8 @@ this to happen.
           function (e)
           {
             "use strict";
-            if (!e.bubbles)
-              this.fire('core-complete', e.detail);
+            e.stopPropagation();
+            this.fire('core-complete', e.detail);
 
             if (this.captureComplete)
             {
