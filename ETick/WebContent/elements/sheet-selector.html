@@ -111,11 +111,11 @@
 
 			bookingsResponse: function () {
 				this.$.bookingsAPI.responseMessage = "Booking created for " +
-					prettyDateTime(new Date(this.slotSelection)) + ".";
+					prettyDateTime(this.slotSelection) + ".";
 
 				this.fire('slot-booked', {
 					sheetId: this.sheetSelection,
-					slot: (this.slotSelection)
+					slot: this.slotSelection
 				})
 			}
 
