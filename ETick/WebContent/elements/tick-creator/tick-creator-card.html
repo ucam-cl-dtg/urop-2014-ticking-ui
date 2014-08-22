@@ -216,6 +216,8 @@
     <are-you-sure id="alertRestoreDefaults" heading="Restore Defaults?" on-yes="{{restoreDefaults}}"></are-you-sure>
     <are-you-sure id="alertDelete" heading="Delete this tick?" on-yes="{{deleteTick}}"></are-you-sure>
 </template>
+<script src="../../js/prettyDate.js"></script>
+<script src="../../bower_components/moment/moment.js"></script>
 <script>
     Polymer('tick-creator-card', {
         ready: function() {
