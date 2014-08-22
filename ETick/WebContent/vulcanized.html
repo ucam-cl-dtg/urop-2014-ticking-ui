@@ -6413,7 +6413,7 @@ this to happen.
 
 		</style>
 		<!-- Add Ssh Ajax call. -->
-		<toast-ajax id="addSSHAjax" method="PUT" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ssh" contenttype="text/plain" handleas="json" on-core-response="{{addSSHResponse}}" waitmessage="Adding key..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error adding key.">
+		<toast-ajax id="addSSHAjax" method="PUT" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/ssh" contenttype="text/plain" handleas="json" on-core-response="{{addSSHResponse}}" waitmessage="Adding key..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error adding key.">
 		</toast-ajax>
 		
 		<div class="card-header" layout="" horizontal="" center="" end-justified="">
@@ -9144,7 +9144,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		</style>
 
 		<!-- Upcoming events API call. -->
-		<core-ajax id="upcomingAPI" auto="" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/bookings" handleas="json" on-core-response="{{upcomingResponse}}">
+		<core-ajax id="upcomingAPI" auto="" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/bookings" handleas="json" on-core-response="{{upcomingResponse}}">
 		</core-ajax>
 
 		<template if="{{data &amp;&amp; !data.ssh}}">
@@ -9184,19 +9184,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 	<template>
 			<!-- API call: adds user if not already registered. -->
-			<core-ajax id="loginAjax" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login" handleas="json" on-core-response="{{loginResponse}}" on-core-error="{{loginError}}">
+			<core-ajax id="loginAjax" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/raven/login" handleas="json" on-core-response="{{loginResponse}}" on-core-error="{{loginError}}">
 			</core-ajax>
 
 			<!-- API call to populate sidebar menu. -->
-			<core-ajax id="sidebarAjax" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/groups" handleas="json" on-core-response="{{sidebarResponse}}">
+			<core-ajax id="sidebarAjax" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/groups" handleas="json" on-core-response="{{sidebarResponse}}">
 			</core-ajax>
 			
 			<!-- API call to populate sidebar tick menu. -->
-			<core-ajax id="sidebarTickAjax" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ticks" handleas="json" on-core-response="{{sidebarTickResponse}}">
+			<core-ajax id="sidebarTickAjax" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/ticks" handleas="json" on-core-response="{{sidebarTickResponse}}">
 			</core-ajax>
 
 			<!-- API call to logout. -->
-			<core-ajax id="logoutAjax" method="delete" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/logout">
+			<core-ajax id="logoutAjax" method="delete" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/raven/logout">
 			</core-ajax>
 
 
@@ -9818,7 +9818,7 @@ paper-checkbox {
 		Polymer('export-members', {
 
 			exportMembers: function () {
-				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid)
+				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + this.gid)
 		        .done(function () {})
 		        .fail(function () { this.$.exportError.show(); });
 			}
@@ -10682,15 +10682,15 @@ paper-checkbox {
 }</style>
 
 		<!-- Add Member Ajax call. -->
-		<core-ajax id="addMemberAjax" method="POST" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping/&apos; + gid}}" contenttype="application/json" handleas="json" on-core-response="{{addMemberResponse}}" on-core-error="{{addMemberError}}">
+		<core-ajax id="addMemberAjax" method="POST" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/grouping/&apos; + gid}}" contenttype="application/json" handleas="json" on-core-response="{{addMemberResponse}}" on-core-error="{{addMemberError}}">
 		</core-ajax>
 
 		<!-- Member list Ajax call. -->
-		<core-ajax id="listAjax" auto="" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/&apos; + gid + &apos;/users&apos;}}" handleas="json" on-core-response="{{listResponse}}">
+		<core-ajax id="listAjax" auto="" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/&apos; + gid + &apos;/users&apos;}}" handleas="json" on-core-response="{{listResponse}}">
 		</core-ajax>
 
 		<!-- Delete member Ajax call. -->
-		<core-ajax id="deleteAjax" method="DELETE" contenttype="application/json" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping/&apos; + gid}}" on-core-response="{{deleteResponse}}" on-core-error="{{deleteError}}">
+		<core-ajax id="deleteAjax" method="DELETE" contenttype="application/json" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/grouping/&apos; + gid}}" on-core-response="{{deleteResponse}}" on-core-error="{{deleteError}}">
 		</core-ajax>
 
 
@@ -10906,7 +10906,7 @@ paper-checkbox {
 				padding: 0 0 0 10px;
 			}
 	</style>
-		<core-ajax auto="" id="tickListAPI" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/list/&apos; + gid}}" handleas="json" on-core-response="{{tickListResponse}}">
+		<core-ajax auto="" id="tickListAPI" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/list/&apos; + gid}}" handleas="json" on-core-response="{{tickListResponse}}">
 		</core-ajax>
 
 
@@ -11220,11 +11220,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <polymer-element name="submit-service" attributes="tickId status testRunning unitPass reportAvailable repo" assetpath="elements/tick-card/">
     <template>
         <!-- submit this tick for testing -->
-        <toast-ajax id="ajaxSubmit" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/&apos; + tickId + &apos;/&apos;}}" handleas="json" method="POST" on-core-response="{{startPolling}}" on-core-error="{{submitError}}" waitmessage="Submitting" waitbeforetoast="500" captureerror="" popuperror="" errormessage="Error submitting tick">
+        <toast-ajax id="ajaxSubmit" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/submission/&apos; + tickId + &apos;/&apos;}}" handleas="json" method="POST" on-core-response="{{startPolling}}" on-core-error="{{submitError}}" waitmessage="Submitting" waitbeforetoast="500" captureerror="" popuperror="" errormessage="Error submitting tick">
         </toast-ajax>
 
         <!-- poll the tick's status -->
-        <toast-ajax id="ajaxPoll" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/&apos; + tickId + &apos;/running&apos;}}" handleas="json" on-core-response="{{pollNext}}" on-core-error="{{pollError}}" captureerror="" popuperror="" errormessage="Error obtaining submission status.">
+        <toast-ajax id="ajaxPoll" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/submission/&apos; + tickId + &apos;/running&apos;}}" handleas="json" on-core-response="{{pollNext}}" on-core-error="{{pollError}}" captureerror="" popuperror="" errormessage="Error obtaining submission status.">
         </toast-ajax>
     </template>
     <script>
@@ -11866,13 +11866,13 @@ paper-checkbox {
 			sheetSelectionChanged: function () {
 				var sel = this.$.selector;
 				this.sheetSelection = sel.options[sel.selectedIndex].getAttribute('sheetid');
-				this.$.slotsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
+				this.$.slotsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" +
 					 this.sheetSelection + "/times/" + this.tickId;
 				this.$.slotsAPI.go();
 			},
 
 			signUpClicked: function () {
-				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
+				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" +
 					this.sheetSelection + "/bookings";
 				var parseDate = Date.parse(this.slotSelection);
 				this.$.bookingsAPI.body = '{ "tickID" : "' + this.tickId + '", "startTime" : "' + parseDate + '" }';
@@ -12012,11 +12012,11 @@ paper-progress::shadow #secondaryProgress {
 </style>
 
         <!-- Call to load sign up information -->
-        <toast-ajax id="ajaxLoadBookings" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/bookings" handleas="json" on-core-response="{{bookingsLoaded}}" waitmessage="Loading booking information..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error loading booking information">
+        <toast-ajax id="ajaxLoadBookings" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/bookings" handleas="json" on-core-response="{{bookingsLoaded}}" waitmessage="Loading booking information..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error loading booking information">
         </toast-ajax>
 
         <!-- Call to delete a sign up -->
-        <toast-ajax id="ajaxDeleteBooking" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/bookings/&apos; + tickId + &apos;/&apos;}}" handleas="json" method="DELETE" on-core-response="{{deleteSuccess}}" waitmessage="Cancelling booking..." waitbeforetoast="500" captureerror="" popuperror="" errormessage="Error cancelling booking." popupresponse="" responsemessage="Booking cancelled.">
+        <toast-ajax id="ajaxDeleteBooking" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/bookings/&apos; + tickId + &apos;/&apos;}}" handleas="json" method="DELETE" on-core-response="{{deleteSuccess}}" waitmessage="Cancelling booking..." waitbeforetoast="500" captureerror="" popuperror="" errormessage="Error cancelling booking." popupresponse="" responsemessage="Booking cancelled.">
         </toast-ajax>
 
         <!-- Information about currently booked tick -->
@@ -12146,10 +12146,10 @@ paper-progress::shadow #secondaryProgress {
                                                  lastTickedOn forked deadline" assetpath="elements/tick-card/">
     <template>
         <!-- Load fork object for this tick -->
-        <toast-ajax id="ajaxLoad" auto="" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/&apos; + tickId + &apos;/&apos;}}" handleas="json" method="GET" on-core-response="{{forkGetSuccess}}" on-core-error="{{forkLoadError}}">
+        <toast-ajax id="ajaxLoad" auto="" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/fork/&apos; + tickId + &apos;/&apos;}}" handleas="json" method="GET" on-core-response="{{forkGetSuccess}}" on-core-error="{{forkLoadError}}">
         </toast-ajax>
 
-        <toast-ajax id="ajaxCreate" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/fork/&apos; + tickId + &apos;/&apos;}}" handleas="json" method="POST" on-core-response="{{forkPostSuccess}}" captureerror="" popuperror="" errormessage="Error initialising tick.">
+        <toast-ajax id="ajaxCreate" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/fork/&apos; + tickId + &apos;/&apos;}}" handleas="json" method="POST" on-core-response="{{forkPostSuccess}}" captureerror="" popuperror="" errormessage="Error initialising tick.">
         </toast-ajax>
 
         <paper-toast id="toastLoadError"></paper-toast>
@@ -12678,7 +12678,7 @@ information about `paper-radio-button`.
         </style>
 		
 		<!-- Get further student info -->
-		<toast-ajax id="ajaxLoadStudent" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/crsid/{{crsId}}" waitmessage="loading student data..." responsemessage="student data loaded" captureerror="" waitbeforetoast="500" handleas="json" contenttype="application/json" on-core-response="{{studentLoaded}}">
+		<toast-ajax id="ajaxLoadStudent" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/crsid/{{crsId}}" waitmessage="loading student data..." responsemessage="student data loaded" captureerror="" waitbeforetoast="500" handleas="json" contenttype="application/json" on-core-response="{{studentLoaded}}">
 		</toast-ajax>
 		
 		<div layout="" horizontal="" center="" flex="" style="min-height:100px">
@@ -12752,7 +12752,7 @@ information about `paper-radio-button`.
 	</toast-ajax>
 	
 	<!-- Kick someone out of a slot -->
-    <core-ajax id="ajaxKick" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/students/{{crsId}}/ticks/{{tickId}}" method="DELETE" contenttype="application/json" handleas="text" on-core-response="{{kickDone}}">
+    <core-ajax id="ajaxKick" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/students/{{crsId}}/ticks/{{tickId}}" method="DELETE" contenttype="application/json" handleas="text" on-core-response="{{kickDone}}">
 	</core-ajax>
 	
 	<div layout="" vertical="">
@@ -12831,7 +12831,7 @@ information about `paper-radio-button`.
 			},
 			refresh: function() {
 				this.fire("hide-report");
-				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
+				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.sessionId;
 				if (this.location === "") {
 					this.locationDisplayed = "Location : No location is available";
 				}
@@ -12934,7 +12934,7 @@ information about `paper-radio-button`.
 				if(event.target.checked) {
 					this.displayDate();
 					this.ticker = event.target.label;
-					this.pathLoadSlots = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId + "/tickers/" + this.ticker;
+					this.pathLoadSlots = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.sessionId + "/tickers/" + this.ticker;
 					this.$.ajaxLoadSlots.go();
 					this.fire("hide-report");
 				}
@@ -15442,7 +15442,7 @@ core-tooltip {
 			}
 		</style>
 		<!-- Delete group API. -->
-		<core-ajax id="deleteAPI" method="DELETE" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/&apos; + gid }}" on-core-response="{{deleteResponse}}" on-core-error="{{deleteError}}">
+		<core-ajax id="deleteAPI" method="DELETE" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/&apos; + gid }}" on-core-response="{{deleteResponse}}" on-core-error="{{deleteError}}">
 		</core-ajax>
 
 		<!-- Delete button. -->
@@ -15604,7 +15604,7 @@ paper-checkbox {
 			var api = this.$.cloneAPI;
 
 			api.body = '{"name":"' + name + '", "info":"' + info + '"}';
-			api.url = 'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid;
+			api.url = 'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + this.gid;
 			api.url += (this.$.memberBox.checked) ? '?members=true' : '?members=false';
 			api.url += (this.$.tickBox.checked) ? '&ticks=true' : '&ticks=false';
 
@@ -15698,7 +15698,7 @@ paper-checkbox {
 
 		</style>
 		<!-- Edit group API. -->
-		<toast-ajax id="editAPI" method="PUT" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/&apos; + gid }}" on-core-response="{{editResponse}}" handleas="json" contenttype="application/json" waitmessage="Saving changes..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error saving changes.">
+		<toast-ajax id="editAPI" method="PUT" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/&apos; + gid }}" on-core-response="{{editResponse}}" handleas="json" contenttype="application/json" waitmessage="Saving changes..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error saving changes.">
 		</toast-ajax>
 
 		<!-- Edit button. -->
@@ -15848,13 +15848,13 @@ paper-checkbox {
 			},
 
 			xls: function () {
-				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid +'/status/xls')
+				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + this.gid +'/status/xls')
 		        .done(function () { this.toggleDialog() })
 		        .fail(function () { this.$.exportError.show(); });
 			},
 
 			csv: function () {
-				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid +'/status/csv')
+				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + this.gid +'/status/csv')
 		        .done(function () { this.toggleDialog() })
 		        .fail(function () { this.$.exportError.show(); });
 			}
@@ -16014,7 +16014,7 @@ paper-checkbox {
 		</style>
 
 		<!-- Add session API call. -->
-		<core-ajax id="addSessionAPI" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets" method="POST" contenttype="application/json" on-core-response="{{addSessionResponse}}" on-core-error="{{addSessionError}}">
+		<core-ajax id="addSessionAPI" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets" method="POST" contenttype="application/json" on-core-response="{{addSessionResponse}}" on-core-error="{{addSessionError}}">
 		</core-ajax>
 
 		<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
@@ -16222,7 +16222,7 @@ paper-checkbox {
 			deleteClicked: function () {
 				if (this.selectedSheet) {
 					var call = this.$.deleteSessionAPI;
-					call.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.selectedSheet._id
+					call.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.selectedSheet._id
 					call.go();
 				}
 			},
@@ -16548,11 +16548,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		</style>
 
 		<!-- Add session API call. -->
-		<core-ajax id="addSessionAPI" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets" method="POST" contenttype="application/json" on-core-response="{{addSessionResponse}}" on-core-error="{{addSessionError}}">
+		<core-ajax id="addSessionAPI" url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets" method="POST" contenttype="application/json" on-core-response="{{addSessionResponse}}" on-core-error="{{addSessionError}}">
 		</core-ajax>
 
 		<!-- Edit session API call. -->
-		<core-ajax id="editSessionAPI" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/&apos; + sheet._id }}" method="POST" contenttype="application/json" on-core-response="{{editSessionResponse}}" on-core-error="{{editSessionError}}">
+		<core-ajax id="editSessionAPI" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/&apos; + sheet._id }}" method="POST" contenttype="application/json" on-core-response="{{editSessionResponse}}" on-core-error="{{editSessionError}}">
 		</core-ajax>
 
 		<h1>{{sheet ? sheet.title : &apos;New Ticking Session:&apos;}}</h1>
@@ -17456,7 +17456,7 @@ polyfill-next-selector {shadow: 'overviewSearchBox core-input';}
     color:   #ABD3F7;
 }</style>
 
-        <toast-ajax id="ajaxLoadOverview" auto="" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/&apos; + gid + &apos;/status/csv&apos;}}" handleas="text" on-core-response="{{overviewLoaded}}" waitbeforetoast="500" waitmessage="Loading Overview..." popuperror="" captureerror="" errormessage="Error loading overview.">
+        <toast-ajax id="ajaxLoadOverview" auto="" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/&apos; + gid + &apos;/status/csv&apos;}}" handleas="text" on-core-response="{{overviewLoaded}}" waitbeforetoast="500" waitmessage="Loading Overview..." popuperror="" captureerror="" errormessage="Error loading overview.">
         </toast-ajax>
 
         <div style="max-height: 600px; position: relative;" layout="" vertical="">
@@ -18264,11 +18264,11 @@ core-tooltip {
 }</style>
 
 		<!-- User roles API call. -->
-		<core-ajax id="roleAjax" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/&apos; + gid + &apos;/roles&apos;}}" handleas="json" on-core-response="{{roleResponse}}">
+		<core-ajax id="roleAjax" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/&apos; + gid + &apos;/roles&apos;}}" handleas="json" on-core-response="{{roleResponse}}">
 		</core-ajax>
 
 		<!-- Available signup sheets API call. -->
-		<core-ajax id="sheetListAPI" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/&apos; + gid }}" handleas="json" on-core-response="{{sheetListResponse}}">
+		<core-ajax id="sheetListAPI" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/groups/&apos; + gid }}" handleas="json" on-core-response="{{sheetListResponse}}">
 		</core-ajax>
 
         <main-card animated="">
@@ -18602,7 +18602,7 @@ paper-checkbox {
 
 			resetAPI: function () {
 				var api = this.$.createGroupAPI;
-				api.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/";
+				api.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/";
 				api.body = "";
 			},
 
@@ -19105,7 +19105,7 @@ paper-dialog::shadow h1 {
     </toast-ajax>
 
     <!-- get and update all other existing tick data -->
-    <toast-ajax id="ajaxLoadTickData" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/&apos; + tickId + &apos;/&apos;}}" handleas="json" on-core-response="{{tickDataLoaded}}" waitmessage="Loading tick data..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error loading the tick.">
+    <toast-ajax id="ajaxLoadTickData" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/&apos; + tickId + &apos;/&apos;}}" handleas="json" on-core-response="{{tickDataLoaded}}" waitmessage="Loading tick data..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error loading the tick.">
     </toast-ajax>
     <toast-ajax id="ajaxPutTickData" handleas="json" contenttype="application/json" method="PUT" on-core-error="{{errorSaving}}" on-core-response="{{tickDataUpdated}}" waitmessage="Saving..." waitbeforetoast="500" captureerror="" popuperror="" errormessage="Error updating tick." responsemessage="Tick updated." popupresponse="">
     </toast-ajax>
@@ -19119,7 +19119,7 @@ paper-dialog::shadow h1 {
     </toast-ajax>
 
     <!-- Delete this tick -->
-    <toast-ajax id="ajaxDeleteTick" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/&apos; + tickId + &apos;/&apos;}}" method="DELETE" handleas="json" on-core-response="{{deleteTickSuccess}}" on-core-error="{{deleteTickError}}" waitmessage="Deleting tick..." waitbeforetoats="500" responsemessage="Tick deleted." popupresponse="" captureerror="" popuperror="" errormessage="Error deleting tick.">
+    <toast-ajax id="ajaxDeleteTick" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/&apos; + tickId + &apos;/&apos;}}" method="DELETE" handleas="json" on-core-response="{{deleteTickSuccess}}" on-core-error="{{deleteTickError}}" waitmessage="Deleting tick..." waitbeforetoats="500" responsemessage="Tick deleted." popupresponse="" captureerror="" popuperror="" errormessage="Error deleting tick.">
     </toast-ajax>
 
     <div id="mainContainer">
@@ -19216,9 +19216,9 @@ paper-dialog::shadow h1 {
             console.log("1: ready");
             this.styleLabel = "";
 
-            this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/";
-           // this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/tester/";
-            this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
+            this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/AUTHOR/";
+           // this.pathLoadTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/tester/";
+            this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick";
             //"http://localhost:8000/testTickData.json";
 
             this.checkJava = false; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
@@ -19435,7 +19435,7 @@ paper-dialog::shadow h1 {
             if (!this.newTick) {
                 console.log("not a new tick");
                 this.$.ajaxPutTickData.body = JSON.stringify(masterObject);
-                this.$.ajaxPutTickData.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + this.tickId;
+                this.$.ajaxPutTickData.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/" + this.tickId;
                 this.$.ajaxPutTickData.go();
             } else {
                 console.log("new tick");
@@ -19717,15 +19717,15 @@ paper-checkbox {
 }</style>
 
 		<!-- Add Extension API. -->
-		<toast-ajax id="extensionAPI" method="PUT" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/&apos; + tid + &apos;/extension&apos; }}" on-core-response="{{addExtensionResponse}}" handleas="json" contenttype="application/json" waitmessage="Adding extension(s)..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error adding extension(s).">
+		<toast-ajax id="extensionAPI" method="PUT" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/&apos; + tid + &apos;/extension&apos; }}" on-core-response="{{addExtensionResponse}}" handleas="json" contenttype="application/json" waitmessage="Adding extension(s)..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error adding extension(s).">
 		</toast-ajax>
 
 		<!-- Delete Extension API. -->
-		<toast-ajax id="deleteAPI" method="DELETE" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/&apos; + tid + &apos;/extension&apos; }}" on-core-response="{{deleteExtensionResponse}}" handleas="json" contenttype="application/json" waitmessage="Deleting extension(s)..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error deleting extension(s).">
+		<toast-ajax id="deleteAPI" method="DELETE" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/&apos; + tid + &apos;/extension&apos; }}" on-core-response="{{deleteExtensionResponse}}" handleas="json" contenttype="application/json" waitmessage="Deleting extension(s)..." waitbeforetoast="1000" captureerror="" popuperror="" errormessage="Error deleting extension(s).">
 		</toast-ajax>
 
 		<!-- Extension list Ajax call. -->
-		<core-ajax id="listAjax" auto="" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/&apos; + tid + &apos;/extension&apos;}}" handleas="json" on-core-response="{{listResponse}}">
+		<core-ajax id="listAjax" auto="" url="{{&apos;http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/&apos; + tid + &apos;/extension&apos;}}" handleas="json" on-core-response="{{listResponse}}">
 		</core-ajax>
 
 		<!-- Card heading. -->

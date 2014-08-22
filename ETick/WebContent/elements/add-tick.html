@@ -12,7 +12,7 @@
 		<!-- All tick list API call. -->
 		<toast-ajax id="listAPI"
 			auto
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ticks"
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/ticks"
 			handleAs="json"
 			on-core-response="{{listResponse}}"
 
@@ -62,7 +62,7 @@
 				var selectedTick = sel.options[sel.selectedIndex].value;
 				console.log(selectedTick);
 
-				this.$.addTickAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + selectedTick + "/" + this.gid;
+				this.$.addTickAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/" + selectedTick + "/" + this.gid;
 				this.$.addTickAPI.go();
 			},
 

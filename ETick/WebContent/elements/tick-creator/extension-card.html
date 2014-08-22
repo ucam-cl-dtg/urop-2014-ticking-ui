@@ -18,7 +18,7 @@
 		<!-- Add Extension API. -->
 		<toast-ajax id="extensionAPI"
 			method="PUT"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension' }}"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/' + tid + '/extension' }}"
 			on-core-response="{{addExtensionResponse}}"
 			handleAs="json"
 			contentType="application/json"
@@ -35,7 +35,7 @@
 		<!-- Delete Extension API. -->
 		<toast-ajax id="deleteAPI"
 			method="DELETE"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension' }}"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/' + tid + '/extension' }}"
 			on-core-response="{{deleteExtensionResponse}}"
 			handleAs="json"
 			contentType="application/json"
@@ -52,7 +52,7 @@
 		<!-- Extension list Ajax call. -->
 		<core-ajax id="listAjax"
 			auto
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension'}}"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/' + tid + '/extension'}}"
 			handleAs="json"
 			on-core-response="{{listResponse}}">
 		</core-ajax>
