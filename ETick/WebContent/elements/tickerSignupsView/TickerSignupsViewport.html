@@ -207,9 +207,10 @@
 					var past = slotTime.isBefore(moment());
 					/* Start time in past, end time in future */
 					var current = past && moment().isBefore(slotTime.add(durationInMinutes, 'm'));
-					if (current) timeToNextSlot = slotTime.add(durationInMinutes, 'm')
-														.subtract(moment())
-														.milliseconds();
+					if (current) timeToNextSlot = moment.duration(slotTime)
+						.add(durationInMinutes, 'm')
+							.subtract(moment())
+							.milliseconds();
 					past = past && !current;
 
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
@@ -223,12 +224,15 @@
 					clearInterval(this.reloadInterval);
 					this.reloadInterval = null;
 				}
-				this.reloadInterval = window.setInterval(
-						function ()
-						{
-							this.$.ajaxLoadSlots.go();
-						}.bind(this),
-						Math.max(timeToNextSlot, 30000 /* 30 seconds */));
+				if (timeToNextSlot < Number.POSITIVE_INFINITY)
+				{
+					this.reloadInterval = window.setInterval(
+							function ()
+							{
+								this.$.ajaxLoadSlots.go();
+							}.bind(this),
+							Math.max(timeToNextSlot, 30000 /* 30 seconds */));
+				}
 
 				this.date = prettyDate(prettyParse(loadedSlots[0].startTime));
 			},
