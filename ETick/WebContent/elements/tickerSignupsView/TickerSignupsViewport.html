@@ -223,7 +223,11 @@
 					clearInterval(this.reloadInterval);
 					this.reloadInterval = null;
 				}
-				this.reloadInterval = window.setInterval(this.$.ajaxLoadSlots.go/* no (), want reference */,
+				this.reloadInterval = window.setInterval(
+						function ()
+						{
+							this.$.ajaxLoadSlots.go();
+						}.bind(this),
 						Math.max(timeToNextSlot, 30000 /* 30 seconds */));
 
 				this.date = prettyDate(prettyParse(loadedSlots[0].startTime));
