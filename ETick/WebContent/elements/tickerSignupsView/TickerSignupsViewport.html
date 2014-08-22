@@ -211,7 +211,7 @@
 					if (current) timeToNextSlot = moment.duration(slotTime)
 						.add(durationInMinutes, 'minutes')
 							.subtract(moment())
-							.milliseconds();
+							.asMilliseconds();
 					past = past && !current;
 
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
