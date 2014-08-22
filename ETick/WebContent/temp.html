@@ -8,8 +8,8 @@
 		<link rel="stylesheet" type="text/css" href="css/font.css">
 
 		<!-- My Imports -->
-		<link rel="import" href="bower_components/polymer-date-picker/polymer-date-picker.html">
-
+		<link rel="import" href="elements/date-picker.html">
+		<link rel="import" href="elements/add-edit-session.html">
 		<style>
 			html, body {
 				height: 100%;
@@ -18,15 +18,7 @@
 		</style>
 	</head>
 	<body>
-		<input id="trigger" value="" 
-		  onclick="alert('hi');" 
-		  readonly class="date"/>
-		<polymer-date-picker 
-		  id="datePicker"
-		  selectedDate="" 
-		  relatedTarget="" 
-		  opened="false"/>
-
+		<add-edit-session></add-edit-session>
 		<script>
 		</script>
 	</body>
