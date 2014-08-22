@@ -215,13 +215,13 @@ this to happen.
                 if (this.errorMessage != null)
                 {
                   this.waitComplete(this.errorMessage +
-                      " See log for further details",
+                      " See console for further details",
                     this.waitShown || this.popUpError);
                 }
                 else
                 {
                   this.waitComplete("Something went wrong." +
-                      " See log for further details",
+                      " See console for further details",
                     this.waitShown || this.popUpError);
                 }
                 console.log(e.detail.response);
