@@ -65,7 +65,9 @@
             },
 
             deadlineChanged: function() {
-                this.deadlinePassed = this.deadline == null ? false : new Date(this.deadline) < new Date();
+                this.deadlinePassed =
+                    this.deadline == null ?
+                    false : moment(this.deadline) < moment();
             },
 
             testRunningChanged: function() {
