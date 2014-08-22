@@ -192,7 +192,7 @@ public class TickSignups {
                         .entity(Strings.EXISTINGTIMEBOOKING).build();
             }
             if (slot.getStartTime().after(now) && slot.getComment().equals(bean.getTickID())) {
-                log.info("The user already had a slot booked for the given tick");
+                log.warn("The user " + crsid + " already had a slot booked for tick " + bean.getTickID());
                 return Response.status(Status.FORBIDDEN)
                         .entity(Strings.EXISTINGTICKBOOKING).build();
             }
