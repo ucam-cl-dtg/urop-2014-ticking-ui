@@ -171,7 +171,7 @@
         </core-collapse>
         <core-collapse opened?="{{!$.collapseGroups.opened}}"><br></core-collapse>
 
-        <tick-workbook-link flex></tick-workbook-link>
+        <tick-workbook-link flex link="{{externalReference}}"></tick-workbook-link>
 
         <dynamic-tests-component dynamicSelectedIndex="{{dynamicSelectedIndex}}"></dynamic-tests-component>
 
@@ -276,6 +276,11 @@
                 this.groups[this.groups.length] = {_id: loadedGroups[i]._id, selected: false, text: loadedGroups[i].name};
             }
 
+            if (!this.tickData.hasOwnProperty("groups")) {
+                return;
+            }
+
+
             for (var g = 0; g < this.tickData.groups.length; g++) {
                 for (var k = 0; k < this.groups.length; k++) {
                     if (this.tickData.groups[g] == this.groups[k]._id) {
@@ -373,12 +378,6 @@
                 }
             }
 
-           //correctness tests
-            if (!this.newTick) {
-                this.$.collapseCorrectness.opened = true;
-                this.$.correctnessAddress.innerHTML = this.tickData.correctnessRepo;
-            }
-
             //load groups which user is an author for
             this.$.ajaxLoadGroups.go();
         },
@@ -456,7 +455,7 @@
                 }
             }
 
-            //TODO: set workbook link
+            this.tickData.externalReference = this.externalReference;
 
             return this.tickData;
         },
