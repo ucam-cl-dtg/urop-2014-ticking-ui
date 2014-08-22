@@ -28,8 +28,8 @@
 			}
 			core-icon.big {
 				height: 27px;
-       			width: 27px;
-       			margin-right: 10px;
+				width: 27px;
+				margin-right: 10px;
 				margin-top: 8px;
 			}
 
@@ -188,14 +188,12 @@
 
 			domReady: function () {
 				if (this.sheet) {
-					var startDT = prettyParse(this.sheet.startTime).toJSON();
-					var endDT   = prettyParse(this.sheet.endTime).toJSON();
-					var startT = startDT.indexOf('T');
+					var startDT = prettyParse(this.sheet.startTime);
+					var endDT   = prettyParse(this.sheet.endTime);
 
-					this.date = startDT.slice(0, startT);
-					this.startTime = startDT.slice(startT + 1, startDT.lastIndexOf(':'));
-					this.endTime = endDT.slice(endDT.indexOf('T') + 1, endDT.lastIndexOf(':'));
-
+					this.date = startDT.format("YYYY-MM-DD");
+					this.startTime = startDT.format("HH:mm");
+					this.endTime = endDT.format("HH:mm");
 				}
 
 				this.tickers = this.sheet ? 
