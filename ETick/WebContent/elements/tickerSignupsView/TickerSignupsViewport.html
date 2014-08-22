@@ -219,7 +219,7 @@
 				if (this.reloadInterval != null)
 					clearInterval(this.reloadInterval);
 				this.reloadInterval = window.setInterval(this.$.ajaxLoadSlots.go/* no (), want reference */,
-						Math.max(slotsDataLoaded, 1000 /* One second */));
+						Math.max(minSlotLength, 1000 /* One second */));
 
 				this.date = prettyDate(prettyParse(loadedSlots[0].startTime));
 			},
