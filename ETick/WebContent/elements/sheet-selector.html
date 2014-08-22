@@ -94,10 +94,7 @@
 			},
 
 			slotsResponse: function () {
-				var r = this.$.slotsAPI.response;
-				this.dates = r.map(function (obj) {
-					return prettyParse(obj);
-				});
+				this.dates = this.$.slotsAPI.response;
 			},
 
 			slotSelectionChanged: function () {
