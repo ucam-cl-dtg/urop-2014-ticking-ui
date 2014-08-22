@@ -22,7 +22,7 @@ function prettyDate(date)
     if (typeof date == typeof "")
         date = prettyParse(date);
 
-    return time.format("dddd, MMMM Do YYYY")
+    return date.format("dddd, MMMM Do YYYY")
 }
 
 function prettyTime(time)
