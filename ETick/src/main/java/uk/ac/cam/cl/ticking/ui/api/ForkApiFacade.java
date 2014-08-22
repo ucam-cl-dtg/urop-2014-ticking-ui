@@ -134,7 +134,7 @@ public class ForkApiFacade implements IForkApiFacade {
 		/* Check permissions */
 
 		if (!permissions.tickRole(crsid, tickId, Role.SUBMITTER)) {
-			log.warn("User " + crsid + " failed to fork "
+			log.warn("User " + crsid + " tried to fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -171,7 +171,8 @@ public class ForkApiFacade implements IForkApiFacade {
 
 			if (s.getClassName().equals(IOException.class.getName())) {
 				log.error("User " + crsid + " failed to fork repository for "
-						+ tickId, s.getCause(), s.getStackTrace());
+						+ tickId + "\nCause: "
+								+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -219,7 +220,7 @@ public class ForkApiFacade implements IForkApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickRole(myCrsid, tickId, Role.MARKER)) {
-			log.warn("User " + myCrsid + " failed to mark "
+			log.warn("User " + myCrsid + " tried to mark "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -314,7 +315,7 @@ public class ForkApiFacade implements IForkApiFacade {
 
 		if (!(permissions.tickRole(myCrsid, tickId, Role.MARKER) || permissions
 				.forkCreator(myCrsid, myCrsid, tickId))) {
-			log.warn("User " + crsid + " failed to get files for "
+			log.warn("User " + crsid + " tried to get files for "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)

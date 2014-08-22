@@ -69,7 +69,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		if (groupingBean.getRoles().isEmpty()) {
 			log.error("User "
 					+ myCrsid
-					+ " failed to add users to a group but neglected to supply desired roles");
+					+ " tried to add users to a group but neglected to supply desired roles");
 			return Response.status(Status.BAD_REQUEST)
 					.entity(Strings.ATLEASTONEROLE).build();
 		}
@@ -86,7 +86,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 
 		/* Check permissions */
 		if (!permissions.hasRole(myCrsid, groupId, Role.AUTHOR)) {
-			log.warn("User " + myCrsid + " failed to add a member to group "
+			log.warn("User " + myCrsid + " tried to add a member to group "
 					+ groupId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
@@ -156,7 +156,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 
 		/* Check permissions */
 		if (!permissions.hasRole(myCrsid, groupId, Role.AUTHOR)) {
-			log.warn("User " + myCrsid + " failed to remove a member to group "
+			log.warn("User " + myCrsid + " tried to remove a member to group "
 					+ groupId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();

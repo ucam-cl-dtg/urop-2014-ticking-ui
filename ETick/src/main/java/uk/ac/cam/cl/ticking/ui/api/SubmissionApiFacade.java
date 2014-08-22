@@ -275,7 +275,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Check permissions */
 		if (!(permissions.forkCreator(myCrsid, crsid, tickId) || permissions
 				.tickRole(myCrsid, tickId, Role.MARKER))) {
-			log.warn("User " + myCrsid + " failed to access fork "
+			log.warn("User " + myCrsid + " tried to access fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -341,7 +341,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Check permissions */
 		if (!(permissions.forkCreator(myCrsid, crsid, tickId) || permissions
 				.tickRole(myCrsid, tickId, Role.MARKER))) {
-			log.warn("User " + myCrsid + " failed to access fork "
+			log.warn("User " + myCrsid + " tried to access fork "
 					+ Fork.generateForkId(crsid, tickId)
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
