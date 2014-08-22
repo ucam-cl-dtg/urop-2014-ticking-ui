@@ -20,15 +20,29 @@
             .this-user {
                 color: #2a56c6;
             }
+            .user-progress {
+                background: #ce93d8;
+                opacity: 0.3;
+                margin-left: -5px;
+                /*width: 100px;*/
+                height: 34px;
+                position: absolute;
+                z-index: 1;
+            }
+            .relative {
+                position: relative;
+                z-index: 4;
+            }
         </style>
 
         <template repeat="{{user in users}}">
             <div id="user-div" layout horizontal class="{{user.crsId == userId ? 'this-user' : ''}}">
+                <div class="user-progress" style="{{user.displayWidth}}"></div>
                 <!-- If the user hasn't logged into the system yet then their LDAP info is unavailable, so their names
                      and college are null. The databindings in the innerHTML display their crsId in this instance instead-->
-                <div class="{{'user-label' + (sortField == 'Name'        ? ' sort-field' : '')}}">{{user.lastName == 'null' ? user.crsId : user.lastName}}</div>
-                <div class="{{'user-label' + (sortField == 'Forename(s)' ? ' sort-field' : '')}}">{{user.foreNames}}</div>
-                <div class="{{'user-label' + (sortField == 'College'     ? ' sort-field' : '')}}">{{user.college == 'null' ? '' : user.college}}</div>
+                <div class="{{'user-label relative' + (sortField == 'Name'        ? ' sort-field' : '')}}">{{user.lastName == 'null' ? user.crsId : user.lastName}}</div>
+                <div class="{{'user-label relative' + (sortField == 'Forename(s)' ? ' sort-field' : '')}}">{{user.foreNames}}</div>
+                <div class="{{'user-label relative' + (sortField == 'College'     ? ' sort-field' : '')}}">{{user.college == 'null' ? '' : user.college}}</div>
             </div>
         </template>
     </template>

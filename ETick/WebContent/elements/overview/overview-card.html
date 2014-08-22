@@ -171,6 +171,13 @@
                    }
                 });
 
+                users = users.map(function(el) {
+                    el.progress = el.displayStrings.filter(function(el) {
+                        return el.iconCode == "P";
+                    }).length / el.displayStrings.length * 100;
+                    return el;
+                });
+
                 //build list of column titles. These are the display strings of the first user
                 var colTitles = users[0].displayStrings.map(function(el) {
                     return el.iconCode;
@@ -260,7 +267,8 @@
                         crsId: temp[i].crsId,
                         college: temp[i].college,
                         displayStrings: temp[i].displayStrings,
-                        cssClass: i % 2 == 0 ? "overview-even" : "overview-odd"
+                        cssClass: i % 2 == 0 ? "overview-even" : "overview-odd",
+                        displayWidth: 'width: ' + temp[i].progress * 4.55 + 'px'
                     }
                 }
             },
