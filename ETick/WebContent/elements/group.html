@@ -199,8 +199,8 @@
 			},
 			
 			formatDate: function (datum) {
-				var date = new Date(datum);
-			    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+				var date = moment(datum);
+			    return date.date() + '/' + (date.month() + 1) + '/' + date.year();
 			},
 
 			roleResponse: function() {
