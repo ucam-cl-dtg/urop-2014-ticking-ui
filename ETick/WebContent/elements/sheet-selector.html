@@ -10,21 +10,31 @@
 		<link rel="stylesheet" type="text/css" href="../css/elements/sheet-selector.css">
 
 		<!-- Signup slots API. -->
-		<core-ajax id="slotsAPI"
+		<toast-ajax id="slotsAPI"
 			url=""
 			handleAs="json"
-			on-core-response="{{slotsResponse}}">
-		</core-ajax>
+			on-core-response="{{slotsResponse}}"
+            
+            popUpError
+            captureError
+            waitMessage="Loading available slots....">
+		</toast-ajax>
 
 		<!-- Signup make bookings API. -->
-		<core-ajax id="bookingsAPI"
+		<toast-ajax id="bookingsAPI"
 			url=""
 			contentType="application/json"
 			handleAs="json"
 			method="POST"
 			on-core-response="{{bookingsResponse}}"
-			on-core-error="{{bookingsError}}">
-		</core-ajax>
+			on-core-error="{{bookingsError}}"
+            
+            popUpError
+            captureError
+            waitMessage="Booking your slot...."
+            popUpResponse
+            responseMessage="Slot successfully booked.">
+		</toast-ajax>
 
 		<paper-dialog id="dialog" backdrop heading="Book a Ticking Slot:" transition="core-transition-top">
 		<div layout vertical center>
@@ -53,11 +63,6 @@
 			</template>
 
 		</paper-dialog>
-
-		<!-- Booking response toasts. -->
-		<paper-toast id="bookingSucessfulToast" duration="3000"></paper-toast>
-		<paper-toast id="bookingErrorToast" duration="3000"></paper-toast>
-
 	</template>
     <script src="../js/prettyDate.js"></script>
 	<script>
@@ -99,19 +104,13 @@
 			},
 
 			bookingsResponse: function () {
-				this.$.bookingSucessfulToast.text = "Booking created for " +
+				this.$.bookingsAPI.responseMessage = "Booking created for " +
                     prettyDateTime(new Date(this.slotSelection)) + ".";
-				this.$.bookingSucessfulToast.show();
 
 				this.fire('slot-booked', {
 					sheetId: this.sheetSelection,
 					slot: (new Date(this.slotSelection))
 				})
-			},
-
-			bookingsError: function (e, detail) {
-				this.$.bookingErrorToast.text = detail.xhr.responseText;
-				this.$.bookingErrorToast.show();
 			}
 
 		});

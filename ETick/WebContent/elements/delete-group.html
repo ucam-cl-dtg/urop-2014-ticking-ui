@@ -1,5 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="are-you-sure.html">
@@ -15,12 +15,16 @@
 			}
 		</style>
 		<!-- Delete group API. -->
-		<core-ajax id="deleteAPI"
+		<toast-ajax id="deleteAPI"
 			method="DELETE"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid }}"
 			on-core-response="{{deleteResponse}}"
-			on-core-error="{{deleteError}}">
-		</core-ajax>
+			on-core-error="{{deleteError}}"
+			
+			popUpError
+			captureError
+			waitMessage="Deleting group....">
+		</toast-ajax>
 
 		<!-- Delete button. -->
 		<paper-icon-button id="deleteButton"

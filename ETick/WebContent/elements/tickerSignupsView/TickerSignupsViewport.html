@@ -66,14 +66,18 @@
 	</toast-ajax>
 	
 	<!-- Kick someone out of a slot -->
-    <core-ajax
+    <toast-ajax
 		id="ajaxKick"
         url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/students/{{crsId}}/ticks/{{tickId}}"
 		method = "DELETE"
 		contentType="application/json"
 		handleAs="text"
-		on-core-response="{{kickDone}}" >
-	</core-ajax>
+		on-core-response="{{kickDone}}"
+		
+		waitMessage="Kicking...."
+		popUpError
+		captureError>
+	</toast-ajax>
 	
 	<div layout vertical>
 		<div id="card-header" layout vertical>

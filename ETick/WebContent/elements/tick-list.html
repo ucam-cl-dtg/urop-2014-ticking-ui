@@ -1,6 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
-<link rel="import" href="../bower_components/core-selector/core-selector.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="search-box.html">
 <link rel="import" href="tick-box.html">
@@ -18,13 +18,17 @@
 				padding: 0 0 0 10px;
 			}
 	</style>
-		<core-ajax
+		<toast-ajax
 			auto
 			id="tickListAPI"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/list/' + gid}}"
 			handleAs="json"
-			on-core-response="{{tickListResponse}}">
-		</core-ajax>
+			on-core-response="{{tickListResponse}}"
+
+			popUpError
+			captureError
+			waitMessage="Loading ticks....">
+		</toast-ajax>
 
 
 		<!-- Tick list card header. -->
