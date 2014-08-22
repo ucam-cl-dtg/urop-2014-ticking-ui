@@ -255,12 +255,12 @@
 					var call = this.$.addSessionAPI;
 				}
 				call.body =
-                    '{   "title" : "' + this.title + '"' +
+                    '{   "title" : "' + toJSONString(this.title) + '"' +
                         ', "description" : "' + toJSONString(this.description) + '"' +
-                        ', "location" : "' + this.location + '"' +
+                        ', "location" : "' + toJSONString(this.location) + '"' +
                         ', "startTime" : "' + this.subStartTime + '"' +
                         ', "endTime" : "' + this.subEndTime + '"' +
-                        ', "slotLengthInMinutes" : "' + this.slotLength + '"' +
+                        ', "slotLengthInMinutes" : "' + Number.parseInt(this.slotLength) + '"' +
                         ', "tickerNames" : ' + JSON.stringify(this.tickers) + '"' +
                         ', "groupID" : "' + this.gid + '"' +
                     '" }';
