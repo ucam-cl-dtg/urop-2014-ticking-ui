@@ -117,7 +117,7 @@
 
                 this.iconCodeDict = {};
                 this.iconCodeDict["PASSED"] = "P";
-                this.iconCodeDict["FAILED"] = "F"; //TODO
+                this.iconCodeDict["FAILED"] = "F";
                 this.iconCodeDict["UP"]     = "UP";
                 this.iconCodeDict["UF"]     = "UF";
                 this.iconCodeDict["I"]      = "I";
@@ -218,11 +218,12 @@
                 this.sortField = "";
 
                 var comparisonDict = {};
-                comparisonDict["-"] = 0;
-                comparisonDict["I"] = 1;
-                comparisonDict["F"] = 2;
-                comparisonDict["U"] = 3;
-                comparisonDict["P"] = 4;
+                comparisonDict["F"]  = 0;
+                comparisonDict["-"]  = 1;
+                comparisonDict["I"]  = 2;
+                comparisonDict["UF"] = 3;
+                comparisonDict["UP"] = 4;
+                comparisonDict["P"]  = 5;
 
                 this.users.sort(function(a, b) {
                     return params.mode * (comparisonDict[a.displayStrings[params.selectedIndex].iconCode] -
