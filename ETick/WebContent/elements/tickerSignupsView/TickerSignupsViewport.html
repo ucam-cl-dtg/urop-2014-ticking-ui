@@ -172,14 +172,11 @@
 				this.slots = [];
 				for (var i = 0; i < loadedSlots.length; i++) {
 
-					var slotTime = prettyParse(loadedSlots[i].startTime);
-					var hour = prettyTime(slotTime).split(":")[0];
-					var min =  prettyTime(slotTime).split(":")[1];
+					var startTime = prettyParse(loadedSlots[i].startTime);
+					var endTime   = startTime.clone()
+						.add(loadedSlots[i].duration, 'milliseconds');
+					var now = moment();
 
-					var timeSlot = hour + ":" + min;
-
-					/* check this conversion is right */
-					var durationInMinutes = loadedSlots[i].duration/60000;
 					var student = loadedSlots[i].bookedUser;
 					var comment = loadedSlots[i].comment;
 					var hidden = false;
@@ -189,34 +186,32 @@
 						hidden = true;
 					}
 
-					/* sort out leading zero */
-					var endMin = parseInt(min) + parseInt(durationInMinutes);
-					var endHour = parseInt(hour) +
-                        parseInt(Math.floor(durationInMinutes/60));
-
-					while (endMin >= 60) {
-						endMin = endMin%60;
-						endHour++;
-					}
-
-					var leadingZero = "";
-					if (endMin < 10) {
-						leadingZero = "0";
-					}
-
-					var past = slotTime.isBefore(moment());
+					var past = endTime.isBefore(now);
 					/* Start time in past, end time in future */
-					var current = past && moment().isBefore(slotTime
-							.add(durationInMinutes, 'minutes'));
-					if (current) timeToNextSlot = moment.duration(slotTime)
-						.add(durationInMinutes, 'minutes')
-							.subtract(moment())
-							.asMilliseconds();
-					past = past && !current;
+					var current = startTime.isBefore(now)
+						&& endTime().isAfter(now);
 
-					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
-					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
-									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null", collapse: false, inPast: past, currentSlot: current});
+					if (current)
+					{
+						timeToNextSlot = moment.duration(endTime)
+							.subtract(now)
+							.asMilliseconds();
+					}
+
+					var timeStamp = startTime.format("HH:mm") +
+						" - " + endTime.format("HH:mm");
+					this.slots.push({	  "_id"         : loadedSlots[i]._id
+										, "duration"    : durationInMinutes
+										, "student"     : student
+										, "comment"     : comment
+										, "time"        : timeSlot
+										, "timeStamp"   : timeStamp
+										, "hidden"      : hidden
+										, "outcome"     : null
+										, "collapse"    : false
+										, "inPast"      : past
+										, "currentSlot" : current
+									});
 				}
 
 				/* Interval for re-loading */
