@@ -165,6 +165,7 @@
 				this.ticker = this.tickers[0].name;
 			},
 			slotsDataLoaded: function() {
+                this.$.ajaxLoadSlots.waitMessage = "Reloading slots....";
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
 				var timeToNextSlot = Number.POSITIVE_INFINITY;
 				this.slots = [];
