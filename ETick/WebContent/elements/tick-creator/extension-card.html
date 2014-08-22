@@ -127,9 +127,9 @@
 	            var month = this.month - 1;
 	            var day = this.day;
 	            var date = new Date();
-	            date.setUTCDate(day);
-	            date.setUTCMonth(month);
-	            date.setUTCFullYear(year);
+	            prettySetDate(date, day);
+	            prettySetMonth(date, month);
+	            prettySetFullYear(date, year);
 	            var ISOdate = date.toISOString();
 				
 				this.$.extensionAPI.body = '{ "crsids": ' + jsonCRSids + ', "deadline" : "' + ISOdate + '"}';
