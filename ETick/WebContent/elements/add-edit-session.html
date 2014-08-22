@@ -179,6 +179,7 @@
 	</template>
     <script src="../bower_components/moment/moment.js"></script>
     <script src="../js/prettyDate.js"></script>
+    <script src="../js/jsonSanitize.js"></script>
 	<script>
 		Polymer('add-edit-session', {
 
@@ -253,7 +254,16 @@
 				else {
 					var call = this.$.addSessionAPI;
 				}
-				call.body = '{"title" : "' + this.title + '", "description" : "' + this.description + '", "location" : "' + this.location + '", "startTime" : "' + this.subStartTime + '", "endTime" : "' + this.subEndTime + '", "slotLengthInMinutes" : "' + this.slotLength + '", "tickerNames" : ' + JSON.stringify(this.tickers) + ', "groupID" : "' + this.gid + '" }';
+				call.body =
+                    '{   "title" : "' + this.title + '"' +
+                        ', "description" : "' + toJSONString(this.description) + '"' +
+                        ', "location" : "' + this.location + '"' +
+                        ', "startTime" : "' + this.subStartTime + '"' +
+                        ', "endTime" : "' + this.subEndTime + '"' +
+                        ', "slotLengthInMinutes" : "' + this.slotLength + '"' +
+                        ', "tickerNames" : ' + JSON.stringify(this.tickers) + '"' +
+                        ', "groupID" : "' + this.gid + '"' +
+                    '" }';
 				call.go();
 			},
 
