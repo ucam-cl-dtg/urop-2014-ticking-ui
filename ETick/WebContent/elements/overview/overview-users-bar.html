@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
 
-<polymer-element name="overview-users-bar" attributes="users sortField">
+<polymer-element name="overview-users-bar" attributes="users userId sortField">
     <template>
         <link rel="stylesheet" href="overview.css">
 
@@ -17,10 +17,13 @@
                 margin-right: -5px;
                 height: 34px;
             }
+            .this-user {
+                color: #5677fc;
+            }
         </style>
 
         <template repeat="{{user in users}}">
-            <div id="user-div" layout horizontal>
+            <div id="user-div" layout horizontal class="{{user.crsId == userId ? 'this-user' : ''}}">
                 <!-- If the user hasn't logged into the system yet then their LDAP info is unavailable, so their names
                      and college are null. The databindings in the innerHTML display their crsId in this instance instead-->
                 <div class="{{'user-label' + (sortField == 'Name'        ? ' sort-field' : '')}}">{{user.lastName == 'null' ? user.crsId : user.lastName}}</div>
