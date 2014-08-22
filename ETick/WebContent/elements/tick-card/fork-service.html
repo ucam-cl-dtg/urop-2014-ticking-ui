@@ -5,7 +5,8 @@
 <polymer-element name="fork-service" attributes="unitPass humanPass signedUp
                                                  testRunning reportAvailable
                                                  repo tickId lastTickedBy
-                                                 lastTickedOn forked deadline">
+                                                 lastTickedOn forked deadline
+                                                 forking">
     <template>
         <!-- Load fork object for this tick -->
         <toast-ajax
@@ -45,19 +46,30 @@
             forkObjectLoaded: function(forkObj) {
                 console.log("fork loaded");
 
-                this.forked = true;
+                if (forkObj.forking) {
+                    this.forked = false;
+                    this.forking = true;
 
-                this.unitPass = forkObj.unitPass;
-                this.humanPass = forkObj.humanPass;
-                this.signedUp = forkObj.signedUp;
-                this.testRunning = forkObj.testing;
-                this.reportAvailable = forkObj.reportAvailable;
-                this.repo = forkObj.repo;
-                this.lastTickedBy = forkObj.lastTickedBy;
-                this.lastTickedOn = forkObj.lastTickedOn;
+                    //poll again
+                    this.job('poll-fork', function() {
 
-                if (this.testRunning) {
-                    this.fire('test-running')
+                    }, 500);
+                } else {
+                    this.forked = true;
+                    this.forking = false;
+
+                    this.unitPass = forkObj.unitPass;
+                    this.humanPass = forkObj.humanPass;
+                    this.signedUp = forkObj.signedUp;
+                    this.testRunning = forkObj.testing;
+                    this.reportAvailable = forkObj.reportAvailable;
+                    this.repo = forkObj.repo;
+                    this.lastTickedBy = forkObj.lastTickedBy;
+                    this.lastTickedOn = forkObj.lastTickedOn;
+
+                    if (this.testRunning) {
+                        this.fire('test-running')
+                    }
                 }
             },
 

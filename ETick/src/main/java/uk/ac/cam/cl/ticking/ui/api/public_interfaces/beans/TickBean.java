@@ -26,6 +26,8 @@ public class TickBean {
 	private Map<String, DateTime> extensions = new HashMap<>();
 
 	private List<StaticOptions> checkstyleOpts = new ArrayList<>();
+	
+	private String externalReference;
 
 	/**
 	 * @param name
@@ -138,6 +140,14 @@ public class TickBean {
 	 */
 	public void addExtension(String crsid, DateTime extension) {
 		this.extensions.put(crsid, extension);
+	}
+
+	public String getExternalReference() {
+		return externalReference;
+	}
+
+	public void setExternalReference(String externalReference) {
+		this.externalReference = externalReference;
 	}
 
 }

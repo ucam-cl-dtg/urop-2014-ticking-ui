@@ -37,9 +37,6 @@ public class UserApiFacade implements IUserApiFacade {
 
 	private IDataManager db;
 
-	@SuppressWarnings("unused")
-	// Currently not needed but these classes are still not final and it is
-	// quite likely to be required in future
 	private ConfigurationLoader<Configuration> config;
 
 	private WebInterface gitServiceProxy;
@@ -207,22 +204,22 @@ public class UserApiFacade implements IUserApiFacade {
 
 		/* Call the git service */
 		try {
-			gitServiceProxy.addSSHKey(key, crsid);
+			gitServiceProxy.addSSHKey(config.getConfig().getSecurityToken(), key, crsid);
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
 			if (s.getClassName().equals(IOException.class.getName())) {
-				log.error("User " + crsid + " tried adding ssh key for " + crsid,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed adding ssh key for " + crsid + "\nCause: "
+						+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 			if (s.getClassName().equals(
 					KeyException.class.getName())) {
-				log.error("User " + crsid + " tried adding ssh key for " + crsid,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed adding ssh key for " + crsid + "\nCause: "
+						+ s.toString());
 				
 				log.error(s.getMessage());
 				String[] badkeys = s.getMessage().trim().split(" ");
@@ -230,7 +227,7 @@ public class UserApiFacade implements IUserApiFacade {
 					log.error(badkey);
 					User badUser = db.getUser(badkey.split("\\.")[0]);
 					try {
-						gitServiceProxy.addSSHKey(badUser.getSsh(), crsid);
+						gitServiceProxy.addSSHKey(config.getConfig().getSecurityToken(), badUser.getSsh(), crsid);
 					} catch (InternalServerErrorException | IOException | KeyException e1) {
 						badUser.setSsh(null);
 						db.saveUser(badUser);
@@ -244,13 +241,13 @@ public class UserApiFacade implements IUserApiFacade {
 						.entity(Strings.IDEMPOTENTRETRY).build();
 
 			} else {
-				log.error("User " + crsid + " tried adding ssh key for " + crsid,
-						s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed adding ssh key for " + crsid + "\nCause: "
+						+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 		} catch (IOException | KeyException e) {
-			log.error("User " + crsid + " tried adding ssh key for " + crsid, e);
+			log.error("User " + crsid + " failed adding ssh key for " + crsid, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}

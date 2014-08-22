@@ -1,7 +1,5 @@
 package uk.ac.cam.cl.ticking.ui.api;
 
-import java.util.TimeZone;
-
 import javax.ws.rs.Produces;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
@@ -25,8 +23,7 @@ public class JodaDateConfig implements ContextResolver<ObjectMapper> {
 	public JodaDateConfig() throws Exception {
 		objectMapper = new ObjectMapper().registerModule(new JodaModule())
 				.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
-						false)
-				.setTimeZone(TimeZone.getDefault());
+						false);
 	}
 
 	@Override

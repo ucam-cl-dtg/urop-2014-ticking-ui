@@ -19,6 +19,7 @@ import publicinterfaces.TickNotInDBException;
 import publicinterfaces.UserNotInDBException;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
+import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableStackTraceElement;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.FileBean;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
@@ -45,9 +46,6 @@ public class ForkApiFacade implements IForkApiFacade {
 			.getLogger(ForkApiFacade.class.getName());
 
 	private IDataManager db;
-	// not currently used but could quite possibly be needed in the future, will
-	// remove if not
-	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
 	private WebInterface gitServiceProxy;
@@ -91,10 +89,10 @@ public class ForkApiFacade implements IForkApiFacade {
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
-		
+
 		boolean signedUp = fork.isSignedUp();
-		boolean serviceSignedUp = tickSignupService
-				.studentHasBookingForTick(crsid, tickId);
+		boolean serviceSignedUp = tickSignupService.studentHasBookingForTick(
+				crsid, tickId);
 		if (signedUp == serviceSignedUp) {
 			return Response.ok(fork).build();
 		} else {
@@ -142,7 +140,7 @@ public class ForkApiFacade implements IForkApiFacade {
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
+
 		/* Create and save fork object */
 		try {
 			fork = new Fork(crsid, tickId, "");
@@ -152,7 +150,7 @@ public class ForkApiFacade implements IForkApiFacade {
 		} catch (DuplicateDataEntryException e) {
 			log.error(
 					"User " + crsid
-							+ " tried to insert fork into database with id "
+							+ " failed to insert fork into database with id "
 							+ fork.getForkId(), e);
 			throw new RuntimeException("Schrodinger's fork");
 			// The fork simultaneously does and doesn't exist
@@ -163,16 +161,18 @@ public class ForkApiFacade implements IForkApiFacade {
 		String repoName = Tick.replaceDelimeter(tickId);
 
 		try {
-			repo = gitServiceProxy.forkRepository(new ForkRequestBean(null,
-					crsid, repoName, null));
+			repo = gitServiceProxy.forkRepository(config.getConfig()
+					.getSecurityToken(), new ForkRequestBean(null, crsid,
+					repoName, null));
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
 			if (s.getClassName().equals(IOException.class.getName())) {
-				log.error("User " + crsid + " tried to fork repository for "
-						+ tickId, s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed to fork repository for "
+						+ tickId + "\nCause: "
+								+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -183,20 +183,19 @@ public class ForkApiFacade implements IForkApiFacade {
 				 * The repo has been forked previously and the exception carries
 				 * the URI as its message so just carry on with this
 				 */
-				log.warn("User " + crsid + " tried to fork repository for "
-						+ tickId, s.getCause(), s.getStackTrace());
-				log.warn(s.getMessage());
+				log.warn("User " + crsid + " failed to fork repository for "
+						+ tickId + "\nCause: " + s.toString());
 				repo = s.getMessage();
 
 			} else {
-				log.error("User " + crsid + " tried to fork repository for "
-						+ tickId, s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed to fork repository for "
+						+ tickId + "\nCause: " + s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | DuplicateRepoNameException e) {
-			log.error("User " + crsid + " tried to fork repository for "
+			log.error("User " + crsid + " failed to fork repository for "
 					+ tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
@@ -237,7 +236,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				ReportResult result = forkBean.getHumanPass() ? ReportResult.PASS
 						: ReportResult.FAIL;
 				try {
-					testServiceProxy.setTickerResult(crsid, tickId, result,
+					testServiceProxy.setTickerResult(config.getConfig().getSecurityToken(), crsid, tickId, result,
 							forkBean.getTickerComments(), forkBean
 									.getCommitId(), forkBean.getReportDate()
 									.getMillis());
@@ -246,11 +245,11 @@ public class ForkApiFacade implements IForkApiFacade {
 					RemoteFailureHandler h = new RemoteFailureHandler();
 					SerializableException s = h.readException(e);
 
-					log.error(
-							"User " + myCrsid
-									+ " tried to set ticker result for "
-									+ Fork.generateForkId(crsid, tickId),
-							s.getCause(), s.getStackTrace());
+					log.error("User " + myCrsid
+							+ " failed to set ticker result for "
+							+ Fork.generateForkId(crsid, tickId) + "\nCause: "
+							+ s.toString());
+
 					return Response.status(Status.NOT_FOUND)
 							.entity(Strings.MISSING).build();
 
@@ -258,7 +257,7 @@ public class ForkApiFacade implements IForkApiFacade {
 						| ReportNotFoundException e) {
 					log.error(
 							"User " + myCrsid
-									+ " tried to set ticker result for "
+									+ " failed to set ticker result for "
 									+ Fork.generateForkId(crsid, tickId), e);
 					return Response.status(Status.NOT_FOUND).entity(e).build();
 				}
@@ -275,7 +274,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				 */
 				if (!forkBean.getHumanPass()) {
 					fork.setSignedUp(false);
-
+					fork.incrementHumanFails();
 					/* Call the tick signup service to set preferred ticker */
 					List<String> groupIds = db.getTick(tickId).getGroups();
 					for (String groupId : groupIds) {
@@ -327,7 +326,8 @@ public class ForkApiFacade implements IForkApiFacade {
 		List<FileBean> files;
 
 		try {
-			files = gitServiceProxy.getAllFiles(
+			files = gitServiceProxy.getAllFiles(config.getConfig()
+					.getSecurityToken(),
 					crsid + "/" + Tick.replaceDelimeter(tickId), commitId);
 
 		} catch (InternalServerErrorException e) {
@@ -336,38 +336,36 @@ public class ForkApiFacade implements IForkApiFacade {
 			SerializableException s = h.readException(e);
 
 			if (s.getClassName().equals(IOException.class.getName())) {
-				log.error(
-						"User " + myCrsid
-								+ " tried to get repository files for "
-								+ Fork.generateForkId(crsid, tickId),
-						s.getCause(), s.getStackTrace());
+				log.error("User " + myCrsid
+						+ " failed to get repository files for "
+						+ Fork.generateForkId(crsid, tickId) + "\nCause: "
+						+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 			if (s.getClassName().equals(
 					RepositoryNotFoundException.class.getName())) {
-				log.error(
-						"User " + myCrsid
-								+ " tried to get repository files for "
-								+ Fork.generateForkId(crsid, tickId),
-						s.getCause(), s.getStackTrace());
+				log.error("User " + myCrsid
+						+ " failed to get repository files for "
+						+ Fork.generateForkId(crsid, tickId) + "\nCause: "
+						+ s.toString());
 				return Response.status(Status.NOT_FOUND)
 						.entity(Strings.MISSING).build();
 
 			} else {
-				log.error(
-						"User " + myCrsid
-								+ " tried to get repository files for "
-								+ Fork.generateForkId(crsid, tickId),
-						s.getCause(), s.getStackTrace());
+				log.error("User " + myCrsid
+						+ " failed to get repository files for "
+						+ Fork.generateForkId(crsid, tickId) + "\nCause: "
+						+ s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | RepositoryNotFoundException e) {
-			log.error("User " + myCrsid + " tried to get repository files for "
-					+ Fork.generateForkId(crsid, tickId), e);
+			log.error(
+					"User " + myCrsid + " failed to get repository files for "
+							+ Fork.generateForkId(crsid, tickId), e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}

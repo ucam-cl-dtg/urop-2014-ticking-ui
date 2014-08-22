@@ -127,8 +127,8 @@
 				this.title = this.$.titleInput.inputValue;
 				this.description = this.$.descInput.inputValue;
 				this.location = this.$.locInput.inputValue;
-				this.startTime = Date.parse(this.$.startTime.value);
-				this.endTime = Date.parse(this.$.endTime.value);
+				this.startTime = moment(this.$.startTime.value);
+				this.endTime = moment(this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
 				var call = this.$.addSessionAPI;

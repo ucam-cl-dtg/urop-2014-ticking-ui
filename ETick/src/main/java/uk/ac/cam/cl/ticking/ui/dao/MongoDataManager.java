@@ -536,5 +536,10 @@ public class MongoDataManager implements IDataManager {
 			return null; // as per javadoc
 		}
 	}
+	
+	@Override
+	public void removeAuthCodeCorrespondingTo(String id) {
+	    authCodeColl.removeById(id);
+	}
 
 }

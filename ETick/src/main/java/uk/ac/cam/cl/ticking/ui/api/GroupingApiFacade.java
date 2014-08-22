@@ -163,7 +163,7 @@ public class GroupingApiFacade implements IGroupingApiFacade {
 		}
 
 		/* Delete specified roles for the given group for each member */
-		String output = "Successfully removed users.";
+		String output = Strings.REMOVEDUSERS;
 
 		for (String crsid : groupingBean.getCrsids()) {
 			/*
