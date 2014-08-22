@@ -37,6 +37,23 @@
     box-shadow: inset 5px 0px 6px -3px rgba(0, 0, 0, 0.4);
 }
 
+.auto-fix {
+    /*Rotated because I'm sneakily using the image:auto-fix icon*/
+    /* Webkit */
+    -webkit-transform: rotate(45deg);
+
+    /* Firefox */
+    -moz-transform: rotate(45deg);
+
+    /* IE (it doesn't hurt to try...) */
+    -ms-transform: rotate(45deg);
+}
+
+.auto-fix-container {
+    margin-left: 7px;
+    margin-top: 5px;
+}
+
 #dropTest {
     background: #008000;
     min-height: 20px;

@@ -40,7 +40,7 @@
                 <div class="user-progress" style="{{user.displayWidth}}"></div>
                 <!-- If the user hasn't logged into the system yet then their LDAP info is unavailable, so their names
                      and college are null. The databindings in the innerHTML display their crsId in this instance instead-->
-                <div class="{{'user-label relative' + (sortField == 'Name'        ? ' sort-field' : '')}}">{{user.lastName == 'null' ? user.crsId : user.lastName}}</div>
+                <div style="margin-left: 30px;" class="{{'user-label relative' + (sortField == 'Name'        ? ' sort-field' : '')}}">{{user.lastName == 'null' ? user.crsId : user.lastName}}</div>
                 <div class="{{'user-label relative' + (sortField == 'Forename(s)' ? ' sort-field' : '')}}">{{user.foreNames}}</div>
                 <div class="{{'user-label relative' + (sortField == 'College'     ? ' sort-field' : '')}}">{{user.college == 'null' ? '' : user.college}}</div>
             </div>
