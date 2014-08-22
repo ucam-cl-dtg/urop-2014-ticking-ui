@@ -105,7 +105,7 @@
 								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
 								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"></core-icon>
 							</div>
-							<div align="left" layout horizontal center flex three>
+							<div align="left" style="color:{{slot.inPast ? 'gray' : (slot.currentSlot ? '#9c27b0' : 'black')}}" layout horizontal center flex three>
 									<div hidden?="{{slot.outcome != 'null'}}">
 											<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
 									</div>
@@ -113,7 +113,7 @@
 										<core-item label="{{slot.timeStamp}}  crsid : {{slot.student}}  ,  tick :  {{slot.comment}} , outcome : {{slot.outcome}}" style="min-height:20px" span></core-item>
 									</div>
 							</div>
-							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
+							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast))}}" flex>
 								<span>View Report</span>
 								<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
 							</div>
@@ -139,6 +139,24 @@
   <script src="../../bower_components/moment/moment.js"></script>
   <script>
   Polymer('ticker-signups-viewport', {
+			ready : function() {
+				this.refresh();
+			},
+			runClock : function() {
+				this.job("clock",function() {
+					this.displayDate();
+				},1000);
+			},
+			displayDate : function() {
+				var currentDate = new Date();
+				this.seconds = currentDate.getSeconds();
+				this.minutes = currentDate.getMinutes();
+				this.hours = currentDate.getHours();
+				this.day = currentDate.getUTCDate();
+				this.month = currentDate.getUTCMonth() + 1;
+				this.year = currentDate.getUTCFullYear();
+				this.runClock();
+			},
 			refresh: function() {
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
@@ -168,6 +186,16 @@
 			slotsDataLoaded: function() {
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
 				this.slots = [];
+				var date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
+				this.slotsDay = date.split("-")[2];
+				var slotsDay = parseInt(date.split("-")[2]);
+				this.slotsMonth = date.split("-")[1];
+				var slotsMonth = parseInt(date.split("-")[1]);
+				this.slotsYear = date.split("-")[0];
+				var slotsYear = parseInt(date.split("-")[0]);
+				var durationInMinutes = loadedSlots[0].duration/60000;
+				this.duration = durationInMinutes;
+				this.date = this.slotsDay + '/' + this.slotsMonth + '/' + this.slotsYear;
 				for (var i = 0; i < loadedSlots.length; i++) {
 
                     var slotTime = prettyParse(loadedSlots[i].startTime);
@@ -299,6 +327,13 @@
 			},
 			kickDone : function() {
 				this.$.ajaxLoadSlots.go();
+			},
+			minutesChanged: function() {
+				/* I'm assuming here sessions will start and have durations that this will work with e.g. 5/10 mins starting on a minute divisible by those units */
+				/* if not there will be a refresh delay. Only refresh during a session. */
+				if((this.minutes % (this.duration)) === 0 && !this.slots[this.slots.length - 1].inPast){
+					this.$.ajaxLoadSlots.go();
+				}
 			}
 		})
   </script>
