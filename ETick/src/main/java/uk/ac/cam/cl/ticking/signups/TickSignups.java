@@ -287,7 +287,8 @@ public class TickSignups {
         }
         if (booking == null) {
             log.warn("No booking was found for the specified tick (user: " + crsid + ", tick: " + tickID + ")");
-            return Response.status(Status.NOT_FOUND).entity("No booking was found for this tick").build();
+            return Response.status(Status.NOT_FOUND).entity("No booking was found for this tick"
+                    + " (bookings in the past cannot be changed)").build();
         }
         try {
             if (!permissions.hasRole(callingCrsid, getGroupID(booking.getSheetID()), Role.MARKER)) {
