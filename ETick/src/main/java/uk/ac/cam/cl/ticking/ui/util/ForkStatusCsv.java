@@ -84,9 +84,9 @@ public class ForkStatusCsv {
 				} else {
 					if (fork.getUnitPass()) {
 						if (fork.getHumanPass()) {
-							writer.append(","+Strings.PASSED+" (By "
+							writer.append(","+Strings.PASSED+" (Ticked by "
 									+ fork.getLastTickedBy() + " on "
-									+ fork.getLastTickedOn().toString(dtf)+")");
+									+ fork.getLastTickedOn().toString(dtf)+" "+fork.stats()+")");
 						} else {
 							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								writer.append(","+Strings.FAILED+" ("+Strings.UNITPASSED+" "+fork.stats()+")");
