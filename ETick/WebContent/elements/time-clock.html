@@ -40,12 +40,13 @@
 		</div>
 	</template>
     <script src="../js/prettyDate.js"></script>
+    <script src="../bower_components/moment/moment.js"></script>
 	<script>
 		Polymer('time-clock', {
 			domReady: function () {
 				var d = prettyParse(this.datetime);
-				var hour = d.getUTCHours();
-				var mins = d.getUTCMinutes();
+				var hour = prettyGetHours(d);
+				var mins = prettyGetMinutes(d);
 				this.h1 = Math.floor(hour / 10);
 				this.h2 = hour % 10;
 				this.m1 = Math.floor(mins / 10);

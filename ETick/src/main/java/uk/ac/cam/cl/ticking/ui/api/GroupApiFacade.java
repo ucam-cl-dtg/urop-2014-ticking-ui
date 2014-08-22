@@ -221,7 +221,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Check permissions */
 		if (!permissions.groupCreator(crsid, group)) {
-			log.warn("User " + crsid + " failed to delete " + groupId
+			log.warn("User " + crsid + " tried to delete " + groupId
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
@@ -302,7 +302,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		/* Check permissions */
 		if (permissions.isStudent(user)) {
 			log.warn("User " + crsid
-					+ " failed to create a group but was denied permission");
+					+ " tried to create a group but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
@@ -378,7 +378,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Check permissions */
 		if (!permissions.hasRole(crsid, groupId, Role.AUTHOR)) {
-			log.warn("User " + crsid + " failed to update the group " + groupId
+			log.warn("User " + crsid + " tried to update the group " + groupId
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
@@ -442,7 +442,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 
 		/* Check permissions */
 		if (!permissions.hasRole(crsid, groupId, Role.AUTHOR)) {
-			log.warn("User " + crsid + " failed to clone the group " + groupId
+			log.warn("User " + crsid + " tried to clone the group " + groupId
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();

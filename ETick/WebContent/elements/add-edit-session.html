@@ -182,6 +182,7 @@
 
 	</template>
     <script src="../js/prettyDate.js"></script>
+    <script src="../bower_components/moment/moment.js"></script>
 	<script>
 		Polymer('add-edit-session', {
 
@@ -245,8 +246,8 @@
 				this.title = this.$.titleInput.inputValue;
 				this.description = this.$.descInput.value;
 				this.location = this.$.locInput.inputValue;
-				this.subStartTime = Date.parse(this.$.date.value + "T" + this.$.startTime.value + "Z");
-				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value + "Z");
+				this.subStartTime = prettyParse(this.$.date.value + "T" + this.$.startTime.value);
+				this.subEndTime = prettyParse(this.$.date.value + "T" + this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
 				console.log(prettyDateTime(new Date(this.subStartTime)),

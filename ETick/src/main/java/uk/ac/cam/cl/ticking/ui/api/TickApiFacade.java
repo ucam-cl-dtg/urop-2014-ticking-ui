@@ -96,7 +96,7 @@ public class TickApiFacade implements ITickApiFacade {
 		/* Check permissions */
 		if (!permissions.tickCreator(crsid, tick)) {
 			log.warn("User " + crsid
-					+ " failed to delete a tick but was denied permission");
+					+ " tried to delete a tick but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
@@ -189,7 +189,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickBeanGroupPermissions(crsid, tickBean)) {
-			log.warn("User " + crsid + " failed to create a tick in groups "
+			log.warn("User " + crsid + " tried to create a tick in groups "
 					+ tickBean.getGroups().toString()
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -362,7 +362,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickBeanGroupPermissions(crsid, tickBean)) {
-			log.warn("User " + crsid + " failed to update tick " + tickId
+			log.warn("User " + crsid + " tried to update tick " + tickId
 					+ " in groups " + tickBean.getGroups().toString()
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -377,7 +377,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 			/* Check for author permissions */
 			if (!crsid.equals(prevTick.getAuthor())) {
-				log.warn("User " + crsid + " failed to update tick " + tickId
+				log.warn("User " + crsid + " tried to update tick " + tickId
 						+ " but was denied permission");
 				return Response.status(Status.FORBIDDEN)
 						.entity(Strings.INVALIDROLE).build();
@@ -456,14 +456,14 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!(permissions.hasRole(crsid, groupId, Role.AUTHOR)||(permissions.tickCreator(crsid, tick)))) {
-			log.warn("User " + crsid + " failed to add tick " + tickId
+			log.warn("User " + crsid + " tried to add tick " + tickId
 					+ " to group " + groupId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
 		
 		if (tick.getGroups().contains(groupId)) {
-			log.warn("User " + crsid + " failed to add tick " + tickId
+			log.warn("User " + crsid + " tried to add tick " + tickId
 					+ " to group " + groupId + " but it was already past of the group");
 			return Response.status(Status.BAD_REQUEST)
 					.entity(Strings.TICKISINGROUP).build();
@@ -498,7 +498,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickCreator(crsid, tick)) {
-			log.warn("User " + crsid + " failed to add an extension to tick "
+			log.warn("User " + crsid + " tried to add an extension to tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
@@ -538,7 +538,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickCreator(crsid, tick)) {
-			log.warn("User " + crsid + " failed to add an extension to tick "
+			log.warn("User " + crsid + " tried to add an extension to tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
@@ -578,7 +578,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickCreator(crsid, tick)) {
-			log.warn("User " + crsid + " failed get the extensions of tick "
+			log.warn("User " + crsid + " tried get the extensions of tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
@@ -612,7 +612,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Check permissions */
 		if (!permissions.tickCreator(myCrsid, tick)) {
-			log.warn("User " + myCrsid + " failed to get the files of tick "
+			log.warn("User " + myCrsid + " tried to get the files of tick "
 					+ tickId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
