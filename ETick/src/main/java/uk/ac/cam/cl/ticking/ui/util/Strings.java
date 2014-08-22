@@ -11,8 +11,6 @@ public class Strings {
 	public static final String GROUPINGSCOLLECTION = "Groupings";
 	public static final String AUTHCODESCOLLECTION = "authCodes";
 
-	public static final String[] ACADEMICINSTITUTIONS = { "Computer Laboratory" };
-
 	public static final String INVALIDROLE = "You do not have the required role for that action.";
 
 	public static final String INVALIDPERMISSION = "You do not have the required permissions for that action.";
