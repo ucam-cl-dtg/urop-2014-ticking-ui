@@ -29,6 +29,14 @@
                 errorMessage="Error loading overview.">
         </toast-ajax>
 
+        <!-- API call: adds user if not already registered. -->
+        <core-ajax id="ajaxCrsId"
+                   auto
+                   url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+                   handleAs="json"
+                   on-core-response="{{loginResponse}}">
+        </core-ajax>
+
         <div style="max-height: 600px; position: relative;" layout vertical>
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
                 <!-- Top left fixed area -->
@@ -81,7 +89,7 @@
                 <!-- user names and colleges -->
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
-                        <overview-users-bar sortField="{{sortField}}" users="{{displayUsers}}"></overview-users-bar>
+                        <overview-users-bar sortField="{{sortField}}" users="{{displayUsers}}" userId="{{userId}}"></overview-users-bar>
                         <div style="height: 30px;"></div>
                     </div>
                 </div>
@@ -395,6 +403,10 @@
                 this.$.ajaxLoadOverview.responseMessage = "Overview refreshed.";
                 this.$.ajaxLoadOverview.popUpResponse = true;
                 this.$.ajaxLoadOverview.go();
+            },
+
+            loginResponse: function() {
+               this.userId = this.$.ajaxCrsId.response._id;
             }
         });
     </script>
