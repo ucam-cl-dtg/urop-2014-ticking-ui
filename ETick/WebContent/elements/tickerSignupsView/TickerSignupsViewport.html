@@ -206,7 +206,7 @@
 
 					var past = slotTime.isBefore(moment());
 					/* Start time in past, end time in future */
-					var current = past && moment().isBefore(slotTime.add('m', durationInMinutes));
+					var current = past && moment().isBefore(slotTime.add(durationInMinutes, 'm'));
 					if (current) timeToNextSlot = slotTime.add(durationInMinutes, 'm')
 														.subtract(moment())
 														.milliseconds();
