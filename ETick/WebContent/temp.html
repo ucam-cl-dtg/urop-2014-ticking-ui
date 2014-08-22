@@ -8,11 +8,7 @@
 		<link rel="stylesheet" type="text/css" href="css/font.css">
 
 		<!-- My Imports -->
-		<link rel="import" href="elements/are-you-sure.html">
-		<link rel="import" href="elements/date-calendar.html">
-		<link rel="import" href="elements/add-edit-session.html">
-		<link rel="import" href="elements/main-card.html">
-		<link rel="import" href="elements/time-entry.html">
+		<link rel="import" href="bower_components/polymer-date-picker/polymer-date-picker.html">
 
 		<style>
 			html, body {
@@ -22,10 +18,14 @@
 		</style>
 	</head>
 	<body>
-		<date-calendar hexColorPrimary="#F75EA7" hexColorSecondary="#CE00E0" datetime="1994-11-05T08:15:30-05:00"></date-calendar>
-		<main-card>
-			<add-edit-session></add-edit-session>
-		</main-card>
+		<input id="trigger" value="" 
+		  onclick="alert('hi');" 
+		  readonly class="date"/>
+		<polymer-date-picker 
+		  id="datePicker"
+		  selectedDate="" 
+		  relatedTarget="" 
+		  opened="false"/>
 
 		<script>
 		</script>
