@@ -343,7 +343,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException e) {
 			log.error("User " + crsid
-					+ " tried to insert group into database with groupId "
+					+ " failed to insert group into database with groupId "
 					+ group.getGroupId(), e);
 			return Response.status(Status.CONFLICT)
 					.entity(Strings.IDEMPOTENTRETRY).build();
@@ -459,7 +459,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException e) {
 			log.error("User " + crsid
-					+ " tried to insert group into database with groupId "
+					+ " failed to insert group into database with groupId "
 					+ group.getGroupId(), e);
 			return Response.status(Status.CONFLICT)
 					.entity(Strings.IDEMPOTENTRETRY).build();
