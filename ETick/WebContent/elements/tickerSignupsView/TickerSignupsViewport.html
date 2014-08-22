@@ -139,24 +139,6 @@
   <script src="../../bower_components/moment/moment.js"></script>
   <script>
   Polymer('ticker-signups-viewport', {
-			ready : function() {
-				this.refresh();
-			},
-			runClock : function() {
-				this.job("clock",function() {
-					this.displayDate();
-				},1000);
-			},
-			displayDate : function() {
-				var currentDate = new Date();
-				this.seconds = currentDate.getSeconds();
-				this.minutes = currentDate.getMinutes();
-				this.hours = currentDate.getHours();
-				this.day = currentDate.getUTCDate();
-				this.month = currentDate.getUTCMonth() + 1;
-				this.year = currentDate.getUTCFullYear();
-				this.runClock();
-			},
 			refresh: function() {
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
@@ -186,16 +168,6 @@
 			slotsDataLoaded: function() {
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
 				this.slots = [];
-				var date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
-				this.slotsDay = date.split("-")[2];
-				var slotsDay = parseInt(date.split("-")[2]);
-				this.slotsMonth = date.split("-")[1];
-				var slotsMonth = parseInt(date.split("-")[1]);
-				this.slotsYear = date.split("-")[0];
-				var slotsYear = parseInt(date.split("-")[0]);
-				var durationInMinutes = loadedSlots[0].duration/60000;
-				this.duration = durationInMinutes;
-				this.date = this.slotsDay + '/' + this.slotsMonth + '/' + this.slotsYear;
 				for (var i = 0; i < loadedSlots.length; i++) {
 
                     var slotTime = prettyParse(loadedSlots[i].startTime);
@@ -230,41 +202,9 @@
 						leadingZero = "0";
 					}
 
-					var past = false;
-					var current = false;
-					if (slotsYear < this.year) {
-						past = true;
-					}
-					else if (slotsYear === this.year) {
-						if(slotsMonth < this.month) {
-							past = true;
-						}
-						else if (slotsMonth === this.month) {
-							if(slotsDay < this.day) {
-								past = true;
-							}
-							else if(slotsDay === this.day) {
-								if( endHour < this.hours ){
-									past = true;
-								}
-								else if (endHour === this.hours) {
-									if (endMin <= this.minutes) {
-										past = true;
-									}
-									else if ((endMin != 0) && (this.minutes >= parseInt(min)) && (this.minutes < endMin)) {
-										current = true;
-									}
-								}
-								else if (endHour === this.hours+1) {
-									if (endMin === 0) {
-										if ((this.minutes >= parseInt(min)) && (this.minutes < 60)) {
-											current = true;
-										}
-									}
-								}
-							}
-						}
-					}
+					var past = slotTime.isBefore(moment());
+					var current = !past && slotTime.isBefore(slotTime.add('ms', duration));
+
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
 					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
 									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null", collapse: false, inPast: past, currentSlot: current});
@@ -327,13 +267,6 @@
 			},
 			kickDone : function() {
 				this.$.ajaxLoadSlots.go();
-			},
-			minutesChanged: function() {
-				/* I'm assuming here sessions will start and have durations that this will work with e.g. 5/10 mins starting on a minute divisible by those units */
-				/* if not there will be a refresh delay. Only refresh during a session. */
-				if((this.minutes % (this.duration)) === 0 && !this.slots[this.slots.length - 1].inPast){
-					this.$.ajaxLoadSlots.go();
-				}
 			}
 		})
   </script>
