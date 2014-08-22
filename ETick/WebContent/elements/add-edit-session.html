@@ -250,8 +250,8 @@
 				this.subEndTime = prettyParse(this.$.date.value + "T" + this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
-				console.log(prettyDateTime(new Date(this.subStartTime)),
-                            prettyDateTime(new Date(this.subEndTime)));
+				console.log(prettyDateTime(this.subStartTime),
+                            prettyDateTime(this.subEndTime));
 
 				if (this.sheet)  {
 					var call = this.$.editSessionAPI;

@@ -37,7 +37,7 @@ public interface IGroupApiFacade {
 	@Path("/{groupId}")
 	@Produces("application/json")
 	public abstract Response getGroup(@PathParam("groupId") String groupId);
-	
+
 	/**
 	 * 
 	 * @param groupId
@@ -46,28 +46,45 @@ public interface IGroupApiFacade {
 	@GET
 	@Path("/{groupId}")
 	@Produces("text/plain")
-	public abstract Response exportGroup(@PathParam("groupId") String groupId);
-	
+	public abstract Response exportGroupMembersTxt(
+			@PathParam("groupId") String groupId);
+
 	/**
 	 * 
 	 * @param groupId
-	 * @return the status of all the fork objects for the users and ticks in the group as csv
+	 * @return the status of all the fork objects for the users and ticks in the
+	 *         group as csv
 	 */
 	@GET
 	@Path("/{groupId}/status/csv")
 	@Produces("text/plain")
-	public abstract Response exportGroupForkStatusCsv(@PathParam("groupId") String groupId);
-	
+	public abstract Response exportGroupForkStatusCsv(
+			@PathParam("groupId") String groupId);
+
 	/**
 	 * 
 	 * @param groupId
-	 * @return the status of all the fork objects for the users and ticks in the group as xls
+	 * @return the status of all the fork objects for the users and ticks in the
+	 *         group as csv without setting download cookies used by
+	 *         fileDownload.js
+	 */
+	@GET
+	@Path("/{groupId}/overview/csv")
+	@Produces("text/plain")
+	public abstract Response getGroupForkStatusCsv(
+			@PathParam("groupId") String groupId);
+
+	/**
+	 * 
+	 * @param groupId
+	 * @return the status of all the fork objects for the users and ticks in the
+	 *         group as xls
 	 */
 	@GET
 	@Path("/{groupId}/status/xls")
-	//@Produces("application/octet-stream")
 	@Produces("application/vnd.ms-excel")
-	public abstract Response exportGroupForkStatusXls(@PathParam("groupId") String groupId);
+	public abstract Response exportGroupForkStatusXls(
+			@PathParam("groupId") String groupId);
 
 	/**
 	 * Deletes the specified group, clearing up any dangling associations with

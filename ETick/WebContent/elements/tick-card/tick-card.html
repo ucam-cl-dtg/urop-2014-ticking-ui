@@ -191,8 +191,8 @@
                     this.datetime = null;
                     this.deadlinePassed = false;
                 } else {
-                    this.datetime = new Date(this.tickObj.deadline);
-                    this.deadlinePassed = this.datetime < new Date();
+                    this.datetime = moment(this.tickObj.deadline);
+                    this.deadlinePassed = this.datetime < moment();
                     console.log("deadline Passed?", this.deadlinePassed);
                 }
 
