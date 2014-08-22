@@ -48,5 +48,9 @@ public class BookingInfo {
     public String getGroupName() {
         return groupName;
     }
+    
+    public void setStartTime(Date startTime) {
+    	this.startTime = startTime;
+    }
 
 }

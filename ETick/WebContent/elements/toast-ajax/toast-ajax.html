@@ -4,6 +4,15 @@
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html"/>
 
 <!--
+
+In the following, ellipsis (...) means either one of:
+
+* Complete: when the requests finishes, either with a success or an
+  error.
+* Response: when the request returns a successful (HTTP 200) response.
+* Error:    when the request returns a non successful response (e.g.
+  HTTP 400 or HTTP 500).
+
 ...Message: shown while waiting, after complete (either error or
 response), response or error
 
@@ -46,7 +55,13 @@ this to happen.
                on-core-error="{{coreError}}"
                on-core-complete="{{coreComplete}}">
     </core-ajax>
-    <paper-toast id="toastElement" text=""></paper-toast>
+    <paper-toast id="waitToastElement"
+                 duration="1000000000"
+                 text="{{waitMessage}}">
+    </paper-toast>
+    <paper-toast id="responseToastElement"
+                 text="">
+    </paper-toast>
   </template>
   <script>
     Polymer('toast-ajax',
@@ -83,11 +98,11 @@ this to happen.
                 this.timeOut = window.setTimeout(
                   function ()
                   {
-                    if (this.waitMessage != null)
+                    if (this.waitMessage != null
+                      ||this.waitMessage == "")
                     {
                       this.waitShown = true;
-                      this.$.toastElement.text = this.waitMessage;
-                      this.$.toastElement.show();
+                      this.$.waitToastElement.show();
                     }
                   }.bind(this)
                   , this.waitBeforeToast);
@@ -95,8 +110,7 @@ this to happen.
               else
               {
                 this.waitShown = true;
-                this.$.toastElement.text = this.waitMessage;
-                this.$.toastElement.show();
+                this.$.waitToastElement.show();
               }
             }
 
@@ -138,7 +152,7 @@ this to happen.
             }
           }
 
-        , popUpToast:
+        , waitComplete:
           function (text, show)
           {
             "use strict";
@@ -149,13 +163,14 @@ this to happen.
               this.timeOut = null;
             }
 
+            this.$.waitToastElement.dismiss();
+
             if (show)
             {
-              if (text != null)
+              if (text != null || text == "")
               {
-                this.$.toastElement.dismiss();
-                this.$.toastElement.text = text;
-                this.$.toastElement.show();
+                this.$.responseToastElement.text = text;
+                this.$.responseToastElement.show();
               }
 
               this.waitShown = false;
@@ -166,16 +181,17 @@ this to happen.
           function (e)
           {
             "use strict";
-            this.fire('core-response', e.detail);
+            if (!e.bubbles)
+              this.fire('core-response', e.detail);
 
             if (this.captureResponse)
             {
-              this.popUpToast(e.detail.response,
+              this.waitComplete(e.detail.response,
                 this.waitShown || this.popUpResponse);
             }
             else
             {
-              this.popUpToast(this.responseMessage,
+              this.waitComplete(this.responseMessage,
                 this.waitShown || this.popUpResponse);
             }
           }
@@ -184,7 +200,9 @@ this to happen.
           function (e)
           {
             "use strict";
-            this.fire('core-error', e.detail);
+
+            if (!e.bubbles)
+              this.fire('core-error', e.detail);
 
             if (this.captureError && e.detail.response != null)
             {
@@ -193,13 +211,13 @@ this to happen.
               {
                 if (this.errorMessage != null)
                 {
-                  this.popUpToast(this.errorMessage +
+                  this.waitComplete(this.errorMessage +
                       " See log for further details",
                     this.waitShown || this.popUpError);
                 }
                 else
                 {
-                  this.popUpToast("Something went wrong." +
+                  this.waitComplete("Something went wrong." +
                       " See log for further details",
                     this.waitShown || this.popUpError);
                 }
@@ -207,13 +225,13 @@ this to happen.
               }
               else
               {
-                this.popUpToast(e.detail.response,
+                this.waitComplete(e.detail.xhr.responseText,
                   this.waitShown || this.popUpError);
               }
             }
             else
             {
-              this.popUpToast(this.errorMessage,
+              this.waitComplete(this.errorMessage,
                 this.waitShown || this.popUpError);
             }
           }
@@ -222,16 +240,17 @@ this to happen.
           function (e)
           {
             "use strict";
-            this.fire('core-complete', e.detail);
+            if (!e.bubbles)
+              this.fire('core-complete', e.detail);
 
             if (this.captureComplete)
             {
-              this.popUpToast(e.detail.response,
+              this.waitComplete(e.detail.response,
                 this.waitShown || this.popUpComplete);
             }
             else
             {
-              this.popUpToast(this.completeMessage,
+              this.waitComplete(this.completeMessage,
                 this.waitShown || this.popUpComplete);
             }
           }

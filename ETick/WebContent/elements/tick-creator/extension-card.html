@@ -1,0 +1,172 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog-transition.html">
+<link rel="import" href="../../bower_components/core-transition/core-transition.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
+<link rel="import" href="extension-list.html">
+<link rel="import" href="../dialog.html">
+<link rel="import" href="../search-box.html">
+
+<polymer-element name="extension-card" attributes="tid">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../../css/elements/group-members.css">
+		<link rel="stylesheet" type="text/css" href="../../css/shared-styles.css">
+
+		<!-- Add Extension API. -->
+		<toast-ajax id="extensionAPI"
+			method="PUT"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension' }}"
+			on-core-response="{{addExtensionResponse}}"
+			handleAs="json"
+			contentType="application/json"
+
+			popUpResponse
+			responseMessage="Extension(s) added."
+			waitMessage="Adding extension(s)..."
+            waitBeforeToast="1000"
+            captureError
+            popUpError
+            errorMessage="Error adding extension(s).">
+		</toast-ajax>
+
+		<!-- Delete Extension API. -->
+		<toast-ajax id="deleteAPI"
+			method="DELETE"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension' }}"
+			on-core-response="{{deleteExtensionResponse}}"
+			handleAs="json"
+			contentType="application/json"
+
+			popUpResponse
+			responseMessage="Deleted extension(s)."
+			waitMessage="Deleting extension(s)..."
+            waitBeforeToast="1000"
+            captureError
+            popUpError
+            errorMessage="Error deleting extension(s).">
+		</toast-ajax>
+
+		<!-- Extension list Ajax call. -->
+		<core-ajax id="listAjax"
+			auto
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tid + '/extension'}}"
+			handleAs="json"
+			on-core-response="{{listResponse}}">
+		</core-ajax>
+
+		<!-- Card heading. -->
+		<div id="headerBar" layout horizontal center>
+			<h1 flex>Extensions ({{number}})</h1>
+            <span flex></span>
+            <search-box id="searchBox" placeholder="Search..."></search-box>
+
+            <core-tooltip label="Add" position="{{number > 0 ? 'bottom' : 'left'}}">
+				<paper-icon-button icon="add" on-click="{{addExtensionClicked}}"></paper-icon-button>
+			</core-tooltip>
+
+			<core-tooltip label="Delete" class="{{number > 0 ? 'delete-tooltip' : ''}}" position="{{number > 0 ? 'bottom' : 'left'}}" >
+            	<paper-icon-button icon="delete" on-click="{{deleteExtensionClicked}}"></paper-icon-button>
+            </core-tooltip>
+		</div>
+
+		<!-- Member list. -->
+		<div id="personListContainer">
+			<extension-list id="members" query="{{searchQuery}}" on-core-select="{{extensionSelectionChanged}}"></extension-list>
+		</div>
+
+		<!-- Extension dialog -->
+		<paper-dialog id="extensionDialog" heading="Add an extension:" backdrop	
+			transition="core-transition-top">
+			<paper-input id="addInput" class="dialogInput"
+				floatingLabel
+				label="CRSid(s)..."
+				error="Invalid CRSid(s)."
+				pattern="^([a-zA-Z]+\d+[^\w\d]*)+$"
+				on-input="{{handleAddInput}}">
+			</paper-input>
+			<h2 class="subtitle">Extension:</h2>
+			<date-entry valid="{{dateValid}}" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry>
+			<template if="{{showSubmit}}">
+				<paper-button id="addSubmit" class="dialogSubmit" label="ADD" on-click="{{addExtension}}" affirmative></paper-button>
+			</template>
+		</paper-dialog>
+
+	</template>
+	<script>
+		Polymer('extension-card', {
+
+			observe: {
+				'$.searchBox.query' : 'searchBoxChanged'
+			},
+
+			searchBoxChanged: function (oldValue, newValue) {
+				this.searchQuery = newValue;
+			},
+
+			listResponse: function() {
+				var list = this.$.listAjax.response;
+				this.number = list.length;
+				this.$.members.people = list;
+			},
+
+			addExtensionResponse: function() {
+				var list = this.$.extensionAPI.response;
+				this.number = list.length;
+				this.$.members.people = list;
+				this.$.members.clearSelection();
+			},
+
+			addExtension: function() {
+				var newCRSIDs = this.$.addInput.value.trim().split(/[^\w\d]+/);
+				var jsonCRSids = JSON.stringify(newCRSIDs);
+				
+				var year = this.year;
+	            var month = this.month - 1;
+	            var day = this.day;
+	            var date = new Date();
+	            prettySetDate(date, day);
+	            prettySetMonth(date, month);
+	            prettySetFullYear(date, year);
+	            var ISOdate = date.toISOString();
+				
+				this.$.extensionAPI.body = '{ "crsids": ' + jsonCRSids + ', "deadline" : "' + ISOdate + '"}';
+				this.$.extensionAPI.go();
+			},
+
+			handleAddInput: function () {
+				if (this.$.addInput.invalid || this.$.addInput.inputValue === "") {
+					this.showSubmit = false;
+				}
+				else {
+					this.showSubmit = true;
+				}
+			},
+
+			addExtensionClicked: function () {
+				this.$.extensionDialog.toggle();
+			},
+
+			extensionSelectionChanged: function () {
+				this.selectedExtensions = this.$.members.$.list.$.selector.selected;
+			},
+
+			deleteExtensionClicked: function () {
+				if (this.selectedExtensions) {
+					this.$.deleteAPI.body = '{ "crsids" : ' + JSON.stringify(this.selectedExtensions) + '}';
+					this.$.deleteAPI.go();
+				}
+			},
+
+			deleteExtensionResponse: function () {
+				var list = this.$.deleteAPI.response;
+				this.number = list.length;
+				this.$.members.people = list;
+				this.$.members.clearSelection();
+			},
+
+		});
+	</script>
+</polymer-element>

@@ -1,11 +1,13 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/core-overlay/core-overlay.html">
 <link rel="import" href="user-card.html">
 <link rel="import" href="ssh-card.html">
 <link rel="import" href="main-card.html">
 <link rel="import" href="upcoming-slots.html">
+<link rel="import" href="loading-spinner.html">
 
-<polymer-element name="user-dash" attributes="">
+<polymer-element name="user-dash" attributes="data">
 	<template>
 		<style>
 			:host {
@@ -13,13 +15,9 @@
 			}
 		</style>
 
-		<!-- Logging in API call. -->
-		<core-ajax id="loginAjax"
-			auto
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user"
-			handleAs="json"
-			on-core-response="{{loginResponse}}">
-		</core-ajax>
+		<core-overlay id="loadingOverlay" backdrop autoCloseDisabled>
+			<loading-spinner></loading-spinner>
+		</core-overlay>
 
 		<!-- Upcoming events API call. -->
 		<core-ajax id="upcomingAPI"
@@ -29,25 +27,40 @@
 			on-core-response="{{upcomingResponse}}">
 		</core-ajax>
 
-		<template if="{{data&&!data.ssh}}">
+		<template if="{{data && !data.ssh}}">
 			<main-card animated>
 				<ssh-card id="userCard"></ssh-card>
 			</main-card>
 		</template>
 		
-		<main-card animated>
-			<user-card id="userCard" ldap="{{data}}"></user-card>
-		</main-card>
+		<template if="{{data}}">
+			<main-card animated>
+				<user-card id="userCard" ldap="{{data}}"></user-card>
+			</main-card>
+		</template>
 
-		<main-card animated>
-			<upcoming-slots slots="{{slots}}"></upcoming-slots>
-		</main-card>
+		<template if="{{slots}}">
+			<main-card animated>
+				<upcoming-slots slots="{{slots}}"></upcoming-slots>
+			</main-card>
+		</template>
+		
 	</template>
 
 	<script>
 		Polymer('user-dash', {
-			loginResponse: function() {
-				this.data = this.$.loginAjax.response;
+			ready: function () {
+				if (!this.data) {
+					this.$.loadingOverlay.open();
+				}
+			},
+
+			dataChanged: function (oldValue, newValue) {
+				if (newValue && this.$.loadingOverlay.opened) {
+					this.async(function () {
+						this.$.loadingOverlay.close();
+					}, null, 500);
+				}
 			},
 
 			upcomingResponse: function() {

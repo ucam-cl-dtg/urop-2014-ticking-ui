@@ -3,11 +3,13 @@
 <link rel="import" href="tick-session-box.html">
 <link rel="import" href="box-list.html">
 <link rel="import" href="add-session.html">
+<link rel="import" href="are-you-sure.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 
 <polymer-element name="tick-session-list" attributes="gid sheets isAuthor">
 	<template>
+        <link rel="stylesheet" href="../css/shared-styles.css">
 		<style>
 			:host {
 				display: block;
@@ -30,6 +32,7 @@
 
 		<div id="headerBar" layout horizontal center end-justified>
 			<!-- <h1 flex>Ticking Sessions ({{sheets ? sheets.length : 0}})</h1> -->
+            <search-box id="searchBox" placeholder="Search..."></search-box>
 			<template if="{{isAuthor}}">
 				<core-tooltip label="Add">
 					<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
@@ -37,11 +40,10 @@
 				<core-tooltip label="Edit">
 					<paper-icon-button id="editSessionButton" icon="create" on-click="{{editClicked}}"></paper-icon-button>
 				</core-tooltip>
-				<core-tooltip label="Delete">
+				<core-tooltip label="Delete" class="delete-tooltip">
 					<paper-icon-button id="deleteSessionButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
 				</core-tooltip>
  			</template>
-			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 
 		<box-list selector id="list" on-core-select="{{sheetSelected}}">
@@ -49,6 +51,9 @@
 				<tick-session-box class="itemBox" sheet="{{sheet}}"></tick-session-box>
 			</template>
 		</box-list>
+
+		<!-- Delete session confirmation dialog. -->
+		<are-you-sure id="deleteConfirmDialog" on-yes="{{deleteConfirmed}}"></are-you-sure>
 
 		<!-- Response toasts. -->
 		<paper-toast id="deleteSessionError" duration="8000"></paper-toast>
@@ -84,16 +89,23 @@
 
 			editClicked: function () {
 				if (this.selectedSheet) {
-					this.fire('edit-sheet-clicked');
+					this.fire('edit-sheet-clicked', {
+						sheet: this.selectedSheet
+					});
 				}
 			},
 
 			deleteClicked: function () {
 				if (this.selectedSheet) {
-					var call = this.$.deleteSessionAPI;
-					call.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.selectedSheet._id
-					call.go();
+					this.$.deleteConfirmDialog.heading = 'Delete session "' + this.selectedSheet.title + '".';
+					this.$.deleteConfirmDialog.toggle();
 				}
+			},
+
+			deleteConfirmed: function () {
+				var call = this.$.deleteSessionAPI;
+				call.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.selectedSheet._id
+				call.go();
 			},
 
 			deleteSessionResponse: function () {

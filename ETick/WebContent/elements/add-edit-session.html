@@ -33,10 +33,6 @@
 				margin-top: 8px;
 			}
 
-			core-icon.center {
-				margin: 0;
-			}
-
 			paper-input.datetime {
 				width: initial;
 				margin-right: 20px;
@@ -54,6 +50,11 @@
 			#descInput {
 				width: 100%;
 				outline: none;
+				font: inherit;
+				margin-bottom: 1.5rem;
+				padding: 0.5rem 0;
+				border: none;
+				border-bottom: 1px solid #757575;
 			}
 		</style>
 
@@ -83,23 +84,23 @@
 				<paper-input id="titleInput" 
 					floatingInput
 					required
-					value="{{sheet.title}}"
+					value="{{sheet ? sheet.title : ''}}"
 					placeholder="Ticking session title..."
 					pattern="^[^/]+$"
 					error="Invalid session title."
 					on-input="{{validate}}"></paper-input>
 			</div>
 
-			<div layout horizontal center>
-				<core-icon class="big center" icon="info-outline"></core-icon>
-				<textarea id="descInput" rows="3">{{desc}}</textarea>
+			<div layout horizontal start>
+				<core-icon class="big" icon="info-outline"></core-icon>
+				<textarea id="descInput" rows="1" placeholder="Description...">{{sheet ? sheet.description : ''}}</textarea>
 			</div>
 
 			<div layout horizontal start>
 				<core-icon class="big" icon="communication:location-on">
 				</core-icon>
 				<paper-input id="locInput"
-					value="{{loc}}"
+					value="{{sheet ? sheet.location : ''}}"
 					floatingInput
 					placeholder="Location..."></paper-input>
 			</div>
@@ -112,7 +113,7 @@
 				required
 				disabled?="{{sheet}}"
 				on-input="{{validate}}"
-				value="{{slotLengthDisplay}}"
+				value="{{sheet ? sheet.slotLengthInMinutes : ''}}"
 				placeholder="In minutes..."
 				pattern="^[0-9]+$"
 				error="Invalid slot length.">
@@ -180,18 +181,14 @@
 		<paper-toast id="editSessionError" duration="8000"></paper-toast>
 
 	</template>
+    <script src="../js/prettyDate.js"></script>
 	<script>
 		Polymer('add-edit-session', {
 
 			domReady: function () {
 				if (this.sheet) {
-					this.titleName = this.sheet.title;
-					this.desc = this.sheet.description;
-					this.loc = this.sheet.location;
-					this.slotLengthDisplay = this.sheet.slotLength;
-
-					var startDT = new Date(this.sheet.startTime).toJSON();
-					var endDT = new Date(this.sheet.endTime).toJSON();
+					var startDT = prettyParse(this.sheet.startTime).toJSON();
+					var endDT   = prettyParse(this.sheet.endTime).toJSON();
 					var startT = startDT.indexOf('T');
 
 					this.date = startDT.slice(0, startT);
@@ -209,14 +206,12 @@
 				this.disableSubmit = false;
 
 				this.validate();
-
-				
-				this.$.locInput.$.input.list = "browsers";
-				console.log(this.$.locInput.$.input);
 			},
 
 			validate: function () {
-				if (this.$.titleInput.inputValue && !this.$.titleInput.invalid &&
+				console.log(this.$.titleInput.invalid);
+
+				if (!this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.value &&
 					this.$.startTime.value && this.$.endTime.value &&
@@ -250,11 +245,12 @@
 				this.title = this.$.titleInput.inputValue;
 				this.description = this.$.descInput.value;
 				this.location = this.$.locInput.inputValue;
-				this.subStartTime = Date.parse(this.$.date.value + "T" + this.$.startTime.value);
-				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value);
+				this.subStartTime = Date.parse(this.$.date.value + "T" + this.$.startTime.value + "Z");
+				this.subEndTime = Date.parse(this.$.date.value + "T" + this.$.endTime.value + "Z");
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
-				console.log((new Date(this.subStartTime)).toLocaleString(), (new Date(this.subEndTime)).toLocaleString());
+				console.log(prettyDateTime(new Date(this.subStartTime)),
+                            prettyDateTime(new Date(this.subEndTime)));
 
 				if (this.sheet)  {
 					var call = this.$.editSessionAPI;
@@ -267,7 +263,7 @@
 			},
 
 			addSessionResponse: function () {
-				this.fire('sheet-edited', {
+				this.fire('sheet-created', {
 					message: "Successfully created new ticking session '" + this.title + "'."
 				});
 			},

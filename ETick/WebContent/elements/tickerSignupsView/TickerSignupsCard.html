@@ -15,6 +15,7 @@
                 width: 100%;
                 font-size: 1.2rem;
                 font-weight: 300;
+                display: block;
             }
             .topBar {
                 height : 100%;
@@ -23,12 +24,16 @@
             .viewer-panel {
                 padding: 20px;
 				padding-top: 5px;
-                width: 100%;
                 font-size: 1.2rem;
                 font-weight: 300;
             }
             core-item.core-selected {
                 color: purple;
+            }
+            #title {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
         </style>
 
@@ -38,11 +43,10 @@
             </core-toolbar>
         </div>
 
-        <div layout horizontal>
-            <div flex class="viewer-panel">
-                <ticker-signups-viewport studentMode="{{studentMode}}" on-show-report="{{showReport}}" location="{{location}}" description="{{description}}" slotId="{{slotId}}" crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
-            </div>
+        <div flex class="viewer-panel">
+            <ticker-signups-viewport studentMode="{{studentMode}}" on-show-report="{{showReport}}" location="{{location}}" description="{{description}}" slotId="{{slotId}}" crsId="{{crsId}}" tickId="{{tickId}}" repoName="{{repoName}}" ticker="{{ticker}}" id="view" sessionId="{{sessionId}}" description="{{description}}" location="{{location}}"></ticker-signups-viewport>
         </div>
+
 
 
     </template>
@@ -52,26 +56,17 @@
                 this.$.panel.toggle();
             },
             alertError: function() {
-                alert("Sorry, something went wrong");
+                alert("Sorry, something went wrong.");
             },
-			updateTickerViewer: function(detail) {
-                this.$.view.updateViewConsole(detail.result);
-            },
-			sessionIdChanged: function() {
+			sessionIdChanged: function(oldValue, newValue) {
 				this.$.view.refresh();
-			},
-			refreshChanged: function() {
-				if(this.refresh) {
-					this.$.view.updateViewConsole(this.reason);
-					this.refresh = !this.refresh;
-				}
 			},
 			kickChanged : function() {
 				if (this.kick) {
 					this.$.view.kickForSure();
 					this.kick = false;
 				} 
-			},
+			}
         })
     </script>
 </polymer-element>

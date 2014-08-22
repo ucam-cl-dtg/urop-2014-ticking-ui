@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.GroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
+import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 import com.google.inject.Inject;
 
@@ -63,24 +65,48 @@ public class ForkStatusCsv {
 			writer.append(',');
 
 			for (String tickId : tickIds) {
+				Tick tick = db.getTick(tickId);
 				Fork fork = db.getFork(Fork.generateForkId(user.getCrsid(),
 						tickId));
+				
+				DateTime extension = tick.getExtensions().get(user.getCrsid());
+				if (extension != null) {
+					tick.setDeadline(extension);
+				}
+				
 				if (fork == null) {
-					writer.append(',');
+					
+					if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
+						writer.append(","+Strings.FAILED);
+					} else {
+						writer.append(',');
+					}
 				} else {
 					if (fork.getUnitPass()) {
 						if (fork.getHumanPass()) {
-							writer.append(",PASSED by "
+							writer.append(","+Strings.PASSED+" (By "
 									+ fork.getLastTickedBy() + " on "
-									+ fork.getLastTickedOn().toString(dtf));
+									+ fork.getLastTickedOn().toString(dtf)+")");
 						} else {
-							writer.append(",Unit passed");
+							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
+								writer.append(","+Strings.FAILED+" ("+Strings.UNITPASSED+" "+fork.stats()+")");
+							} else {
+								writer.append(","+Strings.UNITPASSEDCODE+" ("+Strings.UNITPASSED+" "+fork.stats()+")");
+							}
 						}
 					} else {
 						if (fork.isReportAvailable()) {
-							writer.append(",Unit failed");
+							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
+								writer.append(","+Strings.FAILED+" ("+Strings.UNITFAILED+" "+fork.stats()+")");
+							} else {
+								writer.append(","+Strings.UNITFAILEDCODE+" ("+Strings.UNITFAILED+" "+fork.stats()+")");
+							}
 						} else {
-							writer.append(",Initilialised");
+							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
+								writer.append(","+Strings.FAILED+" ("+Strings.INITIALISED+" "+fork.stats()+")");
+							} else {
+								writer.append(","+Strings.INITCODE+" ("+Strings.INITIALISED+" "+fork.stats()+")");
+							}
 						}
 					}
 				}

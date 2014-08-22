@@ -26,7 +26,7 @@ import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import com.google.inject.Inject;
 
 @Path("/raven")
-public class LdapManager {
+public class AuthManager {
 
 	private IDataManager db;
 	private ConfigurationLoader<AcademicTemplate> academicConfig;
@@ -36,7 +36,7 @@ public class LdapManager {
 	 * @param db
 	 */
 	@Inject
-	public LdapManager(IDataManager db,
+	public AuthManager(IDataManager db,
 			ConfigurationLoader<AcademicTemplate> academicConfig,
 			ConfigurationLoader<Admins> adminConfig) {
 		this.db = db;
@@ -44,8 +44,21 @@ public class LdapManager {
 		this.adminConfig = adminConfig;
 	}
 
+	@GET
+	@Path("/")
+	public Response session(@Context HttpServletRequest request) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		if (crsid == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		return Response.ok().build();
+	}
+
 	/**
-	 * Displays the information we have concerning the user as HTML.
+	 * Displays the information we have concerning the user as HTML. A fallback
+	 * endpoint for checking that your user object is correct without requiring
+	 * access to any other website functionality.
 	 * 
 	 * @param request
 	 * @return response
@@ -110,6 +123,7 @@ public class LdapManager {
 	 * 
 	 * @param request
 	 * @return response
+	 * @throws InterruptedException 
 	 */
 	@GET
 	@Path("/login")
@@ -118,10 +132,19 @@ public class LdapManager {
 
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
+		if (crsid == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+
 		User user = db.getUser(crsid);
 		if (user == null || user.getLdap() == null
 				|| user.getLdap().plusDays(1).isBeforeNow()) {
+			String ssh = null;
+			if (user != null) {
+				ssh = user.getSsh();
+			}
 			user = ldapProduceUser(crsid);
+			user.setSsh(ssh);
 			db.saveUser(user);
 			return Response.status(Status.CREATED).entity(user).build();
 		}
@@ -155,17 +178,22 @@ public class LdapManager {
 		LDAPUser u;
 		User user;
 		try {
-			//TODO async
+			// TODO async
 			u = LDAPQueryManager.getUser(crsid);
 			boolean notStudent = academicConfig.getConfig().represents(u);
 			boolean admin = adminConfig.getConfig().isAdmin(crsid);
-			user = new User(crsid,
-					u.getSurname(), u.getRegName(), u.getDisplayName(),
-					u.getEmail(), u.getInstitutions(), u.getCollegeName(),
-					!notStudent, admin);
+			user = new User(crsid, u.getSurname(), u.getRegName(),
+					u.getDisplayName(), u.getEmail(), u.getInstitutions(),
+					u.getCollegeName(), !notStudent, admin);
 			List<String> photos = u.getPhotos();
 			if (photos != null) {
 				user.setPhoto(photos.get(photos.size() - 1));
+			}
+			if (admin) {
+				for (Group group : db.getGroups()) {
+					db.saveGrouping(new Grouping(group.getGroupId(), user
+							.getCrsid(), Role.ADMIN));
+				}
 			}
 		} catch (LDAPObjectNotFoundException e) {
 			user = new User(crsid);

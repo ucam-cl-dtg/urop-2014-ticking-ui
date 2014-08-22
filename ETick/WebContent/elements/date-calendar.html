@@ -2,6 +2,9 @@
 <polymer-element name="date-calendar" attributes="datetime hexColorPrimary hexColorSecondary">
 	<template>
 		<style shim-shadowdom>
+			:host {
+				display: block;
+			}
 
 			/* Default calendar (primary) color is orange #FF8000 */
 			/* Default border (secondary) color is white #fff */
@@ -75,10 +78,10 @@
 
 				var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 				var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-				var d = new Date(this.datetime);
-				this.date = d.getDate();
-				this.day = weekdays[d.getDay()];
-				this.month = months[d.getMonth()];
+				var d = prettyParse(this.datetime);
+				this.date = prettyGetDate(d);
+				this.day = weekdays[prettyGetDay(d)];
+				this.month = months[prettyGetMonth(d)];
 
                 this.updateColors();
 			},

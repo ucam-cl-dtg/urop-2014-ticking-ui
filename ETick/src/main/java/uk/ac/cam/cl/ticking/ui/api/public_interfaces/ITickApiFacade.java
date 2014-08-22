@@ -14,9 +14,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import org.joda.time.DateTime;
-
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ExtensionBean;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
 
 /**
@@ -113,7 +112,7 @@ public interface ITickApiFacade {
 	 * @throws DuplicateRepoNameException
 	 * 
 	 */
-	@POST
+	@PUT
 	@Path("/{tickId}/{groupId}")
 	@Produces("application/json")
 	public abstract Response addTick(@Context HttpServletRequest request,
@@ -122,18 +121,47 @@ public interface ITickApiFacade {
 			DuplicateRepoNameException;
 
 	/**
-	 * Updates the deadline of a tick in the database
+	 * Adds an extension to a tick in the database
 	 * 
 	 * @param request
 	 * @param tickId
-	 * @param date
-	 * @return The updated tick object
+	 * @param extensionBean
+	 * @return The list of extensions for that tick
 	 */
 	@PUT
-	@Path("/{tickId}/deadline")
+	@Path("/{tickId}/extension")
 	@Produces("application/json")
-	public abstract Response setDeadline(@Context HttpServletRequest request,
-			@PathParam("tickId") String tickId, DateTime date);
+	@Consumes("application/json")
+	public abstract Response setExtension(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId, ExtensionBean extensionBean);
+	
+	/**
+	 * Removes an extension to a tick in the database
+	 * 
+	 * @param request
+	 * @param tickId
+	 * @param extensionBean
+	 * @return The list of extensions for that tick
+	 */
+	@DELETE
+	@Path("/{tickId}/extension")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public abstract Response removeExtension(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId, ExtensionBean extensionBean);
+	
+	/**
+	 * Gets the extensions of a tick in the database
+	 * 
+	 * @param request
+	 * @param tickId
+	 * @return The extensions
+	 */
+	@GET
+	@Path("/{tickId}/extension")
+	@Produces("application/json")
+	public abstract Response getExtensions(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId);
 
 	/**
 	 * 

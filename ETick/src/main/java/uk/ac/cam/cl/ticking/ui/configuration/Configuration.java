@@ -9,10 +9,13 @@ public class Configuration implements ConfigurationFile {
 
 	private String uiApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_UI_DEMO/api/";
 	private String gitApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_GIT/rest/";
+	private String secureGitApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_GIT_SECURED/rest/";
 	private String testApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/";
 	private String signupsApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP_SIGNUPS/rest/";
 	private String uiMongoBroadcast = "localhost";
 	private int uiMongoPort = 27017;
+	
+	private String securityToken;
 
 	/**
 	 * @return URL prefix of the UI api endpoints
@@ -98,6 +101,22 @@ public class Configuration implements ConfigurationFile {
 	 */
 	public void setSignupsApiLocation(String signupsApiLocation) {
 		this.signupsApiLocation = signupsApiLocation;
+	}
+
+	public String getSecurityToken() {
+		return securityToken;
+	}
+
+	public void setSecurityToken(String securityToken) {
+		this.securityToken = securityToken;
+	}
+
+	public String getSecureGitApiLocation() {
+		return secureGitApiLocation;
+	}
+
+	public void setSecureGitApiLocation(String secureGitApiLocation) {
+		this.secureGitApiLocation = secureGitApiLocation;
 	}
 
 }

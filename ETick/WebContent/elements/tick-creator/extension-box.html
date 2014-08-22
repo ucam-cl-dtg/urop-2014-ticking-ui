@@ -1,0 +1,25 @@
+<!-- Box/card element representing a person in a list of people who have extensions. -->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../date-calendar.html">
+
+<polymer-element name="extension-box" attributes="name crsid college extension" noscript>
+	<template>
+		<link rel="stylesheet" type="text/css" href="../..//css/box-element.css">
+
+		<div id="container" layout horizontal center>
+			<date-calendar datetime="{{extension}}" flex
+				hexColorPrimary="#F75EA7" hexColorSecondary="#CE00E0"></date-calendar>
+
+			<div layout vertical>
+				<h1>{{name}}</h1>
+				<div layout horizontal center>
+					<h2 flex>{{college}}</h2>
+					<h2>{{crsid}}</h2>
+				</div>
+				<paper-ripple class="recenteringTouch" fit></paper-ripple>
+			</div>
+		</div>
+	</template>
+</polymer-element>

@@ -40,12 +40,12 @@
                 captureError
                 popUpError
                 errorMessage="Error cancelling booking."
-                popUpComplete
-                completeMessage="Booking cancelled.">
+                popUpResponse
+                responseMessage="Booking cancelled.">
         </toast-ajax>
 
         <!-- Information about currently booked tick -->
-        <core-collapse opened?="{{signedUp}}">
+        <core-collapse opened?="{{signedUp && !humanPass}}">
             <div style="padding: 3px;" layout horizontal>
                 <date-calendar hexColorPrimary="#FF8000" hexColorSecondary="#fff" datetime="{{bookingDateTime}}"></date-calendar>
                 <time-clock datetime="{{booking.startTime}}"></time-clock>

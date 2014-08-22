@@ -102,6 +102,7 @@
     </div>
 
   </template>
+  <script src="../../js/prettyDate.js"></script>
   <script>
     Polymer('file-browser-card'
       , {   selectedFileIdChanged:
@@ -163,6 +164,12 @@
                 "You have failed the automatic tests." +
                 " See below for more detailed information."
             }
+            else if (this.tickerResult == "UNDEFINED")
+            {
+              this.$.resultString.innerHTML =
+                "You have passed the automatic tests." +
+                " Time to get this ticked!";
+            }
             else if (this.tickerResult == "FAIL"
                    &&typeof this.lastTickedBy != typeof undefined
                    &&typeof this.lastTickedOn != typeof undefined)
@@ -172,7 +179,7 @@
                   "<a href=\"mailto:" +
                     this.lastTickedBy + "@cam.ac.uk" +
                     "?subject=" +
-                      encodeURIComponent("Question about tick " +
+                      encodeURIComponent("[Tickl] Question about tick " +
                           this.tickId) +
                     "&body=" +
                       encodeURIComponent("Hi,\n\nI have a question " +
@@ -181,7 +188,8 @@
                   "\">" +
                     this.lastTickedBy +
                   "</a>" +
-                " at " + new Date(this.lastTickedOn).toLocaleString() +
+                " at " +
+                prettyDateTime(prettyParse(this.lastTickedOn)) +
                 ".";
             }
             else if (this.tickerResult == "FAIL")
@@ -208,7 +216,7 @@
                   {
                     return "Commit " + obj.commit.slice(0,7) +
                       ", report generated " +
-                      new Date(obj.date).toLocaleString();
+                      prettyDateTime(obj.date);
                   });
             this.$.reportSelector.selected =
               this.reportsListString.length - 1;

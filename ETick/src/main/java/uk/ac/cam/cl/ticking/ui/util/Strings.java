@@ -33,7 +33,7 @@ public class Strings {
 
 	public static final String EXISTS = "Error: You have already created a tick with this name.";
 
-	public static final String REMOVECREATOR = "Error: You may not remove the creator of the group.";
+	public static final String REMOVECREATOR = "Error: You may not remove the creator of the group. Any other users have been removed.";
 
 	public static final String MISSING = "Error: The resource you requested appears to be missing.";
 
@@ -44,6 +44,19 @@ public class Strings {
 	public static final String TESTRUNNING = "Error: You still have a test running for this tick";
 	
 	public static final String BADKEY = "The key you have entered is malformed";
+	
+	public static final String REMOVEDUSERS = "Successfully removed users";
+	
+	public static final String TICKISINGROUP = "Error: That tick is already associated with the group.";
+	
+	public static final String PASSED = "PASSED";
+	public static final String FAILED = "FAILED";
+	public static final String UNITPASSEDCODE = "UP";
+	public static final String UNITFAILEDCODE = "UF";
+	public static final String INITCODE = "I";
+	public static final String UNITPASSED = "Passed automated tests";
+	public static final String UNITFAILED = "Failed automated tests";
+	public static final String INITIALISED = "Not submitted";
 
 	/**
 	 * Private constructor to prevent this class being created

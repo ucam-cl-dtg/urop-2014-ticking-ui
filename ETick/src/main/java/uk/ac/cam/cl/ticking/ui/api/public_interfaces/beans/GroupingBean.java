@@ -5,6 +5,14 @@ import java.util.List;
 
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 
+/**
+ * This class acts as a wrapper for a list of users and a list of roles for use
+ * when creating groupings of user-group-role in the database.
+ * Using lists allows adding/removing multiple users at a time
+ * 
+ * @author tl364
+ *
+ */
 public class GroupingBean {
 
 	private List<String> crsids = new ArrayList<>();

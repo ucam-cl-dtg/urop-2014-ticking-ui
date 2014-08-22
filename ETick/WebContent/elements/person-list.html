@@ -33,9 +33,10 @@
 			
 			listFilter: function(item) {
 				var q = this.query.toLowerCase();
-				return (item.displayName.toLowerCase().indexOf(q) > -1 ||
-						item._id.toLowerCase().indexOf(q) > -1 ||
-						item.college.toLowerCase().indexOf(q) > -1);
+				return (item.user.displayName.toLowerCase().indexOf(q) > -1 ||
+						item.user._id.toLowerCase().indexOf(q) > -1 ||
+						item.user.college.toLowerCase().indexOf(q) > -1 ||
+						this.arraySearch(item.roles, q.toUpperCase()));
 			},
 
 			filter: function(items, q) {
@@ -43,7 +44,14 @@
 					return items.filter(this.listFilter.bind(this));
 				}
 				return items;
-			}
+			},
+
+			arraySearch: function (arr, q) {
+				for (var i = 0; i < arr.length; i++) {
+					if (arr[i].indexOf(q) > -1) return true;
+				}
+				return false;
+			} 
 		});
 	</script>
 </polymer-element>

@@ -2,33 +2,11 @@
 <link rel="import" href="date-calendar.html">
 <polymer-element name="tick-box" attributes="tick tickId" noscript>
 	<template>
-		<style>
-			:host {
-				display:   block;
-				border-radius: 2px;
-				position: relative;
-			}
-			h1 {
-				margin: 0;
-				font-size: 1.4rem;
-				font-weight: 100;
-			}
-
-			h2 {
-				margin: 0;
-				font-size: 0.7rem;
-				color: #808080;
-				font-weight: 300;
-			}
-			#container {
-				padding: 10px;
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" href="../css/box-element.css">
 		<div layout horizontal center id="container">
 			<date-calendar datetime="{{tick.deadline}}"
 				hexColorPrimary="#F75EA7" hexColorSecondary="#CE00E0"></date-calendar>
-			<div flex></div>
-			<div layout vertical end>
+			<div layout vertical end flex class="textContainer">
 				<h1>{{tick.name}}</h1>
 				<h2>Author: {{tick.author}}</h2>
 			</div>

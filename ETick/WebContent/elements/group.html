@@ -17,7 +17,7 @@
 <link rel="import" href="tick-session-list.html">
 <link rel="import" href="add-edit-session.html">
 <link rel="import" href="overview/overview-card.html">
-
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/core-collapse/core-collapse.html">
@@ -25,6 +25,7 @@
 <polymer-element name="x-group" attributes="gid name info creator editedBy editedOn">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/elements/group.css" shim-shadowdom>
+        <link rel="stylesheet" href="../css/shared-styles.css">
 
 		<!-- User roles API call. -->
 		<core-ajax id="roleAjax"
@@ -60,9 +61,15 @@
                         </p>
 						<span layout horizontal end end-justified flex>
 							<template if="{{isAuthor || isAdmin}}">
-								<delete-group gid="{{gid}}" name="{{name}}"></delete-group>
-								<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
-								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
+								<core-tooltip label="Edit">
+									<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
+								</core-tooltip>
+								<core-tooltip label="Clone">
+									<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
+								</core-tooltip>
+								<core-tooltip label="Delete" class="delete-tooltip">
+									<paper-icon-button id="deleteButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
+								</core-tooltip>
 							</template>
 						</span>
                     </div>
@@ -78,10 +85,14 @@
                 </div>
             </span>
 
+            <!-- Delete group element. -->
+            <delete-group id="deleteGroup" gid="{{gid}}" name="{{name}}"></delete-group>
+
             <!-- Ticks Tab -->
             <span id="ticks" hidden>
-                <tick-list gid="{{gid}}" on-fork-clicked="{{forkClickedHandler}}"
-                           canFork="{{isSubmitter||isAdmin}}"></tick-list>
+                <tick-list gid="{{gid}}" 
+                	on-fork-clicked="{{forkClickedHandler}}"
+                	canFork="{{isSubmitter||isAdmin}}"></tick-list>
             </span>
 
             <!-- Group Members Tab -->
@@ -99,7 +110,7 @@
 	        		on-add-sheet-clicked="{{addSheetHandler}}"
 	        		on-edit-sheet-clicked="{{editSheetHandler}}"
 	        		on-sheet-selected="{{sheetSelectedHandler}}"
-	        		on-sheet-deleted="{{sheetCreated}}">
+	        		on-sheet-deleted="{{sheetCreatedEdited}}">
 	        	</tick-session-list>
 	        </span>
 
@@ -138,7 +149,8 @@
 			<main-card animated>
 				<add-edit-session gid="{{gid}}" sheet="{{sheet}}"
 				on-sheet-cancel="{{sheetCancelled}}"
-				on-sheet-edited="{{sheetCreated}}"></add-edit-session>
+				on-sheet-created="{{sheetCreatedEdited}}"
+				on-sheet-edited="{{sheetCreatedEdited}}"></add-edit-session>
 			</main-card>
 		</template>
 		<paper-toast id="addEditResponseToast" duration="8000"></paper-toast>
@@ -146,13 +158,13 @@
 
         <!-- Marker card for ticking sessions. -->
         <span id="deepTickingSessions" hidden>
-	        <!-- moved template to ticker-signup -->
-            <ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.title}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>
-            
+        	<template if="{{showTickerSignup}}">
+            	<ticker-signup isMarker="{{isMarker}}" isAdmin="{{isAdmin}}" groupId="{{gid}}" sessionName="{{sheet.title}}" sessionId="{{sheet._id}}" location="{{sheet.location}}" description="{{sheet.description}}" on-main-card-swipe-away="{{cardSwiped}}" on-main-card-swipe-back="{{cardUnswiped}}"></ticker-signup>     	
+            </template>
         </span>
 
         <span id="deepOverview">
-            <template if="{{isOverview}}">
+            <template if="{{isOverview||isAdmin}}">
                 <main-card animated>
                     <overview-card gid="{{gid}}"></overview-card>
                 </main-card>
@@ -217,23 +229,26 @@
 			},
 			sheetListResponse: function () {
 				this.sheets = this.$.sheetListAPI.response;
+				this.$.tickingSessionList.clearSelection();
 			},
 
 			forkClickedHandler: function (e, detail) {
 				this.selectedTickId = detail.tickId;
 				this.selectedTickName = detail.tickName;
                 this.selectedTickObj = detail.tickObj;
-
-                console.log(detail);
 			},
 
-			sheetCreated: function (e, detail) {
+			// Ticking sheet cards handlers:
+
+			sheetCreatedEdited: function (e, detail) {
+				console.log(e);
 				this.$.sheetListAPI.go();
 				this.sheetCancelled();
 				if (detail && detail.message) {
 					this.$.addEditResponseToast.text = detail.message;
 					this.$.addEditResponseToast.show();
 				}
+				this.showTickerSignup = false;
 			},
 
 			addSheetHandler: function () {
@@ -242,32 +257,34 @@
 					gid: this.gid,
 					sheet: null
 				}
+				this.showTickerSignup = false;
 			},			
 			
 			editSheetHandler: function (e, detail) {
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: true,
 					gid: this.gid,
-					sheet: this.sheet
+					sheet: detail.sheet
 				};
+				this.showTickerSignup = false;
 			},
 
 			sheetCancelled: function () {
-				this.$.tickingSessionList.clearSelection();
 				this.$.addEditSessionTemp.model = {
 					showAddEditSession: false,
 					gid: null,
 					sheet: null
-				}
+				};
+				this.showTickerSignup = true;
 			},
 
 			sheetSelectedHandler: function (e, detail) {
 				this.sheet = detail.sheet;
+				this.showTickerSignup = this.sheet ? true : false;
 			},
 
-			changeTab: function() { 
-				this.sheet = null;
-				this.$.tickingSessionList.clearSelection();
+			deleteClicked: function () {
+				this.$.deleteGroup.$.confirm.toggle();
 			}
 		});
 	</script>

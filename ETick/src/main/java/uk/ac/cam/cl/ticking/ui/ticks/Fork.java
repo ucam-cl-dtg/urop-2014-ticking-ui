@@ -5,9 +5,6 @@ import org.joda.time.DateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This class stores information regarding a submission for a tickId
- * 
- * NOT CURRENTLY USED, RETAINING UNTIL CERTAIN THIS IS NOT REQUIRED
  * 
  * @author tl364
  *
@@ -23,12 +20,18 @@ public class Fork {
 	private String repo;
 
 	private String tickId;
+	
+	private boolean forking = false;
 
 	private boolean unitPass = false;
 	private boolean humanPass = false;
 	private boolean signedUp = false;
 	private boolean testing = false;
 	private boolean reportAvailable = false;
+	
+	private int unitFails = 0;
+	private int unitPasses = 0;
+	private int humanFails = 0;
 
 	private String lastTickedBy;
 	private DateTime lastTickedOn;
@@ -156,6 +159,14 @@ public class Fork {
 		this.lastTickedBy = lastTickedBy;
 	}
 
+	public boolean isForking() {
+		return forking;
+	}
+
+	public void setForking(boolean forking) {
+		this.forking = forking;
+	}
+
 	/**
 	 * 
 	 * @return signedUp
@@ -217,6 +228,47 @@ public class Fork {
 	public void setLastTickedOn(DateTime lastTickedOn) {
 		this.lastTickedOn = lastTickedOn;
 	}
+
+	public int getUnitFails() {
+		return unitFails;
+	}
+
+	public void setUnitFails(int unitFails) {
+		this.unitFails = unitFails;
+	}
+
+	public int getUnitPasses() {
+		return unitPasses;
+	}
+
+	public void setUnitPasses(int unitPasses) {
+		this.unitPasses = unitPasses;
+	}
+
+	public int getHumanFails() {
+		return humanFails;
+	}
+
+	public void setHumanFails(int humanFails) {
+		this.humanFails = humanFails;
+	}
+	
+	public void incrementUnitFails() {
+		unitFails++;
+	}
+	
+	public void incrementUnitPasses() {
+		unitPasses++;
+	}
+	
+	public void incrementHumanFails() {
+		humanFails++;
+	}
+	
+	public String stats() {
+		return humanFails+"/"+unitPasses+"/"+unitFails;
+	}
+	
 
 	/**
 	 * 

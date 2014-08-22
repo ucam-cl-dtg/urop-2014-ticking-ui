@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../../bower_components/core-icons/communication-icons.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../are-you-sure.html">
 <link rel="import" href="student-info.html">
@@ -11,34 +12,42 @@
 <polymer-element name="ticker-signups-viewport" attributes="sessionId studentMode description location crsId tickId repoName ticker slotId">
   <template>
     <style>
-    :host {
-      background-color: white;
-      padding: 10px;
-      width: 100%;
-      font-size: 1.2rem;
-	  color: black;
-      font-weight: 300;
-    }
-    .card-header {
-	  padding-top: 5px
-      margin-bottom: 10px;
-    }
-	#listTemplate:nth-child(even) {
-		background:#e9e9e9;
-	}
-	#listTemplate:nth-child(odd) {
-		background:#f6f6f6;
-	}
+	    :host {
+	      background-color: white;
+	      padding: 10px;
+	      font-size: 1.2rem;
+		  color: black;
+	      font-weight: 300;
+	      display: block;
+	    }
+	    #card-header {
+	    	margin-bottom: 10px;
+	    }
+		#listTemplate:nth-child(even) {
+			background:#e9e9e9;
+		}
+		#listTemplate:nth-child(odd) {
+			background:#f6f6f6;
+		}
+		core-icon {
+			margin-right: 10px;
+		}
+		.infoFieldContainer {
+			margin-bottom: 10px;
+		}
+		#slots-view-panel {
+			border: black solid 1px;
+			border-bottom-style: none;
+		}
     </style>
 	
 	<!-- Get tickers for this session -->
 	<toast-ajax
 		id="ajaxLoadTickers"
         url="{{pathLoadTickers}}"
-		waitMessage="loading tickers..."
-		responseMessage="tickers loaded"
+		waitMessage="Loading tickers..."
 		captureError
-		waitBeforeToast="500"
+		waitBeforeToast="1000"
         handleAs="json"
 		contentType="application/json"
         on-core-response="{{tickersDataLoaded}}">
@@ -48,10 +57,9 @@
     <toast-ajax
 		id="ajaxLoadSlots"
         url="{{pathLoadSlots}}"
-		waitMessage="loading slots..."
-		responseMessage="slots loaded"
+		waitMessage="Loading slots..."
 		captureError
-		waitBeforeToast="10"
+		waitBeforeToast="1000"
         handleAs="json"
 		contentType="application/json"
         on-core-response="{{slotsDataLoaded}}">
@@ -68,10 +76,19 @@
 	</core-ajax>
 	
 	<div layout vertical>
-		<div id="card-header" align="left">
-			<core-item icon="home" label="{{locationDisplayed}}"></core-item>
-			<core-item icon="today" label="Date : {{date}}"></core-item>
-			<core-item icon="info" label="{{descriptionDisplayed}}"></core-item>
+		<div id="card-header" layout vertical>
+			<div class="infoFieldContainer" layout horizontal center>
+				<core-icon icon="communication:location-on"></core-icon>
+				<span>{{locationDisplayed}}</span>
+			</div>
+			<div class="infoFieldContainer" layout horizontal center>
+				<core-icon icon="event"></core-icon>
+				<span>Date: {{date}}</span>
+			</div>
+			<div class="infoFieldContainer" layout horizontal start>
+				<core-icon icon="info-outline"></core-icon>
+				<span flex>{{descriptionDisplayed}}</span>
+			</div>
 		</div>
 		<div id="ticker-select-panel" align="center">
 			<paper-radio-group selected="{{selected}}" on-change="{{tickerChange}}" layout horizontal flex>
@@ -80,9 +97,9 @@
 				</template>
 			</paper-radio-group>
 		</div>
-		<div id="slots-view-panel" align="center" style="border:black solid 1px;border-bottom-style:none">
+		<div id="slots-view-panel">
 				<template repeat="{{slot in slots}}">
-					<span layout vertical id="listTemplate" style="border-bottom:black solid 1px">
+					<span layout vertical id="listTemplate" style="border-bottom: black solid 1px;">
 						<span layout horizontal flex>
 							<div align="center" style="min-width:60px">
 								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
@@ -118,22 +135,23 @@
 	</div>
 	
   </template>
+  <script src="../../js/prettyDate.js"></script>
   <script>
   Polymer('ticker-signups-viewport', {
 			refresh: function() {
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.sessionId;
 				if (this.location === "") {
-					this.locationDisplayed = "Location : No location is available";
+					this.locationDisplayed = "Location: No location is available";
 				}
 				else {
-					this.locationDisplayed = "Location : " + this.location;
+					this.locationDisplayed = "Location: " + this.location;
 				}
 				if (this.description === "") {
-					this.descriptionDisplayed = "Description : No description is available";
+					this.descriptionDisplayed = "Description: No description is available";
 				}
 				else {
-					this.descriptionDisplayed = "Description : " + this.description;
+					this.descriptionDisplayed = "Description: " + this.description;
 				}
 				this.$.ajaxLoadTickers.go();
 			},
@@ -150,10 +168,14 @@
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
 				this.slots = [];
 				for (var i = 0; i < loadedSlots.length; i++) {
-					var hour = loadedSlots[i].startTime.split(":")[0].split("T")[1];
-					var min = loadedSlots[i].startTime.split(":")[1];
+
+                    var slotTime = prettyParse(loadedSlots[i].startTime);
+                    var hour = prettyTime(slotTime).split(":")[0];
+					var min =  prettyTime(slotTime).split(":")[1];
+
 					var timeSlot = hour + ":" + min;
-					<!-- check this conversion is right -->
+
+					/* check this conversion is right */
 					var durationInMinutes = loadedSlots[i].duration/60000;
 					var student = loadedSlots[i].bookedUser;
 					var comment = loadedSlots[i].comment;
@@ -163,22 +185,27 @@
 						comment = "Empty Slot";
 						hidden = true;
 					}
-					<!-- sort out leading zero -->
+
+					/* sort out leading zero */
 					var endMin = parseInt(min) + parseInt(durationInMinutes);
-					var endHour = parseInt(hour);
+					var endHour = parseInt(hour) +
+                        parseInt(Math.floor(durationInMinutes/60));
+
 					while (endMin >= 60) {
 						endMin = endMin%60;
 						endHour++;
 					}
+
 					var leadingZero = "";
 					if (endMin < 10) {
 						leadingZero = "0";
 					}
+
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
 					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
 									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null", collapse: false});
 				}
-				this.date = loadedSlots[0].startTime.split(":")[0].split("T")[0];
+				this.date = prettyDate(prettyParse(loadedSlots[0].startTime));
 			},
 			tickerChange: function(event) {
 				if(event.target.checked) {

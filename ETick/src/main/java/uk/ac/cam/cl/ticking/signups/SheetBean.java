@@ -101,6 +101,15 @@ public class SheetBean {
     public void setGroupID(String groupID) {
         this.groupID = groupID;
     }
+
+    @Override
+    public String toString() {
+        return "SheetBean [title=" + title + ", description=" + description
+                + ", location=" + location + ", startTime=" + startTime
+                + ", slotLengthInMinutes=" + slotLengthInMinutes + ", endTime="
+                + endTime + ", tickerNames=" + tickerNames + ", groupID="
+                + groupID + "]";
+    }
     
     
     

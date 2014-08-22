@@ -1,3 +1,4 @@
+
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -55,8 +56,8 @@
             captureError
             popUpError
             errorMessage="Error updating tick."
-            completeMessage="Tick updated."
-            popUpComplete>
+            responseMessage="Tick updated."
+            popUpResponse>
     </toast-ajax>
     <toast-ajax
             id="ajaxPostTickData"
@@ -72,8 +73,8 @@
             captureError
             popUpError
             errorMessage="Error saving tick."
-            completeMessage="Tick saved."
-            popUpComplete>
+            responseMessage="Tick saved."
+            popUpResponse>
     </toast-ajax>
 
     <!-- get and update stylistic data -->
@@ -109,8 +110,8 @@
 
             waitMessage="Deleting tick..."
             waitBeforeToats="500"
-            completeMessage="Tick deleted."
-            popUpComplete
+            responseMessage="Tick deleted."
+            popUpResponse
             captureError
             popUpError
             errorMessage="Error deleting tick.">
@@ -125,7 +126,7 @@
                 <br>
             </div>
             <paper-input hidden?="{{inputDisplayNameHidden}}" id="inputDisplayName" flex label="e.g. 1A-Java-Tick-1"
-                         inputValue="{{tickName}}" required error="Required; can't have spaces" validate="^[0-9a-zA-Z][0-9a-zA-Z_-]*$"
+                         inputValue="{{tickName}}" required error="Required; can't have spaces" pattern="^[0-9a-zA-Z][0-9a-zA-Z_-]*$"
                          on-keyup="{{validateDisplayName}}">
             </paper-input>
         </div>
@@ -202,7 +203,7 @@
         <span layout horizontal>
             <span flex></span>
             <paper-button raisedButton id="save" class="tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
-                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving}}">
+                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving || deleting}}">
             </paper-button>
             <div style="width: 20px"></div>
             <paper-button raisedButton id="delete" class="tick-creator" label="{{deleting ? 'DELETING...' : 'DELETE'}}" on-tap="{{alertDeleteTick}}"
@@ -310,18 +311,22 @@
             /* when a user clicks save, they shouldn't be able to click again until the update is complete, so the SAVE
              button is disabled while saving. However, if the SAVE operation is really fast, this creates a jarring UX,
              so this artificial day smooths the UX */
+            var that = this;
             this.job('complete-saving', function() {
-                this.saving = false;
-                this.newTick = false;
+                that.saving = false;
+                that.newTick = false;
+                that.tickData = that.$.ajaxPostTickData.response;
+                that.tickId = that.tickData._id;
+                that.processLoadedTickData();
             }, 500);
 
 
             this.tickData = this.$.ajaxPostTickData.response;
-
             this.tickId = this.tickData._id;
-            this.processLoadedTickData();
+
 
             //TODO: fire some event
+            this.fire('tick-created', {tickId: this.tickId});
         },
         tickDataUpdated: function() {
             /* when a user clicks save, they shouldn't be able to click again until the update is complete, so the SAVE
@@ -368,11 +373,11 @@
                     //By checking the deadline switch, the deadline entry fields will be shown
                     this.$.deadlineSwitch.checked = true;
 
-                    var deadline  = new Date(this.tickData.deadline);
+                    var deadline  = prettyParse(this.tickData.deadline);
 
-                    var day = deadline.getUTCDate().toString();
-                    var month = (deadline.getUTCMonth() + 1).toString();
-                    var year = (deadline.getUTCFullYear()).toString();
+                    var day = prettyGetDate(deadline).toString();
+                    var month = (prettyGetMonth(deadline) + 1).toString();
+                    var year = prettyGetFullYear(deadline).toString();
 
                     //pad day and month to include leading zero if necessary
                     if (day.length == 1) {day = "0" + day}
@@ -461,9 +466,9 @@
                 var month = this.month - 1;
                 var day = this.day;
                 var date = new Date();
-                date.setUTCDate(day);
-                date.setUTCMonth(month);
-                date.setUTCFullYear(year);
+                prettySetDate(date, day);
+                prettySetMonth(date, month);
+                prettySetFullYear(date, year);
                 this.tickData.deadline = date.toISOString();
             } else {
                 this.tickData.deadline = null;
@@ -520,7 +525,7 @@
         },
 
         deleteTickSuccess: function() {
-            //TODO: fire some event
+            this.fire('tick-deleted');
         },
 
         deleteTickError: function() {

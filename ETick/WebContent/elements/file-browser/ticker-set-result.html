@@ -49,7 +49,8 @@
       </core-input>
     </div>
     <div class="bottom">
-      <confirm-button yesBgColor="#455ede"
+      <confirm-button id="confirmElement"
+                      yesBgColor="#455ede"
                       noBgColor="#91a7ff">
         <paper-button raisedButton
                       id="pass"
@@ -72,7 +73,8 @@
       <confirm-button>
     </div>
   </template>
-  <script src="../../hardcoded.js"></script>
+  <script src="../../js/hardcoded.js"></script>
+  <script src="../../js/jsonSanitize.js"></script>
   <script>
     Polymer('ticker-set-result'
       , {   tickStatus: null
@@ -88,14 +90,12 @@
               }
               else
               {
-                comment = comment.replace(/\n/gm, "\\n")
-                                 .replace(/\'/gm, "\\'")
-                                 .replace(/\"/gm, '\\"')
-                                 .replace(/\&/gm, "\\&")
-                                 .replace(/\r/gm, "\\r")
-                                 .replace(/\t/gm, "\\t")
-                                 .replace(/[\b]/gm, "\\b")
-                                 .replace(/\f/gm, "\\f");
+                /* Replaces \n with \\n, etc. (From file
+                 * ETick/WebContent/js/jsonSanitize.js.)
+                 * Not a security sanitization, just a UX one, to stop
+                 * the user from receiving an exception about bad JSON.
+                 */
+                comment = toJSONString(comment)
               }
 
               this.$.setTickResult.url =
@@ -119,41 +119,50 @@
           , passTick:
             function (e)
             {
-              var confirmElement = e.srcElement.parentElement;
-              if (confirmElement.sure &&
-                  confirmElement.currentConfirm == e.srcElement)
+              if (this.$.confirmElement.sure &&
+                  this.$.confirmElement.currentConfirm == this.$.pass)
               {
                 this.sendTick(true,  this.$.tickerComment.value);
                 this.tickStatus = "passed";
                 this.fire("tick-passed",{});
+              }
+              else
+              {
+                this.$.confirmElement.currentConfirm = this.$.pass;
               }
             }
 
           , failTick:
             function (e)
             {
-              var confirmElement = e.srcElement.parentElement;
-              if (confirmElement.sure &&
-                  confirmElement.currentConfirm == e.srcElement)
+              if (this.$.confirmElement.sure &&
+                  this.$.confirmElement.currentConfirm == this.$.fail)
               {
                 this.sendTick(false, this.$.tickerComment.value);
                 this.tickStatus = "failed";
                 this.fire("tick-failed",{});
+              }
+              else
+              {
+                this.$.confirmElement.currentConfirm = this.$.fail;
               }
             }
 
           , noShow:
             function (e)
             {
-              var confirmElement = e.srcElement.parentElement;
-              if (confirmElement.sure &&
-                  confirmElement.currentConfirm == e.srcElement)
+              if (this.$.confirmElement.sure &&
+                  this.$.confirmElement.currentConfirm == this.$.noShow)
               {
                 this.$.setNoShow.url = ticking_service +
                       "/signups/students/" + this.crsid
                       + "/bookings/" + this.sheetId;
                 this.$.setNoShow.go();
                 this.fire("tick-no-show",{});
+              }
+              else
+              {
+                this.$.confirmElement.currentConfirm = this.$.noShow;
               }
             }
         });
