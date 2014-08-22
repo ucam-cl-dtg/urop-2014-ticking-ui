@@ -189,7 +189,7 @@
 					var past = endTime.isBefore(now);
 					/* Start time in past, end time in future */
 					var current = startTime.isBefore(now)
-						&& endTime().isAfter(now);
+						&& endTime.isAfter(now);
 
 					if (current)
 					{
@@ -200,18 +200,19 @@
 
 					var timeStamp = startTime.format("HH:mm") +
 						" - " + endTime.format("HH:mm");
-					this.slots.push({	  "_id"         : loadedSlots[i]._id
-										, "duration"    : durationInMinutes
-										, "student"     : student
-										, "comment"     : comment
-										, "time"        : timeSlot
-										, "timeStamp"   : timeStamp
-										, "hidden"      : hidden
-										, "outcome"     : null
-										, "collapse"    : false
-										, "inPast"      : past
-										, "currentSlot" : current
-									});
+					this.slots.push(
+							{
+								  "_id"         : loadedSlots[i]._id
+								, "duration"    : loadedSlots[i].duration/60000
+								, "student"     : student
+								, "comment"     : comment
+								, "timeStamp"   : timeStamp
+								, "hidden"      : hidden
+								, "outcome"     : null
+								, "collapse"    : false
+								, "inPast"      : past
+								, "currentSlot" : current
+							});
 				}
 
 				/* Interval for re-loading */
