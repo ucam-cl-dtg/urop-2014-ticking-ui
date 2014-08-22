@@ -112,7 +112,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 		/* Call the git service */
 		try {
-			testServiceProxy.runNewTest(crsid, tickId, forkRepoName);
+			testServiceProxy.runNewTest(config.getConfig().getSecurityToken(), crsid, tickId, forkRepoName);
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
@@ -194,7 +194,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Call the test service */
 		publicinterfaces.Status status;
 		try {
-			status = testServiceProxy.pollStatus(crsid, tickId);
+			status = testServiceProxy.pollStatus(config.getConfig().getSecurityToken(), crsid, tickId);
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
@@ -285,7 +285,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Call the test service */
 		Report status;
 		try {
-			status = testServiceProxy.getLastReport(crsid, tickId);
+			status = testServiceProxy.getLastReport(config.getConfig().getSecurityToken(), crsid, tickId);
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
@@ -351,7 +351,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Call the test service */
 		List<Report> status;
 		try {
-			status = testServiceProxy.getAllReports(crsid, tickId);
+			status = testServiceProxy.getAllReports(config.getConfig().getSecurityToken(), crsid, tickId);
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();

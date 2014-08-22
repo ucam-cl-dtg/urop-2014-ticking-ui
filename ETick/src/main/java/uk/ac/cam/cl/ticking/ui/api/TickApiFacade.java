@@ -335,7 +335,7 @@ public class TickApiFacade implements ITickApiFacade {
 		// IOException is thrown
 
 		/* Save style checks with the test service */
-		testServiceProxy.createNewTest(tick.getTickId(),
+		testServiceProxy.createNewTest(config.getConfig().getSecurityToken(), tick.getTickId(),
 				tickBean.getCheckstyleOpts());
 
 		/* Register the tick with the required groups */
@@ -385,7 +385,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 			/* Call the test service to update the checkstyles */
 			testServiceProxy
-					.createNewTest(tickId, tickBean.getCheckstyleOpts());
+					.createNewTest(config.getConfig().getSecurityToken(), tickId, tickBean.getCheckstyleOpts());
 
 			/* Timestamp the tick object */
 			prevTick.setEdited(DateTime.now());
@@ -506,6 +506,9 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Update the extensions, save and return */
 		for (String user : extensionBean.getCrsids()) {
+			if (db.getUser(user) == null) {
+				continue;
+			}
 			tick.addExtension(user, extensionBean.getDeadline());
 		}
 		db.saveTick(tick);

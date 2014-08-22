@@ -27,16 +27,16 @@ function prettyDate(date)
                   "July", "August", "September",
                   "October", "November", "December"];
 
-    return days[date.getDay()] + ", " +
-        date.getDate() + " " +
-        months[date.getMonth()] + " " +
-        padLeft(date.getFullYear(), 4, "0");
+    return days[date.day()] + ", " +
+        date.date() + " " +
+        months[date.month()] + " " +
+        padLeft(date.year(), 4, "0");
 }
 
 function prettyTime(time)
 {
-    return padLeft(time.getHours(), 2, "0") + ":" +
-           padLeft(time.getMinutes(), 2, "0");
+    return padLeft(time.hours(), 2, "0") + ":" +
+           padLeft(time.minutes(), 2, "0");
 }
 
 function prettyDateTime (datetime)
@@ -47,50 +47,50 @@ function prettyDateTime (datetime)
 
 function prettyGetDate (date)
 {
-    return date.getDate();
+    return date.date();
 }
 function prettySetDate (date, value)
 {
-    date.setDate(value);
+    date.date(value);
 }
 
 function prettyGetMonth (date)
 {
-    return date.getMonth();
+    return date.month();
 }
 function prettySetMonth (date, value)
 {
-    date.setMonth(value);
+    date.month(value);
 }
 
 function prettyGetFullYear (date)
 {
-    return date.getFullYear();
+    return date.year();
 }
 function prettySetFullYear (date, value)
 {
-    date.setFullYear(value);
+    date.year(value);
 }
 
 function prettyGetHours (date)
 {
-    return date.getHours();
+    return date.hours();
 }
 function prettySetHours (date, value)
 {
-    date.setHours(value);
+    date.hours(value);
 }
 
 function prettyGetMinutes (date)
 {
-    return date.getMinutes();
+    return date.minutes();
 }
 function prettySetMinutes (date, value)
 {
-    date.setMinutes(value);
+    date.minutes(value);
 }
 
 function prettyGetDay (date)
 {
-    return date.getDay();
+    return date.day();
 }
