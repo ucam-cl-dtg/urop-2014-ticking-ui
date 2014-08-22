@@ -12,17 +12,17 @@
 <polymer-element name="ticker-signups-viewport" attributes="sessionId studentMode description location crsId tickId repoName ticker slotId">
   <template>
     <style>
-	    :host {
-	      background-color: white;
-	      padding: 10px;
-	      font-size: 1.2rem;
+		:host {
+		  background-color: white;
+		  padding: 10px;
+		  font-size: 1.2rem;
 		  color: black;
-	      font-weight: 300;
-	      display: block;
-	    }
-	    #card-header {
-	    	margin-bottom: 10px;
-	    }
+		  font-weight: 300;
+		  display: block;
+		}
+		#card-header {
+			margin-bottom: 10px;
+		}
 		#listTemplate:nth-child(even) {
 			background:#e9e9e9;
 		}
@@ -139,6 +139,7 @@
   <script src="../../bower_components/moment/moment.js"></script>
   <script>
   Polymer('ticker-signups-viewport', {
+			reloadInterval: null,
 			refresh: function() {
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
@@ -164,19 +165,21 @@
 				}
 				this.selected = 0;
 				this.ticker = this.tickers[0].name;
-			},	
+			},
 			slotsDataLoaded: function() {
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
+				var minSlotLength = Number.POSITIVE_INFINITY;
 				this.slots = [];
 				for (var i = 0; i < loadedSlots.length; i++) {
 
-                    var slotTime = prettyParse(loadedSlots[i].startTime);
-                    var hour = prettyTime(slotTime).split(":")[0];
+					var slotTime = prettyParse(loadedSlots[i].startTime);
+					var hour = prettyTime(slotTime).split(":")[0];
 					var min =  prettyTime(slotTime).split(":")[1];
 
 					var timeSlot = hour + ":" + min;
 
 					/* check this conversion is right */
+					minSlotLength = Math.min(minSlotLength, loadedSlots[i].duration);
 					var durationInMinutes = loadedSlots[i].duration/60000;
 					var student = loadedSlots[i].bookedUser;
 					var comment = loadedSlots[i].comment;
@@ -205,12 +208,19 @@
 					var past = slotTime.isBefore(moment());
 					/* Start time in past, end time in future */
 					var current = past && moment().isBefore(slotTime.add('m', durationInMinutes));
-                    past = past && !current;
+					past = past && !current;
 
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
 					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
 									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null", collapse: false, inPast: past, currentSlot: current});
 				}
+
+				/* Interval for re-loading */
+				if (this.reloadInterval != null)
+					clearInterval(this.reloadInterval);
+				this.reloadInterval = window.setInterval(this.$.ajaxLoadSlots.go/* no (), want reference */,
+						Math.max(slotsDataLoaded, 1000 /* One second */));
+
 				this.date = prettyDate(prettyParse(loadedSlots[0].startTime));
 			},
 			tickerChange: function(event) {
