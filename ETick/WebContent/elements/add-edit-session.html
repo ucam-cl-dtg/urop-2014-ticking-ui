@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/core-icons/device-icons.html">
 <link rel="import" href="../bower_components/core-icons/image-icons.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="date-picker.html">
 <link rel="import" href="date-entry.html">
 
 
@@ -33,7 +34,7 @@
 				margin-top: 8px;
 			}
 
-			paper-input.datetime {
+			.datetime {
 				width: initial;
 				margin-right: 20px;
 			}
@@ -123,14 +124,9 @@
 		<h2>Date and Time</h2>
 		<div layout horizontal start>
 			<core-icon class="big" icon="event"></core-icon>
-			<paper-input id="date" class="datetime"
-				type="date"
-				required 
-				error="Session date." 
-				value="{{date}}"
-				on-change="{{validate}}">
-			</paper-input>
-
+			<date-picker id="date" selectedDate="{{date}}" class="datetime"
+				error="Session date."></date-picker>
+			
 			<core-icon class="big" icon="device:access-time"></core-icon>
 			<paper-input id="startTime" class="datetime"
 				type="time"
@@ -214,7 +210,7 @@
 
 				if (!this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
-					this.$.date.value &&
+					this.$.date.selectedDate &&
 					this.$.startTime.value && this.$.endTime.value &&
 					!this.$.slotLengthInput.invalid) {
 					this.$.submitButton.disabled = false;
@@ -246,8 +242,8 @@
 				this.title = this.$.titleInput.inputValue;
 				this.description = this.$.descInput.value;
 				this.location = this.$.locInput.inputValue;
-				this.subStartTime = prettyParse(this.$.date.value + "T" + this.$.startTime.value);
-				this.subEndTime = prettyParse(this.$.date.value + "T" + this.$.endTime.value);
+				this.subStartTime = prettyParse(this.$.date.selectedDate + "T" + this.$.startTime.value);
+				this.subEndTime = prettyParse(this.$.date.selectedDate + "T" + this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
 				console.log(prettyDateTime(this.subStartTime),
