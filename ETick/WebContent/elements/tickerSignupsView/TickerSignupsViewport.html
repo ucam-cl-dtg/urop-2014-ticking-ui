@@ -13,12 +13,12 @@
   <template>
     <style>
 		:host {
-		  background-color: white;
-		  padding: 10px;
-		  font-size: 1.2rem;
-		  color: black;
-		  font-weight: 300;
-		  display: block;
+			background-color: white;
+			padding: 10px;
+			font-size: 1.2rem;
+			color: black;
+			font-weight: 300;
+			display: block;
 		}
 		#card-header {
 			margin-bottom: 10px;
@@ -113,11 +113,11 @@
 										<core-item label="{{slot.timeStamp}}  crsid : {{slot.student}}  ,  tick :  {{slot.comment}} , outcome : {{slot.outcome}}" style="min-height:20px" span></core-item>
 									</div>
 							</div>
-							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast))}}" flex>
+							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
 								<span>View Report</span>
 								<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
 							</div>
-							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
+							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast))}}" flex>
 								<span>Remove {{slot.student}} from Slot</span>
 								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="left" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
 							</div>
@@ -168,7 +168,7 @@
 			},
 			slotsDataLoaded: function() {
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
-				var minSlotLength = Number.POSITIVE_INFINITY;
+				var timeToNextSlot = Number.POSITIVE_INFINITY;
 				this.slots = [];
 				for (var i = 0; i < loadedSlots.length; i++) {
 
@@ -179,7 +179,6 @@
 					var timeSlot = hour + ":" + min;
 
 					/* check this conversion is right */
-					minSlotLength = Math.min(minSlotLength, loadedSlots[i].duration);
 					var durationInMinutes = loadedSlots[i].duration/60000;
 					var student = loadedSlots[i].bookedUser;
 					var comment = loadedSlots[i].comment;
@@ -208,6 +207,9 @@
 					var past = slotTime.isBefore(moment());
 					/* Start time in past, end time in future */
 					var current = past && moment().isBefore(slotTime.add('m', durationInMinutes));
+					if (current) timeToNextSlot = slotTime.add(durationInMinutes, 'm')
+														.subtract(moment())
+														.milliseconds();
 					past = past && !current;
 
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
@@ -217,9 +219,12 @@
 
 				/* Interval for re-loading */
 				if (this.reloadInterval != null)
+				{
 					clearInterval(this.reloadInterval);
+					this.reloadInterval = null;
+				}
 				this.reloadInterval = window.setInterval(this.$.ajaxLoadSlots.go/* no (), want reference */,
-						Math.max(minSlotLength, 1000 /* One second */));
+						Math.max(timeToNextSlot, 30000 /* 30 seconds */));
 
 				this.date = prettyDate(prettyParse(loadedSlots[0].startTime));
 			},
