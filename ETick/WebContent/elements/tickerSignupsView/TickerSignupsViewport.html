@@ -203,7 +203,7 @@
 					}
 
 					var past = slotTime.isBefore(moment());
-					var current = !past && slotTime.isBefore(slotTime.add('ms', duration));
+					var current = !past && slotTime.isBefore(slotTime.add('m', durationInMinutes));
 
 					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
 					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
