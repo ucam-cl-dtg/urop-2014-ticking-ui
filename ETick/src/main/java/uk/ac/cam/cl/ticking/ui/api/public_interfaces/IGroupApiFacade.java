@@ -46,7 +46,7 @@ public interface IGroupApiFacade {
 	@GET
 	@Path("/{groupId}")
 	@Produces("text/plain")
-	public abstract Response exportGroup(@PathParam("groupId") String groupId);
+	public abstract Response exportGroupMembers(@PathParam("groupId") String groupId);
 	
 	/**
 	 * 

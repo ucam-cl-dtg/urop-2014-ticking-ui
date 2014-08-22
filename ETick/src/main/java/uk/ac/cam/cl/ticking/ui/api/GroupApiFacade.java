@@ -98,7 +98,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response exportGroup(String groupId) {
+	public Response exportGroupMembers(String groupId) {
 		Group group = db.getGroup(groupId);
 
 		/* Get the group object, returning if not found */
@@ -123,7 +123,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		for (Role role : Role.values()) {
-			writer.println(role.name());
+			writer.println(role.name()+": ");
 			for (User user : db.getUsers(groupId, role)) {
 				writer.print(user.getCrsid() + " ");
 			}
