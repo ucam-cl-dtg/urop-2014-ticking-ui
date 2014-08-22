@@ -35,7 +35,7 @@
 			<div class="custom-dropdown">
 				<select id="selector" on-change="{{sheetSelectionChanged}}"
 					class="custom-dropdown__select">
-					<option disabled selected>Select ticking session...</option>
+					<option disabled selected value="default">Select ticking session...</option>
 					<template repeat="{{sheet in sheets}}">
 						<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
 						</template>
@@ -44,7 +44,7 @@
 			<div class="custom-dropdown">
 				<select id="slotSelector" on-change="{{slotSelectionChanged}}"
 					class="custom-dropdown__select">
-					<option disabled selected>Select ticking slot...</option>
+					<option disabled selected value="default">Select ticking slot...</option>
 					<template repeat="{{date in dates}}">
 						<option value="{{date}}">{{date | dateFilter}}</option>
 					</template>
@@ -68,6 +68,11 @@
 		Polymer('sheet-selector', {
 			toggle: function () {
 				this.$.dialog.toggle();
+			},
+
+			refreshSelectors: function () {
+				this.$.selector.value = "default";
+				this.$.slotSelector.value = "default";
 			},
 
 			sheetSelectionChanged: function () {
