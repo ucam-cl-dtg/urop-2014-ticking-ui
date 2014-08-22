@@ -37,7 +37,9 @@
                    on-core-response="{{loginResponse}}">
         </core-ajax>
 
-        <div style="max-height: 600px; position: relative;" layout vertical>
+        <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/overview/csv'}}"-->
+
+        <div id="overviewMainContainer" style="max-height: 600px; position: relative;" layout vertical>
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
                 <!-- Top left fixed area -->
                 <div layout vertical style="min-width: 435px;">
@@ -389,11 +391,30 @@
             },
 
             updateScrollAreas: function() {
+                //console.log('scroll area update');
+
                 this.scrollAreaWidth = parseInt(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
+
+                /*console.log("saw", this.scrollAreaWidth, "ovmac", this.$.overviewMainContainer.style.width);
+                if (this.scrollAreaWidth > this.$.overviewMainContainer.style.width - 440) {
+                    //horizontal scroll bar exists
+                    this.$.overviewMainContainer.style.height = "1000px";
+                } else {*/
+                    if (this.displayUsers != undefined) {
+                        this.$.overviewMainContainer.style.height = 34 * this.displayUsers.length + 144 + "px";
+                    }
+                //}
+
+//                if (34 * this.displayUsers.length > 600-144) {
+//                    this.$.scrollArea.style.overflowY = "auto";
+//                } else {
+//                    this.$.scrollArea.style.overflowY = "hidden";
+//                }
+
 
                 this.job('update-again', function() {
                     this.updateScrollAreas();
-                }, 300);
+                }, 100);
             },
 
             refresh: function() {
