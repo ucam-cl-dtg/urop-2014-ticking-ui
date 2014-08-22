@@ -108,11 +108,11 @@ public class TickSignups {
                     groupID, sheetID);
             
             /* Convert all of the datetimes out of UTC before passing them on */
-            List<Date> convertedSlots = new ArrayList<>();
+            /*List<Date> convertedSlots = new ArrayList<>();
             for (Date date : slots) {
                 convertedSlots.add(convertToAssumedGMTXFromUTC(date));
-            }
-            return Response.ok(convertedSlots).build();
+            }*/
+            return Response.ok(slots).build();
         } catch(InternalServerErrorException e) { // Don't forget to ignore this block...
             try {
                 throwRealException(e);
@@ -153,7 +153,7 @@ public class TickSignups {
         String groupID = null;
         
         /* Convert the bean starttime to UTC */
-        bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
+        //bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
         
         try {
             /* Each sheet has precisely one group - get it */
@@ -444,8 +444,8 @@ public class TickSignups {
                 }
                 /* Convert the starttime to GMTX */
                 BookingInfo info = new BookingInfo(s, groupName);
-                info.setStartTime(convertToAssumedGMTXFromUTC(info
-                        .getStartTime()));
+                //info.setStartTime(convertToAssumedGMTXFromUTC(info
+                //        .getStartTime()));
                 toReturn.add(info);
             }
         }
@@ -463,12 +463,12 @@ public class TickSignups {
     public Response listSheets(@PathParam("groupID") String groupID) {
         try {
             List<Sheet> sheets = service.listSheets(groupID);
-            for (Sheet sheet : sheets) {
-                /* Convert the starttime to GMTX */
+            /*for (Sheet sheet : sheets) {
+                /* Convert the starttime to GMTX 
                 sheet.setStartTime(convertToAssumedGMTXFromUTC(sheet
                         .getStartTime()));
                 sheet.setEndTime(convertToAssumedGMTXFromUTC(sheet.getEndTime()));
-            }
+            }*/
             return Response.ok(sheets).build();
         } catch(InternalServerErrorException e) { // Ignore this block
             try {
@@ -532,16 +532,16 @@ public class TickSignups {
     public Response listSlots(@PathParam("sheetID") String sheetID, @PathParam("ticker") String tickerName) {
         try {
             List<Slot> slots = service.listColumnSlots(sheetID, tickerName);
-            List<Slot> convertedSlots = new ArrayList<>();
+            /*List<Slot> convertedSlots = new ArrayList<>();
             for (Slot slot : slots) {
-                /*Convert to GMTX*/
+                /*Convert to GMTX
                 Slot converted = new Slot(slot.getSheetID(),
                         slot.getColumnName(),
                         convertToAssumedGMTXFromUTC(slot.getStartTime()),
                         slot.getDuration(), slot.getBookedUser(), slot.getComment());
                 convertedSlots.add(converted);
-            }
-            return Response.ok(convertedSlots).build();
+            }*/
+            return Response.ok(slots).build();
         } catch(InternalServerErrorException e) { // Ignore this block
             try {
                 throwRealException(e);
@@ -873,8 +873,8 @@ public class TickSignups {
                 "the group of ID " + bean.getGroupID() + ". Parameters follow:\n" + bean.toString());
         
         /*Convert to UTC*/
-        bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
-        bean.setEndTime(convertToUTCViaAssumedGMTX(bean.getEndTime()));
+        //bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
+        //bean.setEndTime(convertToUTCViaAssumedGMTX(bean.getEndTime()));
         
         if (!permissions.hasRole(crsid, bean.getGroupID(), Role.AUTHOR)) {
             log.warn("Sheet creation failed: The user " + crsid + " is not an author in the group");
@@ -1030,8 +1030,8 @@ public class TickSignups {
                 + ". Parameters follow.\n" + bean.toString());
         
         /*Convert to UTC*/
-        bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
-        bean.setEndTime(convertToUTCViaAssumedGMTX(bean.getEndTime()));
+        //bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
+        //bean.setEndTime(convertToUTCViaAssumedGMTX(bean.getEndTime()));
         
         Sheet sheet;
         try {
