@@ -1288,6 +1288,36 @@ public class TickSignups {
         log.info("Group created");
     }
     
+    public void deleteGroup(String groupID) {
+        log.info("Deleting all sheets belonging to group of ID " + groupID);
+        try {
+            for (Sheet sheet : service.listSheets(groupID)) {
+                String id = sheet.get_id();
+                try {
+                    service.deleteSheet(id, db.getAuthCode(id));
+                    db.removeAuthCodeCorrespondingTo(id);
+                } catch (ItemNotFoundException e) {
+                    log.error("A sheet was not found, although it was retrieved from a list of sheets");
+                    // Do nothing though, because it doesn't exist, which is what was wanted
+                } catch (NotAllowedException e) {
+                    log.error("There was an inconsitency in the databases - the authCode was found to "
+                            + "be incorrect");
+                }
+            }
+            try {
+                service.deleteGroup(groupID, db.getAuthCode(groupID));
+            } catch (NotAllowedException e) {
+                log.error("There was an inconsitency in the databases - the authCode was found to "
+                        + "be incorrect");
+            }
+            db.removeAuthCodeCorrespondingTo(groupID);
+        } catch (ItemNotFoundException e) {
+            log.error("The group was not found in the signups database even though it "
+                    + "shouldn't have been deleted yet");
+        }
+        
+    }
+    
     public String getGroupID(String sheetID) throws ItemNotFoundException {
         List<String> groupIDs = service.getGroupIDs(sheetID);
         if (groupIDs.size() != 1) {

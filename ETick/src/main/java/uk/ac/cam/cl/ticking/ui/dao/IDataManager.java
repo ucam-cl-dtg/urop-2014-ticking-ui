@@ -313,5 +313,11 @@ public interface IDataManager {
 	 * @return The authCode corresponding to the given id. Null if none exists.
 	 */
 	public String getAuthCode(String id);
+	
+	/**
+	 * Removes the id/authCode pair
+	 * @param id
+	 */
+	public void removeAuthCodeCorrespondingTo(String id);
 
 }
