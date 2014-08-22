@@ -98,7 +98,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response exportGroup(String groupId) {
+	public Response exportGroupMembersTxt(String groupId) {
 		Group group = db.getGroup(groupId);
 
 		/* Get the group object, returning if not found */
@@ -123,7 +123,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		for (Role role : Role.values()) {
-			writer.println(role.name());
+			writer.println(role.name()+": ");
 			for (User user : db.getUsers(groupId, role)) {
 				writer.print(user.getCrsid() + " ");
 			}
@@ -167,6 +167,34 @@ public class GroupApiFacade implements IGroupApiFacade {
 		response.header("Content-Disposition", "attachment; filename=\""
 				+ group.getName() + ".csv\"");
 		response.header("Set-Cookie", "fileDownload=true; path=/");
+		return response.build();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Response getGroupForkStatusCsv(String groupId) {
+		Group group = db.getGroup(groupId);
+
+		/* Get the group object, returning if not found */
+		if (group == null) {
+			log.error("Requested group " + groupId
+					+ " but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		File temp;
+		try {
+			temp = csv.generateCsvFile(group);
+		} catch (IOException e) {
+			log.error("Tried exporting group fork status" + groupId, e);
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(Strings.IDEMPOTENTRETRY).build();
+		}
+
+		ResponseBuilder response = Response.ok((Object) temp);
 		return response.build();
 	}
 	
@@ -228,6 +256,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		/* Remove the group and return ok */
+		tickSignupService.deleteGroup(groupId);
 		db.removeGroup(groupId);
 		return Response.ok(Strings.DELETED).build();
 	}
@@ -343,7 +372,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException e) {
 			log.error("User " + crsid
-					+ " tried to insert group into database with groupId "
+					+ " failed to insert group into database with groupId "
 					+ group.getGroupId(), e);
 			return Response.status(Status.CONFLICT)
 					.entity(Strings.IDEMPOTENTRETRY).build();
@@ -459,7 +488,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 			db.insertGroup(group);
 		} catch (DuplicateDataEntryException e) {
 			log.error("User " + crsid
-					+ " tried to insert group into database with groupId "
+					+ " failed to insert group into database with groupId "
 					+ group.getGroupId(), e);
 			return Response.status(Status.CONFLICT)
 					.entity(Strings.IDEMPOTENTRETRY).build();

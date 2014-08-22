@@ -75,7 +75,8 @@
                 repo="{{repo}}"
                 forked="{{forked}}"
                 lastTickedBy="{{lastTickedBy}}"
-                lastTickedOn="{{lastTickedOn}}">
+                lastTickedOn="{{lastTickedOn}}"
+                forking="{{forking}}">
         </fork-service>
 
         <div id="mainContainer" layout horizontal>
@@ -83,9 +84,6 @@
             <div flex>
                 <div layout horizontal style="margin-right: 10px;">
                     <h1 flex vertical center>{{tickName}}</h1>
-
-                    <!-- STATUS IS HERE TODO: remove this comment -->
-
 
                     <div layout vertical>
                         <div flex></div>
@@ -101,6 +99,7 @@
 
                     <core-collapse style="margin-right: -10px;" opened?="{{datetime != null}}" horizontal>
                         <div style="padding: 3px;">
+                            <!-- If deadline passed then MD Red 500 else MD green 500 -->
                             <date-calendar datetime="{{datetime}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>
                         </div>
                     </core-collapse>
@@ -118,7 +117,8 @@
                 <core-collapse opened?="{{!forked}}">
                     <fork-component
                             on-create-fork="{{createFork}}"
-                            repo="{{repo}}">
+                            repo="{{repo}}"
+                            initialising="{{forking}}">
                     </fork-component>
                 </core-collapse>
 
@@ -170,10 +170,11 @@
             },
 
             observe: {
-                forked: 'computeStatusCode',
-                reportAvailable: 'computeStatusCode',
-                unitPass: 'computeStatusCode',
-                humanPass: 'computeStatusCode'
+                forked: 'showNewStatusCode',
+                reportAvailable: 'showNewStatusCode',
+                unitPass: 'showNewStatusCode',
+                humanPass: 'showNewStatusCode',
+                deadlinePassed: 'showNewStatusCode'
             },
 
             domReady: function() {
@@ -190,8 +191,8 @@
                     this.datetime = null;
                     this.deadlinePassed = false;
                 } else {
-                    this.datetime = new Date(this.tickObj.deadline);
-                    this.deadlinePassed = this.datetime < new Date();
+                    this.datetime = moment(this.tickObj.deadline);
+                    this.deadlinePassed = this.datetime < moment();
                     console.log("deadline Passed?", this.deadlinePassed);
                 }
 
@@ -229,19 +230,28 @@
                 }, 500);
             },
 
+            showNewStatusCode: function() {
+                this.job('new-status', function() {
+                    this.computeStatusCode();
+                }, 330);
+            },
+
             computeStatusCode: function() {
                 if (!this.forked) {
                     //Not started.
                     this.statusCode = "-";
+                } else if (this.deadlinePassed){
+                    //deadline passed, so failed.
+                    this.statusCode = "F";
                 } else if (!this.reportAvailable) {
                     //Not submitted.
                     this.statusCode = "I";
                 } else if (!this.unitPass) {
                     //Failed automated tests.
-                    this.statusCode = "F";
+                    this.statusCode = "UF";
                 } else if (!this.humanPass) {
                     //Passed automated tests.
-                    this.statusCode = "U";
+                    this.statusCode = "UP";
                 } else if (this.humanPass) {
                     //Passed by ticker
                     this.statusCode = "P";

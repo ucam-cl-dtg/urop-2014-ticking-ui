@@ -22,6 +22,9 @@
 			on-core-response="{{addExtensionResponse}}"
 			handleAs="json"
 			contentType="application/json"
+
+			popUpResponse
+			responseMessage="Extension(s) added."
 			waitMessage="Adding extension(s)..."
             waitBeforeToast="1000"
             captureError
@@ -36,6 +39,9 @@
 			on-core-response="{{deleteExtensionResponse}}"
 			handleAs="json"
 			contentType="application/json"
+
+			popUpResponse
+			responseMessage="Deleted extension(s)."
 			waitMessage="Deleting extension(s)..."
             waitBeforeToast="1000"
             captureError
@@ -61,10 +67,9 @@
 				<paper-icon-button icon="add" on-click="{{addExtensionClicked}}"></paper-icon-button>
 			</core-tooltip>
 
-			<!-- DELTE API NOT READY --
-			<!-- <core-tooltip label="Delete" position="left">
+			<core-tooltip label="Delete" class="{{number > 0 ? 'delete-tooltip' : ''}}" position="{{number > 0 ? 'bottom' : 'left'}}" >
             	<paper-icon-button icon="delete" on-click="{{deleteExtensionClicked}}"></paper-icon-button>
-            </core-tooltip> -->
+            </core-tooltip>
 		</div>
 
 		<!-- Member list. -->
@@ -90,6 +95,7 @@
 		</paper-dialog>
 
 	</template>
+    <script src="../../bower_components/moment/moment.js"></script>
 	<script>
 		Polymer('extension-card', {
 
@@ -111,6 +117,7 @@
 				var list = this.$.extensionAPI.response;
 				this.number = list.length;
 				this.$.members.people = list;
+				this.$.members.clearSelection();
 			},
 
 			addExtension: function() {
@@ -120,10 +127,10 @@
 				var year = this.year;
 	            var month = this.month - 1;
 	            var day = this.day;
-	            var date = new Date();
-	            date.setUTCDate(day);
-	            date.setUTCMonth(month);
-	            date.setUTCFullYear(year);
+	            var date = moment();
+	            prettySetDate(date, day);
+	            prettySetMonth(date, month);
+	            prettySetFullYear(date, year);
 	            var ISOdate = date.toISOString();
 				
 				this.$.extensionAPI.body = '{ "crsids": ' + jsonCRSids + ', "deadline" : "' + ISOdate + '"}';
@@ -149,14 +156,16 @@
 
 			deleteExtensionClicked: function () {
 				if (this.selectedExtensions) {
-					console.log(this.selectedExtensions);
 					this.$.deleteAPI.body = '{ "crsids" : ' + JSON.stringify(this.selectedExtensions) + '}';
-					// this.$.deleteAPI.go();
+					this.$.deleteAPI.go();
 				}
 			},
 
 			deleteExtensionResponse: function () {
-				this.$.members.people = this.$.deleteAPI.response;
+				var list = this.$.deleteAPI.response;
+				this.number = list.length;
+				this.$.members.people = list;
+				this.$.members.clearSelection();
 			},
 
 		});

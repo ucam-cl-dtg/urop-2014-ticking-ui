@@ -11,8 +11,6 @@ public class Strings {
 	public static final String GROUPINGSCOLLECTION = "Groupings";
 	public static final String AUTHCODESCOLLECTION = "authCodes";
 
-	public static final String[] ACADEMICINSTITUTIONS = { "Computer Laboratory" };
-
 	public static final String INVALIDROLE = "You do not have the required role for that action.";
 
 	public static final String INVALIDPERMISSION = "You do not have the required permissions for that action.";
@@ -44,6 +42,19 @@ public class Strings {
 	public static final String TESTRUNNING = "Error: You still have a test running for this tick";
 	
 	public static final String BADKEY = "The key you have entered is malformed";
+	
+	public static final String REMOVEDUSERS = "Successfully removed users";
+	
+	public static final String TICKISINGROUP = "Error: That tick is already associated with the group.";
+	
+	public static final String PASSED = "PASSED";
+	public static final String FAILED = "FAILED";
+	public static final String UNITPASSEDCODE = "UP";
+	public static final String UNITFAILEDCODE = "UF";
+	public static final String INITCODE = "I";
+	public static final String UNITPASSED = "Passed automated tests";
+	public static final String UNITFAILED = "Failed automated tests";
+	public static final String INITIALISED = "Not submitted";
 
 	/**
 	 * Private constructor to prevent this class being created

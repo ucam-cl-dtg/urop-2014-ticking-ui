@@ -216,6 +216,8 @@
     <are-you-sure id="alertRestoreDefaults" heading="Restore Defaults?" on-yes="{{restoreDefaults}}"></are-you-sure>
     <are-you-sure id="alertDelete" heading="Delete this tick?" on-yes="{{deleteTick}}"></are-you-sure>
 </template>
+<script src="../../bower_components/moment/moment.js"></script>
+<script src="../../js/prettyDate.js"></script>
 <script>
     Polymer('tick-creator-card', {
         ready: function() {
@@ -375,9 +377,9 @@
 
                     var deadline  = prettyParse(this.tickData.deadline);
 
-                    var day = deadline.getUTCDate().toString();
-                    var month = (deadline.getUTCMonth() + 1).toString();
-                    var year = (deadline.getUTCFullYear()).toString();
+                    var day = prettyGetDate(deadline).toString();
+                    var month = (prettyGetMonth(deadline) + 1).toString();
+                    var year = prettyGetFullYear(deadline).toString();
 
                     //pad day and month to include leading zero if necessary
                     if (day.length == 1) {day = "0" + day}
@@ -465,10 +467,10 @@
                 var year = this.year;
                 var month = this.month - 1;
                 var day = this.day;
-                var date = new Date();
-                date.setUTCDate(day);
-                date.setUTCMonth(month);
-                date.setUTCFullYear(year);
+                var date = moment();
+                prettySetDate(date, day);
+                prettySetMonth(date, month);
+                prettySetFullYear(date, year);
                 this.tickData.deadline = date.toISOString();
             } else {
                 this.tickData.deadline = null;

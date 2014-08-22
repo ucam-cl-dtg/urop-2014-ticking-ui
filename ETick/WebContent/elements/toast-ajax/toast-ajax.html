@@ -4,6 +4,15 @@
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html"/>
 
 <!--
+
+In the following, ellipsis (...) means either one of:
+
+* Complete: when the requests finishes, either with a success or an
+  error.
+* Response: when the request returns a successful (HTTP 200) response.
+* Error:    when the request returns a non successful response (e.g.
+  HTTP 400 or HTTP 500).
+
 ...Message: shown while waiting, after complete (either error or
 response), response or error
 
@@ -172,8 +181,10 @@ this to happen.
           function (e)
           {
             "use strict";
-            if (!e.bubbles)
-              this.fire('core-response', e.detail);
+
+            /* Otherwise the firing happens after this */
+            e.stopPropagation();
+            this.fire('core-response', e.detail);
 
             if (this.captureResponse)
             {
@@ -192,8 +203,9 @@ this to happen.
           {
             "use strict";
 
-            if (!e.bubbles)
-              this.fire('core-error', e.detail);
+            /* Otherwise the firing happens after this */
+            e.stopPropagation();
+            this.fire('core-error', e.detail);
 
             if (this.captureError && e.detail.response != null)
             {
@@ -203,13 +215,13 @@ this to happen.
                 if (this.errorMessage != null)
                 {
                   this.waitComplete(this.errorMessage +
-                      " See log for further details",
+                      " See console for further details",
                     this.waitShown || this.popUpError);
                 }
                 else
                 {
                   this.waitComplete("Something went wrong." +
-                      " See log for further details",
+                      " See console for further details",
                     this.waitShown || this.popUpError);
                 }
                 console.log(e.detail.response);
@@ -231,8 +243,8 @@ this to happen.
           function (e)
           {
             "use strict";
-            if (!e.bubbles)
-              this.fire('core-complete', e.detail);
+            e.stopPropagation();
+            this.fire('core-complete', e.detail);
 
             if (this.captureComplete)
             {

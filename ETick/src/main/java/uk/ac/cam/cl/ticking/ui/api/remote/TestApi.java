@@ -29,7 +29,7 @@ public class TestApi {
 
 		ResteasyClient client = new ResteasyClientBuilder()
 				.maxPooledPerRoute(200).httpEngine(engine).build();
-		ResteasyWebTarget target = client.target(config.getTestApiLocation());
+		ResteasyWebTarget target = client.target(config.getSecureTestApiLocation());
 
 		testService = target.proxy(ITestService.class);
 	}

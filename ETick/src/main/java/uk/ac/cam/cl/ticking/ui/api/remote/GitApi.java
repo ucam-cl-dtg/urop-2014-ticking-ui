@@ -30,7 +30,7 @@ public class GitApi {
 
 		ResteasyClient client = new ResteasyClientBuilder()
 				.maxPooledPerRoute(GITCONNECTIONS).httpEngine(engine).build();
-		ResteasyWebTarget target = client.target(config.getGitApiLocation());
+		ResteasyWebTarget target = client.target(config.getSecureGitApiLocation());
 
 		webInterface = target.proxy(WebInterface.class);
 	}

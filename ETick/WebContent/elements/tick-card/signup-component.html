@@ -111,6 +111,7 @@
             },
 
             tickIdChanged: function() {
+                this.$.signupDialog.refreshSelectors();
                 console.log("tickId changed!", this.tickId);
             },
 
@@ -156,7 +157,7 @@
 
                 //assert bookings.length == 1
                 this.booking = bookings[0];
-                this.bookingDateTime = new Date(this.booking.startTime);
+                this.bookingDateTime = moment(this.booking.startTime);
 
                 console.log("booking", this.booking);
             }

@@ -13,11 +13,12 @@
 <polymer-element name="overview-card" attributes="gid">
     <template>
         <link rel="stylesheet" href="overview.css">
+        <link rel="stylesheet" href="../../css/shared-styles.css">
 
         <toast-ajax
                 id="ajaxLoadOverview"
                 auto
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/status/csv'}}"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/overview/csv'}}"
                 handleAs="text"
                 on-core-response="{{overviewLoaded}}"
 
@@ -28,7 +29,17 @@
                 errorMessage="Error loading overview.">
         </toast-ajax>
 
-        <div style="max-height: 600px; position: relative;" layout vertical>
+        <!-- API call: adds user if not already registered. -->
+        <core-ajax id="ajaxCrsId"
+                   auto
+                   url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+                   handleAs="json"
+                   on-core-response="{{loginResponse}}">
+        </core-ajax>
+
+        <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/overview/csv'}}"-->
+
+        <div id="overviewMainContainer" style="max-height: 600px; position: relative;" layout vertical>
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
                 <!-- Top left fixed area -->
                 <div layout vertical style="min-width: 435px;">
@@ -63,9 +74,13 @@
                 </div>
 
                 <!-- Refresh and export buttons -->
-                <div end style="height: 50px; position: absolute; right: 0; top: -10px;" layout horizontal>
-                    <paper-icon-button icon="refresh" on-tap="{{refresh}}"></paper-icon-button>
-                    <export-status gid="{{gid}}"></export-status>
+                <div end style="height: 50px; position: absolute; top: -5px; right: 0; background: #2D91EC;" layout horizontal>
+                    <core-tooltip class="delete-tooltip" label="Refresh">
+                        <paper-icon-button icon="refresh" on-tap="{{refresh}}"></paper-icon-button>
+                    </core-tooltip>
+                    <core-tooltip class="delete-tooltip" label="Export">
+                        <export-status gid="{{gid}}"></export-status>
+                    </core-tooltip>
                 </div>
             </div>
 
@@ -76,7 +91,7 @@
                 <!-- user names and colleges -->
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
-                        <overview-users-bar sortField="{{sortField}}" users="{{displayUsers}}"></overview-users-bar>
+                        <overview-users-bar sortField="{{sortField}}" users="{{displayUsers}}" userId="{{userId}}"></overview-users-bar>
                         <div style="height: 30px;"></div>
                     </div>
                 </div>
@@ -100,7 +115,15 @@
         Polymer('overview-card', {
             created: function() {
                 this.scrollAreaLeft = 0;    //used by overview list to determine if the tooltips should be pointing left
-                                            //or right in order to not be cut off screnn
+                                            //or right in order to not be cut off screen
+
+                this.iconCodeDict = {};
+                this.iconCodeDict["PASSED"] = "P";
+                this.iconCodeDict["FAILED"] = "F";
+                this.iconCodeDict["UP"]     = "UP";
+                this.iconCodeDict["UF"]     = "UF";
+                this.iconCodeDict["I"]      = "I";
+                this.iconCodeDict[""]       = "-";
             },
 
             overviewLoaded: function() {
@@ -118,6 +141,7 @@
 
                 //build user objects from these columns
                 var that = this;
+                var iconCodeDict = this.iconCodeDict;
                 var users = arrayed.map(function(el) {
                    return {
                        foreNames: el[0].split(" ").slice(0, el[0].split(" ").length - 1).join(" "),
@@ -126,27 +150,20 @@
                        college: el[2],
                        displayStrings:
                                el.splice(4, el.length - 1).map(function (el, index) {
-                                   var iconCode;
-                                   var tooltip;
+                                   //display strings should be either blank or of the form "STATUSCODE (detail)"
+                                   if (el == "") {
+                                       return {iconCode: "-", tooltip: "Not started", index: index};
+                                   }
 
-                                   if (el == "Unit failed") {
-                                       iconCode = "F";
-                                       tooltip = "Failed automated tests.";
-                                   } else if (el == "Unit passed") {
-                                       iconCode = "U";
-                                       tooltip = "Passed automated tests.";
-                                   } else if (el == "Initilialised") { //spelt wrongly because the .csv is spelt wrongly.
-                                       iconCode = "I";
-                                       tooltip = "Not submitted.";
-                                   } else if (el.lastIndexOf("PASSED by") > -1) {
-                                       iconCode = "P";
-                                       el = el.toLowerCase();
-                                       tooltip = el.charAt(0).toUpperCase() + el.slice(1);
-                                   } else if (el == "") {
-                                       iconCode = "-";
-                                       tooltip = "Not started.";
-                                   } else {
-                                       iconCode = el;
+                                   if (!(/^(.* \(.*\))$/.test(el))) {
+                                       return {iconCode: el, tooltip: null, index: index};
+                                   }
+
+                                   var iconCode = el.split(" (")[0];
+                                   var tooltip = el.split(" (")[1].replace(")", "");
+
+                                   if (iconCodeDict.hasOwnProperty(iconCode)) {
+                                       iconCode = iconCodeDict[iconCode];
                                    }
 
                                    return {iconCode: iconCode, tooltip: tooltip, index: index};
@@ -203,11 +220,12 @@
                 this.sortField = "";
 
                 var comparisonDict = {};
-                comparisonDict["-"] = 0;
-                comparisonDict["I"] = 1;
-                comparisonDict["F"] = 2;
-                comparisonDict["U"] = 3;
-                comparisonDict["P"] = 4;
+                comparisonDict["F"]  = 0;
+                comparisonDict["-"]  = 1;
+                comparisonDict["I"]  = 2;
+                comparisonDict["UF"] = 3;
+                comparisonDict["UP"] = 4;
+                comparisonDict["P"]  = 5;
 
                 this.users.sort(function(a, b) {
                     return params.mode * (comparisonDict[a.displayStrings[params.selectedIndex].iconCode] -
@@ -373,11 +391,30 @@
             },
 
             updateScrollAreas: function() {
+                //console.log('scroll area update');
+
                 this.scrollAreaWidth = parseInt(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
+
+                /*console.log("saw", this.scrollAreaWidth, "ovmac", this.$.overviewMainContainer.style.width);
+                if (this.scrollAreaWidth > this.$.overviewMainContainer.style.width - 440) {
+                    //horizontal scroll bar exists
+                    this.$.overviewMainContainer.style.height = "1000px";
+                } else {*/
+                    if (this.displayUsers != undefined) {
+                        this.$.overviewMainContainer.style.height = 34 * this.displayUsers.length + 144 + "px";
+                    }
+                //}
+
+//                if (34 * this.displayUsers.length > 600-144) {
+//                    this.$.scrollArea.style.overflowY = "auto";
+//                } else {
+//                    this.$.scrollArea.style.overflowY = "hidden";
+//                }
+
 
                 this.job('update-again', function() {
                     this.updateScrollAreas();
-                }, 300);
+                }, 100);
             },
 
             refresh: function() {
@@ -388,6 +425,10 @@
                 this.$.ajaxLoadOverview.responseMessage = "Overview refreshed.";
                 this.$.ajaxLoadOverview.popUpResponse = true;
                 this.$.ajaxLoadOverview.go();
+            },
+
+            loginResponse: function() {
+               this.userId = this.$.ajaxCrsId.response._id;
             }
         });
     </script>

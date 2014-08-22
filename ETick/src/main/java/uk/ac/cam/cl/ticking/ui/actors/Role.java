@@ -10,6 +10,8 @@ package uk.ac.cam.cl.ticking.ui.actors;
  * Overview - Has the ability to see overall statistics regarding who has
  * completed what.
  * 
+ * Admin - Has all of the above power.
+ * 
  * @author tl364
  *
  */

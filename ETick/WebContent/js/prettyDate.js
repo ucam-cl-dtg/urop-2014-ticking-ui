@@ -1,3 +1,4 @@
+/* Wrappers, so if we decide to change to UTC, etc. we can do it here. */
 function padLeft(input, width, padChar)
 {
     if (typeof input != typeof "")
@@ -13,46 +14,80 @@ function padLeft(input, width, padChar)
 
 function prettyParse(dateString)
 {
-    if (typeof dateString != typeof "")
-        return dateString; /* In case we get a Date passed */
-
-    var match = dateString.match(/\d{4}-\d\d-\d\d(T\d\d:\d\d:\d\d(.\d{3})?)?/);
-
-    if (match.length === 0)
-    {
-        throw "Invalid date format, expected something" +
-           " like 2000-12-25T09:00:00.000, got " + dateString;
-    }
-    else
-    {
-        return new Date(match[0] + "Z");
-    }
+    return moment(dateString, moment.ISO_8601);
 }
 
 function prettyDate(date)
 {
-    var days = ["Sun", "Mon", "Tue", "Wed",
-                "Thu", "Fri", "Sat"];
+    if (typeof date == typeof "")
+        date = prettyParse(date);
 
-    var months = ["January", "February", "March",
-                  "April", "May", "June",
-                  "July", "August", "September",
-                  "October", "November", "December"];
-
-    return days[date.getUTCDay()] + ", " +
-        date.getUTCDate() + " " +
-        months[date.getUTCMonth()] + " " +
-        padLeft(date.getUTCFullYear(), 4, "0");
+    return date.format("dddd, MMMM Do YYYY")
 }
 
 function prettyTime(time)
 {
-    return padLeft(time.getUTCHours(), 2, "0") + ":" +
-           padLeft(time.getUTCMinutes(), 2, "0");
+    if (typeof time == typeof "")
+        time = prettyParse(time);
+
+    return time.format("HH:mm");
 }
 
 function prettyDateTime (datetime)
 {
-    return prettyDate(datetime) + " " +
+    if (typeof datetime == typeof "")
+        datetime = prettyParse(datetime);
+
+    return prettyDate(datetime) + ", " +
         prettyTime(datetime);
+}
+
+function prettyGetDate (date)
+{
+    return date.date();
+}
+function prettySetDate (date, value)
+{
+    date.date(value);
+}
+
+function prettyGetMonth (date)
+{
+    return date.month();
+}
+function prettySetMonth (date, value)
+{
+    date.month(value);
+}
+
+function prettyGetFullYear (date)
+{
+    return date.year();
+}
+function prettySetFullYear (date, value)
+{
+    date.year(value);
+}
+
+function prettyGetHours (date)
+{
+    return date.hours();
+}
+function prettySetHours (date, value)
+{
+    date.hours(value);
+}
+
+function prettyGetMinutes (date)
+{
+    return date.minutes();
+}
+function prettySetMinutes (date, value)
+{
+    date.minutes(value);
+}
+
+function prettyGetDay (date)
+{
+    return date.day();
 }

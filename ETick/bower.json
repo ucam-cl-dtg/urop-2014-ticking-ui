@@ -11,7 +11,9 @@
     "paper-elements": "Polymer/paper-elements#~0.3.5",
     "highlightjs-element": "Polymer/highlightjs-element#~0.3.5",
     "marked-element": "Polymer/marked-element#~0.3.5",
-    "jquery": "~2.1.1"
+    "jquery": "~2.1.1",
+    "moment": "~2.8.1",
+    "polymer-date-picker": "~0.0.5"
   },
   "authors": [
     "Alexander Simpson <as2388@cam.ac.uk>",

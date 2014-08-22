@@ -112,23 +112,23 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 		/* Call the git service */
 		try {
-			testServiceProxy.runNewTest(crsid, tickId, forkRepoName);
+			testServiceProxy.runNewTest(config.getConfig().getSecurityToken(), crsid, tickId, forkRepoName);
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
 			if (s.getClassName().equals(IOException.class.getName())) {
-				log.error("User " + crsid + " tried to start new test on "
-						+ repoName, s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed to start new test on "
+						+ repoName + "\nCause: " + s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 			if (s.getClassName().equals(
 					TestStillRunningException.class.getName())) {
-				log.error("User " + crsid + " tried to start new test on "
-						+ repoName, s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed to start new test on "
+						+ repoName + "\nCause: " + s.toString());
 				return Response.status(Status.SERVICE_UNAVAILABLE)
 						.entity(Strings.TESTRUNNING).build();
 
@@ -136,8 +136,8 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 			if (s.getClassName()
 					.equals(TestIDNotFoundException.class.getName())) {
-				log.error("User " + crsid + " tried to start new test on "
-						+ repoName, s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed to start new test on "
+						+ repoName + "\nCause: " + s.toString());
 				return Response.status(Status.NOT_FOUND)
 						.entity(Strings.MISSING).build();
 
@@ -145,21 +145,21 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 
 			if (s.getClassName().equals(
 					NoCommitsToRepoException.class.getName())) {
-				log.error("User " + crsid + " tried to start new test on "
-						+ repoName, s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed to start new test on "
+						+ repoName + "\nCause: " + s.toString());
 				return Response.status(Status.BAD_REQUEST)
 						.entity(Strings.NOCOMMITS).build();
 
 			} else {
-				log.error("User " + crsid + " tried to start new test on "
-						+ repoName, s.getCause(), s.getStackTrace());
+				log.error("User " + crsid + " failed to start new test on "
+						+ repoName + "\nCause: " + s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | TestStillRunningException
 				| TestIDNotFoundException | NoCommitsToRepoException e) {
-			log.error("User " + crsid + " tried to start new test on "
+			log.error("User " + crsid + " failed to start new test on "
 					+ repoName, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
@@ -194,24 +194,27 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Call the test service */
 		publicinterfaces.Status status;
 		try {
-			status = testServiceProxy.pollStatus(crsid, tickId);
+			status = testServiceProxy.pollStatus(config.getConfig().getSecurityToken(), crsid, tickId);
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
-			log.error("User " + crsid + " tried getting the running status of "
-					+ crsid + " " + tickId, s.getCause(), s.getStackTrace());
+			log.error("User " + crsid
+					+ " failed getting the running status of " + crsid + " "
+					+ tickId + "\nCause: " + s.toString());
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		} catch (NoSuchTestException e) {
-			log.error("User " + crsid + " tried getting the running status of "
-					+ crsid + " " + tickId, e);
+			log.error("User " + crsid
+					+ " failed getting the running status of " + crsid + " "
+					+ tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
 
 		/* Check if the tests are complete */
-		if ((status.getProgress() == status.getMaxProgress())&&(status.getCurrentPositionInQueue()==0)) {
+		if ((status.getProgress() == status.getMaxProgress())
+				&& (status.getCurrentPositionInQueue() == 0)) {
 
 			/* The fork has finished testing and the report is available */
 			fork.setTesting(false);
@@ -228,10 +231,12 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 				for (String groupId : groupIds) {
 					tickSignupService.allowSignup(crsid, groupId, tickId);
 				}
+				fork.incrementUnitPasses();
 			} else {
 				for (String groupId : groupIds) {
 					tickSignupService.disallowSignup(crsid, groupId, tickId);
 				}
+				fork.incrementUnitFails();
 			}
 
 			/* Set whether the fork passed and save it */
@@ -280,19 +285,19 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Call the test service */
 		Report status;
 		try {
-			status = testServiceProxy.getLastReport(crsid, tickId);
+			status = testServiceProxy.getLastReport(config.getConfig().getSecurityToken(), crsid, tickId);
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
-			log.error("User " + myCrsid + " tried getting last report for "
-					+ crsid + " " + tickId, s.getCause(), s.getStackTrace());
+			log.error("User " + myCrsid + " failed getting last report for "
+					+ crsid + " " + tickId + "\nCause: " + s.toString());
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 
 		} catch (UserNotInDBException | TickNotInDBException e) {
-			log.error("User " + myCrsid + " tried getting last report for "
+			log.error("User " + myCrsid + " failed getting last report for "
 					+ crsid + " " + tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
@@ -346,19 +351,19 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		/* Call the test service */
 		List<Report> status;
 		try {
-			status = testServiceProxy.getAllReports(crsid, tickId);
+			status = testServiceProxy.getAllReports(config.getConfig().getSecurityToken(), crsid, tickId);
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
 			SerializableException s = h.readException(e);
 
-			log.error("User " + myCrsid + " tried getting all reports for "
-					+ crsid + " " + tickId, s.getCause(), s.getStackTrace());
+			log.error("User " + myCrsid + " failed getting all reports for "
+					+ crsid + " " + tickId + "\nCause: " + s.toString());
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 
 		} catch (UserNotInDBException | TickNotInDBException e) {
-			log.error("User " + myCrsid + " tried getting all reports for "
+			log.error("User " + myCrsid + " failed getting all reports for "
 					+ crsid + " " + tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();

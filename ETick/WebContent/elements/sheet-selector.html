@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog-transition.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 
 <polymer-element name="sheet-selector" attributes="sheets tickId">
 	<template>
@@ -10,17 +11,20 @@
 		<link rel="stylesheet" type="text/css" href="../css/elements/sheet-selector.css">
 
 		<!-- Signup slots API. -->
-		<core-ajax id="slotsAPI"
+		<toast-ajax id="slotsAPI"
 			url=""
 			handleAs="json"
-			on-core-response="{{slotsResponse}}">
-		</core-ajax>
+			on-core-response="{{slotsResponse}}"
+
+			waitBeforeToast="200"
+			waitMessage="Loading ticking slots...">
+		</toast-ajax>
 
 		<!-- Signup make bookings API. -->
 		<core-ajax id="bookingsAPI"
 			url=""
 			contentType="application/json"
-			handleAs="json"
+			handleAs="text"
 			method="POST"
 			on-core-response="{{bookingsResponse}}"
 			on-core-error="{{bookingsError}}">
@@ -31,7 +35,7 @@
 			<div class="custom-dropdown">
 				<select id="selector" on-change="{{sheetSelectionChanged}}"
 					class="custom-dropdown__select">
-					<option disabled selected>Select Ticking Session...</option>
+					<option disabled selected value="default">Select ticking session...</option>
 					<template repeat="{{sheet in sheets}}">
 						<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
 						</template>
@@ -40,7 +44,7 @@
 			<div class="custom-dropdown">
 				<select id="slotSelector" on-change="{{slotSelectionChanged}}"
 					class="custom-dropdown__select">
-					<option disabled selected>Select Ticking Slot...</option>
+					<option disabled selected value="default">Select ticking slot...</option>
 					<template repeat="{{date in dates}}">
 						<option value="{{date}}">{{date | dateFilter}}</option>
 					</template>
@@ -59,11 +63,17 @@
 		<paper-toast id="bookingErrorToast" duration="3000"></paper-toast>
 
 	</template>
+    <script src="../bower_components/moment/moment.js"></script>
     <script src="../js/prettyDate.js"></script>
 	<script>
 		Polymer('sheet-selector', {
 			toggle: function () {
 				this.$.dialog.toggle();
+			},
+
+			refreshSelectors: function () {
+				this.$.selector.value = "default";
+				this.$.slotSelector.value = "default";
 			},
 
 			sheetSelectionChanged: function () {
@@ -77,16 +87,13 @@
 			signUpClicked: function () {
 				this.$.bookingsAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" +
 					this.sheetSelection + "/bookings";
-				var parseDate = Date.parse(this.slotSelection);
+				var parseDate = moment(this.slotSelection);
 				this.$.bookingsAPI.body = '{ "tickID" : "' + this.tickId + '", "startTime" : "' + parseDate + '" }';
 				this.$.bookingsAPI.go();
 			},
 
 			slotsResponse: function () {
-				var r = this.$.slotsAPI.response;
-				this.dates = r.map(function (obj) {
-					return prettyParse(obj);
-				});
+				this.dates = this.$.slotsAPI.response;
 			},
 
 			slotSelectionChanged: function () {
@@ -100,12 +107,12 @@
 
 			bookingsResponse: function () {
 				this.$.bookingSucessfulToast.text = "Booking created for " +
-                    prettyDateTime(new Date(this.slotSelection)) + ".";
+                    prettyDateTime(this.slotSelection) + ' with "' + this.$.bookingsAPI.response + '".' ;
 				this.$.bookingSucessfulToast.show();
 
 				this.fire('slot-booked', {
 					sheetId: this.sheetSelection,
-					slot: (new Date(this.slotSelection))
+					slot: (this.slotSelection)
 				})
 			},
 

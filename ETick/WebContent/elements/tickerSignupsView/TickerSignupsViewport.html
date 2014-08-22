@@ -12,17 +12,17 @@
 <polymer-element name="ticker-signups-viewport" attributes="sessionId studentMode description location crsId tickId repoName ticker slotId">
   <template>
     <style>
-	    :host {
-	      background-color: white;
-	      padding: 10px;
-	      font-size: 1.2rem;
-		  color: black;
-	      font-weight: 300;
-	      display: block;
-	    }
-	    #card-header {
-	    	margin-bottom: 10px;
-	    }
+		:host {
+			background-color: white;
+			padding: 10px;
+			font-size: 1.2rem;
+			color: black;
+			font-weight: 300;
+			display: block;
+		}
+		#card-header {
+			margin-bottom: 10px;
+		}
 		#listTemplate:nth-child(even) {
 			background:#e9e9e9;
 		}
@@ -105,19 +105,17 @@
 								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
 								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"></core-icon>
 							</div>
-							<div align="left" layout horizontal center flex three>
-									<div hidden?="{{slot.outcome != 'null'}}">
-											<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
-									</div>
-									<div hidden?="{{slot.outcome == 'null'}}">
-										<core-item label="{{slot.timeStamp}}  crsid : {{slot.student}}  ,  tick :  {{slot.comment}} , outcome : {{slot.outcome}}" style="min-height:20px" span></core-item>
+							<div align="left" style="color:{{slot.inPast ? 'gray' : (slot.currentSlot ? '#9c27b0' : 'black')}}" layout horizontal center flex three>
+									<div>
+													<core-item label="{{slot.timeStamp + (slot.student=='' ? ' Empty Slot' : ' crsid : ' + slot.student + ' ,  tick : ' + slot.comment + (slot.outcome==null?'':', outcome: ' + slot.outcome))}}" style="min-height:20px" span>
+											</core-item>
 									</div>
 							</div>
 							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
 								<span>View Report</span>
 								<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
 							</div>
-							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
+							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast))}}" flex>
 								<span>Remove {{slot.student}} from Slot</span>
 								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="left" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
 							</div>
@@ -135,9 +133,11 @@
 	</div>
 	
   </template>
+  <script src="../../bower_components/moment/moment.js"></script>
   <script src="../../js/prettyDate.js"></script>
   <script>
   Polymer('ticker-signups-viewport', {
+			reloadInterval: null,
 			refresh: function() {
 				this.fire("hide-report");
 				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.sessionId;
@@ -163,20 +163,19 @@
 				}
 				this.selected = 0;
 				this.ticker = this.tickers[0].name;
-			},	
+			},
 			slotsDataLoaded: function() {
+                this.$.ajaxLoadSlots.waitMessage = "Reloading slots....";
 				var loadedSlots = this.$.ajaxLoadSlots.response.slice(0);
+				var timeToNextSlot = Number.POSITIVE_INFINITY;
 				this.slots = [];
 				for (var i = 0; i < loadedSlots.length; i++) {
 
-                    var slotTime = prettyParse(loadedSlots[i].startTime);
-                    var hour = prettyTime(slotTime).split(":")[0];
-					var min =  prettyTime(slotTime).split(":")[1];
+					var startTime = prettyParse(loadedSlots[i].startTime);
+					var endTime   = startTime.clone()
+						.add(loadedSlots[i].duration, 'milliseconds');
+					var now = moment();
 
-					var timeSlot = hour + ":" + min;
-
-					/* check this conversion is right */
-					var durationInMinutes = loadedSlots[i].duration/60000;
 					var student = loadedSlots[i].bookedUser;
 					var comment = loadedSlots[i].comment;
 					var hidden = false;
@@ -186,25 +185,58 @@
 						hidden = true;
 					}
 
-					/* sort out leading zero */
-					var endMin = parseInt(min) + parseInt(durationInMinutes);
-					var endHour = parseInt(hour) +
-                        parseInt(Math.floor(durationInMinutes/60));
+					var past = endTime.isBefore(now);
+					/* Start time in past, end time in future */
+					var current = startTime.isBefore(now)
+						&& endTime.isAfter(now);
 
-					while (endMin >= 60) {
-						endMin = endMin%60;
-						endHour++;
+					if (current)
+					{
+						timeToNextSlot = moment.duration(endTime)
+							.subtract(now)
+							.asMilliseconds();
+					}
+					else if (i === 0 && !past)
+					{
+						timeToNextSlot = moment.duration(startTime)
+							.subtract(now)
+							.asMilliseconds();
 					}
 
-					var leadingZero = "";
-					if (endMin < 10) {
-						leadingZero = "0";
-					}
-
-					var timeStamp = hour + ":" + min + " - " + endHour + ":" + leadingZero + endMin;
-					this.slots.push({_id: loadedSlots[i]._id , duration: durationInMinutes , student: student, comment: comment,
-									 time : timeSlot, timeStamp: timeStamp, hidden : hidden, outcome: "null", collapse: false});
+					var timeStamp = startTime.format("HH:mm") +
+						" - " + endTime.format("HH:mm");
+					this.slots.push(
+							{
+								  "_id"         : loadedSlots[i]._id
+								, "duration"    : loadedSlots[i].duration/60000
+								, "student"     : student
+								, "comment"     : comment
+								, "timeStamp"   : timeStamp
+								, "hidden"      : hidden
+								, "outcome"     : null
+								, "collapse"    : false
+								, "inPast"      : past
+								, "currentSlot" : current
+							});
 				}
+
+				/* Interval for re-loading */
+				if (this.reloadInterval != null)
+				{
+					clearInterval(this.reloadInterval);
+					this.reloadInterval = null;
+				}
+				if (0 < timeToNextSlot
+						&& timeToNextSlot < Number.POSITIVE_INFINITY)
+				{
+					this.reloadInterval = window.setInterval(
+							function ()
+							{
+								this.$.ajaxLoadSlots.go();
+							}.bind(this),
+							Math.max(timeToNextSlot, 30000 /* 30 seconds */));
+				}
+
 				this.date = prettyDate(prettyParse(loadedSlots[0].startTime));
 			},
 			tickerChange: function(event) {

@@ -33,6 +33,8 @@ public class Tick implements Comparable<Tick> {
 	private Map<String, DateTime> extensions = new HashMap<>();
 
 	private DateTime edited;
+	
+	private String externalReference;
 
 	/**
 	 * 
@@ -68,6 +70,7 @@ public class Tick implements Comparable<Tick> {
 		this.setDeadline(bean.getDeadline());
 		this.setGroups(bean.getGroups());
 		this.setExtensions(bean.getExtensions());
+		this.setExternalReference(bean.getExternalReference());
 	}
 
 	/**
@@ -168,6 +171,14 @@ public class Tick implements Comparable<Tick> {
 		this.groups = groups;
 	}
 
+	public String getExternalReference() {
+		return externalReference;
+	}
+
+	public void setExternalReference(String externalReference) {
+		this.externalReference = externalReference;
+	}
+
 	/**
 	 * @param groupId
 	 */
@@ -205,6 +216,14 @@ public class Tick implements Comparable<Tick> {
 	 */
 	public void addExtension(String crsid, DateTime extension) {
 		this.extensions.put(crsid, extension);
+	}
+	
+	/**
+	 * 
+	 * @param crsid
+	 */
+	public void removeExtension(String crsid) {
+		this.extensions.remove(crsid);
 	}
 
 	/**

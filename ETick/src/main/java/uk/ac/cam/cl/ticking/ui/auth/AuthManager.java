@@ -56,7 +56,9 @@ public class AuthManager {
 	}
 
 	/**
-	 * Displays the information we have concerning the user as HTML.
+	 * Displays the information we have concerning the user as HTML. A fallback
+	 * endpoint for checking that your user object is correct without requiring
+	 * access to any other website functionality.
 	 * 
 	 * @param request
 	 * @return response
@@ -121,6 +123,7 @@ public class AuthManager {
 	 * 
 	 * @param request
 	 * @return response
+	 * @throws InterruptedException 
 	 */
 	@GET
 	@Path("/login")
@@ -188,7 +191,8 @@ public class AuthManager {
 			}
 			if (admin) {
 				for (Group group : db.getGroups()) {
-					db.saveGrouping(new Grouping(group.getGroupId(), user.getCrsid(), Role.ADMIN));
+					db.saveGrouping(new Grouping(group.getGroupId(), user
+							.getCrsid(), Role.ADMIN));
 				}
 			}
 		} catch (LDAPObjectNotFoundException e) {

@@ -1,0 +1,79 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html
+">
+<link rel="import" href="../bower_components/core-dropdown/core-dropdown.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
+
+<polymer-element name="add-tick" attributes="gid">
+	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+		<link rel="stylesheet" type="text/css" href="../css/elements/sheet-selector.css">
+
+		<!-- All tick list API call. -->
+		<toast-ajax id="listAPI"
+			auto
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ticks"
+			handleAs="json"
+			on-core-response="{{listResponse}}"
+
+			waitBeforeToast="200"
+			waitMessage="Loading ticks...">
+		</toast-ajax>
+
+		<!-- Add tick to group API. -->
+		<toast-ajax id="addTickAPI"
+			method="PUT"
+			on-core-response="{{addTickResponse}}"
+			on-core-error="{{addTickError}}"
+
+			popUpResponse
+			responseMessage="Successfully added tick to group."
+			waitBeforeToast="500"
+            waitMessage="Adding tick..."
+            popUpError
+            captureError>
+    	</toast-ajax>
+
+		<paper-dialog id="dialog"
+			backdrop
+			transition="core-transition-top"
+			heading="Add ticks to group:">
+
+			<div class="custom-dropdown">
+				<select id="selector" on-change="{{sheetSelectionChanged}}"
+					class="custom-dropdown__select">
+					<option disabled selected>Select tick...</option>
+					<template repeat="{{tick in ticks}}">
+						<option value="{{tick._id}}">{{tick.name}}</option>
+						</template>
+				</select>
+			</div>
+
+			<paper-button id="addSubmit" class="dialogSubmit" label="ADD"
+				on-click="{{addSubmitClicked}}" affirmative></paper-button>
+		</paper-dialog>
+
+	</template>
+	<script>
+		Polymer('add-tick', {
+
+			addSubmitClicked: function () {
+				var sel = this.$.selector;
+				var selectedTick = sel.options[sel.selectedIndex].value;
+				console.log(selectedTick);
+
+				this.$.addTickAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + selectedTick + "/" + this.gid;
+				this.$.addTickAPI.go();
+			},
+
+			listResponse: function () {
+				this.ticks = this.$.listAPI.response;
+
+			},
+
+			addTickResponse: function () {
+				this.fire('tick-added');
+			},
+		});
+	</script>
+</polymer-element>
