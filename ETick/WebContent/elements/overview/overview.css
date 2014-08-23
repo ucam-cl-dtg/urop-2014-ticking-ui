@@ -54,6 +54,10 @@
     margin-top: 5px;
 }
 
+.icon-white {
+    color: white;
+}
+
 #dropTest {
     background: #008000;
     min-height: 20px;
