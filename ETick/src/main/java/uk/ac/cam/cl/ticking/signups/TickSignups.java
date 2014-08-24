@@ -198,24 +198,68 @@ public class TickSignups {
             }
         }
         try {
-            if (service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime()).size() == 0) {
+            List<String> freeTickers = service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime());
+            if (freeTickers.size() == 0) {
                 log.info("No free slots were found at the given time");
                 return Response.status(Status.NOT_FOUND)
                         .entity(Strings.NOFREESLOTS).build();
             }
-            if (service.getPermissions(groupID, crsid).containsKey(bean.getTickID())) { // have passed this tick
+            if (service.getPermissions(groupID, crsid).containsKey(bean.getTickID())) { // user has passed this tick
+                /* Get the ticker they should ideally be signed up with (i.e. they have been failed by) */
                 String ticker = service.getPermissions(groupID, crsid).get(bean.getTickID());
-                if (ticker == null) { // any ticker permitted, assign first free ticker
-                    ticker = service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime()).get(0);
+                if (ticker != null) {
+                    service.book(sheetID, ticker, bean.getStartTime(), new SlotBookingBean(null, crsid, bean.getTickID()));
+                    /* Update fork object - not strictly needed any more */
+                    Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
+                    f.setSignedUp(true);
+                    db.saveFork(f);
+                    log.info("The booking was successfully made");
+                    return Response.ok().entity(ticker).build();
+                    // If not successful, let the user know.
+                } else {
+                    freeTickers = service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime());
+                    for (int t = 0; t < freeTickers.size(); t++) { // for each free ticker
+                        try { // try to book the user using that ticker
+                            service.book(sheetID, freeTickers.get(t), bean.getStartTime(),
+                                    new SlotBookingBean(null, crsid, bean.getTickID()));
+                            /* Update fork object - not strictly needed any more */
+                            Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
+                            f.setSignedUp(true);
+                            db.saveFork(f);
+                            log.info("The booking was successfully made");
+                            return Response.ok().entity(ticker).build();
+                        } catch(InternalServerErrorException e) { // Ignore this block
+                            try {
+                                throwRealException(e);
+                                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                                        .build();
+                            } catch (NotAllowedException e1) { // booking failed
+                                if (t+1 == freeTickers.size()) {
+                                    throw e1; // No more free tickers at this time, report error
+                                } else {
+                                    // Do nothing; try and book with a different ticker instead
+                                }
+                            } catch (Throwable th) {
+                                log.error("Something went wrong when processing the InternalServerErrorException", th);
+                                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                                        .build();
+                            }
+                        } catch (NotAllowedException e) { // booking failed
+                            if (t+1 == freeTickers.size()) {
+                                throw e; // No more free tickers at this time, report error
+                            } else {
+                                // Do nothing; try and book with a different ticker instead
+                            }
+                        }
+                    }
+                    log.warn("Booking unsuccessful after trying all possible tickers");
+                    // I expect this to happen when freeTickers.size() == 0
+                    return Response.status(Status.NOT_FOUND)
+                            .entity(Strings.NOFREESLOTS).build();
                 }
-                /* Make booking */
-                service.book(sheetID, ticker, bean.getStartTime(), new SlotBookingBean(null, crsid, bean.getTickID()));
-                /* Update fork object - not strictly needed any more */
-                Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
-                f.setSignedUp(true);
-                db.saveFork(f);
-                log.info("The booking was successfully made");
-                return Response.ok().entity(ticker).build();
             } else {
                 log.warn("The booking was not made - " + crsid + " does not have permission to sign up for tick"
                         + bean.getTickID());
@@ -251,7 +295,7 @@ public class TickSignups {
         } catch (NotAllowedException e) {
             log.warn("Permission to book the slot was denied", e);
             return Response.status(Status.FORBIDDEN)
-                    .entity("Not allowed: " + e.getMessage()).build();
+                    .entity("Booking unsuccessful: " + e.getMessage()).build();
         }
     }
 
