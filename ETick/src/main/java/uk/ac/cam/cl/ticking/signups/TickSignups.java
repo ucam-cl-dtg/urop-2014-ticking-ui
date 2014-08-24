@@ -104,10 +104,15 @@ public class TickSignups {
                     + crsid + " tickID: " + tickID + " groupID: " + groupID + " sheetID: " + sheetID);
             
             /* Get slots from generic signups service */
-            List<Date> slots = service.listAllFreeStartTimes(crsid, tickID,
+            List<Date> freeTimes = service.listAllFreeStartTimes(crsid, tickID,
                     groupID, sheetID);
-            
-            return Response.ok(slots).build();
+            /* Remove slots for which the student already has a slot booked */
+            for (Slot s : service.listUserSlots(crsid)) {
+                if (freeTimes.contains(s.getStartTime())) {
+                    freeTimes.remove(s.getStartTime());
+                }
+            }
+            return Response.ok(freeTimes).build();
         } catch(InternalServerErrorException e) { // Don't forget to ignore this block...
             try {
                 throwRealException(e);
@@ -177,8 +182,8 @@ public class TickSignups {
                 " at time " + new Date(bean.getStartTime()) + " on sheet " + sheetID + " in group " + groupID);
         Date now = new Date();
         for (Slot slot : service.listUserSlots(crsid)) { // Check user's existing bookings for clash
-            if (slot.getStartTime().equals(bean.getStartTime())) {
-                log.info("The user already had a slot booked at the given time");
+            if (slot.getStartTime().getTime() == bean.getStartTime()) {
+                log.warn("The user already had a slot booked at the given time");
                 return Response.status(Status.FORBIDDEN)
                         .entity(Strings.EXISTINGTIMEBOOKING).build();
             }
