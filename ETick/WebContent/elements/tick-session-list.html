@@ -39,8 +39,8 @@
 			<!-- <h1 flex>Ticking Sessions ({{sheets ? sheets.length : 0}})</h1> -->
             <search-box id="searchBox" placeholder="Search..."></search-box>
 			<template if="{{isAuthor}}">
-				<core-tooltip label="Add">
-					<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
+				<core-tooltip label="Create Session" style="left: -23px;">
+					<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}" style="left: 23px;"></paper-icon-button>
 				</core-tooltip>
 				<core-tooltip label="Edit">
 					<paper-icon-button id="editSessionButton" icon="create" on-click="{{editClicked}}"></paper-icon-button>
