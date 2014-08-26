@@ -28,7 +28,7 @@
 
 		<!-- User roles API call. -->
 		<toast-ajax id="roleAjax"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/' + gid + '/roles'}}"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/' + gid + '/roles'}}"
 			handleAs="json" on-core-response="{{roleResponse}}"
 
             popUpError
@@ -38,7 +38,7 @@
 
 		<!-- Available signup sheets API call. -->
 		<toast-ajax id="sheetListAPI"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/' + gid }}"
+			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/groups/' + gid }}"
 			handleAs="json"
 			on-core-response="{{sheetListResponse}}"
             
