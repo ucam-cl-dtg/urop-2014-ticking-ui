@@ -37,10 +37,12 @@
 		</toast-ajax>
 
 		<!-- Edit button. -->
-		<paper-icon-button id="editButton"
-			icon="create"
-			on-click="{{toggleDialog}}">
-		</paper-icon-button>
+        <core-tooltip label="Edit Group">
+            <paper-icon-button id="editButton"
+                icon="create"
+                on-click="{{toggleDialog}}">
+            </paper-icon-button>
+        </core-tooltip>
 
 		<!-- Edit dialog -->
 		<paper-dialog id="editGroupDialog" heading="Edit Group:" backdrop	
