@@ -18,7 +18,7 @@
         <toast-ajax
                 id="ajaxLoadOverview"
                 auto
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api_DEMO/group/' + gid + '/overview/csv'}}"
+                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api_DEMO/group/' + gid + '/overview/csv'}}"
                 handleAs="text"
                 on-core-response="{{overviewLoaded}}"
 
@@ -32,12 +32,12 @@
         <!-- API call: adds user if not already registered. -->
         <core-ajax id="ajaxCrsId"
                    auto
-                   url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+                   url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/raven/login"
                    handleAs="json"
                    on-core-response="{{loginResponse}}">
         </core-ajax>
 
-        <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/overview/csv'}}"-->
+        <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + gid + '/overview/csv'}}"-->
 
         <div id="overviewMainContainer" style="max-height: 600px; position: relative;" layout vertical>
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
