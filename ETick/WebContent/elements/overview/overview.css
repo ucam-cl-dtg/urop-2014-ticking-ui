@@ -54,6 +54,10 @@
     margin-top: 6px;
 }
 
+core-tooltip {
+    outline: none;
+}
+
 .icon-white {
     color: white;
 }
