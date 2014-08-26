@@ -6,6 +6,7 @@
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
+<link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="extension-list.html">
 <link rel="import" href="../dialog.html">
 <link rel="import" href="../search-box.html">
@@ -50,12 +51,15 @@
 		</toast-ajax>
 
 		<!-- Extension list Ajax call. -->
-		<core-ajax id="listAjax"
+		<toast-ajax id="listAjax"
 			auto
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/' + tid + '/extension'}}"
 			handleAs="json"
-			on-core-response="{{listResponse}}">
-		</core-ajax>
+			on-core-response="{{listResponse}}"
+            popUpError
+            captureError
+            waitMessage="Loading current extension(s)...">
+		</toast-ajax>
 
 		<!-- Card heading. -->
 		<div id="headerBar" layout horizontal center>

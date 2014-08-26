@@ -1,4 +1,4 @@
-package uk.ac.cam.cl.ticking.ui.api;
+package uk.ac.cam.cl.ticking.ui.api.facades;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.FileBean;
+import uk.ac.cam.cl.git.api.IllegalCharacterException;
 import uk.ac.cam.cl.git.api.RepoUserRequestBean;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
@@ -246,6 +247,19 @@ public class TickApiFacade implements ITickApiFacade {
 					return Response.status(Status.NOT_FOUND)
 							.entity(Strings.IDEMPOTENTRETRY).build();
 
+				}
+				
+				if (s.getClassName().equals(
+						IllegalCharacterException.class.getName())) {
+
+					log.error(
+							"User " + crsid
+									+ " failed creating stub repository for "
+									+ tick.getTickId() + "\nCause: "
+											+ s.toString());
+					return Response.status(Status.BAD_REQUEST)
+							.entity(s.getMessage()).build();
+
 				} else {
 					log.error(
 							"User " + crsid
@@ -256,7 +270,7 @@ public class TickApiFacade implements ITickApiFacade {
 							.entity(Strings.IDEMPOTENTRETRY).build();
 				}
 
-			} catch (IOException | DuplicateRepoNameException e) {
+			} catch (IOException | DuplicateRepoNameException | IllegalCharacterException e) {
 				log.error(
 						"User " + crsid
 								+ " failed to create stub repository for "
@@ -305,6 +319,18 @@ public class TickApiFacade implements ITickApiFacade {
 					return Response.status(Status.NOT_FOUND)
 							.entity(Strings.IDEMPOTENTRETRY).build();
 
+				}
+				
+				if (s.getClassName().equals(
+						IllegalCharacterException.class.getName())) {
+
+					log.error("User " + crsid
+							+ " failed creating correctness repository for "
+							+ tick.getTickId() + "\nCause: "
+									+ s.toString());
+					return Response.status(Status.BAD_REQUEST)
+							.entity(s.getMessage()).build();
+
 				} else {
 					log.error("User " + crsid
 							+ " failed creating correctness repository for "
@@ -314,7 +340,7 @@ public class TickApiFacade implements ITickApiFacade {
 							.entity(Strings.IDEMPOTENTRETRY).build();
 				}
 
-			} catch (IOException | DuplicateRepoNameException e) {
+			} catch (IOException | DuplicateRepoNameException | IllegalCharacterException e) {
 				log.error(
 						"User "
 								+ crsid

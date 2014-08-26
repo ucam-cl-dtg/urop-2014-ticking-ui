@@ -6,6 +6,7 @@
 <link rel="import" href="are-you-sure.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 
 <polymer-element name="tick-session-list" attributes="gid sheets isAuthor">
 	<template>
@@ -24,11 +25,15 @@
 
 		<!-- Delete Tick Session API. -->
 		<!-- Add session API call. -->
-		<core-ajax id="deleteSessionAPI"
+		<toast-ajax id="deleteSessionAPI"
 			method="DELETE"
 			on-core-response="{{deleteSessionResponse}}"
-			on-core-error="{{deleteSessionError}}">
-		</core-ajax>
+			on-core-error="{{deleteSessionError}}"
+			
+			waitMessage="Removing ticking session...."
+			popUpError
+			captureError>
+		</toast-ajax>
 
 		<div id="headerBar" layout horizontal center end-justified>
 			<!-- <h1 flex>Ticking Sessions ({{sheets ? sheets.length : 0}})</h1> -->

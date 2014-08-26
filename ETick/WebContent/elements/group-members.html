@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 <link rel="import" href="person-list.html">
 <link rel="import" href="export-members.html">
 <link rel="import" href="dialog.html">
@@ -18,31 +19,43 @@
 		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
 
 		<!-- Add Member Ajax call. -->
-		<core-ajax id="addMemberAjax"
+		<toast-ajax id="addMemberAjax"
 			method="POST"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/grouping/' + gid}}"
 			contentType="application/json"
 			handleAs="json"
 			on-core-response="{{addMemberResponse}}"
-			on-core-error="{{addMemberError}}">
-		</core-ajax>
+			on-core-error="{{addMemberError}}"
+			
+			popUpError
+			captureError
+			waitMessage="Adding....">
+		</toast-ajax>
 
 		<!-- Member list Ajax call. -->
-		<core-ajax id="listAjax"
+		<toast-ajax id="listAjax"
 			auto
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + gid + '/users'}}"
 			handleAs="json"
-			on-core-response="{{listResponse}}">
-		</core-ajax>
+			on-core-response="{{listResponse}}"
+			
+			popUpError
+			captureError
+			waitMessage="Loading group members....">
+		</toast-ajax>
 
 		<!-- Delete member Ajax call. -->
-		<core-ajax id="deleteAjax"
+		<toast-ajax id="deleteAjax"
 			method="DELETE"
 			contentType="application/json"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/grouping/' + gid}}"
 			on-core-response="{{deleteResponse}}"
-			on-core-error="{{deleteError}}">
-		</core-ajax>
+			on-core-error="{{deleteError}}"
+			
+			popUpError
+			captureError
+			waitMessage="Removing....">
+		</toast-ajax>
 
 
 		<!-- Card heading. -->

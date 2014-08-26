@@ -66,14 +66,18 @@
 	</toast-ajax>
 	
 	<!-- Kick someone out of a slot -->
-    <core-ajax
+    <toast-ajax
 		id="ajaxKick"
         url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/students/{{crsId}}/ticks/{{tickId}}"
 		method = "DELETE"
 		contentType="application/json"
 		handleAs="text"
-		on-core-response="{{kickDone}}" >
-	</core-ajax>
+		on-core-response="{{kickDone}}"
+		
+		waitMessage="Kicking...."
+		popUpError
+		captureError>
+	</toast-ajax>
 	
 	<div layout vertical>
 		<div id="card-header" layout vertical>
@@ -100,23 +104,23 @@
 		<div id="slots-view-panel">
 				<template repeat="{{slot in slots}}">
 					<span layout vertical id="listTemplate" style="border-bottom: black solid 1px;">
-						<span layout horizontal flex>
+						<span layout horizontal center>
 							<div align="center" style="min-width:60px">
 								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
 								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"></core-icon>
 							</div>
-							<div align="left" style="color:{{slot.inPast ? 'gray' : (slot.currentSlot ? '#9c27b0' : 'black')}}" layout horizontal center flex three>
+							<div align="left" style="color:{{slot.inPast ? 'gray' : (slot.currentSlot ? '#9c27b0' : 'black')}}" flex eight>
 									<div>
-													<core-item label="{{slot.timeStamp + (slot.student=='' ? ' Empty Slot' : ' crsid : ' + slot.student + ' ,  tick : ' + slot.comment + (slot.outcome==null?'':', outcome: ' + slot.outcome))}}" style="min-height:20px" span>
-											</core-item>
+										<core-item label="{{slot.timeStamp + (slot.student=='' ? '  Empty Slot' : '  CRSID: ' + slot.student + ',  tick: ' + slot.comment + (slot.outcome==null?'':', outcome: ' + slot.outcome))}}" style="min-height:20px" span>
+										</core-item>
 									</div>
 							</div>
-							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex>
+							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex two>
 								<span>View Report</span>
 								<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
 							</div>
-							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast))}}" flex>
-								<span>Remove {{slot.student}} from Slot</span>
+							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast))}}" flex three>
+								<span>Remove {{slot.student}} from slot</span>
 								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="left" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
 							</div>
 						</span>

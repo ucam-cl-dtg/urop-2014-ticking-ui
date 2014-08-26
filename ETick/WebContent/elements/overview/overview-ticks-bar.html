@@ -10,8 +10,8 @@
             <template repeat="{{tickName in tickNames}}">
                 <!-- The weird margin thing going on here is the only way I could make the labels be at the bottom
                      of the header bar. Without margin-top, Chrome moves the element diagonally. No idea why. -->
-                <div id="{{tickName.index}}" style="margin-bottom: -35px; margin-top: 35px;"
-                     class="{{'tick-label rotated unselectable' + (tickName.index == selectedIndex ? ' sort-field-header' : '')}}"
+                <div id="{{tickName.index}}" style="margin-bottom: 5px; margin-top: -5px;"
+                     class="{{'tick-header rotated unselectable' + (tickName.index == selectedIndex ? ' sort-field-header' : '')}}"
                      on-tap="{{titleClicked}}">{{tickName.text}}</div>
             </template>
             <h4 id="spacer" class="user-label"></h4>

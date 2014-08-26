@@ -1,5 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 <polymer-element name="create-group" attributes="">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
@@ -9,13 +9,17 @@
 			}
 		</style>
 
-		<core-ajax id="createGroupAPI"
+		<toast-ajax id="createGroupAPI"
 			contentType="application/json"
 			handleAs="json"
 			method="POST"
 			on-core-response="{{createResponse}}"
-			on-core-error="{{createError}}">
-		</core-ajax>
+			on-core-error="{{createError}}"
+			
+			popUpError
+			captureError
+			waitMessage="Creating group....">
+		</toast-ajax>
 
 		<paper-dialog id="createGroupDialog" heading="New Group:" backdrop	
 				transition="core-transition-top">
@@ -95,18 +99,11 @@
 			},
 
 			createResponse: function() {
-				var toast = this.$.createGroupSuccess;
-				var response = this.$.createGroupAPI.response;
-				toast.text = 'Created new group "' + response.name + '".';
-				toast.show();
+				var ajax = this.$.createGroupAPI;
+				ajax.waitMessage =
+					'Created new group "' + ajax.name + '".';
 
-				this.fire('group-created', response);
-			},
-
-			createError: function(e, detail) {
-				var toast = this.$.createGroupError;
-				toast.text = detail.xhr.responseText;
-				toast.show();
+				this.fire('group-created', ajax.response);
 			}
 
 		});
