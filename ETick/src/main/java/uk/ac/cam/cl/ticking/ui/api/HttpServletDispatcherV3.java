@@ -10,5 +10,6 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 		@WebInitParam(name = "resteasy.servlet.mapping.prefix", value = "/api") })
 public class HttpServletDispatcherV3 extends HttpServletDispatcher {
 
-	private static final long serialVersionUID = -4372001075760879707L;
+	private static final long serialVersionUID = 7782176087540717680L;
+
 }

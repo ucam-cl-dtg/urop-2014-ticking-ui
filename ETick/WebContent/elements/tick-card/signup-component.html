@@ -111,6 +111,7 @@
             },
 
             tickIdChanged: function() {
+                this.$.signupDialog.refreshSelectors();
                 console.log("tickId changed!", this.tickId);
             },
 

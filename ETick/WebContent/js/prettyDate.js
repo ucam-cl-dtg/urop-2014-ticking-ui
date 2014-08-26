@@ -19,29 +19,26 @@ function prettyParse(dateString)
 
 function prettyDate(date)
 {
-    var days = ["Sun", "Mon", "Tue", "Wed",
-                "Thu", "Fri", "Sat"];
+    if (typeof date == typeof "")
+        date = prettyParse(date);
 
-    var months = ["January", "February", "March",
-                  "April", "May", "June",
-                  "July", "August", "September",
-                  "October", "November", "December"];
-
-    return days[date.day()] + ", " +
-        date.date() + " " +
-        months[date.month()] + " " +
-        padLeft(date.year(), 4, "0");
+    return date.format("dddd, MMMM Do YYYY")
 }
 
 function prettyTime(time)
 {
-    return padLeft(time.hours(), 2, "0") + ":" +
-           padLeft(time.minutes(), 2, "0");
+    if (typeof time == typeof "")
+        time = prettyParse(time);
+
+    return time.format("HH:mm");
 }
 
 function prettyDateTime (datetime)
 {
-    return prettyDate(datetime) + " " +
+    if (typeof datetime == typeof "")
+        datetime = prettyParse(datetime);
+
+    return prettyDate(datetime) + ", " +
         prettyTime(datetime);
 }
 

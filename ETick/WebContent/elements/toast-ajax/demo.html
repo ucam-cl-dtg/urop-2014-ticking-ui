@@ -37,6 +37,8 @@ html,body {
               ajax.addEventListener("core-response",
                   function (e)
                   {
+                    document.querySelector("toast-ajax")
+                      .responseMessage = e.detail.xhr.responseText;
                     console.log(e);
                   });
 

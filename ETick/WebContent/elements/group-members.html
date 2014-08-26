@@ -121,6 +121,8 @@
 
 			searchBoxChanged: function (oldValue, newValue) {
 				this.searchQuery = newValue;
+                /* Reselect selected members */
+                this.$.members.$.list.$.selector.selectedChanged();
 			},
 
 			personSelectionChanged: function () {
@@ -136,7 +138,7 @@
 			// Add member(s) functionality:
 
 			addMember: function() {
-				var newCRSIDs = this.$.addInput.value.trim().split(/[^\w\d]+/);
+				var newCRSIDs = this.$.addInput.value.toLowerCase().trim().split(/[^\w\d]+/);
 				var roles = [];
 				if (this.$.authBox.checked) roles.push('AUTHOR');
 				if (this.$.markBox.checked) roles.push('MARKER');

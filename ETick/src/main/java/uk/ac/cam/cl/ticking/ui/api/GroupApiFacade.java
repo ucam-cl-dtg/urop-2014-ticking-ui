@@ -256,6 +256,7 @@ public class GroupApiFacade implements IGroupApiFacade {
 		}
 
 		/* Remove the group and return ok */
+		tickSignupService.deleteGroup(groupId);
 		db.removeGroup(groupId);
 		return Response.ok(Strings.DELETED).build();
 	}

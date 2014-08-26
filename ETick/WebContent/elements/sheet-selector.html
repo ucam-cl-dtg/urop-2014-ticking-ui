@@ -35,7 +35,7 @@
 			<div class="custom-dropdown">
 				<select id="selector" on-change="{{sheetSelectionChanged}}"
 					class="custom-dropdown__select">
-					<option disabled selected>Select ticking session...</option>
+					<option disabled selected value="default">Select ticking session...</option>
 					<template repeat="{{sheet in sheets}}">
 						<option sheetid="{{sheet._id}}">{{sheet.title}}</option>
 						</template>
@@ -44,7 +44,7 @@
 			<div class="custom-dropdown">
 				<select id="slotSelector" on-change="{{slotSelectionChanged}}"
 					class="custom-dropdown__select">
-					<option disabled selected>Select ticking slot...</option>
+					<option disabled selected value="default">Select ticking slot...</option>
 					<template repeat="{{date in dates}}">
 						<option value="{{date}}">{{date | dateFilter}}</option>
 					</template>
@@ -63,12 +63,17 @@
 		<paper-toast id="bookingErrorToast" duration="3000"></paper-toast>
 
 	</template>
-    <script src="../js/prettyDate.js"></script>
     <script src="../bower_components/moment/moment.js"></script>
+    <script src="../js/prettyDate.js"></script>
 	<script>
 		Polymer('sheet-selector', {
 			toggle: function () {
 				this.$.dialog.toggle();
+			},
+
+			refreshSelectors: function () {
+				this.$.selector.value = "default";
+				this.$.slotSelector.value = "default";
 			},
 
 			sheetSelectionChanged: function () {
@@ -88,10 +93,7 @@
 			},
 
 			slotsResponse: function () {
-				var r = this.$.slotsAPI.response;
-				this.dates = r.map(function (obj) {
-					return prettyParse(obj);
-				});
+				this.dates = this.$.slotsAPI.response;
 			},
 
 			slotSelectionChanged: function () {

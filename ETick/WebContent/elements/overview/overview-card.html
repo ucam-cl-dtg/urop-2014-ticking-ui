@@ -29,7 +29,17 @@
                 errorMessage="Error loading overview.">
         </toast-ajax>
 
-        <div style="max-height: 600px; position: relative;" layout vertical>
+        <!-- API call: adds user if not already registered. -->
+        <core-ajax id="ajaxCrsId"
+                   auto
+                   url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+                   handleAs="json"
+                   on-core-response="{{loginResponse}}">
+        </core-ajax>
+
+        <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/overview/csv'}}"-->
+
+        <div id="overviewMainContainer" style="max-height: 600px; position: relative;" layout vertical>
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
                 <!-- Top left fixed area -->
                 <div layout vertical style="min-width: 435px;">
@@ -81,7 +91,7 @@
                 <!-- user names and colleges -->
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
-                        <overview-users-bar sortField="{{sortField}}" users="{{displayUsers}}"></overview-users-bar>
+                        <overview-users-bar sortField="{{sortField}}" users="{{displayUsers}}" userId="{{userId}}"></overview-users-bar>
                         <div style="height: 30px;"></div>
                     </div>
                 </div>
@@ -109,7 +119,7 @@
 
                 this.iconCodeDict = {};
                 this.iconCodeDict["PASSED"] = "P";
-                this.iconCodeDict["FAILED"] = "F"; //TODO
+                this.iconCodeDict["FAILED"] = "F";
                 this.iconCodeDict["UP"]     = "UP";
                 this.iconCodeDict["UF"]     = "UF";
                 this.iconCodeDict["I"]      = "I";
@@ -210,11 +220,12 @@
                 this.sortField = "";
 
                 var comparisonDict = {};
-                comparisonDict["-"] = 0;
-                comparisonDict["I"] = 1;
-                comparisonDict["F"] = 2;
-                comparisonDict["U"] = 3;
-                comparisonDict["P"] = 4;
+                comparisonDict["F"]  = 0;
+                comparisonDict["-"]  = 1;
+                comparisonDict["I"]  = 2;
+                comparisonDict["UF"] = 3;
+                comparisonDict["UP"] = 4;
+                comparisonDict["P"]  = 5;
 
                 this.users.sort(function(a, b) {
                     return params.mode * (comparisonDict[a.displayStrings[params.selectedIndex].iconCode] -
@@ -380,11 +391,30 @@
             },
 
             updateScrollAreas: function() {
+                //console.log('scroll area update');
+
                 this.scrollAreaWidth = parseInt(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
+
+                /*console.log("saw", this.scrollAreaWidth, "ovmac", this.$.overviewMainContainer.style.width);
+                if (this.scrollAreaWidth > this.$.overviewMainContainer.style.width - 440) {
+                    //horizontal scroll bar exists
+                    this.$.overviewMainContainer.style.height = "1000px";
+                } else {*/
+                    if (this.displayUsers != undefined) {
+                        this.$.overviewMainContainer.style.height = 34 * this.displayUsers.length + 144 + "px";
+                    }
+                //}
+
+//                if (34 * this.displayUsers.length > 600-144) {
+//                    this.$.scrollArea.style.overflowY = "auto";
+//                } else {
+//                    this.$.scrollArea.style.overflowY = "hidden";
+//                }
+
 
                 this.job('update-again', function() {
                     this.updateScrollAreas();
-                }, 300);
+                }, 100);
             },
 
             refresh: function() {
@@ -395,6 +425,10 @@
                 this.$.ajaxLoadOverview.responseMessage = "Overview refreshed.";
                 this.$.ajaxLoadOverview.popUpResponse = true;
                 this.$.ajaxLoadOverview.go();
+            },
+
+            loginResponse: function() {
+               this.userId = this.$.ajaxCrsId.response._id;
             }
         });
     </script>

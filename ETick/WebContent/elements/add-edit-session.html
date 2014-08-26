@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/core-icons/device-icons.html">
 <link rel="import" href="../bower_components/core-icons/image-icons.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="date-picker.html">
 <link rel="import" href="date-entry.html">
 
 
@@ -28,12 +29,12 @@
 			}
 			core-icon.big {
 				height: 27px;
-       			width: 27px;
-       			margin-right: 10px;
+				width: 27px;
+				margin-right: 10px;
 				margin-top: 8px;
 			}
 
-			paper-input.datetime {
+			.datetime {
 				width: initial;
 				margin-right: 20px;
 			}
@@ -123,14 +124,9 @@
 		<h2>Date and Time</h2>
 		<div layout horizontal start>
 			<core-icon class="big" icon="event"></core-icon>
-			<paper-input id="date" class="datetime"
-				type="date"
-				required 
-				error="Session date." 
-				value="{{date}}"
-				on-change="{{validate}}">
-			</paper-input>
-
+			<date-picker id="date" selectedDate="{{date}}" class="datetime"
+				error="Session date."></date-picker>
+			
 			<core-icon class="big" icon="device:access-time"></core-icon>
 			<paper-input id="startTime" class="datetime"
 				type="time"
@@ -181,21 +177,20 @@
 		<paper-toast id="editSessionError" duration="8000"></paper-toast>
 
 	</template>
-    <script src="../js/prettyDate.js"></script>
     <script src="../bower_components/moment/moment.js"></script>
+    <script src="../js/prettyDate.js"></script>
+    <script src="../js/jsonSanitize.js"></script>
 	<script>
 		Polymer('add-edit-session', {
 
 			domReady: function () {
 				if (this.sheet) {
-					var startDT = prettyParse(this.sheet.startTime).toJSON();
-					var endDT   = prettyParse(this.sheet.endTime).toJSON();
-					var startT = startDT.indexOf('T');
+					var startDT = prettyParse(this.sheet.startTime);
+					var endDT   = prettyParse(this.sheet.endTime);
 
-					this.date = startDT.slice(0, startT);
-					this.startTime = startDT.slice(startT + 1, startDT.lastIndexOf(':'));
-					this.endTime = endDT.slice(endDT.indexOf('T') + 1, endDT.lastIndexOf(':'));
-
+					this.date = startDT.format("YYYY-MM-DD");
+					this.startTime = startDT.format("HH:mm");
+					this.endTime = endDT.format("HH:mm");
 				}
 
 				this.tickers = this.sheet ? 
@@ -214,7 +209,7 @@
 
 				if (!this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
-					this.$.date.value &&
+					this.$.date.selectedDate &&
 					this.$.startTime.value && this.$.endTime.value &&
 					!this.$.slotLengthInput.invalid) {
 					this.$.submitButton.disabled = false;
@@ -246,8 +241,8 @@
 				this.title = this.$.titleInput.inputValue;
 				this.description = this.$.descInput.value;
 				this.location = this.$.locInput.inputValue;
-				this.subStartTime = prettyParse(this.$.date.value + "T" + this.$.startTime.value);
-				this.subEndTime = prettyParse(this.$.date.value + "T" + this.$.endTime.value);
+				this.subStartTime = prettyParse(this.$.date.selectedDate + "T" + this.$.startTime.value);
+				this.subEndTime = prettyParse(this.$.date.selectedDate + "T" + this.$.endTime.value);
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
 				console.log(prettyDateTime(this.subStartTime),
@@ -259,7 +254,16 @@
 				else {
 					var call = this.$.addSessionAPI;
 				}
-				call.body = '{"title" : "' + this.title + '", "description" : "' + this.description + '", "location" : "' + this.location + '", "startTime" : "' + this.subStartTime + '", "endTime" : "' + this.subEndTime + '", "slotLengthInMinutes" : "' + this.slotLength + '", "tickerNames" : ' + JSON.stringify(this.tickers) + ', "groupID" : "' + this.gid + '" }';
+				call.body =
+					'{   "title" : "' + toJSONString(this.title) + '"' +
+						', "description" : "' + toJSONString(this.description) + '"' +
+						', "location" : "' + toJSONString(this.location) + '"' +
+						', "startTime" : "' + this.subStartTime + '"' +
+						', "endTime" : "' + this.subEndTime + '"' +
+						', "slotLengthInMinutes" : "' + Number.parseInt(this.slotLength) + '"' +
+						', "tickerNames" : ' + JSON.stringify(this.tickers) +
+						', "groupID" : "' + this.gid + '"' +
+					'}';
 				call.go();
 			},
 

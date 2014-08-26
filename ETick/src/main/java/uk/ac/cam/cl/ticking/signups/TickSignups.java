@@ -20,8 +20,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +60,8 @@ import com.google.inject.Inject;
  * block, this handling is replicated outside the block, both to satisfy the compiler
  * and in case the bug is fixed.
  */
+
+/* Note: this service treats all times as UTC */
 
 
 @Path("/signups")
@@ -104,15 +104,15 @@ public class TickSignups {
                     + crsid + " tickID: " + tickID + " groupID: " + groupID + " sheetID: " + sheetID);
             
             /* Get slots from generic signups service */
-            List<Date> slots = service.listAllFreeStartTimes(crsid, tickID,
+            List<Date> freeTimes = service.listAllFreeStartTimes(crsid, tickID,
                     groupID, sheetID);
-            
-            /* Convert all of the datetimes out of UTC before passing them on */
-            /*List<Date> convertedSlots = new ArrayList<>();
-            for (Date date : slots) {
-                convertedSlots.add(convertToAssumedGMTXFromUTC(date));
-            }*/
-            return Response.ok(slots).build();
+            /* Remove slots for which the student already has a slot booked */
+            for (Slot s : service.listUserSlots(crsid)) {
+                if (freeTimes.contains(s.getStartTime())) {
+                    freeTimes.remove(s.getStartTime());
+                }
+            }
+            return Response.ok(freeTimes).build();
         } catch(InternalServerErrorException e) { // Don't forget to ignore this block...
             try {
                 throwRealException(e);
@@ -151,10 +151,6 @@ public class TickSignups {
             @PathParam("sheetID") String sheetID, MakeBookingBean bean) {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         String groupID = null;
-        
-        /* Convert the bean starttime to UTC */
-        //bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
-        
         try {
             /* Each sheet has precisely one group - get it */
             groupID = getGroupID(sheetID);
@@ -186,8 +182,8 @@ public class TickSignups {
                 " at time " + new Date(bean.getStartTime()) + " on sheet " + sheetID + " in group " + groupID);
         Date now = new Date();
         for (Slot slot : service.listUserSlots(crsid)) { // Check user's existing bookings for clash
-            if (slot.getStartTime().equals(bean.getStartTime())) {
-                log.info("The user already had a slot booked at the given time");
+            if (slot.getStartTime().getTime() == bean.getStartTime()) {
+                log.warn("The user already had a slot booked at the given time");
                 return Response.status(Status.FORBIDDEN)
                         .entity(Strings.EXISTINGTIMEBOOKING).build();
             }
@@ -198,24 +194,68 @@ public class TickSignups {
             }
         }
         try {
-            if (service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime()).size() == 0) {
+            List<String> freeTickers = service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime());
+            if (freeTickers.size() == 0) {
                 log.info("No free slots were found at the given time");
                 return Response.status(Status.NOT_FOUND)
                         .entity(Strings.NOFREESLOTS).build();
             }
-            if (service.getPermissions(groupID, crsid).containsKey(bean.getTickID())) { // have passed this tick
+            if (service.getPermissions(groupID, crsid).containsKey(bean.getTickID())) { // user has passed this tick
+                /* Get the ticker they should ideally be signed up with (i.e. they have been failed by) */
                 String ticker = service.getPermissions(groupID, crsid).get(bean.getTickID());
-                if (ticker == null) { // any ticker permitted, assign first free ticker
-                    ticker = service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime()).get(0);
+                if (ticker != null) {
+                    service.book(sheetID, ticker, bean.getStartTime(), new SlotBookingBean(null, crsid, bean.getTickID()));
+                    /* Update fork object - not strictly needed any more */
+                    Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
+                    f.setSignedUp(true);
+                    db.saveFork(f);
+                    log.info("The booking was successfully made");
+                    return Response.ok().entity(ticker).build();
+                    // If not successful, let the user know.
+                } else {
+                    freeTickers = service.listColumnsWithFreeSlotsAt(sheetID, bean.getStartTime());
+                    for (int t = 0; t < freeTickers.size(); t++) { // for each free ticker
+                        try { // try to book the user using that ticker
+                            service.book(sheetID, freeTickers.get(t), bean.getStartTime(),
+                                    new SlotBookingBean(null, crsid, bean.getTickID()));
+                            /* Update fork object - not strictly needed any more */
+                            Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
+                            f.setSignedUp(true);
+                            db.saveFork(f);
+                            log.info("The booking was successfully made");
+                            return Response.ok().entity(freeTickers.get(t)).build();
+                        } catch(InternalServerErrorException e) { // Ignore this block
+                            try {
+                                throwRealException(e);
+                                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                                        .build();
+                            } catch (NotAllowedException e1) { // booking failed
+                                if (t+1 == freeTickers.size()) {
+                                    throw e1; // No more free tickers at this time, report error
+                                } else {
+                                    // Do nothing; try and book with a different ticker instead
+                                }
+                            } catch (Throwable th) {
+                                log.error("Something went wrong when processing the InternalServerErrorException", th);
+                                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                                        .build();
+                            }
+                        } catch (NotAllowedException e) { // booking failed
+                            if (t+1 == freeTickers.size()) {
+                                throw e; // No more free tickers at this time, report error
+                            } else {
+                                // Do nothing; try and book with a different ticker instead
+                            }
+                        }
+                    }
+                    log.warn("Booking unsuccessful after trying all possible tickers");
+                    // I expect this to happen when freeTickers.size() == 0
+                    return Response.status(Status.NOT_FOUND)
+                            .entity(Strings.NOFREESLOTS).build();
                 }
-                /* Make booking */
-                service.book(sheetID, ticker, bean.getStartTime(), new SlotBookingBean(null, crsid, bean.getTickID()));
-                /* Update fork object - not strictly needed any more */
-                Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
-                f.setSignedUp(true);
-                db.saveFork(f);
-                log.info("The booking was successfully made");
-                return Response.ok().entity(ticker).build();
             } else {
                 log.warn("The booking was not made - " + crsid + " does not have permission to sign up for tick"
                         + bean.getTickID());
@@ -251,7 +291,7 @@ public class TickSignups {
         } catch (NotAllowedException e) {
             log.warn("Permission to book the slot was denied", e);
             return Response.status(Status.FORBIDDEN)
-                    .entity("Not allowed: " + e.getMessage()).build();
+                    .entity("Booking unsuccessful: " + e.getMessage()).build();
         }
     }
 
@@ -464,12 +504,6 @@ public class TickSignups {
     public Response listSheets(@PathParam("groupID") String groupID) {
         try {
             List<Sheet> sheets = service.listSheets(groupID);
-            /*for (Sheet sheet : sheets) {
-                /* Convert the starttime to GMTX 
-                sheet.setStartTime(convertToAssumedGMTXFromUTC(sheet
-                        .getStartTime()));
-                sheet.setEndTime(convertToAssumedGMTXFromUTC(sheet.getEndTime()));
-            }*/
             return Response.ok(sheets).build();
         } catch(InternalServerErrorException e) { // Ignore this block
             try {
@@ -533,15 +567,6 @@ public class TickSignups {
     public Response listSlots(@PathParam("sheetID") String sheetID, @PathParam("ticker") String tickerName) {
         try {
             List<Slot> slots = service.listColumnSlots(sheetID, tickerName);
-            /*List<Slot> convertedSlots = new ArrayList<>();
-            for (Slot slot : slots) {
-                /*Convert to GMTX
-                Slot converted = new Slot(slot.getSheetID(),
-                        slot.getColumnName(),
-                        convertToAssumedGMTXFromUTC(slot.getStartTime()),
-                        slot.getDuration(), slot.getBookedUser(), slot.getComment());
-                convertedSlots.add(converted);
-            }*/
             return Response.ok(slots).build();
         } catch(InternalServerErrorException e) { // Ignore this block
             try {
@@ -564,44 +589,6 @@ public class TickSignups {
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
         }
     }
-   
-    /**
-     * @return Response whose body is has booked the slot (null if no one) and the tick
-     * they have booked to do.
-     */
-    /* Commented out to see if anyone is actually using this method...
-    @GET
-    @Path("/sheets/{sheetID}/tickers/{ticker}/{startTime}")
-    @Produces("application/json")
-    public Response getBooking(@PathParam("sheetID") String sheetID,
-            @PathParam("ticker") String tickerName,
-            @PathParam("startTime") Date startTime) {
-        /*Convert to UTC*//*
-        startTime = convertToUTCViaAssumedGMTX(startTime);
-        try {
-            return Response.ok(service.showBooking(sheetID, tickerName, startTime.getTime())).build();
-        } catch(InternalServerErrorException e) { // Ignore this block
-            try {
-                throwRealException(e);
-                log.error("Something went wrong when processing the InternalServerErrorException", e);
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
-                        .build();
-            } catch (ItemNotFoundException e1) {
-                log.warn("The booking was not found - investigate if something else", e1);
-                return Response.status(Status.NOT_FOUND).entity("Not found error: " + e1.getMessage()).build();
-            } catch (Throwable t) {
-                log.error("Something went wrong when processing the InternalServerErrorException", t);
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
-                        .build();
-            }
-        } catch (ItemNotFoundException e) {
-            log.warn("The booking was not found - investigate if something else", e);
-            return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
-        }
-    }
-    */
     
     /**
      * Removes all bookings that haven't yet started for the given
@@ -873,10 +860,6 @@ public class TickSignups {
         log.info("User " + crsid + " has requested the creation of a sheet for " +
                 "the group of ID " + bean.getGroupID() + ". Parameters follow:\n" + bean.toString());
         
-        /*Convert to UTC*/
-        //bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
-        //bean.setEndTime(convertToUTCViaAssumedGMTX(bean.getEndTime()));
-        
         if (!permissions.hasRole(crsid, bean.getGroupID(), Role.AUTHOR)) {
             log.warn("Sheet creation failed: The user " + crsid + " is not an author in the group");
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
@@ -1030,10 +1013,6 @@ public class TickSignups {
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         log.info("User " + crsid + " is attempting to edit the sheet of ID " + sheetID
                 + ". Parameters follow.\n" + bean.toString());
-        
-        /*Convert to UTC*/
-        //bean.setStartTime(convertToUTCViaAssumedGMTX(bean.getStartTime()));
-        //bean.setEndTime(convertToUTCViaAssumedGMTX(bean.getEndTime()));
         
         Sheet sheet;
         try {
@@ -1330,39 +1309,7 @@ public class TickSignups {
         }
         return groupIDs.get(0);
     }
-    
-    private Date convertToUTCViaAssumedGMTX(Date date) {
-        DateTime input = new DateTime(date, DateTimeZone.UTC);
-        DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
-        DateTime utc = gmtx.withZone(DateTimeZone.UTC);
 
-        return utc.toDate();
-
-    }
-
-    private Date convertToAssumedGMTXFromUTC(Date date) {
-        DateTime input = new DateTime(date);
-        DateTime gmtx = input.withZone(DateTimeZone.getDefault());
-
-        return gmtx.toDate();
-    }
-
-    private Long convertToUTCViaAssumedGMTX(Long date) {
-        DateTime input = new DateTime(date, DateTimeZone.UTC);
-        DateTime gmtx = input.withZoneRetainFields(DateTimeZone.getDefault());
-        DateTime utc = gmtx.withZone(DateTimeZone.UTC);
-
-        return utc.getMillis();
-
-    }
-
-    private Long convertToFakedGMTXFromUTC(Long date) {
-        DateTime input = new DateTime(date);
-        DateTime utc = input.withZone(DateTimeZone.UTC);
-        
-        return utc.getMillis();
-    }
-    
     /**
      * Extracts the real exception from the InternalServerErrorException passed to it, and
      * throws it.
