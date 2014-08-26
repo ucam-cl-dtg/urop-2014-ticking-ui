@@ -410,9 +410,10 @@
                 name: tickData.name,
                 deadline: tickData.deadline,
                 groups: tickData.groups,
-                checkstyleOpts: staticData,
-                containerId: dynamicData.containerId,
-                testId: dynamicData.testId
+                externalReference: tickData.externalReference,
+                checkstyleOpts: staticData
+//                containerId: dynamicData.containerId,
+//                testId: dynamicData.testId
                 //TODO: insert required files into the master object
             };
 
@@ -483,7 +484,7 @@
         },
         buildDynamicData: function() {
             if (this.dynamicSelectedIndex == null) {
-                return null;
+                return {containerId: null, testId: null};
             } else {
                 return this.dynamicOptions[this.dynamicSelectedIndex];
             }
