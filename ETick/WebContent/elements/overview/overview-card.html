@@ -56,7 +56,7 @@
                     <!-- User details column headers -->
                     <div layout horizontal>
                         <div class="auto-fix-container">
-                            <core-icon class="{{sortField == progress ? 'icon-white' : ''}}" class="auto-fix" icon="image:auto-fix" on-tap="{{sortProgress}}"></core-icon>
+                            <core-icon class="{{'auto-fix' + (sortField == 'progress' ? ' icon-white' : '')}}" icon="image:auto-fix" on-tap="{{sortProgress}}"></core-icon>
                         </div>
                     <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
                         <div layout horizontal end class="user-label">
@@ -247,10 +247,18 @@
                 //TODO: should probably subsort by either last name or number of attempts made (when this becomes available)
             },
 
-            sortProgress: function(e, params) {
+            sortProgress: function() {
+                if (this.sortField == "progress") {
+                    this.sortDir *= -1;
+                } else {
+                    this.sortField = "progress";
+                    this.sortDir = 1;
+                }
+
                 this.users.sort(function(a, b) {
-                    //TODO
-                });
+                    console.log(a.progress, b.progress);
+                    return this.sortDir * (a.progress - b.progress);
+                }.bind(this));
             },
 
             sortLastNameAscending: function() {
