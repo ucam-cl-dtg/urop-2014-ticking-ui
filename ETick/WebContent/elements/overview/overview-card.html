@@ -57,7 +57,6 @@
                     <div layout horizontal>
                         <core-tooltip label="Progress" position="top">
 
-
                         <div class="auto-fix-container">
                             <core-icon class="{{'auto-fix' + (sortField == 'progress' ? ' icon-white' : '')}}" icon="image:auto-fix" on-tap="{{sortProgress}}"></core-icon>
                         </div>
@@ -289,11 +288,13 @@
                         lastName: temp[i].lastName,
                         crsId: temp[i].crsId,
                         college: temp[i].college,
-                        displayStrings: temp[i].displayStrings,
+                        displayStrings: temp[i].displayStrings.length == 0 ? [{iconCode: "", tooltip: "", index: 0}] : temp[i].displayStrings,
                         cssClass: i % 2 == 0 ? "overview-even" : "overview-odd",
                         displayWidth: 'width: ' + temp[i].progress * 4.55 + 'px'
                     }
                 }
+
+
             },
 
             /**

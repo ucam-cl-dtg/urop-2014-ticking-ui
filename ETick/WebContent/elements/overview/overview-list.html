@@ -34,9 +34,9 @@
                 </template>
 
                 <template if="{{!enableTooltip}}">
-                        <div class="tick-label" vertical layout center>
-                            <status-icon class="overview-status-icon" mode="{{displayString.iconCode}}"></status-icon>
-                        </div>
+                    <div class="tick-label" vertical layout center>
+                        <status-icon class="overview-status-icon" mode="{{displayString.iconCode}}"></status-icon>
+                    </div>
                 </template>
             </template>
         </div>
@@ -58,6 +58,7 @@
 
             updateListWidth: function() {
                 this.listContainerStyle = "width: " + this.max(60 * (this.user.displayStrings.length), this.scrollAreaWidth) + "px;";
+                console.log("Saw", this.scrollAreaWidth);
             },
 
             max: function(a, b) {
@@ -79,7 +80,9 @@
             },
 
             pointerOver: function() {
-                this.enableTooltip = true;
+                if (this.user.displayStrings.length > 0) {
+                    this.enableTooltip = true;
+                }
             }
         });
     </script>
