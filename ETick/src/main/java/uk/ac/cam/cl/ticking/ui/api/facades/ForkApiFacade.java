@@ -22,6 +22,7 @@ import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.FileBean;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
+import uk.ac.cam.cl.git.api.IllegalCharacterException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.signups.TickSignups;
@@ -162,7 +163,7 @@ public class ForkApiFacade implements IForkApiFacade {
 		try {
 			repo = gitServiceProxy.forkRepository(config.getConfig()
 					.getSecurityToken(), new ForkRequestBean(null, crsid,
-					repoName, null));
+					repoName));
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
@@ -186,14 +187,24 @@ public class ForkApiFacade implements IForkApiFacade {
 						+ tickId + "\nCause: " + s.toString());
 				repo = s.getMessage();
 
+			}
+			
+			if (s.getClassName().equals(
+					IllegalCharacterException.class.getName())) {
+
+				log.warn("User " + crsid + " failed to fork repository for "
+						+ tickId + "\nCause: " + s.toString());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(s.getMessage()).build();
+
 			} else {
 				log.error("User " + crsid + " failed to fork repository for "
 						+ tickId + "\nCause: " + s.toString());
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
+				return Response.status(Status.BAD_REQUEST)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
-		} catch (IOException | DuplicateRepoNameException e) {
+		} catch (IOException | DuplicateRepoNameException | IllegalCharacterException e) {
 			log.error("User " + crsid + " failed to fork repository for "
 					+ tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
