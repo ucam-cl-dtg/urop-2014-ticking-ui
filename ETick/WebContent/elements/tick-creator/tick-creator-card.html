@@ -401,7 +401,7 @@
 
             var tickData = this.buildTickData();
             var staticData = this.buildStaticData();
-            //TODO: call function which builds dynamic data
+            var dynamicData = this.buildDynamicData();
             //TODO: build required files
 
             console.log("tick data", tickData);
@@ -410,8 +410,10 @@
                 name: tickData.name,
                 deadline: tickData.deadline,
                 groups: tickData.groups,
-                checkstyleOpts: staticData
-                //TODO: insert dynamic data and required files into the master object
+                checkstyleOpts: staticData,
+                containerId: dynamicData.containerId,
+                testId: dynamicData.testId
+                //TODO: insert required files into the master object
             };
 
             if (!this.newTick) {
