@@ -16,6 +16,15 @@ public class Configuration implements ConfigurationFile {
 	private String uiMongoBroadcast = "localhost";
 	private int uiMongoPort = 27017;
 	
+	private int gitDefaultMaxPerRoute = 8;
+	private int gitMaxTotal = 8;
+	
+	private int testDefaultMaxPerRoute = 200;
+	private int testMaxTotal = 200;
+	
+	private int signupDefaultMaxPerRoute = 200;
+	private int signupMaxTotal = 200;
+	
 	private String securityToken;
 
 	/**
@@ -126,6 +135,54 @@ public class Configuration implements ConfigurationFile {
 
 	public void setSecureTestApiLocation(String secureTestApiLocation) {
 		this.secureTestApiLocation = secureTestApiLocation;
+	}
+
+	public int getGitDefaultMaxPerRoute() {
+		return gitDefaultMaxPerRoute;
+	}
+
+	public void setGitDefaultMaxPerRoute(int gitDefaultMaxPerRoute) {
+		this.gitDefaultMaxPerRoute = gitDefaultMaxPerRoute;
+	}
+
+	public int getGitMaxTotal() {
+		return gitMaxTotal;
+	}
+
+	public void setGitMaxTotal(int gitMaxTotal) {
+		this.gitMaxTotal = gitMaxTotal;
+	}
+
+	public int getTestDefaultMaxPerRoute() {
+		return testDefaultMaxPerRoute;
+	}
+
+	public void setTestDefaultMaxPerRoute(int testDefaultMaxPerRoute) {
+		this.testDefaultMaxPerRoute = testDefaultMaxPerRoute;
+	}
+
+	public int getTestMaxTotal() {
+		return testMaxTotal;
+	}
+
+	public void setTestMaxTotal(int testMaxTotal) {
+		this.testMaxTotal = testMaxTotal;
+	}
+
+	public int getSignupDefaultMaxPerRoute() {
+		return signupDefaultMaxPerRoute;
+	}
+
+	public void setSignupDefaultMaxPerRoute(int signupDefaultMaxPerRoute) {
+		this.signupDefaultMaxPerRoute = signupDefaultMaxPerRoute;
+	}
+
+	public int getSignupMaxTotal() {
+		return signupMaxTotal;
+	}
+
+	public void setSignupMaxTotal(int signupMaxTotal) {
+		this.signupMaxTotal = signupMaxTotal;
 	}
 
 }
