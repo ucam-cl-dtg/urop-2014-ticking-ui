@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
-import uk.ac.cam.cl.ticking.ui.api.GroupApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.facades.GroupApiFacade;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
