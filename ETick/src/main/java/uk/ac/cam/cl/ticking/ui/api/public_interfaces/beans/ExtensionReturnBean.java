@@ -1,7 +1,5 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans;
 
-import java.util.List;
-
 import org.joda.time.DateTime;
 
 import uk.ac.cam.cl.ticking.ui.actors.User;

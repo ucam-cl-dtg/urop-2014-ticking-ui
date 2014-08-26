@@ -21,14 +21,14 @@ public class SignupApi {
 				Configuration.class).getConfig();
 
 		PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
-		cm.setDefaultMaxPerRoute(200);
-		cm.setMaxTotal(200);
+		cm.setDefaultMaxPerRoute(config.getSignupDefaultMaxPerRoute());
+		cm.setMaxTotal(config.getSignupMaxTotal());
 
 		HttpClient httpClient = new DefaultHttpClient(cm);
 		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
 
 		ResteasyClient client = new ResteasyClientBuilder()
-				.maxPooledPerRoute(200).httpEngine(engine).build();
+				.maxPooledPerRoute(config.getSignupDefaultMaxPerRoute()).httpEngine(engine).build();
 		ResteasyWebTarget target = client
 				.target(config.getSignupsApiLocation());
 
