@@ -1,5 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../../bower_components/core-icons/image-icons.html">
 <link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
@@ -53,6 +55,13 @@
 
                     <!-- User details column headers -->
                     <div layout horizontal>
+                        <core-tooltip label="Progress" position="top">
+
+
+                        <div class="auto-fix-container">
+                            <core-icon class="{{'auto-fix' + (sortField == 'progress' ? ' icon-white' : '')}}" icon="image:auto-fix" on-tap="{{sortProgress}}"></core-icon>
+                        </div>
+                        </core-tooltip>
                     <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
                         <div layout horizontal end class="user-label">
                             <div on-tap="{{sort}}" class="{{'user-label unselectable' + (sortField == item ? ' sort-field-header' : '')}}">{{item}}</div>
@@ -171,6 +180,13 @@
                    }
                 });
 
+                users = users.map(function(el) {
+                    el.progress = el.displayStrings.filter(function(el) {
+                        return el.iconCode == "P";
+                    }).length / el.displayStrings.length * 100;
+                    return el;
+                });
+
                 //build list of column titles. These are the display strings of the first user
                 var colTitles = users[0].displayStrings.map(function(el) {
                     return el.iconCode;
@@ -235,6 +251,20 @@
                 //TODO: should probably subsort by either last name or number of attempts made (when this becomes available)
             },
 
+            sortProgress: function() {
+                if (this.sortField == "progress") {
+                    this.sortDir *= -1;
+                } else {
+                    this.sortField = "progress";
+                    this.sortDir = 1;
+                }
+
+                this.users.sort(function(a, b) {
+                    console.log(a.progress, b.progress);
+                    return this.sortDir * (a.progress - b.progress);
+                }.bind(this));
+            },
+
             sortLastNameAscending: function() {
                 this.sortField = "Name";
                 this.sortDir = "1";
@@ -260,7 +290,8 @@
                         crsId: temp[i].crsId,
                         college: temp[i].college,
                         displayStrings: temp[i].displayStrings,
-                        cssClass: i % 2 == 0 ? "overview-even" : "overview-odd"
+                        cssClass: i % 2 == 0 ? "overview-even" : "overview-odd",
+                        displayWidth: 'width: ' + temp[i].progress * 4.55 + 'px'
                     }
                 }
             },
