@@ -290,7 +290,7 @@
                         college: temp[i].college,
                         displayStrings: temp[i].displayStrings.length == 0 ? [{iconCode: "", tooltip: "", index: 0}] : temp[i].displayStrings,
                         cssClass: i % 2 == 0 ? "overview-even" : "overview-odd",
-                        displayWidth: 'width: ' + temp[i].progress * 4.55 + 'px'
+                        displayWidth: 'width: ' + temp[i].progress * 4.75 + 'px'
                     }
                 }
 
@@ -437,11 +437,11 @@
                     }
                 //}
 
-//                if (34 * this.displayUsers.length > 600-144) {
-//                    this.$.scrollArea.style.overflowY = "auto";
-//                } else {
-//                    this.$.scrollArea.style.overflowY = "hidden";
-//                }
+                if (34 * this.displayUsers.length > 600-144) {
+                    this.$.scrollArea.style.overflowY = "auto";
+                } else {
+                    this.$.scrollArea.style.overflowY = "hidden";
+                }
 
 
                 this.job('update-again', function() {
