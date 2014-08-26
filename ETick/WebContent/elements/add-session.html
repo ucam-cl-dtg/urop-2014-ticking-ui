@@ -2,7 +2,7 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="datetime-picker.html">
 
@@ -20,13 +20,17 @@
 		</style>
 
 		<!-- Add session API call. -->
-		<core-ajax id="addSessionAPI"
+		<toast-ajax id="addSessionAPI"
 			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets"
 			method="POST"
 			contentType="application/json"
 			on-core-response="{{addSessionResponse}}"
-			on-core-error="{{addSessionError}}">
-		</core-ajax>
+			on-core-error="{{addSessionError}}"
+            
+            popUpError
+            captureError
+            waitMessage="Adding signups sheet....">
+		</toast-ajax>
 
 		<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
 		<paper-dialog id="addDialog" heading="Create Ticking Session:"
@@ -95,10 +99,6 @@
 				<paper-button id="addSubmit" class="dialogSubmit" label="CREATE" on-click="{{createButtonClicked}}" affirmative></paper-button>
 			</template>
 		</paper-dialog>
-
-		<paper-toast id="addSessionSuccess" duration="8000"></paper-toast>
-		<paper-toast id="addSessionError" duration="8000"></paper-toast>
-
 	</template>
 	<script>
 		Polymer('add-session', {
@@ -137,16 +137,9 @@
 			},
 
 			addSessionResponse: function () {
-				var toast = this.$.addSessionSuccess;
-				toast.text = "Successfully created new ticking session '" + this.title + "'.";
+				this.$.addSessionAPI.responseMessage =
+                    "Successfully created new ticking session '" + this.title + "'.";
 				this.fire('sheet-created');
-				toast.show();
-			},
-
-			addSessionError: function(e, detail) {
-				var toast = this.$.addSessionError;
-				toast.text = detail.xhr.responseText;
-				toast.show();
 			},
 
 			addTicker: function () {

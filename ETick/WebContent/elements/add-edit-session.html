@@ -1,4 +1,4 @@
-
+<link rel="import" href="toast-ajax/toast-ajax.html">
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/core-icons/communication-icons.html">
@@ -60,22 +60,28 @@
 		</style>
 
 		<!-- Add session API call. -->
-		<core-ajax id="addSessionAPI"
+		<toast-ajax id="addSessionAPI"
 			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets"
 			method="POST"
 			contentType="application/json"
 			on-core-response="{{addSessionResponse}}"
-			on-core-error="{{addSessionError}}">
-		</core-ajax>
+			
+			popUpError
+			captureError
+			waitMessage="Adding signups sheet....">
+		</toast-ajax>
 
 		<!-- Edit session API call. -->
-		<core-ajax id="editSessionAPI"
+		<toast-ajax id="editSessionAPI"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/' + sheet._id }}"
 			method="POST"
 			contentType="application/json"
 			on-core-response="{{editSessionResponse}}"
-			on-core-error="{{editSessionError}}">
-		</core-ajax>
+			
+			popUpError
+			captureError
+			waitMessage="Editing signups sheet....">
+		</toast-ajax>
 
 		<h1>{{sheet ? sheet.title : 'New Ticking Session:'}}</h1>
 		<h2>Session Information</h2>
@@ -170,12 +176,6 @@
 				on-click="{{submitClicked}}">
 			</paper-button>
 		</div>
-
-
-		<!-- Error toasts. -->
-		<paper-toast id="addSessionError" duration="8000"></paper-toast>
-		<paper-toast id="editSessionError" duration="8000"></paper-toast>
-
 	</template>
     <script src="../bower_components/moment/moment.js"></script>
     <script src="../js/prettyDate.js"></script>
@@ -273,12 +273,6 @@
 				});
 			},
 
-			addSessionError: function(e, detail) {
-				var toast = this.$.addSessionError;
-				toast.text = detail.xhr.responseText;
-				toast.show();
-			},
-
 			cancelClicked: function () {
 				this.fire('sheet-cancel');
 			},
@@ -287,12 +281,6 @@
 				this.fire('sheet-edited', {
 					message: "Edited ticking session '" + this.title + "'."
 				});
-			},
-
-			editSessionError: function(e, detail) {
-				var toast = this.$.editSessionError;
-				toast.text = detail.xhr.responseText;
-				toast.show();
 			},
 			
 		});
