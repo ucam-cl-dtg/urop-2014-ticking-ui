@@ -55,9 +55,13 @@
 
                     <!-- User details column headers -->
                     <div layout horizontal>
+                        <core-tooltip label="Progress" position="top">
+
+
                         <div class="auto-fix-container">
                             <core-icon class="{{'auto-fix' + (sortField == 'progress' ? ' icon-white' : '')}}" icon="image:auto-fix" on-tap="{{sortProgress}}"></core-icon>
                         </div>
+                        </core-tooltip>
                     <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
                         <div layout horizontal end class="user-label">
                             <div on-tap="{{sort}}" class="{{'user-label unselectable' + (sortField == item ? ' sort-field-header' : '')}}">{{item}}</div>
