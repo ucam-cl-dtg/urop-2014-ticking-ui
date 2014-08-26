@@ -8,7 +8,7 @@ public class TickTest {
 
 	@Test
 	public void testReplaceDelimeter() {
-		assertEquals(",s should be replaces by /s", "crsid/tick_name",Tick.replaceDelimeter("crsid,tick_name"));
+		assertEquals(", should be replaces by /", "crsid/tick_name",Tick.replaceDelimeter("crsid,tick_name"));
 	}
 
 }
