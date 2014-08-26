@@ -7,14 +7,13 @@ package uk.ac.cam.cl.ticking.ui.configuration;
  */
 public class Configuration implements ConfigurationFile {
 
+	/* These variables will not update during execution but will on a Tomcat service restart*/
 	private String uiApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_UI/api/";
 	private String gitApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_GIT/rest/";
 	private String secureGitApiLocation = "http://urop2014.dtg.cl.cam.ac.uk:8080/UROP_GIT_SECURED/rest/";
 	private String testApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem/rest/";
 	private String secureTestApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem-secured/rest/";
 	private String signupsApiLocation = "http://urop2014.dtg.cl.cam.ac.uk/UROP_SIGNUPS/rest/";
-	private String uiMongoBroadcast = "localhost";
-	private int uiMongoPort = 27017;
 	
 	private int gitDefaultMaxPerRoute = 8;
 	private int gitMaxTotal = 8;
@@ -24,6 +23,10 @@ public class Configuration implements ConfigurationFile {
 	
 	private int signupDefaultMaxPerRoute = 200;
 	private int signupMaxTotal = 200;
+	/*---------*/
+	
+	private String uiMongoBroadcast = "localhost";
+	private int uiMongoPort = 27017;
 	
 	private String securityToken;
 

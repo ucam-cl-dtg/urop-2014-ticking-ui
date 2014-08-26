@@ -1,4 +1,4 @@
-package uk.ac.cam.cl.ticking.ui.api;
+package uk.ac.cam.cl.ticking.ui.api.facades;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,7 +27,6 @@ import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.ticking.signups.TickSignups;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ISubmissionApiFacade;
-import uk.ac.cam.cl.ticking.ui.configuration.Admins;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
@@ -44,9 +43,6 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			.getLogger(SubmissionApiFacade.class.getName());
 
 	private IDataManager db;
-	// not currently used but could quite possibly be needed in the future, will
-	// remove if not
-	@SuppressWarnings("unused")
 	private ConfigurationLoader<Configuration> config;
 
 	private ITestService testServiceProxy;

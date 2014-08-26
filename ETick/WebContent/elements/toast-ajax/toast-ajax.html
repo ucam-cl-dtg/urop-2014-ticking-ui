@@ -99,7 +99,7 @@ this to happen.
                   function ()
                   {
                     if (this.waitMessage != null
-                      ||this.waitMessage == "")
+                      &&this.waitMessage != "")
                     {
                       this.waitShown = true;
                       this.$.waitToastElement.show();

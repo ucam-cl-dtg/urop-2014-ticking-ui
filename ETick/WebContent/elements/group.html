@@ -1,7 +1,6 @@
 <!-- Element representing a 'Group' page. -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="main-card.html">
 <link rel="import" href="group-members.html">
 <link rel="import" href="tick-list.html">
@@ -28,17 +27,25 @@
         <link rel="stylesheet" href="../css/shared-styles.css">
 
 		<!-- User roles API call. -->
-		<core-ajax id="roleAjax"
+		<toast-ajax id="roleAjax"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/' + gid + '/roles'}}"
-			handleAs="json" on-core-response="{{roleResponse}}">
-		</core-ajax>
+			handleAs="json" on-core-response="{{roleResponse}}"
+
+            popUpError
+            captureError
+            waitMessage="Loading your roles....">
+		</toast-ajax>
 
 		<!-- Available signup sheets API call. -->
-		<core-ajax id="sheetListAPI"
+		<toast-ajax id="sheetListAPI"
 			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/' + gid }}"
 			handleAs="json"
-			on-core-response="{{sheetListResponse}}">
-		</core-ajax>
+			on-core-response="{{sheetListResponse}}"
+            
+            popUpError
+            captureError
+            waitMessage="Loading signups sheets....">
+		</toast-ajax>
 
         <main-card animated>
 			<!-- temporary on-tap to try and remove deep signups card -->
