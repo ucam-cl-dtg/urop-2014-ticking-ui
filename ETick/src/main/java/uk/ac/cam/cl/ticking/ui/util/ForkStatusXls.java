@@ -99,7 +99,10 @@ public class ForkStatusXls {
 	    rightCell.setCellStyle(borderStyle);
 	    
 	    for (String tickId : group.getTicks()) {
-			row.createCell(cellnum++).setCellValue(db.getTick(tickId).getName());
+	    	Tick tick = db.getTick(tickId);
+			String heading = tick.getName();
+			heading += (tick.getDeadline() == null) ? "" : " "+tick.getDeadline().toString(dtf);
+			row.createCell(cellnum++).setCellValue(heading);
 		}
 		
 		for (User user : submitters) {
@@ -129,6 +132,7 @@ public class ForkStatusXls {
 						Cell cell = row.createCell(cellnum++);
 						cell.setCellValue(Strings.FAILED);
 						cell.setCellStyle(failStyle);
+						createComment(workbook,sheet,row,cell,Strings.NOTSTARTED);
 					} else {
 						cellnum++;
 					}

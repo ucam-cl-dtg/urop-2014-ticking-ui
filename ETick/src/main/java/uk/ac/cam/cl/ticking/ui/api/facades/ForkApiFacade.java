@@ -113,6 +113,15 @@ public class ForkApiFacade implements IForkApiFacade {
 				"RavenRemoteUser");
 
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
+		Tick tick = db.getTick(tickId);
+
+		/* Return if the tick doesn't exist */
+		if (tick == null) {
+			log.error("Requested tick " + tickId
+					+ " for forking, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
 
 		/* Does it already exist? */
 		if (fork != null) {
@@ -139,6 +148,18 @@ public class ForkApiFacade implements IForkApiFacade {
 					+ " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
+		}
+
+		/* Has the deadline passed? */
+		DateTime extension = tick.getExtensions().get(crsid);
+
+		if (extension != null) {
+			tick.setDeadline(extension);
+		}
+
+		if (tick.getDeadline() != null && tick.getDeadline().isBeforeNow()) {
+			return Response.status(Status.NOT_FOUND).entity(Strings.DEADLINE)
+					.build();
 		}
 
 		/* Create and save fork object */
@@ -171,8 +192,7 @@ public class ForkApiFacade implements IForkApiFacade {
 
 			if (s.getClassName().equals(IOException.class.getName())) {
 				log.error("User " + crsid + " failed to fork repository for "
-						+ tickId + "\nCause: "
-								+ s.toString());
+						+ tickId + "\nCause: " + s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -188,7 +208,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				repo = s.getMessage();
 
 			}
-			
+
 			if (s.getClassName().equals(
 					IllegalCharacterException.class.getName())) {
 
@@ -204,7 +224,8 @@ public class ForkApiFacade implements IForkApiFacade {
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
-		} catch (IOException | DuplicateRepoNameException | IllegalCharacterException e) {
+		} catch (IOException | DuplicateRepoNameException
+				| IllegalCharacterException e) {
 			log.error("User " + crsid + " failed to fork repository for "
 					+ tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
@@ -246,7 +267,8 @@ public class ForkApiFacade implements IForkApiFacade {
 				ReportResult result = forkBean.getHumanPass() ? ReportResult.PASS
 						: ReportResult.FAIL;
 				try {
-					testServiceProxy.setTickerResult(config.getConfig().getSecurityToken(), crsid, tickId, result,
+					testServiceProxy.setTickerResult(config.getConfig()
+							.getSecurityToken(), crsid, tickId, result,
 							forkBean.getTickerComments(), forkBean
 									.getCommitId(), forkBean.getReportDate()
 									.getMillis());

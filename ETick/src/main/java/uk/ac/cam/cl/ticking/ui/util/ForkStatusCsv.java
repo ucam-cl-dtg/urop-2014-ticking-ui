@@ -52,7 +52,10 @@ public class ForkStatusCsv {
 		writer.append(",College");
 		writer.append(',');
 		for (String tickId : group.getTicks()) {
-			writer.append(',' + db.getTick(tickId).getName());
+			Tick tick = db.getTick(tickId);
+			String heading = ',' + tick.getName();
+			heading += (tick.getDeadline() == null) ? "" : " "+tick.getDeadline().toString(dtf);
+			writer.append(heading);
 		}
 
 		writer.append('\n');
@@ -77,7 +80,7 @@ public class ForkStatusCsv {
 				if (fork == null) {
 					
 					if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
-						writer.append(","+Strings.FAILED);
+						writer.append(","+Strings.FAILED+" ("+Strings.NOTSTARTED+")");
 					} else {
 						writer.append(',');
 					}
