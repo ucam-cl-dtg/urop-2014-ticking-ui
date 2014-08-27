@@ -5,7 +5,6 @@
 <link rel="import" href="../bower_components/core-icons/device-icons.html">
 <link rel="import" href="../bower_components/core-icons/image-icons.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="date-picker.html">
 <link rel="import" href="date-entry.html">
 
 
@@ -130,8 +129,7 @@
 		<h2>Date and Time</h2>
 		<div layout horizontal start>
 			<core-icon class="big" icon="event"></core-icon>
-			<date-picker id="date" selectedDate="{{date}}" class="datetime"
-				error="Session date."></date-picker>
+			<date-entry id="dateEntry" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry>
 			
 			<core-icon class="big" icon="device:access-time"></core-icon>
 			<paper-input id="startTime" class="datetime"
