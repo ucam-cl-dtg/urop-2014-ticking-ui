@@ -8,6 +8,43 @@
   <template>
     <link rel="stylesheet" href="../../css/shared-styles.css"/>
     <link rel="stylesheet" href="status-list-style.css"/>
+    <style>
+      .tooltipFiles
+      {
+        font-size: 11pt;
+        line-height: 11pt;
+        position: absolute;
+        visibility: hidden;
+        background-color: rgba(0,0,0,0.8);
+        color: white;
+        border-radius: 3px;
+        z-index: 1002;
+        padding: 8px;
+      }
+
+      div:hover .tooltipFiles
+      {
+        display: none;
+      }
+
+      div.tooltipFiles-container:hover .tooltipFiles
+      {
+        visibility: visible !important;
+        display: block;
+      }
+
+      div.tooltipFiles-container:active .tooltipFiles
+      {
+        visibility: visible !important;
+        display: block;
+      }
+
+      div.tooltipFiles-container:focus .tooltipFiles
+      {
+        visibility: visible !important;
+        display: block;
+      }
+    </style>
 
     <core-item icon="backspace"
                on-tap="{{clearHighlighting}}"
@@ -18,11 +55,22 @@
                    selected="{{highlight}}"
                    valueattr="name">
       <template repeat="{{item in items}}">
-        <core-item icon='{{item.icon}}'
-                   name="{{item.className}}"
-                   class="{{item.outcome}}"
-                   label="{{item.problemDescription}}">
-        </core-item>
+        <div class="tooltipFiles-container">
+          <core-item icon='{{item.icon}}'
+                     name="{{item.className}}"
+                     class="{{item.outcome}}"
+                     label="{{item.problemDescription}}">
+          </core-item>
+          <template if="{{item.files.length > 0}}">
+            <div class="tooltipFiles">
+              <ul>
+                <template repeat="{{filename in item.files}}">
+                <li>{{filename}}</li>
+                </template>
+              </ul>
+            </div>
+          </template>
+        </div>
       </template> 
     </core-selector>
     <p>
@@ -52,6 +100,13 @@
                         default:
                           error.icon = "error";
                       }
+
+                      error.files = error.fileDetails.map(
+                          function (fileDetail)
+                          {
+                            return fileDetail.file;
+                          });
+
                       return error;
                     });
 
