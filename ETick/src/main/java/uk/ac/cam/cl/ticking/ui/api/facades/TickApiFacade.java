@@ -206,157 +206,83 @@ public class TickApiFacade implements ITickApiFacade {
 		tick.setAuthor(crsid);
 		tick.initTickId();
 
-		/* Has the tick been unsuccessfully created previously? */
-		Tick failed = db.getTick(tick.getTickId());
-		if (failed != null && failed.getStubRepo() != null
-				&& failed.getCorrectnessRepo() != null) {
+		/* Has the tick been created previously? */
+		Tick prev = db.getTick(tick.getTickId());
+		if (prev != null) {
 			log.error("User " + crsid + " failed creating tick with id "
 					+ tick.getTickId());
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
+			return Response.status(Status.CONFLICT)
 					.entity(Strings.EXISTS).build();
 		}
 
 		/*
-		 * If we haven't tried previously or we did and the failure was creating
-		 * the stub repo
+		 * Create the stub repository
 		 */
-		if (failed == null || failed.getStubRepo() == null) {
-			String repo;
-			try {
-				repo = gitServiceProxy.addRepository(config.getConfig()
-						.getSecurityToken(), new RepoUserRequestBean(crsid
-						+ "/" + tickBean.getName(), crsid));
+		String repo;
+		try {
+			repo = gitServiceProxy.addRepository(config.getConfig()
+					.getSecurityToken(), new RepoUserRequestBean(crsid + "/"
+					+ tickBean.getName(), crsid));
 
-			} catch (InternalServerErrorException e) {
-				RemoteFailureHandler h = new RemoteFailureHandler();
-				SerializableException s = h.readException(e);
+		} catch (InternalServerErrorException e) {
+			RemoteFailureHandler h = new RemoteFailureHandler();
+			SerializableException s = h.readException(e);
 
-				if (s.getClassName().equals(IOException.class.getName())) {
+			if (s.getClassName().equals(IOException.class.getName())) {
 
-					log.error("User " + crsid
-							+ " failed creating stub repository for "
-							+ tick.getTickId() + "\nCause: " + s.toString());
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-				}
-
-				if (s.getClassName().equals(
-						DuplicateRepoNameException.class.getName())) {
-					log.error("User " + crsid
-							+ " failed creating stub repository for "
-							+ tick.getTickId() + "\nCause: " + s.toString());
-					return Response.status(Status.NOT_FOUND)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-
-				}
-
-				if (s.getClassName().equals(
-						IllegalCharacterException.class.getName())) {
-
-					log.error("User " + crsid
-							+ " failed creating stub repository for "
-							+ tick.getTickId() + "\nCause: " + s.toString());
-					return Response.status(Status.BAD_REQUEST)
-							.entity(s.getMessage()).build();
-
-				} else {
-					log.error("User " + crsid
-							+ " failed creating stub repository for "
-							+ tick.getTickId() + "\nCause: " + s.toString());
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-				}
-
-			} catch (IOException | DuplicateRepoNameException
-					| IllegalCharacterException e) {
-				log.error(
-						"User " + crsid
-								+ " failed to create stub repository for "
-								+ tick.getTickId(), e.getCause());
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-						.build();
-				// Due to exception chaining this shouldn't happen
-			}
-
-			tick.setStubRepo(repo);
-		} else {
-			/* Else get the stub repo from the failure */
-			tick.setStubRepo(failed.getStubRepo());
-		}
-
-		/*
-		 * If we haven't tried previously or we did and the failure was creating
-		 * the correctness repo
-		 */
-		if (failed == null || failed.getCorrectnessRepo() == null) {
-			String correctnessRepo;
-			try {
-				correctnessRepo = gitServiceProxy.addRepository(
-						config.getConfig().getSecurityToken(),
-						new RepoUserRequestBean(crsid + "/"
-								+ tickBean.getName() + "/correctness", crsid));
-			} catch (InternalServerErrorException e) {
-				RemoteFailureHandler h = new RemoteFailureHandler();
-				SerializableException s = h.readException(e);
-
-				if (s.getClassName().equals(IOException.class.getName())) {
-
-					log.error("User " + crsid
-							+ " tied creating correctness repository for "
-							+ tick.getTickId() + "\nCause: " + s.toString());
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-				}
-
-				if (s.getClassName().equals(
-						DuplicateRepoNameException.class.getName())) {
-					log.error("User " + crsid
-							+ " failed creating correctness repository for "
-							+ tick.getTickId() + "\nCause: " + s.toString());
-					return Response.status(Status.NOT_FOUND)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-
-				}
-
-				if (s.getClassName().equals(
-						IllegalCharacterException.class.getName())) {
-
-					log.error("User " + crsid
-							+ " failed creating correctness repository for "
-							+ tick.getTickId() + "\nCause: " + s.toString());
-					return Response.status(Status.BAD_REQUEST)
-							.entity(s.getMessage()).build();
-
-				} else {
-					log.error("User " + crsid
-							+ " failed creating correctness repository for "
-							+ tick.getTickId() + "\nCause: " + s.toString());
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-				}
-
-			} catch (IOException | DuplicateRepoNameException
-					| IllegalCharacterException e) {
 				log.error("User " + crsid
-						+ " failed to create correctness repository for "
-						+ tick.getTickId(), e.getCause());
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-						.build();
-				// Due to exception chaining this shouldn't happen
+						+ " failed creating stub repository for "
+						+ tick.getTickId() + "\nCause: " + s.toString());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
-			tick.setCorrectnessRepo(correctnessRepo);
 
-		} else {
-			/* Else get the correctness repo from the failure */
-			tick.setCorrectnessRepo(failed.getCorrectnessRepo());
+			if (s.getClassName().equals(
+					DuplicateRepoNameException.class.getName())) {
+				log.error("User " + crsid
+						+ " failed creating stub repository for "
+						+ tick.getTickId() + "\nCause: " + s.toString());
+				return Response.status(Status.NOT_FOUND)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+
+			}
+
+			if (s.getClassName().equals(
+					IllegalCharacterException.class.getName())) {
+
+				log.error("User " + crsid
+						+ " failed creating stub repository for "
+						+ tick.getTickId() + "\nCause: " + s.toString());
+				return Response.status(Status.BAD_REQUEST)
+						.entity(s.getMessage()).build();
+
+			} else {
+				log.error("User " + crsid
+						+ " failed creating stub repository for "
+						+ tick.getTickId() + "\nCause: " + s.toString());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
+
+		} catch (IOException | DuplicateRepoNameException
+				| IllegalCharacterException e) {
+			log.error(
+					"User " + crsid + " failed to create stub repository for "
+							+ tick.getTickId(), e.getCause());
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
+			// Due to exception chaining this shouldn't happen
 		}
+
+		tick.setStubRepo(repo);
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
 
 		/* Save style checks with the test service */
 		testServiceProxy.createNewTest(config.getConfig().getSecurityToken(),
-				tick.getTickId(), tickBean.getCheckstyleOpts(), tickBean.getContainerId(), tickBean.getTestId());
+				tick.getTickId(), tickBean.getCheckstyleOpts(),
+				tickBean.getContainerId(), tickBean.getTestId());
 
 		/* Register the tick with the required groups */
 		for (String groupId : tick.getGroups()) {
@@ -405,7 +331,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 			/* Call the test service to update the checkstyles */
 			testServiceProxy.createNewTest(config.getConfig()
-					.getSecurityToken(), tickId, tickBean.getCheckstyleOpts(), tickBean.getContainerId(), tickBean.getTestId());
+					.getSecurityToken(), tickId, tickBean.getCheckstyleOpts(),
+					tickBean.getContainerId(), tickBean.getTestId());
 
 			/* Timestamp the tick object */
 			prevTick.setEdited(DateTime.now());
