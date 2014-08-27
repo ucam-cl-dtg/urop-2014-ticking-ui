@@ -294,6 +294,49 @@ public class TickSignups {
                     .entity("Booking unsuccessful: " + e.getMessage()).build();
         }
     }
+    
+    /**
+     * Books the slot with the current raven user's crsid and the comment "Unavailable",
+     * providing that the current raven user is a marker in the group of the given sheet.
+     */
+    @POST
+    @Path("/sheets/{sheetID}/tickerbookings")
+    public Response tickerReserveSlot(@Context HttpServletRequest request,
+            @PathParam("sheetID") String sheetID, TickerReserveSlotBean bean) {
+        String commentToBook = "Unavailable";
+        String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        String groupID;
+        try {
+            groupID = getGroupID(sheetID);
+        } catch (ItemNotFoundException e) {
+            log.warn("The user " + crsid + " tried to reserve a the slot "
+                    + " in the sheet of ID " + sheetID + " but the group for that sheet was not found");
+            return Response.status(Status.NOT_FOUND).entity("Error: no group was found for that sheet").build();
+        }
+        if (!permissions.hasRole(crsid, groupID, Role.MARKER)) {
+            log.warn("The user " + crsid + " tried to reserve a the slot starting at "
+                    + new Date(bean.getStartTime()) + " for ticker " + bean.getTicker()
+                    + " in the sheet of ID " + sheetID + " but is not a marker in the group");
+            return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+        }
+        allowSignup(crsid, groupID, commentToBook);
+        try {
+            service.book(sheetID, bean.getTicker(), bean.getStartTime(),
+                    new SlotBookingBean(null, crsid, commentToBook, db.getAuthCode(sheetID)));
+        } catch (ItemNotFoundException e) {
+            log.error("Something was not found which definitely should have been; there is an inconsistency", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Server Error: inconsistent databases; "
+                    + "reservation not made").build();
+        } catch (NotAllowedException e) {
+            log.error("The databases are inconsistent; the signups service rejected the auth code in the "
+                    + "'front end' database", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Server Error: inconsistent databases; "
+                    + "reservation not made").build();
+        }
+        log.info("Marker " + crsid + " has reserved a slot at " + new Date(bean.getStartTime())
+        + " for ticker " + bean.getTicker()+ " in the sheet of ID " + sheetID);
+        return Response.ok().build();
+    }
 
     /**
      * Unbooks the current raven user from the slot they've booked for the specified tick.
