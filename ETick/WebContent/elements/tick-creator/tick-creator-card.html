@@ -258,13 +258,23 @@
             var tickSettings = this.$.ajaxLoadStatic.response;
             this.staticOptions = tickSettings.checkstylesFiles;
             this.dynamicOptions = tickSettings.dynamicAvailable;
+            console.log("new stuff");
+            console.log(this.dynamicOptions);
+            console.log(tickSettings.testId);
+
             if (this.dynamicOptions != null) {
                 for (var j = 0; j < this.dynamicOptions.length; j++) {
-                    if (this.dynamicOptions[j].testId == tickSettings.testId) {
+                    if (this.dynamicOptions[j].testID == tickSettings.testId) {
                         this.dynamicSelectedIndex = j;
                     }
                 }
             }
+
+            if (this.dynamicSelectedIndex != null) {
+                this.dynamicOpened = true;
+            }
+
+            console.log("sdl dsindex", this.dynamicSelectedIndex);
 
             if (this.staticOptions.length == 0) {
                 this.$.ajaxLoadDefaults.go();
@@ -279,7 +289,7 @@
             var tickSettings = this.$.ajaxLoadDefaults.response;
             this.staticOptions = tickSettings.checkstylesFiles;
             this.dynamicOptions = tickSettings.dynamicAvailable;
-            console.log("dynamic opts", this.dynamicOptions);
+//            console.log("dynamic opts", this.dynamicOptions);
             this.dynamicSelectedIndex = null;
 
             for (var i = 0; i < this.staticOptions.length; i++) {
