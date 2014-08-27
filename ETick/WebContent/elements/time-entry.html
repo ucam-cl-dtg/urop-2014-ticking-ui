@@ -1,7 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 
-<polymer-element name="time-entry" attributes="">
+<polymer-element name="time-entry" attributes="hrs mins">
 	<template>
 		<style>
 			:host {
@@ -10,24 +10,57 @@
 		</style>
 		
 			<paper-input id="hours"
+				inputValue="{{hrs}}"
 				floatingLabel
+				type="number"
+				max="23"
+				min="0"
 				placeholder="HH"
-				pattern="^\d\d$"
 				required
-				error=" ">
+				error=" "
+				on-blur="{{inputBlurred}}"
+				on-input="{{validate}}">
 			</paper-input>
 			<paper-input id="minutes"
+				inputValue="{{mins}}"
 				floatingLabel
+				type="number"
+				max="59"
+				min="0"
 				placeholder="MM"
-				pattern="^\d\d$"
 				required
-				error=" ">
+				error=" "
+				on-blur="{{inputBlurred}}"
+				on-input="{{validate}}">
 			</paper-input>
 
 	</template>
 	<script>
 		Polymer('time-entry', {
-			
+			pad: function (s) {
+				s = parseInt(s).toString();
+				if (s && s.length == 1) {
+					return "0" + s;
+				}
+				return s;
+			},
+
+			inputBlurred: function () {
+				this.hrs = this.pad(this.hrs);
+				this.mins = this.pad(this.mins);
+
+				this.validate();
+			},
+
+			validate: function () {
+				if (this.$.hours.invalid || this.$.minutes.invalid) {
+					this.value = null;
+				}
+				else {
+					this.value = this.pad(this.hrs) + ":" + this.pad(this.mins);
+				}
+				console.log(this.value);
+			}
 		});
 	</script>
 </polymer-element>
