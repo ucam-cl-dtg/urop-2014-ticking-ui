@@ -110,6 +110,7 @@
 
             tickIdChanged: function() {
                 this.$.signupDialog.refreshSelectors();
+                this.$.ajaxLoadBookings.go();
                 console.log("tickId changed!", this.tickId);
             },
 
@@ -134,10 +135,6 @@
                 if (this.signedUp) {
                     this.$.ajaxLoadBookings.go();
                 }
-            },
-
-            bookingChanged: function() {
-                console.log("start time changed to", this.booking.startTime);
             },
 
             /**
