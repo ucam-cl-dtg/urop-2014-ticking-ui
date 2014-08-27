@@ -203,7 +203,7 @@ public class TickSignups {
             if (service.getPermissions(groupID, crsid).containsKey(bean.getTickID())) { // user has passed this tick
                 /* Get the ticker they should ideally be signed up with (i.e. they have been failed by) */
                 String ticker = service.getPermissions(groupID, crsid).get(bean.getTickID());
-                if (ticker != null) {
+                if (ticker != null && service.columnIsFullyBooked(sheetID, ticker)) {
                     service.book(sheetID, ticker, bean.getStartTime(), new SlotBookingBean(null, crsid, bean.getTickID()));
                     /* Update fork object - not strictly needed any more */
                     Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
@@ -1320,6 +1320,7 @@ public class TickSignups {
         RemoteFailureHandler h = new RemoteFailureHandler();
         SerializableException s = h.readException(e);
         /* Extract class of the real exception */
+        @SuppressWarnings("unchecked") // We know it must be throwable - it is an exception!
         Class<? extends Throwable> clazz = (Class<? extends Throwable>) Class.forName(s.getClassName());
         /* Get the constructor for the exception which takes a single string */
         Constructor<? extends Throwable> ctor = clazz.getConstructor(String.class);
