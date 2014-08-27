@@ -203,7 +203,7 @@ public class TickSignups {
             if (service.getPermissions(groupID, crsid).containsKey(bean.getTickID())) { // user has passed this tick
                 /* Get the ticker they should ideally be signed up with (i.e. they have been failed by) */
                 String ticker = service.getPermissions(groupID, crsid).get(bean.getTickID());
-                if (ticker != null && service.columnIsFullyBooked(sheetID, ticker)) {
+                if (ticker != null && !service.columnIsFullyBooked(sheetID, ticker)) {
                     service.book(sheetID, ticker, bean.getStartTime(), new SlotBookingBean(null, crsid, bean.getTickID()));
                     /* Update fork object - not strictly needed any more */
                     Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
