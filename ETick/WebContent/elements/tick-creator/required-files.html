@@ -1,0 +1,31 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="required-files" attributes="requiredFiles">
+    <template>
+        <link rel="stylesheet" href="tick-creator-card.css">
+        <style>
+            #inputRequiredFiles {
+                width: 100%;
+                outline: none;
+                font: inherit;
+                margin: 8px 0 8px 0;
+                padding: 0.5rem 0;
+                border: none;
+                border-bottom: 1px solid #757575;
+                overflow: hidden;
+            }
+        </style>
+
+        <h4>Files Required in Student's Repository</h4>
+        <textarea on-keyup="{{changedTextArea}}" on-focus="changedTextArea" rows="1" id="inputRequiredFiles" placeholder="Separate with new lines...">{{requiredFiles}}</textarea>
+    </template>
+    <script>
+        Polymer('required-files', {
+           changedTextArea: function() {
+               if (this.$.inputRequiredFiles.scrollHeight > this.$.inputRequiredFiles.clientHeight) {
+                   this.$.inputRequiredFiles.style.height = this.$.inputRequiredFiles.scrollHeight + "px";
+               }
+           }
+        });
+    </script>
+</polymer-element>
