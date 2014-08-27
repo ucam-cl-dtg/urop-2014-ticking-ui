@@ -159,6 +159,7 @@
                 {
                   file.id = index;
                   file.hidden = isHidden(file);
+                  return file;
                 });
 
             this.fire('files-loaded');
