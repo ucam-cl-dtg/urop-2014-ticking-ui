@@ -5,7 +5,7 @@
 <link rel="import" href="../bower_components/core-icons/device-icons.html">
 <link rel="import" href="../bower_components/core-icons/image-icons.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="date-entry.html">
+<link rel="import" href="date-picker.html">
 
 
 <polymer-element name="add-edit-session" attributes="sheet gid">
@@ -31,10 +31,6 @@
 				width: 27px;
 				margin-right: 10px;
 				margin-top: 8px;
-			}
-
-			core-icon.center {
-				margin-top: 0;
 			}
 
 			.datetime {
@@ -131,14 +127,13 @@
 		</div>
 
 		<h2>Date and Time</h2>
-		<div layout horizontal center>
-			<core-icon class="big center" icon="event"></core-icon>
-			<date-entry id="dateEntry" day="{{day}}" month="{{month}}" year="{{year}}" 
-				on-input="{{validate}}"></date-entry>
+		<div layout horizontal start>
+			<core-icon class="big" icon="event"></core-icon>
+			<date-picker id="date" selectedDate="{{date}}" class="datetime"
+				error="Session date."></date-picker>
 			
 			<core-icon class="big" icon="device:access-time"></core-icon>
 			<paper-input id="startTime" class="datetime"
-				floatinglabel
 				type="time"
 				required 
 				error="Start time." 
@@ -148,7 +143,6 @@
 
 			<core-icon class="big" icon="device:access-time"></core-icon>
 			<paper-input id="endTime" class="datetime"
-				floatinglabel
 				type="time"
 				required 
 				error="End time." 
@@ -187,15 +181,11 @@
     <script src="../js/jsonSanitize.js"></script>
 	<script>
 		Polymer('add-edit-session', {
+
 			domReady: function () {
 				if (this.sheet) {
 					var startDT = prettyParse(this.sheet.startTime);
 					var endDT   = prettyParse(this.sheet.endTime);
-
-					this.day = startDT.date();
-					this.month = startDT.month();
-					this.year = startDT.year();
-
 
 					this.date = startDT.format("YYYY-MM-DD");
 					this.startTime = startDT.format("HH:mm");
@@ -214,11 +204,11 @@
 			},
 
 			validate: function () {
-				console.log(this.$.dateEntry.valid);
+				console.log(this.$.titleInput.invalid);
 
 				if (!this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
-					this.$.dateEntry.valid &&
+					this.$.date.selectedDate &&
 					this.$.startTime.value && this.$.endTime.value &&
 					!this.$.slotLengthInput.invalid) {
 					this.$.submitButton.disabled = false;
