@@ -15,7 +15,7 @@
       <span class="file-name"> {{name}} </span>
       <main-card unresolved>
         <pre class="hljs code-container">
-          <code>
+          <code style="font-family:'Source Code Pro' monospace; font-size: 14px;">
   <!-- Deliberately unindented (because of pre tag) -->
   <content id="codeContent" select="code"></content>
           </code>
@@ -81,7 +81,7 @@
                  * looping over arrays, so I use native array functions
                  */
                 var comments =
-                  this.comments.map(/* Same as foldl */
+                  this.comments.map(
                     function(comment)
                     {
                         return comment.fileDetails

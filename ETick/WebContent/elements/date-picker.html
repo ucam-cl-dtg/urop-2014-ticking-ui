@@ -7,22 +7,11 @@
         <style>
           :host {
             display: block;
-            z-index: 1;
           }
-	        input.date {
-	        	border: 1px solid #DDDDDD; 
-	        	background-color: #EEEEEE; 
-	        	color:#555555;
-	        	min-width: 200px; 
-	        	padding: 8px 10px; 
-	        	margin: 10px; 
-	        	border-radius: 4px; 
-	        }
-	        input.date:hover { 
-	        	cursor: pointer; 
-	        	border: 1px solid #44B4E4; 
-	        	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6); 
-	        }
+
+          polymer-date-picker {
+            z-index: 15;
+          }
 
           paper-input /deep/ input {
             margin: 0;
@@ -31,14 +20,23 @@
         </style>
         
         <polymer-date-picker id="datePicker" selectedDate="{{selectedDate}}" relatedTarget="{{$.trigger.$.input}}" opened="{{opened}}"></polymer-date-picker>
-        <paper-input id="trigger" value="{{selectedDate}}" on-click="{{toggle}}" required readonly error="{{error}}"></paper-input>
+        <paper-input id="trigger" value="{{displayDate}}" on-click="{{toggle}}" required readonly error="{{error}}"></paper-input>
 
       </template>
-    </polymer-element>
     <script>
       Polymer('date-picker', {
 
+        domReady: function () {
+          var datePicker = this.$.datePicker;
+          var headerPanel = document.getElementById('scaffold').shadowRoot.getElementById('headerPanel');
+          headerPanel.addEventListener('scroll', function () {
+            datePicker.reposition();
+          })
+        },
+
       	opened: false,
+
+        dateEntered: false,
 
         toggle: function() {
             this.$.datePicker.toggle();
@@ -46,6 +44,12 @@
         open: function() {
             this.$.datePicker.open();
         },
+
+        selectedDateChanged: function (oldValue, newValue) {
+          if (oldValue) {
+            this.displayDate = newValue;
+          }
+        }
       });
     </script>
 </polymer-element>

@@ -7,6 +7,7 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
+<link rel="import" href="../date-picker.html">
 <link rel="import" href="extension-list.html">
 <link rel="import" href="../dialog.html">
 <link rel="import" href="../search-box.html">
@@ -92,7 +93,7 @@
 				on-input="{{handleAddInput}}">
 			</paper-input>
 			<h2 class="subtitle">Extension:</h2>
-			<date-entry valid="{{dateValid}}" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry>
+			<date-picker id="datePicker" selectedDate="{{date}}"></date-picker>
 			<template if="{{showSubmit}}">
 				<paper-button id="addSubmit" class="dialogSubmit" label="ADD" on-click="{{addExtension}}" affirmative></paper-button>
 			</template>
@@ -127,22 +128,16 @@
 			addExtension: function() {
 				var newCRSIDs = this.$.addInput.value.trim().split(/[^\w\d]+/);
 				var jsonCRSids = JSON.stringify(newCRSIDs);
-				
-				var year = this.year;
-	            var month = this.month - 1;
-	            var day = this.day;
-	            var date = moment();
-	            prettySetDate(date, day);
-	            prettySetMonth(date, month);
-	            prettySetFullYear(date, year);
-	            var ISOdate = date.toISOString();
+
+	            var ISOdate = prettyParse(this.date).toISOString();
+	            console.log(ISOdate);
 				
 				this.$.extensionAPI.body = '{ "crsids": ' + jsonCRSids + ', "deadline" : "' + ISOdate + '"}';
 				this.$.extensionAPI.go();
 			},
 
 			handleAddInput: function () {
-				if (this.$.addInput.invalid || this.$.addInput.inputValue === "") {
+				if (this.$.addInput.invalid || this.$.addInput.inputValue === "" || !this.$.datePicker.dateEntered) {
 					this.showSubmit = false;
 				}
 				else {

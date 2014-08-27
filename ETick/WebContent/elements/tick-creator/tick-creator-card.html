@@ -12,6 +12,7 @@
 <link rel="import" href="static-list-labels.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../date-entry.html">
+<link rel="import" href="../date-picker.html">
 
 <polymer-element name="tick-creator-card" attributes="tickId">
 <template>
@@ -143,11 +144,12 @@
             <h4>MASTER DEADLINE</h4>
             <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
         </div>
-        <core-collapse id="collapseDeadline" opened="{{dateShown}}">
-            <date-entry valid="{{dateValid}}" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry>
+       
+        <br>
+         <core-collapse id="collapseDeadline" opened="{{dateShown}}">
+            <date-picker id="datePicker" selectedDate="{{date}}"></date-picker>
         </core-collapse>
 
-        <br>
 
         <div layout horizontal>
             <h4 style="height: 19px;">ADD TO GROUPS</h4>
@@ -202,7 +204,7 @@
         <span layout horizontal>
             <span flex></span>
             <paper-button raisedButton id="save" class="tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
-                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving || deleting}}">
+                          disabled?="{{ (!inputDisplayNameHidden && !displayValid) || saving || deleting}}">
             </paper-button>
             <div style="width: 20px"></div>
             <paper-button raisedButton id="delete" class="tick-creator" label="{{deleting ? 'DELETING...' : 'DELETE'}}" on-tap="{{alertDeleteTick}}"
@@ -288,7 +290,8 @@
                 this.groups[this.groups.length] = {_id: loadedGroups[i]._id, selected: false, text: loadedGroups[i].name};
             }
 
-            for (var g = 0; g < this.tickData.groups.length; g++) {
+            for (var g = 0; typeof this.tickData.groups !=
+                    typeof undefined && g < this.tickData.groups.length; g++) {
                 for (var k = 0; k < this.groups.length; k++) {
                     if (this.tickData.groups[g] == this.groups[k]._id) {
                         this.groups[k].selected = true;
@@ -376,17 +379,7 @@
 
                     var deadline  = prettyParse(this.tickData.deadline);
 
-                    var day = prettyGetDate(deadline).toString();
-                    var month = (prettyGetMonth(deadline) + 1).toString();
-                    var year = prettyGetFullYear(deadline).toString();
-
-                    //pad day and month to include leading zero if necessary
-                    if (day.length == 1) {day = "0" + day}
-                    if (month.length == 1) {month = "0" + month}
-
-                    this.day = day;
-                    this.month = month;
-                    this.year = year;
+                    this.date = deadline.format("YYYY-MM-DD");
                 }
             }
 
@@ -463,14 +456,7 @@
 
             //Update master deadline
             if (this.$.deadlineSwitch.checked) {
-                var year = this.year;
-                var month = this.month - 1;
-                var day = this.day;
-                var date = moment();
-                prettySetDate(date, day);
-                prettySetMonth(date, month);
-                prettySetFullYear(date, year);
-                this.tickData.deadline = date.toISOString();
+                this.tickData.deadline = prettyParse(this.date).toISOString();
             } else {
                 this.tickData.deadline = null;
             }

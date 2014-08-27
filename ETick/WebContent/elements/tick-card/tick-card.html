@@ -100,16 +100,18 @@
                     <div layout horizontal start>
                         <input flex readonly="readonly" style="cursor: default; border: none; font-size: 16px;" onclick="this.select()" value="{{displayRepo}}"/>
                     </div>
+                    <br>
                 </core-collapse>
-
-                <br>
 
                 <core-collapse opened?="{{tickObj.externalReference != null && forked}}">
-                    <h2>Exercise Sheet</h2>
-                    <a href="{{tickObj.externalReference}}" target="_blank">{{tickObj.externalReference}}</a>
+                    <h2>Resources</h2>
+                    <template repeat="{{ref in externalReferences}}">
+                        <div><a href="{{ref}}" target="_blank">{{ref}}</a></div>
+                    </template>
+                    <br>
+                    <!-- This div is needed in order to make core-collapse show the <br> -->
+                    <div>&nbsp;</div>
                 </core-collapse>
-
-                <br>
 
                 <core-collapse opened?="{{!forked}}">
                     <fork-component
@@ -134,7 +136,7 @@
                                       deadline="{{tickObj.deadline}}">
                     </submit-component>
 
-                    <h2>Ticking Session</h2>
+                    <h2>Ticking Slot</h2>
                     <signup-component flex
                                       sheets="{{sheets}}"
                                       signedUp="{{signedUp}}"
@@ -195,6 +197,9 @@
                 }
 
                 this.forking = false;
+
+                this.externalReferences = this.tickObj.externalReference.split(/([ ,]|\n)+/);
+                console.log("ex-refs", this.externalReferences);
             },
 
             createFork: function() {

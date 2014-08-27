@@ -26,7 +26,7 @@ public class Tick implements Comparable<Tick> {
 	private String name;
 	private String author;
 
-	private String stubRepo, correctnessRepo;
+	private String stubRepo;
 	private DateTime deadline;
 	private List<String> groups = new ArrayList<>();
 
@@ -85,20 +85,6 @@ public class Tick implements Comparable<Tick> {
 	 */
 	public void setStubRepo(String stubRepo) {
 		this.stubRepo = stubRepo;
-	}
-
-	/**
-	 * @return correctnessRepo
-	 */
-	public String getCorrectnessRepo() {
-		return correctnessRepo;
-	}
-
-	/**
-	 * @param correctnessRepo
-	 */
-	public void setCorrectnessRepo(String correctnessRepo) {
-		this.correctnessRepo = correctnessRepo;
 	}
 
 	/**

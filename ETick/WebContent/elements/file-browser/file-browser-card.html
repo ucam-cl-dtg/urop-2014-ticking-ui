@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/core-splitter/core-splitter.html"/>
 <link rel="import" href="../../bower_components/core-dropdown/core-dropdown.html"/>
 <link rel="import" href="../../bower_components/core-item/core-item.html"/>
+<link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html"/>
 <link rel="import" href="../../bower_components/marked-element/marked-element.html"/>
 <link rel="import" href="files-service.html"/>
 <link rel="import" href="file-card.html"/>
@@ -45,6 +46,7 @@
         <h3 id="resultString" class="result">
         </h3>
         <files-list files="{{files}}"
+                    showHidden="{{showHidden}}"
                     selectedFileId="{{selectedFileId}}">
         </files-list>
         <hr/>
@@ -54,24 +56,31 @@
       <core-splitter direction="left"></core-splitter>
       <div class="main">
 
-        <!-- Report selection -->
-        <core-dropdown id="reportSelector"
-                       selected="{{selectedReport}}">
-          <template repeat="{{report in reportsListString}}">
-            <core-item label="{{report}}"></core-item>
-          </template>
-        </core-dropdown>
-        <br/>
+        <!-- Report selection and refresh -->
+        <div horizontal layout>
+          <div flex>
+            <core-dropdown id="reportSelector"
+                           selected="{{selectedReport}}">
+              <template repeat="{{report in reportsListString}}">
+                <core-item label="{{report}}"></core-item>
+              </template>
+            </core-dropdown>
+          </div>
+          <div>
+            <core-icon-button icon="refresh"
+                              on-tap="{{refresh}}">
+            Reload
+            </core-icon-button>
+          </div>
+        </div>
 
         <!-- Ticker comments -->
-        <template if="{{comments != null}}">
-          <div class="ticker-comments">
-            Ticker comments:
-            <!-- Indentation due to marked element considering spaces -->
-            <marked-element text="{{comments}}">
-            </marked-element>
-          </div>
-        </template>
+        <div class="ticker-comments">
+          Ticker comments:
+          <!-- Indentation due to marked element considering spaces -->
+          <marked-element text="{{comments == null ? '' : comments}}">
+          </marked-element>
+        </div>
 
         <!-- File contents -->
         <template repeat="{{file in files}}">
@@ -79,6 +88,7 @@
           <file-card content="{{file.content}}"
                      name="{{file.name}}"
                      comments="{{errors}}"
+                     hidden?="{{file.hidden && !showHidden}}"
                      highlight="{{highlight}}">
           </file-card>
           </section>
@@ -104,6 +114,7 @@
   </template>
   <script src="../../bower_components/moment/moment.js"></script>
   <script src="../../js/prettyDate.js"></script>
+  <script src="../../js/hiddenFiles.js"></script>
   <script>
     Polymer('file-browser-card'
       , {   selectedFileIdChanged:
@@ -221,6 +232,12 @@
                   });
             this.$.reportSelector.selected =
               this.reportsListString.length - 1;
+          }
+
+        , refresh:
+          function ()
+          {
+            this.$.service.$.report.go();
           }
         });
   </script>
