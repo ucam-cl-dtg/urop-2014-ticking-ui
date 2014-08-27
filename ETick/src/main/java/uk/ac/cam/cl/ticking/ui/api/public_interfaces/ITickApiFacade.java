@@ -176,5 +176,28 @@ public interface ITickApiFacade {
 	public abstract Response getAllFiles(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId,
 			@PathParam("commitId") String commitId);
+	
+	/**
+	 * 
+	 * @param request
+	 * @param tickId
+	 * @return the default test settings from the test service
+	 */
+	@GET
+	@Path("/test/settings")
+	@Produces("application/json")
+	public abstract Response getTestFiles(@Context HttpServletRequest request);
+	
+	/**
+	 * 
+	 * @param request
+	 * @param tickId
+	 * @return the test settings for the tick object from the test service
+	 */
+	@GET
+	@Path("/{tickId}/test/settings")
+	@Produces("application/json")
+	public abstract Response getTestFiles(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId);
 
 }

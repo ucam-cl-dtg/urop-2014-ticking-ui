@@ -691,6 +691,7 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.ok(files).build();
 	}
 	
+	@Override
 	public Response getTestFiles(HttpServletRequest request) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
@@ -700,6 +701,7 @@ public class TickApiFacade implements ITickApiFacade {
 		return Response.ok(settings).build();
 	}
 	
+	@Override
 	public Response getTestFiles(HttpServletRequest request, String tickId) {
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
