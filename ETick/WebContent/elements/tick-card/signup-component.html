@@ -150,11 +150,13 @@
                     return el.tickID.valueOf() == tickId.valueOf();
                 });
 
-                //assert bookings.length == 1
-                this.booking = bookings[0];
-                this.bookingDateTime = moment(this.booking.startTime);
+                if (bookings.length > 0)
+                {
+                    this.booking = bookings[0];
+                    this.bookingDateTime = moment(this.booking.startTime);
 
-                console.log("booking", this.booking);
+                    console.log("booking", this.booking);
+                }
             }
         });
     </script>
