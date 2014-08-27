@@ -690,4 +690,40 @@ public class TickApiFacade implements ITickApiFacade {
 
 		return Response.ok(files).build();
 	}
+	
+	public Response getTestFiles(HttpServletRequest request) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		
+		TickSettings settings = testServiceProxy.getTestFiles(config.getConfig().getSecurityToken());
+		
+		return Response.ok(settings).build();
+	}
+	
+	public Response getTestFiles(HttpServletRequest request, String tickId) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		
+		/* Get the tick object and return if it doesn't exist */
+		Tick tick = db.getTick(tickId);
+
+		if (tick == null) {
+			log.error("User " + myCrsid + " requested tick " + tickId
+					+ " to get test settings, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Check permissions */
+		if (!permissions.tickCreator(myCrsid, tick)) {
+			log.warn("User " + myCrsid + " tried to get the test settings of tick "
+					+ tickId + " but was denied permission");
+			return Response.status(Status.FORBIDDEN)
+					.entity(Strings.INVALIDROLE).build();
+		}
+		
+		TickSettings settings = testServiceProxy.getTestFiles(config.getConfig().getSecurityToken(), tickId);
+		
+		return Response.ok(settings).build();
+	}
 }

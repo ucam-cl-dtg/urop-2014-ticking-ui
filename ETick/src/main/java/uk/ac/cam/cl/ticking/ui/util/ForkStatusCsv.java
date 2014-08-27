@@ -3,6 +3,7 @@ package uk.ac.cam.cl.ticking.ui.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -37,6 +38,7 @@ public class ForkStatusCsv {
 
 		String groupId = group.getGroupId();
 		List<String> tickIds = group.getTicks();
+		Collections.sort(tickIds, new IgnoreCaseComparator());
 		List<User> submitters = db.getUsers(groupId, Role.SUBMITTER);
 
 		File temp;
@@ -51,7 +53,7 @@ public class ForkStatusCsv {
 		writer.append(",CRSid");
 		writer.append(",College");
 		writer.append(',');
-		for (String tickId : group.getTicks()) {
+		for (String tickId : tickIds) {
 			Tick tick = db.getTick(tickId);
 			String heading = ',' + tick.getName();
 			heading += (tick.getDeadline() == null) ? "" : " "+tick.getDeadline().toString(dtf);
