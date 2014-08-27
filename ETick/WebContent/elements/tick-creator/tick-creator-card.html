@@ -252,8 +252,14 @@
         staticDataLoaded: function() {
             var tickSettings = this.$.ajaxLoadStatic.response.slice(0);
             this.staticOptions = tickSettings.checkstylesFiles;
-            this.dynamicSelectedIndex = tickSettings.testId;
             this.dynamicOptions = tickSettings.dynamicAvailable;
+            if (this.dynamicOptions != null) {
+                for (var j = 0; j < this.dynamicOptions.length; j++) {
+                    if (this.dynamicOptions[j].testId == tickSettings.testId) {
+                        this.dynamicSelectedIndex = j;
+                    }
+                }
+            }
 
             if (this.staticOptions.length == 0) {
                 this.$.ajaxLoadDefaults.go();
@@ -265,7 +271,10 @@
             }
         },
         defaultsLoaded: function() {
-            this.staticOptions = this.$.ajaxLoadDefaults.response.slice(0);
+            var tickSettings = this.$.ajaxLoadStatic.response.slice(0);
+            this.staticOptions = tickSettings.checkstylesFiles;
+            this.dynamicOptions = tickSettings.dynamicAvailable;
+            this.dynamicSelectedIndex = null;
 
             for (var i = 0; i < this.staticOptions.length; i++) {
                 this.staticOptions[i].closed = false;
@@ -426,9 +435,9 @@
                 deadline: tickData.deadline,
                 groups: tickData.groups,
                 externalReference: tickData.externalReference,
-                checkstyleOpts: staticData
-//                containerId: dynamicData.containerId,
-//                testId: dynamicData.testId
+                checkstyleOpts: staticData,
+                containerId: dynamicData.containerId,
+                testId: dynamicData.testId
                 //TODO: insert required files into the master object
             };
 
