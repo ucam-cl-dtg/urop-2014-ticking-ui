@@ -198,8 +198,11 @@
 
                 this.forking = false;
 
-                this.externalReferences = this.tickObj.externalReference.split(/([ ,]|\n)+/);
-                console.log("ex-refs", this.externalReferences);
+                if (this.tickObj.externalReference != null)
+                {
+                    this.externalReferences = this.tickObj.externalReference.split(/([ ,]|\n)+/);
+                    console.log("ex-refs", this.externalReferences);
+                }
             },
 
             createFork: function() {
