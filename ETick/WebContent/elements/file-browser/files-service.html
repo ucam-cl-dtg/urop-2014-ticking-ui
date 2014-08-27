@@ -154,14 +154,13 @@
           {
             "use strict";
 
-            this.files = this.$.fileContent.response;
-
-            var i;
-            for (i = 0; i < this.files.length; i++)
-            {
-              this.files[i].id = i;
-              this.files[i].hidden = isHidden(this.files[i]);
-            }
+            this.files = this.$.fileContent.response.map(
+                function (file, index)
+                {
+                  file.id = index;
+                  file.hidden = isHidden(file);
+                  return file;
+                });
 
             this.fire('files-loaded');
           }

@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
-<link rel="import" href="../../bower_components/core-icons/image-icons.html">
+<link rel="import" href="../custom-icons/custom-icons.html">
 <link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
@@ -39,8 +39,6 @@
                    on-core-response="{{loginResponse}}">
         </core-ajax>
 
-        <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/overview/csv'}}"-->
-
         <div id="overviewMainContainer" style="max-height: 600px; position: relative;" layout vertical>
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
                 <!-- Top left fixed area -->
@@ -54,11 +52,11 @@
                     </div>
 
                     <!-- User details column headers -->
-                    <div layout horizontal>
+                    <div layout horizontal style="max-width: 465px;">
                         <core-tooltip label="Progress" position="top">
 
                         <div class="auto-fix-container">
-                            <core-icon class="{{'auto-fix' + (sortField == 'progress' ? ' icon-white' : '')}}" icon="image:auto-fix" on-tap="{{sortProgress}}"></core-icon>
+                            <core-icon class="{{'auto-fix' + (sortField == 'progress' ? ' icon-white' : '')}}" icon="custom-icons:progress-bar" on-tap="{{sortProgress}}"></core-icon>
                         </div>
                         </core-tooltip>
                     <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>

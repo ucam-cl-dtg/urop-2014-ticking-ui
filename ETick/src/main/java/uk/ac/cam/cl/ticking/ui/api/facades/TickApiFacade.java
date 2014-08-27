@@ -16,6 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import publicinterfaces.ITestService;
+import publicinterfaces.TestIDNotFoundException;
+import publicinterfaces.TickSettings;
+import uk.ac.cam.cl.dtg.teaching.containers.api.exceptions.TestNotFoundException;
 import uk.ac.cam.cl.dtg.teaching.exceptions.RemoteFailureHandler;
 import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
@@ -49,7 +52,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 	private ITestService testServiceProxy;
 	private WebInterface gitServiceProxy;
-	
+
 	private PermissionsManager permissions;
 
 	/**
@@ -59,7 +62,8 @@ public class TickApiFacade implements ITickApiFacade {
 	@Inject
 	public TickApiFacade(IDataManager db,
 			ConfigurationLoader<Configuration> config,
-			ITestService testServiceProxy, WebInterface gitServiceProxy, PermissionsManager permissions) {
+			ITestService testServiceProxy, WebInterface gitServiceProxy,
+			PermissionsManager permissions) {
 		this.db = db;
 		this.config = config;
 		this.testServiceProxy = testServiceProxy;
@@ -104,10 +108,13 @@ public class TickApiFacade implements ITickApiFacade {
 
 		/* Call the git service to delete the repository */
 		try {
-			gitServiceProxy.deleteRepository(config.getConfig().getSecurityToken(), Tick.replaceDelimeter(tickId));
-			gitServiceProxy.deleteRepository(config.getConfig().getSecurityToken(), Tick.replaceDelimeter(tickId)+"/correctness");
+			gitServiceProxy.deleteRepository(config.getConfig()
+					.getSecurityToken(), Tick.replaceDelimeter(tickId));
+			gitServiceProxy.deleteRepository(config.getConfig()
+					.getSecurityToken(), Tick.replaceDelimeter(tickId)
+					+ "/correctness");
 			db.removeTick(tickId);
-			/*Remove dangling group references*/
+			/* Remove dangling group references */
 			for (String groupId : tick.getGroups()) {
 				Group group = db.getGroup(groupId);
 				group.removeTick(tickId);
@@ -120,8 +127,7 @@ public class TickApiFacade implements ITickApiFacade {
 
 			if (s.getClassName().equals(IOException.class.getName())) {
 				log.error("User " + crsid + " failed deleting repository for "
-						+ tickId + "\nCause: "
-								+ s.toString());
+						+ tickId + "\nCause: " + s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -130,7 +136,7 @@ public class TickApiFacade implements ITickApiFacade {
 					RepositoryNotFoundException.class.getName())) {
 				/* We still want to remove the tick */
 				db.removeTick(tickId);
-				/*Remove dangling group references*/
+				/* Remove dangling group references */
 				for (String groupId : tick.getGroups()) {
 					Group group = db.getGroup(groupId);
 					group.removeTick(tickId);
@@ -138,13 +144,11 @@ public class TickApiFacade implements ITickApiFacade {
 				}
 
 				log.warn("User " + crsid + " failed deleting repository for "
-						+ tickId + "\nCause: "
-								+ s.toString());
+						+ tickId + "\nCause: " + s.toString());
 
 			} else {
 				log.error("User " + crsid + " failed deleting repository for "
-						+ tickId + "\nCause: "
-								+ s.toString());
+						+ tickId + "\nCause: " + s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -202,167 +206,83 @@ public class TickApiFacade implements ITickApiFacade {
 		tick.setAuthor(crsid);
 		tick.initTickId();
 
-		/* Has the tick been unsuccessfully created previously? */
-		Tick failed = db.getTick(tick.getTickId());
-		if (failed != null && failed.getStubRepo() != null
-				&& failed.getCorrectnessRepo() != null) {
+		/* Has the tick been created previously? */
+		Tick prev = db.getTick(tick.getTickId());
+		if (prev != null) {
 			log.error("User " + crsid + " failed creating tick with id "
 					+ tick.getTickId());
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
+			return Response.status(Status.CONFLICT)
 					.entity(Strings.EXISTS).build();
 		}
 
 		/*
-		 * If we haven't tried previously or we did and the failure was
-		 * creating the stub repo
+		 * Create the stub repository
 		 */
-		if (failed == null || failed.getStubRepo() == null) {
-			String repo;
-			try {
-				repo = gitServiceProxy.addRepository(config.getConfig().getSecurityToken(), new RepoUserRequestBean(
-						crsid + "/" + tickBean.getName(), crsid));
+		String repo;
+		try {
+			repo = gitServiceProxy.addRepository(config.getConfig()
+					.getSecurityToken(), new RepoUserRequestBean(crsid + "/"
+					+ tickBean.getName(), crsid));
 
-			} catch (InternalServerErrorException e) {
-				RemoteFailureHandler h = new RemoteFailureHandler();
-				SerializableException s = h.readException(e);
+		} catch (InternalServerErrorException e) {
+			RemoteFailureHandler h = new RemoteFailureHandler();
+			SerializableException s = h.readException(e);
 
-				if (s.getClassName().equals(IOException.class.getName())) {
+			if (s.getClassName().equals(IOException.class.getName())) {
 
-					log.error(
-							"User " + crsid
-									+ " failed creating stub repository for "
-									+ tick.getTickId() + "\nCause: "
-											+ s.toString());
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-				}
-
-				if (s.getClassName().equals(
-						DuplicateRepoNameException.class.getName())) {
-					log.error(
-							"User " + crsid
-									+ " failed creating stub repository for "
-									+ tick.getTickId() + "\nCause: "
-											+ s.toString());
-					return Response.status(Status.NOT_FOUND)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-
-				}
-				
-				if (s.getClassName().equals(
-						IllegalCharacterException.class.getName())) {
-
-					log.error(
-							"User " + crsid
-									+ " failed creating stub repository for "
-									+ tick.getTickId() + "\nCause: "
-											+ s.toString());
-					return Response.status(Status.BAD_REQUEST)
-							.entity(s.getMessage()).build();
-
-				} else {
-					log.error(
-							"User " + crsid
-									+ " failed creating stub repository for "
-									+ tick.getTickId() + "\nCause: "
-											+ s.toString());
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-				}
-
-			} catch (IOException | DuplicateRepoNameException | IllegalCharacterException e) {
-				log.error(
-						"User " + crsid
-								+ " failed to create stub repository for "
-								+ tick.getTickId(), e.getCause());
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-						.build();
-				// Due to exception chaining this shouldn't happen
+				log.error("User " + crsid
+						+ " failed creating stub repository for "
+						+ tick.getTickId() + "\nCause: " + s.toString());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
-			tick.setStubRepo(repo);
-		} else {
-			/* Else get the stub repo from the failure */
-			tick.setStubRepo(failed.getStubRepo());
-		}
+			if (s.getClassName().equals(
+					DuplicateRepoNameException.class.getName())) {
+				log.error("User " + crsid
+						+ " failed creating stub repository for "
+						+ tick.getTickId() + "\nCause: " + s.toString());
+				return Response.status(Status.NOT_FOUND)
+						.entity(Strings.IDEMPOTENTRETRY).build();
 
-		/*
-		 * If we haven't tried previously or we did and the failure was
-		 * creating the correctness repo
-		 */
-		if (failed == null || failed.getCorrectnessRepo() == null) {
-			String correctnessRepo;
-			try {
-				correctnessRepo = gitServiceProxy
-						.addRepository(config.getConfig().getSecurityToken(), new RepoUserRequestBean(crsid + "/"
-								+ tickBean.getName() + "/correctness", crsid));
-			} catch (InternalServerErrorException e) {
-				RemoteFailureHandler h = new RemoteFailureHandler();
-				SerializableException s = h.readException(e);
-
-				if (s.getClassName().equals(IOException.class.getName())) {
-
-					log.error("User " + crsid
-							+ " tied creating correctness repository for "
-							+ tick.getTickId() + "\nCause: "
-									+ s.toString());
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-				}
-
-				if (s.getClassName().equals(
-						DuplicateRepoNameException.class.getName())) {
-					log.error("User " + crsid
-							+ " failed creating correctness repository for "
-							+ tick.getTickId() + "\nCause: "
-									+ s.toString());
-					return Response.status(Status.NOT_FOUND)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-
-				}
-				
-				if (s.getClassName().equals(
-						IllegalCharacterException.class.getName())) {
-
-					log.error("User " + crsid
-							+ " failed creating correctness repository for "
-							+ tick.getTickId() + "\nCause: "
-									+ s.toString());
-					return Response.status(Status.BAD_REQUEST)
-							.entity(s.getMessage()).build();
-
-				} else {
-					log.error("User " + crsid
-							+ " failed creating correctness repository for "
-							+ tick.getTickId() + "\nCause: "
-									+ s.toString());
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(Strings.IDEMPOTENTRETRY).build();
-				}
-
-			} catch (IOException | DuplicateRepoNameException | IllegalCharacterException e) {
-				log.error(
-						"User "
-								+ crsid
-								+ " failed to create correctness repository for "
-								+ tick.getTickId(), e.getCause());
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
-						.build();
-				// Due to exception chaining this shouldn't happen
 			}
-			tick.setCorrectnessRepo(correctnessRepo);
 
-		} else {
-			/* Else get the correctness repo from the failure */
-			tick.setCorrectnessRepo(failed.getCorrectnessRepo());
+			if (s.getClassName().equals(
+					IllegalCharacterException.class.getName())) {
+
+				log.error("User " + crsid
+						+ " failed creating stub repository for "
+						+ tick.getTickId() + "\nCause: " + s.toString());
+				return Response.status(Status.BAD_REQUEST)
+						.entity(s.getMessage()).build();
+
+			} else {
+				log.error("User " + crsid
+						+ " failed creating stub repository for "
+						+ tick.getTickId() + "\nCause: " + s.toString());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
+
+		} catch (IOException | DuplicateRepoNameException
+				| IllegalCharacterException e) {
+			log.error(
+					"User " + crsid + " failed to create stub repository for "
+							+ tick.getTickId(), e.getCause());
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
+			// Due to exception chaining this shouldn't happen
 		}
+
+		tick.setStubRepo(repo);
 
 		// Execution will only reach this point if there are no git errors else
 		// IOException is thrown
 
 		/* Save style checks with the test service */
-		testServiceProxy.createNewTest(config.getConfig().getSecurityToken(), tick.getTickId(),
-				tickBean.getCheckstyleOpts());
+		testServiceProxy.createNewTest(config.getConfig().getSecurityToken(),
+				tick.getTickId(), tickBean.getCheckstyleOpts(),
+				tickBean.getContainerId(), tickBean.getTestId());
 
 		/* Register the tick with the required groups */
 		for (String groupId : tick.getGroups()) {
@@ -410,8 +330,9 @@ public class TickApiFacade implements ITickApiFacade {
 			}
 
 			/* Call the test service to update the checkstyles */
-			testServiceProxy
-					.createNewTest(config.getConfig().getSecurityToken(), tickId, tickBean.getCheckstyleOpts());
+			testServiceProxy.createNewTest(config.getConfig()
+					.getSecurityToken(), tickId, tickBean.getCheckstyleOpts(),
+					tickBean.getContainerId(), tickBean.getTestId());
 
 			/* Timestamp the tick object */
 			prevTick.setEdited(DateTime.now());
@@ -481,16 +402,18 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 
 		/* Check permissions */
-		if (!(permissions.hasRole(crsid, groupId, Role.AUTHOR)||(permissions.tickCreator(crsid, tick)))) {
+		if (!(permissions.hasRole(crsid, groupId, Role.AUTHOR) || (permissions
+				.tickCreator(crsid, tick)))) {
 			log.warn("User " + crsid + " tried to add tick " + tickId
 					+ " to group " + groupId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
 					.entity(Strings.INVALIDROLE).build();
 		}
-		
+
 		if (tick.getGroups().contains(groupId)) {
 			log.warn("User " + crsid + " tried to add tick " + tickId
-					+ " to group " + groupId + " but it was already past of the group");
+					+ " to group " + groupId
+					+ " but it was already past of the group");
 			return Response.status(Status.BAD_REQUEST)
 					.entity(Strings.TICKISINGROUP).build();
 		}
@@ -508,7 +431,8 @@ public class TickApiFacade implements ITickApiFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response setExtension(HttpServletRequest request, String tickId, ExtensionBean extensionBean) {
+	public Response setExtension(HttpServletRequest request, String tickId,
+			ExtensionBean extensionBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
@@ -538,20 +462,22 @@ public class TickApiFacade implements ITickApiFacade {
 			tick.addExtension(user, extensionBean.getDeadline());
 		}
 		db.saveTick(tick);
-		
+
 		List<ExtensionReturnBean> extensions = new ArrayList<>();
 		for (Entry<String, DateTime> entry : tick.getExtensions().entrySet()) {
-			extensions.add(new ExtensionReturnBean(db.getUser(entry.getKey()), entry.getValue()));
+			extensions.add(new ExtensionReturnBean(db.getUser(entry.getKey()),
+					entry.getValue()));
 		}
-		
+
 		return Response.status(Status.CREATED).entity(extensions).build();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response removeExtension(HttpServletRequest request, String tickId, ExtensionBean extensionBean) {
+	public Response removeExtension(HttpServletRequest request, String tickId,
+			ExtensionBean extensionBean) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
@@ -578,15 +504,16 @@ public class TickApiFacade implements ITickApiFacade {
 			tick.removeExtension(user);
 		}
 		db.saveTick(tick);
-		
+
 		List<ExtensionReturnBean> extensions = new ArrayList<>();
 		for (Entry<String, DateTime> entry : tick.getExtensions().entrySet()) {
-			extensions.add(new ExtensionReturnBean(db.getUser(entry.getKey()), entry.getValue()));
+			extensions.add(new ExtensionReturnBean(db.getUser(entry.getKey()),
+					entry.getValue()));
 		}
-		
+
 		return Response.status(Status.CREATED).entity(extensions).build();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -599,8 +526,8 @@ public class TickApiFacade implements ITickApiFacade {
 		Tick tick = db.getTick(tickId);
 
 		if (tick == null) {
-			log.error("User " + crsid + " requested extensions for tick" + tickId
-					+ " to update deadline, but it couldn't be found");
+			log.error("User " + crsid + " requested extensions for tick"
+					+ tickId + " to update deadline, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
 		}
@@ -615,7 +542,8 @@ public class TickApiFacade implements ITickApiFacade {
 
 		List<ExtensionReturnBean> extensions = new ArrayList<>();
 		for (Entry<String, DateTime> entry : tick.getExtensions().entrySet()) {
-			extensions.add(new ExtensionReturnBean(db.getUser(entry.getKey()), entry.getValue()));
+			extensions.add(new ExtensionReturnBean(db.getUser(entry.getKey()),
+					entry.getValue()));
 		}
 		return Response.ok(extensions).build();
 	}
@@ -650,7 +578,8 @@ public class TickApiFacade implements ITickApiFacade {
 		/* Call the git service to get the files */
 		List<FileBean> files;
 		try {
-			files = gitServiceProxy.getAllFiles(config.getConfig().getSecurityToken(), Tick.replaceDelimeter(tickId),
+			files = gitServiceProxy.getAllFiles(config.getConfig()
+					.getSecurityToken(), Tick.replaceDelimeter(tickId),
 					commitId);
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
@@ -659,8 +588,8 @@ public class TickApiFacade implements ITickApiFacade {
 			if (s.getClassName().equals(IOException.class.getName())) {
 
 				log.error("User " + myCrsid
-						+ " failed to get repository files for " + tickId + "\nCause: "
-								+ s.toString());
+						+ " failed to get repository files for " + tickId
+						+ "\nCause: " + s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
@@ -668,26 +597,138 @@ public class TickApiFacade implements ITickApiFacade {
 			if (s.getClassName().equals(
 					RepositoryNotFoundException.class.getName())) {
 				log.error("User " + myCrsid
-						+ " failed to get repository files for " + tickId + "\nCause: "
-								+ s.toString());
+						+ " failed to get repository files for " + tickId
+						+ "\nCause: " + s.toString());
 				return Response.status(Status.NOT_FOUND)
 						.entity(Strings.MISSING).build();
 
 			} else {
 				log.error("User " + myCrsid
-						+ " failed to get repository files for " + tickId + "\nCause: "
-								+ s.toString());
+						+ " failed to get repository files for " + tickId
+						+ "\nCause: " + s.toString());
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(Strings.IDEMPOTENTRETRY).build();
 			}
 
 		} catch (IOException | RepositoryNotFoundException e) {
-			log.error("User " + myCrsid + " failed to get repository files for "
-					+ tickId, e);
+			log.error("User " + myCrsid
+					+ " failed to get repository files for " + tickId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
 
 		return Response.ok(files).build();
+	}
+
+	@Override
+	public Response getTestFiles(HttpServletRequest request) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+
+		TickSettings settings;
+		try {
+			settings = testServiceProxy.getTestFiles(config.getConfig()
+					.getSecurityToken());
+		} catch (InternalServerErrorException e) {
+			RemoteFailureHandler h = new RemoteFailureHandler();
+			SerializableException s = h.readException(e);
+
+			if (s.getClassName().equals(IOException.class.getName())) {
+
+				log.error("User " + myCrsid
+						+ " failed to get default test settings" + "\nCause: "
+						+ s.toString());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
+
+			if (s.getClassName().equals(TestNotFoundException.class.getName())) {
+				log.error("User " + myCrsid
+						+ " failed to get default test settings" + "\nCause: "
+						+ s.toString());
+				return Response.status(Status.NOT_FOUND)
+						.entity(Strings.MISSING).build();
+
+			} else {
+				log.error("User " + myCrsid
+						+ " failed to get default test settings" + "\nCause: "
+						+ s.toString());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
+		} catch (IOException | TestNotFoundException e) {
+			log.error("User " + myCrsid
+					+ " failed to get default test settings", e);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
+		}
+
+		return Response.ok(settings).build();
+	}
+
+	@Override
+	public Response getTestFiles(HttpServletRequest request, String tickId) {
+		String myCrsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+
+		/* Get the tick object and return if it doesn't exist */
+		Tick tick = db.getTick(tickId);
+
+		if (tick == null) {
+			log.error("User " + myCrsid + " requested tick " + tickId
+					+ " to get test settings, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Check permissions */
+		if (!permissions.tickCreator(myCrsid, tick)) {
+			log.warn("User " + myCrsid
+					+ " tried to get the test settings of tick " + tickId
+					+ " but was denied permission");
+			return Response.status(Status.FORBIDDEN)
+					.entity(Strings.INVALIDROLE).build();
+		}
+
+		TickSettings settings;
+		try {
+			settings = testServiceProxy.getTestFiles(config.getConfig()
+					.getSecurityToken(), tickId);
+		} catch (InternalServerErrorException e) {
+			RemoteFailureHandler h = new RemoteFailureHandler();
+			SerializableException s = h.readException(e);
+
+			if (s.getClassName()
+					.equals(TestIDNotFoundException.class.getName())) {
+
+				log.error("User " + myCrsid
+						+ " failed to get test settings for tick " + tickId
+						+ "\nCause: " + s.toString());
+				return Response.status(Status.NOT_FOUND)
+						.entity(Strings.MISSING).build();
+			}
+
+			if (s.getClassName().equals(TestNotFoundException.class.getName())) {
+				log.error("User " + myCrsid
+						+ " failed to get test settings for tick " + tickId
+						+ "\nCause: " + s.toString());
+				return Response.status(Status.NOT_FOUND)
+						.entity(Strings.MISSING).build();
+
+			} else {
+				log.error("User " + myCrsid
+						+ " failed to get test settings for tick " + tickId
+						+ "\nCause: " + s.toString());
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(Strings.IDEMPOTENTRETRY).build();
+			}
+		} catch (TestIDNotFoundException | TestNotFoundException e) {
+			log.error("User " + myCrsid
+					+ " failed to get default test settings", e);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+					.build();
+		}
+
+		return Response.ok(settings).build();
 	}
 }
