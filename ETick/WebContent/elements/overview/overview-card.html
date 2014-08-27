@@ -74,10 +74,12 @@
 
                 <!-- Tick headings -->
                 <div flex style="overflow-x: hidden; margin-left: -6px;" layout horizontal class="overview-header-height">
-                    <div id="headings" style="overflow: hidden; margin-left: -6px;" class="overview-header-height">
-                        <overview-ticks-bar id="overviewTicksBar" style="height: 150px;" tickNames="{{tickNames}}"
+                    <div id="headings" style="overflow: hidden; margin-left: -6px;" layout horizontal class="overview-header-height">
+                        <div style="width: 43px; min-width: 43px; max-width: 43px;"></div>
+                        <overview-ticks-bar id="overviewTicksBar" tickNames="{{tickNames}}"
                                             on-tick-selected="{{sortTick}}"
-                        ></overview-ticks-bar>
+                                            style="height: 150px;">
+                        </overview-ticks-bar>
                     </div>
                 </div>
 
@@ -290,11 +292,9 @@
                         college: temp[i].college,
                         displayStrings: temp[i].displayStrings.length == 0 ? [{iconCode: "", tooltip: "", index: 0}] : temp[i].displayStrings,
                         cssClass: i % 2 == 0 ? "overview-even" : "overview-odd",
-                        displayWidth: 'width: ' + temp[i].progress * 4.55 + 'px'
+                        displayWidth: 'width: ' + temp[i].progress * 4.75 + 'px'
                     }
                 }
-
-
             },
 
             /**
@@ -437,11 +437,11 @@
                     }
                 //}
 
-//                if (34 * this.displayUsers.length > 600-144) {
-//                    this.$.scrollArea.style.overflowY = "auto";
-//                } else {
-//                    this.$.scrollArea.style.overflowY = "hidden";
-//                }
+                if (34 * this.displayUsers.length > 600-144) {
+                    this.$.scrollArea.style.overflowY = "auto";
+                } else {
+                    this.$.scrollArea.style.overflowY = "hidden";
+                }
 
 
                 this.job('update-again', function() {

@@ -68,14 +68,10 @@
                         </p>
 						<span layout horizontal end end-justified flex>
 							<template if="{{isAuthor || isAdmin}}">
-								<core-tooltip label="Edit">
-									<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
-								</core-tooltip>
-								<core-tooltip label="Clone">
-									<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
-								</core-tooltip>
-								<core-tooltip label="Delete" class="delete-tooltip">
-									<paper-icon-button id="deleteButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
+								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
+							    <clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
+								<core-tooltip label="Delete" class="delete-tooltip" style="right: 5px;">
+									<paper-icon-button id="deleteButton" icon="delete" on-click="{{deleteClicked}}" style="top: -4px; left: 5px;"></paper-icon-button>
 								</core-tooltip>
 							</template>
 						</span>
@@ -263,7 +259,7 @@
 					showAddEditSession: true,
 					gid: this.gid,
 					sheet: null
-				}
+				};
 				this.showTickerSignup = false;
 			},			
 			

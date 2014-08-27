@@ -66,12 +66,12 @@
 
         <!-- Sign up button -->
         <core-collapse opened?="{{!signedUp && !testRunning && unitPass && !humanPass}}">
-            <paper-button class="tick-component" label="BOOK TICKING SESSION" on-tap="{{openSignupDialog}}"></paper-button>
+            <paper-button class="tick-component" label="BOOK TICKING SLOT" on-tap="{{openSignupDialog}}"></paper-button>
         </core-collapse>
 
         <!-- Cancel sign up button -->
         <core-collapse opened?="{{signedUp && !humanPass}}">
-            <paper-button class="tick-component" label="CANCEL TICKING SESSION" on-tap="{{showCancelDialog}}"></paper-button>
+            <paper-button class="tick-component" label="CANCEL TICKING SLOT" on-tap="{{showCancelDialog}}"></paper-button>
         </core-collapse>
 
         <!-- Error message: sign up unavailable because the unit tester has not been passed -->
@@ -94,7 +94,7 @@
 
         <are-you-sure
                 id="cancelDialog"
-                heading="Cancel Ticking Session?"
+                heading="Cancel Ticking Slot?"
                 on-yes="{{deleteBooking}}">
         </are-you-sure>
     </template>

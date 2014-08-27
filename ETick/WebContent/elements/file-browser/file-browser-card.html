@@ -45,6 +45,7 @@
         <h3 id="resultString" class="result">
         </h3>
         <files-list files="{{files}}"
+                    showHidden="{{showHidden}}"
                     selectedFileId="{{selectedFileId}}">
         </files-list>
         <hr/>
@@ -79,6 +80,7 @@
           <file-card content="{{file.content}}"
                      name="{{file.name}}"
                      comments="{{errors}}"
+                     hidden?="{{file.hidden && !showHidden}}"
                      highlight="{{highlight}}">
           </file-card>
           </section>
@@ -104,6 +106,7 @@
   </template>
   <script src="../../bower_components/moment/moment.js"></script>
   <script src="../../js/prettyDate.js"></script>
+  <script src="../../js/hiddenFiles.js"></script>
   <script>
     Polymer('file-browser-card'
       , {   selectedFileIdChanged:

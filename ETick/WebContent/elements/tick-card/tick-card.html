@@ -15,15 +15,6 @@
         <link rel="stylesheet" href="../../css/elements/group-members.css">
         <link rel="stylesheet" href="tick-components.css">
 
-        <!--<style>-->
-            <!--h1 {-->
-                <!--margin: 0;-->
-            <!--}-->
-            <!--:host {-->
-                <!--margin-top: 10px;-->
-            <!--}-->
-        <!--</style>-->
-
         <style>
             :host {
                 margin: 10px;
@@ -104,11 +95,18 @@
                     </core-collapse>
                 </div>
 
-                <core-collapse opened?="{{displayRepo != null}}">
+                <core-collapse opened?="{{displayRepo != ' '}}">
                     <h2>Repository</h2>
                     <div layout horizontal start>
-                        <div>{{displayRepo}}</div>
+                        <input flex readonly="readonly" style="cursor: default; border: none; font-size: 16px;" onclick="this.select()" value="{{displayRepo}}"/>
                     </div>
+                </core-collapse>
+
+                <br>
+
+                <core-collapse opened?="{{tickObj.externalReference != null && forked}}">
+                    <h2>Exercise Sheet</h2>
+                    <a href="{{tickObj.externalReference}}" target="_blank">{{tickObj.externalReference}}</a>
                 </core-collapse>
 
                 <br>
@@ -117,7 +115,8 @@
                     <fork-component
                             on-create-fork="{{createFork}}"
                             repo="{{repo}}"
-                            initialising="{{forking}}">
+                            initialising="{{forking}}"
+                            deadlinePassed="{{deadlinePassed}}">
                     </fork-component>
                 </core-collapse>
 
@@ -233,6 +232,10 @@
                 this.job('new-status', function() {
                     this.computeStatusCode();
                 }, 330);
+            },
+
+            displayRepoChanged: function() {
+                console.log("disp-repo", this.displayRepo);
             },
 
             computeStatusCode: function() {

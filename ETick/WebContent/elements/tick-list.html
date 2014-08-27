@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="toast-ajax/toast-ajax.html">
 <link rel="import" href="search-box.html">
@@ -8,6 +9,7 @@
 
 <polymer-element name="tick-list" attributes="gid canFork">
 	<template>
+        <link rel="stylesheet" href="../css/shared-styles.css">
 		<style>
 			:host {
 				display: block;
@@ -17,7 +19,7 @@
 				font-weight: 100;
 				padding: 0 0 0 10px;
 			}
-	</style>
+	    </style>
 		<toast-ajax
 			auto
 			id="tickListAPI"
@@ -38,7 +40,9 @@
 			<!--<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>-->
             <span flex></span>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
-			<paper-icon-button id="addTickButton" icon="add" on-click="{{addTickClicked}}"></paper-icon-button>
+            <core-tooltip label="Add Tick" class="add-tick-tooltip">
+			    <paper-icon-button id="addTickButton" icon="add" on-click="{{addTickClicked}}"></paper-icon-button>
+            </core-tooltip>
 		</div>
 
 		<!-- Tick list. -->

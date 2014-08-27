@@ -11,9 +11,23 @@
 .tick-label {
     width: 50px;
     min-width: 50px;
+    max-width: 50px;
     margin: 0;
     padding: 5px;
+    /*white-space: pre;*/
+    text-overflow: ellipsis
+}
+
+.tick-header {
+    width: 135px;
+    min-width: 135px;
+    max-width: 135px;
+    /*height: 60px;*/
+    margin: 0 0 0 -84.5px;
+    padding: 5px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
 }
 
 .horizontalDropShadow {

@@ -43,6 +43,7 @@
   </template>
   <script src="../../bower_components/moment/moment.js"></script>
   <script src="../../js/prettyDate.js"></script>
+  <script src="../../js/hiddenFiles.js"></script>
   <script>
   Polymer('files-service'
     , {   repoNameChanged:
@@ -156,6 +157,7 @@
             for (i = 0; i < this.files.length; i++)
             {
               this.files[i].id = i;
+              this.files[i].hidden = isHidden(this.files[i]);
             }
 
             this.fire('files-loaded');
