@@ -75,12 +75,12 @@
         </div>
 
         <!-- Ticker comments -->
-          <div class="ticker-comments">
-            Ticker comments:
-            <!-- Indentation due to marked element considering spaces -->
-            <marked-element text="{{comments}}">
-            </marked-element>
-          </div>
+        <div class="ticker-comments">
+          Ticker comments:
+          <!-- Indentation due to marked element considering spaces -->
+          <marked-element text="{{comments == null ? '' : comments}}">
+          </marked-element>
+        </div>
 
         <!-- File contents -->
         <template repeat="{{file in files}}">
