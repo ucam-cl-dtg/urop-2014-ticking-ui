@@ -203,7 +203,7 @@ public class TickSignups {
             if (service.getPermissions(groupID, crsid).containsKey(bean.getTickID())) { // user has passed this tick
                 /* Get the ticker they should ideally be signed up with (i.e. they have been failed by) */
                 String ticker = service.getPermissions(groupID, crsid).get(bean.getTickID());
-                if (ticker != null && service.columnIsFullyBooked(sheetID, ticker)) {
+                if (ticker != null && !service.columnIsFullyBooked(sheetID, ticker)) {
                     service.book(sheetID, ticker, bean.getStartTime(), new SlotBookingBean(null, crsid, bean.getTickID()));
                     /* Update fork object - not strictly needed any more */
                     Fork f = db.getFork(Fork.generateForkId(crsid, bean.getTickID()));
@@ -1040,6 +1040,13 @@ public class TickSignups {
             log.info("Sheet not found", e);
             return Response.status(Status.NOT_FOUND).entity("The sheet was not found").build();
         }
+        int millisecondsInOneMinute = 60000;
+        long sheetLengthInMinutes = (bean.getEndTime() - bean.getStartTime())/millisecondsInOneMinute;
+        if (sheetLengthInMinutes <= 0) {
+            log.info("Sheet editing failed: the end time must be after the start time.\n" + bean.toString());
+            return Response.status(Status.BAD_REQUEST).entity("The end time must be after "
+                    + "the start time").build();
+        }
         if ((sheet.getStartTime().getTime() - bean.getStartTime()) % sheet.getSlotLengthInMinutes() != 0) {
             log.info("The new start time must be an integer multiple of slot lengths away from the " +
                     "old start time of " + sheet.getStartTime().toString());
@@ -1054,8 +1061,6 @@ public class TickSignups {
                     + "multiple of slot lengths away from the " +
                     "old end time of " + sheet.getEndTime().toString()).build();
         }
-        int millisecondsInOneMinute = 60000;
-        long sheetLengthInMinutes = (bean.getEndTime() - bean.getStartTime())/millisecondsInOneMinute;
         if (sheetLengthInMinutes/bean.getSlotLengthInMinutes() > 500) {
             log.info("Too many slots would have been created");
             return Response.status(Status.FORBIDDEN).entity("This sheet would have a silly "
