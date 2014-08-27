@@ -38,7 +38,7 @@
     height: 6px;
     min-height: 6px;
     margin-top: -6px;
-    box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 5px 6px -3px rgba(0, 0, 0, 0.4);
 }
 
 .verticalDropShadow {
@@ -48,7 +48,7 @@
     right: 0;
     width: 6px;
     margin-left: -6px;
-    box-shadow: inset 5px 0px 6px -3px rgba(0, 0, 0, 0.4);
+    box-shadow: inset 5px 0 6px -3px rgba(0, 0, 0, 0.4);
 }
 
 .auto-fix {
@@ -130,7 +130,6 @@ polyfill-next-selector {shadow: 'overviewSearchBox core-input';}
     margin-bottom: -20px;
 }
 
-/*polyfill-next-selector {shadow: 'overviewSearchBox core-input';}*/
 #overviewSearchBox /deep/ input  {
     color: white;
 }
