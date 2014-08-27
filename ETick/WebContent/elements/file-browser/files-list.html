@@ -15,6 +15,8 @@
       {
         padding-left: 15px;
         margin-right: 20px;
+        /* Mis-alignment with checkbox */
+        vertical-align: super;
       }
       .fileSelector [fileHidden=true]
       {
@@ -37,25 +39,7 @@
   </template>
   <script>
     Polymer('files-list'
-      , {   filesChanged:
-            function ()
-            {
-              "use strict";
-              /* Collapse common substrings
-               * Changes
-               * ["a/b/c", "a/b/d", "a/e/", "f"]
-               *
-               * to
-               * [["a", "b", "c"], ["a", "b", "d"], ["a", "e"], ["f"]]
-               *
-               * then to
-               * [["a", [["b", ["c", "d"]], "e"]], "f"]
-               */
-              this.files.sort();
-              /*this.files.map(function (x) { return x.split("/"); });*/
-
-              /* TODO: above collapse of common substrings. */
-            }
+      , {
         });
   </script>
 </polymer-element>
