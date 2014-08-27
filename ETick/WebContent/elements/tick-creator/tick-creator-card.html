@@ -173,7 +173,7 @@
 
         <tick-workbook-link flex link="{{externalReference}}"></tick-workbook-link>
 
-        <dynamic-tests-component dynamicOptions="{{dynamicOptions}}" dynamicSelectedIndex="{{dynamicSelectedIndex}}"></dynamic-tests-component>
+        <dynamic-tests-component id="dynamicTestsComponent" dynamicOptions="{{dynamicOptions}}" dynamicSelectedIndex="{{dynamicSelectedIndex}}"></dynamic-tests-component>
 
         <required-files requiredFiles="{{displayRequiredFiles}}"></required-files>
 
@@ -507,7 +507,7 @@
             return sendData;
         },
         buildDynamicData: function() {
-            if (this.dynamicSelectedIndex == null) {
+            if (this.dynamicSelectedIndex == null || !this.$.dynamicTestsComponent.collapseDynamic.opened) {
                 return {containerId: null, testId: null};
             } else {
                 return this.dynamicOptions[this.dynamicSelectedIndex];
