@@ -144,12 +144,13 @@
             <h4>MASTER DEADLINE</h4>
             <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
         </div>
-        <core-collapse id="collapseDeadline" opened="{{dateShown}}">
+       
+        <br>
+         <core-collapse id="collapseDeadline" opened="{{dateShown}}">
             <date-picker id="datePicker" selectedDate="{{date}}"></date-picker>
-            <date-entry valid="{{dateValid}}" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry>
+            <!-- <date-entry valid="{{dateValid}}" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry> -->
         </core-collapse>
 
-        <br>
 
         <div layout horizontal>
             <h4 style="height: 19px;">ADD TO GROUPS</h4>
@@ -204,7 +205,7 @@
         <span layout horizontal>
             <span flex></span>
             <paper-button raisedButton id="save" class="tick-creator" label="{{saving ? 'SAVING...' : 'SAVE'}}" on-tap="{{saveEverything}}"
-                          disabled?="{{(dateShown && !dateValid) || (!inputDisplayNameHidden && !displayValid) || saving || deleting}}">
+                          disabled?="{{ (!inputDisplayNameHidden && !displayValid) || saving || deleting}}">
             </paper-button>
             <div style="width: 20px"></div>
             <paper-button raisedButton id="delete" class="tick-creator" label="{{deleting ? 'DELETING...' : 'DELETE'}}" on-tap="{{alertDeleteTick}}"
@@ -381,6 +382,9 @@
 
                     this.date = deadline.format("YYYY-MM-DD");
 
+
+                    console.log(prettyParse(this.date));
+
                     var day = prettyGetDate(deadline).toString();
                     var month = (prettyGetMonth(deadline) + 1).toString();
                     var year = prettyGetFullYear(deadline).toString();
@@ -471,11 +475,12 @@
                 var year = this.year;
                 var month = this.month - 1;
                 var day = this.day;
-                var date = moment();
+                var date = moment();                
                 prettySetDate(date, day);
                 prettySetMonth(date, month);
                 prettySetFullYear(date, year);
-                this.tickData.deadline = date.toISOString();
+
+                this.tickData.deadline = prettyParse(this.date).toISOString();
             } else {
                 this.tickData.deadline = null;
             }
