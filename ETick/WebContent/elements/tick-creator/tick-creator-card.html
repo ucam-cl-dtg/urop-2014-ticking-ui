@@ -288,7 +288,8 @@
                 this.groups[this.groups.length] = {_id: loadedGroups[i]._id, selected: false, text: loadedGroups[i].name};
             }
 
-            for (var g = 0; g < this.tickData.groups.length; g++) {
+            for (var g = 0; typeof this.tickData.groups !=
+                    typeof undefined && g < this.tickData.groups.length; g++) {
                 for (var k = 0; k < this.groups.length; k++) {
                     if (this.tickData.groups[g] == this.groups[k]._id) {
                         this.groups[k].selected = true;
