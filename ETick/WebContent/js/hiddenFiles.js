@@ -26,6 +26,9 @@ function isHidden (file)
         });
     }
 
-    return file.name.startsWith(".")
-        || file.name.endsWith(".class");
+    /* Get rid of directories if file path to get name */
+    fileName = file.name.split("/").pop();
+
+    return fileName.startsWith(".")
+        || fileName.endsWith(".class");
 }

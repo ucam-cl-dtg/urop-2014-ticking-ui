@@ -43,17 +43,21 @@
     </files-service>
     <div class="container" horizontal layout>
       <div class="sidebar">
-        <h3 id="resultString" class="result">
-        </h3>
-        <files-list files="{{files}}"
-                    showHidden="{{showHidden}}"
-                    selectedFileId="{{selectedFileId}}">
-        </files-list>
+        <div class="sidebar-element">
+          <h3 id="resultString" class="result">
+          </h3>
+          <files-list files="{{files}}"
+                      showHidden="{{showHidden}}"
+                      selectedFileId="{{selectedFileId}}">
+          </files-list>
+        </div>
         <hr/>
-        <status-list errors="{{errors}}" highlight="{{highlight}}">
-        </status-list>
+        <div class="sidebar-element">
+          <status-list errors="{{errors}}" highlight="{{highlight}}">
+          </status-list>
+        </div>
       </div>
-      <core-splitter direction="left"></core-splitter>
+      <core-splitter direction="right"></core-splitter>
       <div class="main">
 
         <!-- Report selection and refresh -->

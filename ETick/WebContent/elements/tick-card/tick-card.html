@@ -46,7 +46,6 @@
                 background: #259b24;
                 color: #fff;
             }
-
             #buttonsContainer paper-button {
                 width: 18%;
                 margin: 20px 10px 10px;
@@ -104,8 +103,10 @@
                 </core-collapse>
 
                 <core-collapse opened?="{{tickObj.externalReference != null && forked}}">
-                    <h2>Exercise Sheet</h2>
-                    <a href="{{tickObj.externalReference}}" target="_blank">{{tickObj.externalReference}}</a>
+                    <h2>Resources</h2>
+                    <template repeat="{{ref in externalReferences}}">
+                        <div><a href="{{ref}}" target="_blank">{{ref}}</a></div>
+                    </template>
                     <br>
                     <!-- This div is needed in order to make core-collapse show the <br> -->
                     <div>&nbsp;</div>
@@ -195,6 +196,12 @@
                 }
 
                 this.forking = false;
+
+                if (this.tickObj.externalReference != null)
+                {
+                    this.externalReferences = this.tickObj.externalReference.split(/([ ,]|\n)+/);
+                    console.log("ex-refs", this.externalReferences);
+                }
             },
 
             createFork: function() {
