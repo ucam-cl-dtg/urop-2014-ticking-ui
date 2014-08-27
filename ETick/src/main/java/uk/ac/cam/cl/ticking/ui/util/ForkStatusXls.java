@@ -3,6 +3,7 @@ package uk.ac.cam.cl.ticking.ui.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -52,6 +53,8 @@ public class ForkStatusXls {
 
 		String groupId = group.getGroupId();
 		List<String> tickIds = group.getTicks();
+		Collections.sort(tickIds, new IgnoreCaseComparator());
+		
 		List<User> submitters = db.getUsers(groupId, Role.SUBMITTER);
 		
 		DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd");
@@ -98,7 +101,7 @@ public class ForkStatusXls {
 	    
 	    rightCell.setCellStyle(borderStyle);
 	    
-	    for (String tickId : group.getTicks()) {
+	    for (String tickId : tickIds) {
 	    	Tick tick = db.getTick(tickId);
 			String heading = tick.getName();
 			heading += (tick.getDeadline() == null) ? "" : " "+tick.getDeadline().toString(dtf);
