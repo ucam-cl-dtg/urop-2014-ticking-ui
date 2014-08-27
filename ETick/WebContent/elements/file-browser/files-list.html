@@ -16,7 +16,7 @@
         padding-left: 15px;
         margin-right: 20px;
       }
-      [fileHidden=true]
+      .fileSelector [fileHidden=true]
       {
         color: #9e9e9e;
       }
@@ -24,6 +24,7 @@
     <paper-checkbox checked="{{showHidden}}"></paper-checkbox>
     <span>Show hidden files</span>
     <core-selector id="selector"
+                   class="fileSelector"
                    selected="{{selectedFileId}}"
                    valueattr="id">
       <template repeat="{{file in files}}">
