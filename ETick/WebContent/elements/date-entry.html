@@ -63,7 +63,6 @@
                        this.month > 0 && this.month <= 12 && this.month.toString().length <= 2 &&
                        this.year >= 0 && this.year <= 9999 && this.year != "" &&
                        (this.year.toString().length == 4 || this.year.toString().length == 2));
-                console.log(this.valid);
             },
             isLeapYear: function() {
                 if (this.year % 4 != 0) {

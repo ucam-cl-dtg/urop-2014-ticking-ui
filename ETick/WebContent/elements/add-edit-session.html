@@ -33,6 +33,10 @@
 				margin-top: 8px;
 			}
 
+			core-icon.center {
+				margin-top: 0;
+			}
+
 			.datetime {
 				width: initial;
 				margin-right: 20px;
@@ -127,13 +131,14 @@
 		</div>
 
 		<h2>Date and Time</h2>
-		<div layout horizontal start>
-			<core-icon class="big" icon="event"></core-icon>
+		<div layout horizontal center>
+			<core-icon class="big center" icon="event"></core-icon>
 			<date-entry id="dateEntry" day="{{day}}" month="{{month}}" year="{{year}}" 
 				on-input="{{validate}}"></date-entry>
 			
 			<core-icon class="big" icon="device:access-time"></core-icon>
 			<paper-input id="startTime" class="datetime"
+				floatinglabel
 				type="time"
 				required 
 				error="Start time." 
@@ -143,6 +148,7 @@
 
 			<core-icon class="big" icon="device:access-time"></core-icon>
 			<paper-input id="endTime" class="datetime"
+				floatinglabel
 				type="time"
 				required 
 				error="End time." 
@@ -185,6 +191,11 @@
 				if (this.sheet) {
 					var startDT = prettyParse(this.sheet.startTime);
 					var endDT   = prettyParse(this.sheet.endTime);
+
+					this.day = startDT.date();
+					this.month = startDT.month();
+					this.year = startDT.year();
+
 
 					this.date = startDT.format("YYYY-MM-DD");
 					this.startTime = startDT.format("HH:mm");
