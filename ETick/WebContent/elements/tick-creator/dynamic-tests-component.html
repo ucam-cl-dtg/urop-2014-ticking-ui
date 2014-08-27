@@ -9,13 +9,6 @@
     <template>
         <link rel="stylesheet" href="tick-creator-card.css">
 
-        <toast-ajax id="ajaxLoadDynamic"
-                    auto
-                    url="http://localhost:8000/tick-creator.json"
-                    handleAs="json"
-                    on-core-response="{{dynamicOptionsLoaded}}">
-        </toast-ajax>
-
         <div layout horizontal>
             <h4>Correctness Tests</h4>
             <paper-toggle-button id="dynamicSwitch" on-change="{{toggleDynamic}}"></paper-toggle-button>
@@ -36,10 +29,6 @@
     </template>
     <script>
         Polymer('dynamic-tests-component', {
-            dynamicOptionsLoaded: function() {
-                this.dynamicOptions = this.$.ajaxLoadDynamic.response;
-            },
-
             dynamicOptionsChanged: function() {
                 this.options = this.dynamicOptions.map(function(el, index) {
                     return {
