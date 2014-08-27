@@ -14,13 +14,13 @@
 
         <span layout horizontal>
             <paper-input inputValue="{{day}}" id="day" label="DD" floatinglabel="true"
-                         pattern="^(0?[1-9]|[12][0-9]|30|31)$" required error=" " on-blur="{{inputBlurred}}" on-keyup="{{validate}}">
+                         pattern="^(0?[1-9]|[12][0-9]|30|31)$" required error=" " on-blur="{{inputBlurred}}" on-input="{{validate}}">
             </paper-input>
             <paper-input inputValue="{{month}}" id="month" label="MM" floatinglabel="true"
-                         pattern="^(0?[1-9]|1[012])$" required error=" " on-blur="{{inputBlurred}}" on-keyup="{{validate}}">
+                         pattern="^(0?[1-9]|1[012])$" required error=" " on-blur="{{inputBlurred}}" on-input="{{validate}}">
             </paper-input>
             <paper-input inputValue="{{year}}" id="year" label="YYYY" floatinglabel="true"
-                         pattern="^([0-9][0-9])?[0-9][0-9]$" required error=" " on-blur="{{inputBlurred}}" on-keyup="{{validate}}">
+                         pattern="^([0-9][0-9])?[0-9][0-9]$" required error=" " on-blur="{{inputBlurred}}" on-input="{{validate}}">
             </paper-input>
         </span>
     </template>
