@@ -12,6 +12,7 @@
 <link rel="import" href="static-list-labels.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 <link rel="import" href="../date-entry.html">
+<link rel="import" href="../date-picker.html">
 
 <polymer-element name="tick-creator-card" attributes="tickId">
 <template>
@@ -144,6 +145,7 @@
             <paper-toggle-button id="deadlineSwitch" on-change="{{toggleDeadline}}"></paper-toggle-button>
         </div>
         <core-collapse id="collapseDeadline" opened="{{dateShown}}">
+            <date-picker id="datePicker" selectedDate="{{date}}"></date-picker>
             <date-entry valid="{{dateValid}}" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry>
         </core-collapse>
 
@@ -376,6 +378,8 @@
                     this.$.deadlineSwitch.checked = true;
 
                     var deadline  = prettyParse(this.tickData.deadline);
+
+                    this.date = deadline.format("YYYY-MM-DD");
 
                     var day = prettyGetDate(deadline).toString();
                     var month = (prettyGetMonth(deadline) + 1).toString();
