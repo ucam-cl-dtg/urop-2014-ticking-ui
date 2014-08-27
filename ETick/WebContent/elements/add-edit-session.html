@@ -182,10 +182,10 @@
 					var endDT   = prettyParse(this.sheet.endTime);
 
 					this.date = startDT.format("YYYY-MM-DD");
-					this.startH = startDT.hour();
-					this.startM = startDT.minute();
-					this.endH = endDT.hour();
-					this.endM = endDT.minute();
+					this.startH = startDT.hour().toString();
+					this.startM = startDT.minute().toString();
+					this.endH = endDT.hour().toString();
+					this.endM = endDT.minute().toString();
 
 					this.startTime = startDT.format("HH:mm");
 					this.endTime = endDT.format("HH:mm");
@@ -203,17 +203,11 @@
 			},
 
 			validate: function () {
-				console.log(!this.$.titleInput.invalid ,
-					this.tickers , this.tickers.length >= 1 ,
-					this.$.date.selectedDate ,
-					this.$.startTime.hrs , this.$.startTime.mins ,
-					!this.$.slotLengthInput.invalid);
 
 				if (!this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.selectedDate &&
-					this.$.startTime.hrs && this.$.startTime.mins &&
-					this.$.endTime.hrs && this.$.endTime.mins &&
+					this.startH && this.startM && this.endH && this.endM &&
 					!this.$.slotLengthInput.invalid) {
 					this.$.submitButton.disabled = false;
 				}
@@ -244,8 +238,8 @@
 				this.title = this.$.titleInput.inputValue;
 				this.description = this.$.descInput.value;
 				this.location = this.$.locInput.inputValue;
-				this.subStartTime = prettyParse(this.$.date.selectedDate + "T" + this.$.startTime.value);
-				this.subEndTime = prettyParse(this.$.date.selectedDate + "T" + this.$.endTime.value);
+				this.subStartTime = prettyParse(this.$.date.selectedDate + "T" + this.$.startTime.hrs + ":" + this.$.startTime.mins);
+				this.subEndTime = prettyParse(this.$.date.selectedDate + "T" + this.$.endTime.hrs + ":" + this.$.endTime.mins);
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
 				console.log(prettyDateTime(this.subStartTime),

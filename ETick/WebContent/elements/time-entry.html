@@ -54,20 +54,7 @@
 			inputBlurred: function () {
 				this.hrs = this.pad(this.hrs);
 				this.mins = this.pad(this.mins);
-
-				this.validate();
-			},
-
-			validate: function () {
-				console.log(this.$.hours.invalid, this.$.minutes.invalid);
-				if (this.$.hours.invalid || this.$.minutes.invalid) {
-					this.value = null;
-				}
-				else {
-					this.value = this.hrs + ":" + this.mins;
-				}
-				console.log(this.value);
-			},
+			}
 		});
 	</script>
 </polymer-element>
