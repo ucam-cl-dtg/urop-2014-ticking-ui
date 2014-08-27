@@ -15,12 +15,12 @@
         </div>
         <core-collapse id="collapseDynamic" opened?="{{opened}}">
             <div layout horizontal wrap style="margin-left: 10px;">
-                <paper-radio-group>
+                <paper-radio-group selected="{{dynamicSelectedIndex}}">
                     <template repeat="{{dynamicOption in options}}">
                         <!-- TODO: init with checked property -->
                         <paper-radio-button id="{{'correctnessIndex-' + dynamicOption.index}}"
                                             on-change="{{selectedChanged}}" label="{{dynamicOption.testName}}"
-                                            style="width: 250px;">
+                                            style="width: 250px;" name="{{dynamicOption.index}}">
                         </paper-radio-button>
                     </template>
                 </paper-radio-group>
@@ -38,6 +38,10 @@
                         index: index
                     };
                 });
+            },
+
+            dynamicSelectedIndexChanged: function() {
+                console.log("dtc dsi", this.dynamicSelectedIndex);
             },
 
             toggleDynamic: function() {
