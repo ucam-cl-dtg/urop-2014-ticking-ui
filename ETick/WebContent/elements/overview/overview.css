@@ -130,7 +130,6 @@ polyfill-next-selector {shadow: 'overviewSearchBox core-input';}
     margin-bottom: -20px;
 }
 
-/*polyfill-next-selector {shadow: 'overviewSearchBox core-input';}*/
 #overviewSearchBox /deep/ input  {
     color: white;
 }
