@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/core-icons/image-icons.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="date-picker.html">
+<link rel="import" href="time-entry.html">
 
 
 <polymer-element name="add-edit-session" attributes="sheet gid">
@@ -133,22 +134,15 @@
 				error="Session date."></date-picker>
 			
 			<core-icon class="big" icon="device:access-time"></core-icon>
-			<paper-input id="startTime" class="datetime"
-				type="time"
-				required 
-				error="Start time." 
-				value="{{startTime}}"
-				on-change="{{validate}}">
-			</paper-input>
+			<time-entry id="startTime" class="datetime"
+				hrs="{{startH}}" mins="{{startM}}"
+				on-input="{{validate}}"></time-entry>
+
 
 			<core-icon class="big" icon="device:access-time"></core-icon>
-			<paper-input id="endTime" class="datetime"
-				type="time"
-				required 
-				error="End time." 
-				value="{{endTime}}"
-				on-change="{{validate}}">
-			</paper-input>
+			<time-entry id="endTime" class="datetime"
+				hrs="{{endH}}" mins="{{endM}}"
+				on-input="{{validate}}"></time-entry>
 		</div>
 
 		<h2>Tickers</h2>
@@ -188,6 +182,11 @@
 					var endDT   = prettyParse(this.sheet.endTime);
 
 					this.date = startDT.format("YYYY-MM-DD");
+					this.startH = startDT.hour();
+					this.startM = startDT.minute();
+					this.endH = endDT.hour();
+					this.endM = endDT.minute();
+
 					this.startTime = startDT.format("HH:mm");
 					this.endTime = endDT.format("HH:mm");
 				}
@@ -204,12 +203,17 @@
 			},
 
 			validate: function () {
-				console.log(this.$.titleInput.invalid);
+				console.log(!this.$.titleInput.invalid ,
+					this.tickers , this.tickers.length >= 1 ,
+					this.$.date.selectedDate ,
+					this.$.startTime.hrs , this.$.startTime.mins ,
+					!this.$.slotLengthInput.invalid);
 
 				if (!this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.selectedDate &&
-					this.$.startTime.value && this.$.endTime.value &&
+					this.$.startTime.hrs && this.$.startTime.mins &&
+					this.$.endTime.hrs && this.$.endTime.mins &&
 					!this.$.slotLengthInput.invalid) {
 					this.$.submitButton.disabled = false;
 				}

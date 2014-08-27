@@ -7,36 +7,42 @@
 			:host {
 				display: block;
 			}
+			paper-input {
+				width: 100%;
+			}
 		</style>
 		
+		<span layout horizontal center>
 			<paper-input id="hours"
-				inputValue="{{hrs}}"
-				floatingLabel
+				value="{{hrs}}"
 				type="number"
 				max="23"
 				min="0"
-				placeholder="HH"
 				required
-				error=" "
+				error="HH"
 				on-blur="{{inputBlurred}}"
 				on-input="{{validate}}">
 			</paper-input>
 			<paper-input id="minutes"
-				inputValue="{{mins}}"
-				floatingLabel
+				value="{{mins}}"
 				type="number"
 				max="59"
 				min="0"
-				placeholder="MM"
 				required
-				error=" "
+				error="MM"
 				on-blur="{{inputBlurred}}"
 				on-input="{{validate}}">
 			</paper-input>
+		</span>
 
 	</template>
 	<script>
 		Polymer('time-entry', {
+
+			domReady: function () {
+				this.inputBlurred();
+			},
+
 			pad: function (s) {
 				s = parseInt(s).toString();
 				if (s && s.length == 1) {
@@ -53,14 +59,15 @@
 			},
 
 			validate: function () {
+				console.log(this.$.hours.invalid, this.$.minutes.invalid);
 				if (this.$.hours.invalid || this.$.minutes.invalid) {
 					this.value = null;
 				}
 				else {
-					this.value = this.pad(this.hrs) + ":" + this.pad(this.mins);
+					this.value = this.hrs + ":" + this.mins;
 				}
 				console.log(this.value);
-			}
+			},
 		});
 	</script>
 </polymer-element>
