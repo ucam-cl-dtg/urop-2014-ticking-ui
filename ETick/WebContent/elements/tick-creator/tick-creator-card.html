@@ -83,7 +83,7 @@
     <!-- get and update stylistic data -->
     <toast-ajax
             id="ajaxLoadDefaults"
-            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/testerAPI/v2/testFiles"
+            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/test/settings"
             handleAs="json"
             on-core-response="{{defaultsLoaded}}"
 
@@ -93,7 +93,7 @@
     </toast-ajax>
     <toast-ajax
             id="ajaxLoadStatic"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/testerAPI/v2/' + tickId + '/testFiles'}}"
+            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/test/settings'}}"
             handleAs="json"
             on-core-response="{{staticDataLoaded}}"
 
