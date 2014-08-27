@@ -1,4 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 
 <polymer-element name="submit-service" attributes="tickId status testRunning unitPass reportAvailable repo">
@@ -19,18 +21,17 @@
                 errorMessage="Error submitting tick">
         </toast-ajax>
 
-        <!-- poll the tick's status -->
-        <toast-ajax
+        <!-- poll the tick's status. This NEEDS TO BE A CORE-AJAX instead of a toast-ajax because the response code
+             is needed to determine if the toast should be displayed -->
+        <core-ajax
                 id="ajaxPoll"
                 url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/submission/' + tickId + '/running'}}"
                 handleAs="json"
                 on-core-response="{{pollNext}}"
-                on-core-error="{{pollError}}"
+                on-core-error="{{pollError}}">
+        </core-ajax>
 
-                captureError
-                popUpError
-                errorMessage="Error obtaining submission status.">
-        </toast-ajax>
+        <paper-toast id="toastPollError"></paper-toast>
     </template>
     <script>
         Polymer('submit-service', {
@@ -75,23 +76,22 @@
             pollError: function(e, detail) {
                 console.log("poll error");
 
-                this.job('delay-poll', function() {
-                    this.pollNext();
-                }, 4000);
-
-                //TODO: sometimes poll fails because there is nothing to poll, so this should be handled somehow
-                //TODO: (similar to below, which was how it was done previously)
-                /*if (detail.xhr.responseText.indexOf("NoSuchTestException") > -1) {
+                if (detail.xhr.status == 404) {
                     //assume last test finished
                     this.testRunning = false;
                 } else {
                     //no idea what could have happened. Assume connection failed (e.g. timed out) and try again
+                    if (detail.xhr.responseText == null) {
+                        this.$.toastPollError.text = "Error retrieving submission status. Retrying..."
+                    } else {
+                        this.$.toastPollError.text = detail.xhr.responseText;
+                    }
                     this.$.toastPollError.show();
 
-                    this.job('polymer-is-forcing-me-to-name-this-job', function() {
+                    this.job('restart-polling', function() {
                         this.startPolling();
                     }, 4000);
-                }*/
+                }
             },
 
             repoChanged: function() {
