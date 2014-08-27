@@ -129,7 +129,8 @@
 		<h2>Date and Time</h2>
 		<div layout horizontal start>
 			<core-icon class="big" icon="event"></core-icon>
-			<date-entry id="dateEntry" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry>
+			<date-entry id="dateEntry" day="{{day}}" month="{{month}}" year="{{year}}" 
+				on-blur="{{validate}}"></date-entry>
 			
 			<core-icon class="big" icon="device:access-time"></core-icon>
 			<paper-input id="startTime" class="datetime"
@@ -180,7 +181,6 @@
     <script src="../js/jsonSanitize.js"></script>
 	<script>
 		Polymer('add-edit-session', {
-
 			domReady: function () {
 				if (this.sheet) {
 					var startDT = prettyParse(this.sheet.startTime);
@@ -203,11 +203,11 @@
 			},
 
 			validate: function () {
-				console.log(this.$.titleInput.invalid);
+				console.log(this.$.dateEntry.valid);
 
 				if (!this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
-					this.$.date.selectedDate &&
+					this.$.dateEntry.valid &&
 					this.$.startTime.value && this.$.endTime.value &&
 					!this.$.slotLengthInput.invalid) {
 					this.$.submitButton.disabled = false;
