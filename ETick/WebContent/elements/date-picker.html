@@ -36,7 +36,7 @@
 
       	opened: false,
 
-        displayDate: "No date selected...",
+        dateEntered: false,
 
         toggle: function() {
             this.$.datePicker.toggle();
@@ -46,8 +46,9 @@
         },
 
         selectedDateChanged: function (oldValue, newValue) {
-          if (oldValue)
+          if (oldValue) {
             this.displayDate = newValue;
+          }
         }
       });
     </script>

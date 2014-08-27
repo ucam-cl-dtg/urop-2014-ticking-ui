@@ -148,7 +148,6 @@
         <br>
          <core-collapse id="collapseDeadline" opened="{{dateShown}}">
             <date-picker id="datePicker" selectedDate="{{date}}"></date-picker>
-            <!-- <date-entry valid="{{dateValid}}" day="{{day}}" month="{{month}}" year="{{year}}"></date-entry> -->
         </core-collapse>
 
 
@@ -381,21 +380,6 @@
                     var deadline  = prettyParse(this.tickData.deadline);
 
                     this.date = deadline.format("YYYY-MM-DD");
-
-
-                    console.log(prettyParse(this.date));
-
-                    var day = prettyGetDate(deadline).toString();
-                    var month = (prettyGetMonth(deadline) + 1).toString();
-                    var year = prettyGetFullYear(deadline).toString();
-
-                    //pad day and month to include leading zero if necessary
-                    if (day.length == 1) {day = "0" + day}
-                    if (month.length == 1) {month = "0" + month}
-
-                    this.day = day;
-                    this.month = month;
-                    this.year = year;
                 }
             }
 
@@ -472,14 +456,6 @@
 
             //Update master deadline
             if (this.$.deadlineSwitch.checked) {
-                var year = this.year;
-                var month = this.month - 1;
-                var day = this.day;
-                var date = moment();                
-                prettySetDate(date, day);
-                prettySetMonth(date, month);
-                prettySetFullYear(date, year);
-
                 this.tickData.deadline = prettyParse(this.date).toISOString();
             } else {
                 this.tickData.deadline = null;
