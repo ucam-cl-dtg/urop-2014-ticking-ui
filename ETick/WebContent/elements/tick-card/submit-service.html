@@ -113,10 +113,10 @@
                     this.status.info = "Done";
                     var oldRepo = this.repo.valueOf();
                     this.repo = null;
+                    this.reportAvailable = true;
 
                     this.job('show-button', function() {
                         this.testRunning = false;
-                        this.reportAvailable = true;
                         this.unitPass = statusString == "PASS";
                         //this.repo = oldRepo; //regenerate report
                         console.log(this.repo);
