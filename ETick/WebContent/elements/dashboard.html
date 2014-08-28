@@ -60,7 +60,11 @@
 			},
 
 			dataChanged: function (oldValue, newValue) {
-				is
+				if (newValue && this.$.loadingOverlay.opened) {
+					this.async(function () {
+						this.$.loadingOverlay.close();
+					}, null, 500);
+				}
 			},
 
 			upcomingResponse: function() {
