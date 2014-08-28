@@ -266,7 +266,7 @@ public class Tick implements Comparable<Tick> {
 		if (!(o instanceof Tick)) {
 			return false;
 		}
-		return this.tickId == ((Tick) o).tickId;
+		return this.tickId.equals(((Tick) o).tickId);
 	}
 
 	/**

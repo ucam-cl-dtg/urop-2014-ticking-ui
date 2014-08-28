@@ -112,7 +112,7 @@ public class Grouping {
 		if (!(o instanceof Grouping)) {
 			return false;
 		}
-		return this._id == ((Grouping) o)._id;
+		return this._id.equals(((Grouping) o)._id);
 	}
 
 	/**
