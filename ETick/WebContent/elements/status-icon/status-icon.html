@@ -15,6 +15,12 @@
                 width: 48px;
                 height: 48px;
             }
+            .pass{
+                color: #259b24;
+            }
+            .fail{
+                color: #e51c23;
+            }
             .status-icon-label {
                 margin-right: 10px;
                 color: #757575;
@@ -34,7 +40,7 @@
 
             <!-- When core-icon is created, if icon="", then it displays no icon. However, if icon is set to a non-empty
                  string, then set back to "", a blank icon is not displayed.-->
-            <core-icon class="{{big ? 'big' : 'small'}}"
+            <core-icon class="{{mode == 'P' ? 'pass' : mode == 'F' ? 'fail' : big ? 'big' : 'small'}}"
                        icon="{{mode == '-' ? (big ? 'maps:local-hotel' : '') : mode == 'I' ? 'play-circle-outline' : mode == 'UF' ? 'block' : mode == 'UP' ? 'check-circle-outline-blank' : mode == 'P' ? 'check-circle-outline' : mode == 'F' ? 'close' : ''}}"
                        hidden?="{{!(mode == 'I' || mode == 'UF' || mode == 'UP' || mode == 'F' || mode == 'P' || (mode == '-' && big))}}">
             </core-icon>
