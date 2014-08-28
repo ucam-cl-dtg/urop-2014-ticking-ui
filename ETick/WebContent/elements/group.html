@@ -95,7 +95,8 @@
             <span id="ticks" hidden>
                 <tick-list gid="{{gid}}" 
                 	on-fork-clicked="{{forkClickedHandler}}"
-                	canFork="{{isSubmitter||isAdmin}}"></tick-list>
+                	canFork="{{isSubmitter||isAdmin}}"
+                    id="tickList"></tick-list>
             </span>
 
             <!-- Group Members Tab -->
@@ -130,7 +131,8 @@
                                repoName="{{repoName}}"
                                tickObj="{{selectedTickObj}}"
                                lastTickedBy="{{lastTickedBy}}"
-                               lastTickedOn="{{lastTickedOn}}">
+                               lastTickedOn="{{lastTickedOn}}"
+                               on-status-changed="{{forkStatusUpdated}}">
                     </tick-card>
                 </main-card>
             </template>
@@ -288,7 +290,11 @@
 
 			deleteClicked: function () {
 				this.$.deleteGroup.$.confirm.toggle();
-			}
+			},
+
+            forkStatusUpdated: function(e, detail) {
+                this.$.tickList.forkStatusUpdated(detail);
+            }
 		});
 	</script>
 </polymer-element>
