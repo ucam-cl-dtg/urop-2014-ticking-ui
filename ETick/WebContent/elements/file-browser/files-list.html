@@ -23,8 +23,10 @@
         color: #9e9e9e;
       }
     </style>
-    <paper-checkbox checked="{{showHidden}}"></paper-checkbox>
-    <span>Show hidden files</span>
+    <paper-checkbox checked="{{showHidden}}"
+                    hidden?="{{!hiddenFiles}}">
+    </paper-checkbox>
+    <span hidden?="{{!hiddenFiles}}">Show hidden files</span>
     <core-selector id="selector"
                    class="fileSelector"
                    selected="{{selectedFileId}}"
@@ -39,7 +41,15 @@
   </template>
   <script>
     Polymer('files-list'
-      , {
+      , {   filesChanged:
+            function ()
+            {
+              this.hiddenFiles = this.files.some(
+                  function (file)
+                  {
+                    return file.hidden;
+                  });
+            }
         });
   </script>
 </polymer-element>
