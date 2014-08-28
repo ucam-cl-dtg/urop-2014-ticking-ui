@@ -12,13 +12,15 @@ h1 {
 	margin: 0;
 	font-size: 1.4rem;
 	font-weight: 100;
+    color: black;
 }
 
 h2 {
 	margin: 0;
 	font-size: 0.7rem;
-	color: #808080;
+	/*color: #808080;*/
 	font-weight: 300;
+    color: black;
 }
 
 h3 {
