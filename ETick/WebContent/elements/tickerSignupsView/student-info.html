@@ -15,7 +15,7 @@
 		<!-- Get further student info -->
 		<toast-ajax
 			id="ajaxLoadStudent"
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/crsid/{{crsId}}"
+			url="{{ticking_service}}/user/crsid/{{crsId}}"
 			waitMessage="Loading student data..."
 			responseMessage="Student data loaded"
 			captureError
@@ -41,8 +41,10 @@
 			</div>
 		</div>
     </template>
+	<script src="../js/hardcoded.js"></script>
     <script>
         Polymer( 'student-info', {
+			ticking_service: ticking_service,
             openedChanged : function() {
 				if(this.opened) {
 					this.$.ajaxLoadStudent.go();

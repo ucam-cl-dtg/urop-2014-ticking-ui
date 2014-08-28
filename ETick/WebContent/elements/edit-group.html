@@ -25,7 +25,7 @@
 		<!-- Edit group API. -->
 		<toast-ajax id="editAPI"
 			method="PUT"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid }}"
+			url="{{ticking_service + '/group/' + gid }}"
 			on-core-response="{{editResponse}}"
 			handleAs="json"
 			contentType="application/json"
@@ -64,6 +64,7 @@
 		</paper-dialog>
 
 	</template>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 	Polymer('edit-group', {
 		domReady: function() {

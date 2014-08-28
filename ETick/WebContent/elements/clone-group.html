@@ -71,6 +71,7 @@
 		</paper-dialog>
 
 	</template>
+    <script src="../js/hardcoded.js"></script>
 	<script>
 	Polymer('clone-group', {
 		domReady: function() {
@@ -89,7 +90,7 @@
 			var api = this.$.cloneAPI;
 
 			api.body = '{"name":"' + name + '", "info":"' + info + '"}';
-			api.url = 'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid;
+			api.url = ticking_service + '/group/' + this.gid;
 			api.url += (this.$.memberBox.checked) ? '?members=true' : '?members=false';
 			api.url += (this.$.tickBox.checked) ? '&ticks=true' : '&ticks=false';
 

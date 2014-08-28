@@ -61,7 +61,7 @@
 
 		<!-- Add session API call. -->
 		<toast-ajax id="addSessionAPI"
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets"
+			url="{{ticking_service}}/signups/sheets"
 			method="POST"
 			contentType="application/json"
 			on-core-response="{{addSessionResponse}}"
@@ -73,7 +73,7 @@
 
 		<!-- Edit session API call. -->
 		<toast-ajax id="editSessionAPI"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/' + sheet._id }}"
+			url="{{ticking_service + '/signups/sheets/' + sheet._id }}"
 			method="POST"
 			contentType="application/json"
 			on-core-response="{{editSessionResponse}}"
@@ -173,8 +173,10 @@
     <script src="../bower_components/moment/moment.js"></script>
     <script src="../js/prettyDate.js"></script>
     <script src="../js/jsonSanitize.js"></script>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('add-edit-session', {
+			ticking_service: ticking_service,
 
 			domReady: function () {
 				if (this.sheet) {

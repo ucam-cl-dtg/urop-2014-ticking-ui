@@ -27,11 +27,12 @@
 		<paper-toast id="exportError" duration="3000" text="Error serving file."></paper-toast>
 
 	</template>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('export-members', {
 
 			exportMembers: function () {
-				$.fileDownload('http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + this.gid)
+				$.fileDownload(ticking_service + '/group/' + this.gid)
 		        .done(function () {})
 		        .fail(function () { this.$.exportError.show(); });
 			}

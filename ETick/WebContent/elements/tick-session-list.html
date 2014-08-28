@@ -63,6 +63,7 @@
 		<!-- Response toasts. -->
 		<paper-toast id="deleteSessionError" duration="8000"></paper-toast>
 	</template>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('tick-session-list', {
 			sheetListFilter: function(items, q) {
@@ -109,7 +110,7 @@
 
 			deleteConfirmed: function () {
 				var call = this.$.deleteSessionAPI;
-				call.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets/" + this.selectedSheet._id
+				call.url = ticking_service + "/signups/sheets/" + this.selectedSheet._id
 				call.go();
 			},
 

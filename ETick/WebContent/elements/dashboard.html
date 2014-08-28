@@ -22,7 +22,7 @@
 		<!-- Upcoming events API call. -->
 		<toast-ajax id="upcomingAPI"
 			auto
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/bookings"
+			url="{{ticking_service}}/signups/bookings"
 			handleAs="json"
 			on-core-response="{{upcomingResponse}}"
 			
@@ -51,8 +51,10 @@
 		
 	</template>
 
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('user-dash', {
+			ticking_service: ticking_service,
 			ready: function () {
 				if (!this.data) {
 					this.$.loadingOverlay.open();
