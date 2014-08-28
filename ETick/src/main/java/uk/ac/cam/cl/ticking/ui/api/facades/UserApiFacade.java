@@ -3,7 +3,9 @@ package uk.ac.cam.cl.ticking.ui.api.facades;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
@@ -276,7 +278,7 @@ public class UserApiFacade implements IUserApiFacade {
 					.build();
 		}
 		
-		List<Tick> ticks = new ArrayList<>();
+		Set<Tick> ticks = new HashSet<>();
 		List<ToDoBean> todos = new ArrayList<>();
 		
 		for (Group group : db.getGroups(crsid, Role.SUBMITTER)) {
@@ -288,7 +290,8 @@ public class UserApiFacade implements IUserApiFacade {
 			}
 		}
 		
-		Collections.sort(ticks, new DeadlineFirstComparator());
+		List<Tick> tickList = new ArrayList<>(ticks);
+		Collections.sort(tickList, new DeadlineFirstComparator());
 		
 		for (Tick tick : ticks) {
 			Fork fork = db.getFork(Fork.generateForkId(crsid, tick.getTickId()));
