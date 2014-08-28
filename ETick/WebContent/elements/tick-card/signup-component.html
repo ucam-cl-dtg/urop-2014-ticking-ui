@@ -14,7 +14,7 @@
         <!-- Call to load sign up information -->
         <toast-ajax
                 id="ajaxLoadBookings"
-                url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/bookings"
+                url="{{ticking_service}}/signups/bookings"
                 handleAs="json"
                 on-core-response="{{bookingsLoaded}}"
 
@@ -28,7 +28,7 @@
         <!-- Call to delete a sign up -->
         <toast-ajax
                 id="ajaxDeleteBooking"
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/bookings/' + tickId + '/'}}"
+                url="{{ticking_service + '/signups/bookings/' + tickId + '/'}}"
                 handleAs="json"
                 method="DELETE"
                 on-core-response="{{deleteSuccess}}"
@@ -98,8 +98,10 @@
                 on-yes="{{deleteBooking}}">
         </are-you-sure>
     </template>
+	<script src="../../js/hardcoded.js"></script>
     <script>
         Polymer('signup-component', {
+			ticking_service: ticking_service,
             domReady: function() {
                 var that = this;
                 this.$.signupDialog.addEventListener('slot-booked', function(e){

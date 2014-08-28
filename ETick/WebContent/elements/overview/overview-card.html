@@ -20,7 +20,7 @@
         <toast-ajax
                 id="ajaxLoadOverview"
                 auto
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/overview/csv'}}"
+                url="{{ticking_service + '/group/' + gid + '/overview/csv'}}"
                 handleAs="text"
                 on-core-response="{{overviewLoaded}}"
 
@@ -34,7 +34,7 @@
         <!-- API call: adds user if not already registered. -->
         <core-ajax id="ajaxCrsId"
                    auto
-                   url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/raven/login"
+                   url="{{ticking_service}}/raven/login"
                    handleAs="json"
                    on-core-response="{{loginResponse}}">
         </core-ajax>
@@ -119,8 +119,11 @@
             </div>
         </div>
     </template>
+    <script src="../../js/hardcoded.js"></script>
     <script>
         Polymer('overview-card', {
+            ticking_service: ticking_service,
+
             created: function() {
                 this.scrollAreaLeft = 0;    //used by overview list to determine if the tooltips should be pointing left
                                             //or right in order to not be cut off screen

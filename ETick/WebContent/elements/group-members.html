@@ -21,7 +21,7 @@
 		<!-- Add Member Ajax call. -->
 		<toast-ajax id="addMemberAjax"
 			method="POST"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping/' + gid}}"
+			url="{{ticking_service + '/grouping/' + gid}}"
 			contentType="application/json"
 			handleAs="json"
 			on-core-response="{{addMemberResponse}}"
@@ -35,7 +35,7 @@
 		<!-- Member list Ajax call. -->
 		<toast-ajax id="listAjax"
 			auto
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/' + gid + '/users'}}"
+			url="{{ticking_service + '/group/' + gid + '/users'}}"
 			handleAs="json"
 			on-core-response="{{listResponse}}"
 			
@@ -48,7 +48,7 @@
 		<toast-ajax id="deleteAjax"
 			method="DELETE"
 			contentType="application/json"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/grouping/' + gid}}"
+			url="{{ticking_service + '/grouping/' + gid}}"
 			on-core-response="{{deleteResponse}}"
 			on-core-error="{{deleteError}}"
 			
@@ -123,8 +123,10 @@
 
         <are-you-sure id="deleteDialog" heading="Delete selected members?" on-yes="{{deleteMembers}}"></are-you-sure>
 	</template>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('group-members', {
+			ticking_service: ticking_service,
 
 			allowAdd: false,
 
