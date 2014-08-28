@@ -1,0 +1,34 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
+
+<polymer-element name="todo-card.html" attributes="">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+
+		<!-- Ticks TODO API call. -->
+		<toast-ajax id="todoAPI"
+			auto
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/todo"
+			handleAs="json"
+			on-core-response="{{todoResponse}}"
+			
+			popUpError
+			captureError
+			waitMessage="Loading your to-do list...">
+		</toast-ajax>
+
+
+	</template>
+	<script>
+		Polymer('todo-card.html', {
+			todoResponse: function () {
+				this.todoData = this.$.todoAPI.response;
+				console.log(this.todoData);
+			}	
+		});
+	</script>
+</polymer-element>
