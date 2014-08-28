@@ -58,6 +58,8 @@ public class Strings {
 	public static final String UNITPASSED = "Passed automated tests";
 	public static final String UNITFAILED = "Failed automated tests";
 	public static final String INITIALISED = "Not submitted";
+	public static final String SIGNEDUP = "Signed up";
+	public static final String SIGNEDUPCODE = "SU";
 
 	/**
 	 * Private constructor to prevent this class being created
