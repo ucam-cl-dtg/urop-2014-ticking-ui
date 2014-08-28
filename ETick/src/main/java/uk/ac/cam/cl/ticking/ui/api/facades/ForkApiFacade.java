@@ -261,6 +261,15 @@ public class ForkApiFacade implements IForkApiFacade {
 		/* Does the required fork object exist? */
 		Fork fork = db.getFork(Fork.generateForkId(crsid, tickId));
 		if (fork != null) {
+			/* Are we trying to mark the most recent report? */
+			if (fork.getLastReport() != null || fork.getLastReport()!=forkBean.getReportDate()) {
+				log.error("User " + myCrsid + " tried to mark a report for "
+						+ Fork.generateForkId(crsid, tickId)
+						+ " with date "+forkBean.getReportDate()+" but the most recent is "+fork.getLastReport());
+				return Response.status(Status.FORBIDDEN)
+						.entity(Strings.LASTREPORT).build();
+			}
+			
 			if (forkBean.getHumanPass() != null) {
 
 				/* Call the test service */
@@ -301,8 +310,7 @@ public class ForkApiFacade implements IForkApiFacade {
 				log.info(DateTime.now().toString());
 
 				/*
-				 * If the ticker failed us, require us to resubmit to the unit
-				 * tester
+				 * If the ticker failed us
 				 */
 				if (!forkBean.getHumanPass()) {
 					fork.setSignedUp(false);

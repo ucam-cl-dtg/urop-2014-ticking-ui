@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="../../css/shared-styles.css"/>
     <link rel="stylesheet" href="status-list-style.css"/>
     <style>
+      .core-selected /deep/ div
+      {
+        font-weight: bold;
+      }
+
       .tooltipFiles
       {
         font-size: 11pt;
@@ -53,11 +58,12 @@
     <core-selector multi
                    id="selector"
                    selected="{{highlight}}"
+                   selectedClass="core-selected"
                    valueattr="name">
       <template repeat="{{item in items}}">
-        <div class="tooltipFiles-container">
+        <div class="tooltipFiles-container"
+             name="{{item.className}}">
           <core-item icon='{{item.icon}}'
-                     name="{{item.className}}"
                      class="{{item.outcome}}"
                      label="{{item.problemDescription}}">
           </core-item>
