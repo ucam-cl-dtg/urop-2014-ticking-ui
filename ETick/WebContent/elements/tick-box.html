@@ -4,13 +4,9 @@
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/box-element.css">
 		<div layout horizontal center id="container">
-            <template if="{{tick.deadline}}">
+			<status-icon id="statusIcon" big="true" mode="{{statusCode}}"></status-icon>
 			<date-calendar datetime="{{tick.deadline}}"
 				hexColorPrimary="#F75EA7" hexColorSecondary="#CE00E0"></date-calendar>
-            </template>
-            <template if="{{fork != -1}}">
-                <status-icon id="statusIcon" big="true" mode="{{statusCode}}"></status-icon>
-            </template>
 			<div layout vertical end flex class="textContainer">
 				<h1>{{tick.name}}</h1>
 				<h2>Author: {{tick.author}}</h2>

@@ -6,7 +6,6 @@
 
 #container {
 	padding: 10px;
-    min-height: 56px; /* This is the height of the calendar */
 }
 
 h1 {
@@ -36,5 +35,5 @@ h3 {
 }
 
 #statusIcon {
-    margin-left: 5px;
+    margin: 0 5px;
 }
