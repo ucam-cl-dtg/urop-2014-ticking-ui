@@ -41,7 +41,7 @@
 		</div>
 
 		<box-list id="list">
-			<template repeat="{{tickFork in data}}">
+			<template repeat="{{tickFork in data | tickListFilter($.searchBox.query)}}">
 				<tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
 			</template>
 		</box-list>

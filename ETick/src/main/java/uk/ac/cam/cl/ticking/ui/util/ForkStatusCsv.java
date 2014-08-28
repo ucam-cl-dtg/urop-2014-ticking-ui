@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,9 +64,13 @@ public class ForkStatusCsv {
 		
 		String groupId = group.getGroupId();
 		
-		List<String> tickIds = group.getTicks();
+		List<Tick> ticks = new ArrayList<>();
+		for (String tickId : group.getTicks()) {
+			ticks.add(db.getTick(tickId));
+		}
 		
-		Collections.sort(tickIds, new IgnoreCaseComparator());
+		Collections.sort(ticks);
+		
 		List<User> submitters = db.getUsers(groupId, Role.SUBMITTER);
 		
 		DateTimeFormatter dtf = DateTimeFormat.forPattern("dd/MM/yyyy");
@@ -74,8 +79,7 @@ public class ForkStatusCsv {
 		writer.append(",CRSid");
 		writer.append(",College");
 		writer.append(',');
-		for (String tickId : tickIds) {
-			Tick tick = db.getTick(tickId);
+		for (Tick tick : ticks) {
 			String name = tick.getName().replace(',', ';');
 			name = name.replaceAll("\\n", " ");
 			String heading = ',' + name;
@@ -92,10 +96,9 @@ public class ForkStatusCsv {
 			writer.append(',' + user.getCollege());
 			writer.append(',');
 
-			for (String tickId : tickIds) {
-				Tick tick = db.getTick(tickId);
+			for (Tick tick : ticks) {
 				Fork fork = db.getFork(Fork.generateForkId(user.getCrsid(),
-						tickId));
+						tick.getTickId()));
 				
 				DateTime extension = tick.getExtensions().get(user.getCrsid());
 				if (extension != null) {
