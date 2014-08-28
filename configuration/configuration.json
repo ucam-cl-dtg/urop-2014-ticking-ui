@@ -1,0 +1,35 @@
+{
+    /* Host name where the Git repository is at */
+    "repoHost" : "urop2014.dtg.cl.cam.ac.uk",
+    /* Username under which gitolite runs at */
+    "repoUser" : "gitolite3",
+
+    /* Pre-shared secret, should be the same as in configuration.json */
+    "securityToken" : "53eb64400caea92144f63d3dc9e091cc",
+
+    /* Name of the database in MongoDB */
+    "repoDatabase" : "urop_git",
+
+    /* Place to generate the gitolite config, should be tomcat7 writable */
+    "gitoliteGeneratedConfigFile" : "/var/lib/tomcat7/webapps/urop_gitolite.conf",
+
+    /* Place to put SSH keys, should be tomcat7 writable */
+    "gitoliteSSHKeyLocation" : "/var/lib/gitolite3/.gitolite/keydir/",
+
+    /* Endpoints for urop-2014-ticking-ui and urop-2014-git */
+    "uiApiLocation" : "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/",
+    "secureGitApiLocation" : "http://urop2014.dtg.cl.cam.ac.uk/UROP_GIT_SECURED/rest/",
+    "secureTestApiLocation" : "http://urop2014.dtg.cl.cam.ac.uk/UROP-TestingSystem-dynamic2/rest/",
+
+    /* Mongo database for urop-2014-ticking-ui */
+    "uiMongoBroadcast" : "localhost",
+    "uiMongoPort" : "27017",
+
+    /* Maximum instances of urop-2014-git, urop-2014-tester and urop-2014-signup */
+    "gitDefaultMaxPerRoute" : "8",
+    "gitMaxTotal" : "8",
+    "testDefaultMaxPerRoute" : "200",
+    "testMaxTotal" : "200",
+    "signupDefaultMaxPerRoute" : "200",
+    "signupMaxTotal" : "200"
+}

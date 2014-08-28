@@ -1,0 +1,75 @@
+{
+    /* Path where the urop-2014-git project is deployed */
+    "gitAPIPath" : "http://localhost/UROP_GIT_SECURED/rest/",
+
+    /* Settings for MongoDB */
+    "mongoHost" : "localhost",
+    "mongoPort" : "27017",
+    "mongoReportDBName" : "UROP-TESTING-SYSTEM-DB",
+    "mongoUsersCollectionName" : "Users",
+    "mongoTickSettingsCollectionName" : "TestSettings",
+
+    /* Pre-shared secret, should be the same as in configuration.json */
+    "securityToken" : "53eb64400caea92144f63d3dc9e091cc",
+
+    /* Number of threads to test with */
+    "threadNumber" : "1",
+
+    /* Artificial delay for tests, was for testing */
+    "testDelay" : "0",
+
+    /* Path where Andrew Rice's dynamic tester is deployed */
+    "testerPath" : "https://containers-1.dtg.cl.cam.ac.uk/api-template/api",
+
+    /* Templates for re-creating the repository git URL, should be the
+       same as a combination of repoHost and repoUser in configuration.json */
+    "repoTemplate" : "ssh://gitolite3@urop2014.dtg.cl.cam.ac.uk/",
+
+    /* Default static test options
+       0 is ignore
+       1 is warn
+       2 is fail */
+    "xmlTestSettings" : {
+        "unusedImports" : "1",
+        "noWhitespaceBefore" : "1",
+        "whitespace" : "1",
+        "emptyBlocks" : "2",
+        "noWhitespaceAfter" : "1",
+        "whitespaceAroundTokens" : "1",
+        "noProblem" : "0",
+        "namingConventions" : "1",
+        "redundantImports" : "1",
+        "TODOorFIXME" : "2",
+        "longVariableDeclaration" : "1",
+        "tabInALine" : "0",
+        "illegalThrow" : "2",
+        "illegalCatch" : "2",
+        "indentation" : "1",
+        "stringComparisons" : "2",
+        "switchDefaultLast" : "1"
+    },
+
+    /* Human readable descriptions for static tests */
+    "xmlTestReadable" : {
+        "unusedImports" : "Unused imports",
+        "noWhitespaceBefore" : "No whitespace before characters",
+        "whitespace" : "Whitespace",
+        "emptyBlocks" : "Empty blocks",
+        "noWhitespaceAfter" : "No whitespace after characters",
+        "whitespaceAroundTokens" : "Whitespace around tokens",
+        "noProblem" : "No problem (for testing purposes)",
+        "namingConventions" : "Naming conventions",
+        "redundantImports" : "Redundant imports",
+        "TODOorFIXME" : "TODOs and FIXMEs",
+        "longVariableDeclaration" : "Upper case long declaration",
+        "tabInALine" : "Tabs within lines",
+        "illegalThrow" : "Illegal throws",
+        "illegalCatch" : "Illegal catches",
+        "indentation" : "Indentation",
+        "stringComparisons" : "Strings literal equality",
+        "switchDefaultLast" : "Switch default last"
+    },
+
+    /* XML header used to generate checkstyle configuration */
+    "header" : "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE module PUBLIC '-//Puppy Crawl//DTD Check Configuration 1.3//EN' 'http://www.puppycrawl.com/dtds/configuration_1_3.dtd'>"
+}
