@@ -25,13 +25,17 @@
 					this.deadlinePassed = true;
 				}
 			},
+
+            deadlinePassedChanged: function() {
+                this.forkChanged();
+            },
             
             forkChanged: function() {
-                if (this.fork == null) {
-                    this.statusCode = "-";
-                } else if (this.fork.deadlinePassed) {
+                if (this.deadlinePassed) {
                     //deadline passed, so failed.
                     this.statusCode = "F";
+                } else if (this.fork == null) {
+                    this.statusCode = "-";
                 } else if (!this.fork.reportAvailable) {
                     //Not submitted.
                     this.statusCode = "I";

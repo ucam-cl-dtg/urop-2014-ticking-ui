@@ -284,16 +284,14 @@ public class UserApiFacade implements IUserApiFacade {
 		for (Group group : db.getGroups(crsid, Role.SUBMITTER)) {
 			for (String tickId : group.getTicks()) {
 				Tick tick = db.getTick(tickId);
-				if (!ticks.contains(tick)) {
-					ticks.add(tick);
-				}
+				ticks.add(tick);
 			}
 		}
 		
 		List<Tick> tickList = new ArrayList<>(ticks);
 		Collections.sort(tickList, new DeadlineFirstComparator());
 		
-		for (Tick tick : ticks) {
+		for (Tick tick : tickList) {
 			Fork fork = db.getFork(Fork.generateForkId(crsid, tick.getTickId()));
 			todos.add(new ToDoBean(tick, fork));
 		}
