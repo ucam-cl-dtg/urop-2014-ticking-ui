@@ -29,7 +29,7 @@ public class Strings {
 
 	public static final String NOFREESLOTS = "Error: there are no free slots at the given time.";
 
-	public static final String EXISTS = "Error: You have already created a tick with this name.";
+	public static final String EXISTS = "Error: You have already created a tick with this repository identifier.";
 
 	public static final String REMOVECREATOR = "Error: You may not remove the creator of the group. Any other users have been removed.";
 
@@ -58,6 +58,8 @@ public class Strings {
 	public static final String UNITPASSED = "Passed automated tests";
 	public static final String UNITFAILED = "Failed automated tests";
 	public static final String INITIALISED = "Not submitted";
+	public static final String SIGNEDUP = "Signed up";
+	public static final String SIGNEDUPCODE = "SU";
 
 	/**
 	 * Private constructor to prevent this class being created

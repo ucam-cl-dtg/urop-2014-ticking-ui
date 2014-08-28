@@ -172,7 +172,7 @@ public class Group implements Comparable<Group> {
 		if (!(o instanceof Group)) {
 			return false;
 		}
-		return this.groupId == ((Group) o).groupId;
+		return this.groupId.equals(((Group) o).groupId);
 	}
 
 	/**

@@ -3,6 +3,7 @@ package uk.ac.cam.cl.ticking.ui.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,8 +53,12 @@ public class ForkStatusXls {
 	public File generateXlsFile(Group group) throws IOException {
 
 		String groupId = group.getGroupId();
-		List<String> tickIds = group.getTicks();
-		Collections.sort(tickIds, new IgnoreCaseComparator());
+		List<Tick> ticks = new ArrayList<>();
+		for (String tickId : group.getTicks()) {
+			ticks.add(db.getTick(tickId));
+		}
+		
+		Collections.sort(ticks);
 		
 		List<User> submitters = db.getUsers(groupId, Role.SUBMITTER);
 		
@@ -101,8 +106,7 @@ public class ForkStatusXls {
 	    
 	    rightCell.setCellStyle(borderStyle);
 	    
-	    for (String tickId : tickIds) {
-	    	Tick tick = db.getTick(tickId);
+	    for (Tick tick : ticks) {
 			String heading = tick.getName();
 			heading += (tick.getDeadline() == null) ? "" : " "+tick.getDeadline().toString(dtf);
 			row.createCell(cellnum++).setCellValue(heading);
@@ -119,10 +123,9 @@ public class ForkStatusXls {
 			rightCell.setCellValue(user.getCollege());
 			rightCell.setCellStyle(borderStyle);
 			
-			for (String tickId : tickIds) {
+			for (Tick tick : ticks) {
 				Fork fork = db.getFork(Fork.generateForkId(user.getCrsid(),
-						tickId));
-				Tick tick = db.getTick(tickId);
+						tick.getTickId()));
 				
 				DateTime extension = tick.getExtensions().get(user.getCrsid());
 				if (extension != null) {
@@ -147,19 +150,25 @@ public class ForkStatusXls {
 							
 							cell.setCellStyle(passStyle);
 							
-							String comment =  fork.getLastTickedBy()+" "+fork.getLastTickedOn().toString(dtf);
+							String comment =  fork.getLastTickedBy()+" "+fork.getLastTickedOn().toString(dtf)+" "+fork.stats();
 							
 							createComment(workbook, sheet, row, cell, comment);
 						    
 						} else {
-							
+							if (fork.isSignedUp()) {
+								Cell cell = row.createCell(cellnum++);
+								cell.setCellValue(Strings.SIGNEDUP);
+								createComment(workbook, sheet, row, cell, fork.stats());
+							}
 							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								Cell cell = row.createCell(cellnum++);
 								cell.setCellValue(Strings.FAILED);
 								cell.setCellStyle(failStyle);
-								createComment(workbook, sheet, row, cell, Strings.UNITPASSED);
+								createComment(workbook, sheet, row, cell, Strings.UNITPASSED+ " "+fork.stats());
 							} else {
-								row.createCell(cellnum++).setCellValue(Strings.UNITPASSED);
+								Cell cell = row.createCell(cellnum++);
+								cell.setCellValue(Strings.UNITPASSED);
+								createComment(workbook, sheet, row, cell, fork.stats());
 							}
 							
 						}
@@ -169,9 +178,11 @@ public class ForkStatusXls {
 								Cell cell = row.createCell(cellnum++);
 								cell.setCellValue(Strings.FAILED);
 								cell.setCellStyle(failStyle);
-								createComment(workbook, sheet, row, cell, Strings.UNITFAILED);
+								createComment(workbook, sheet, row, cell, Strings.UNITFAILED+ " "+fork.stats());
 							} else {
-								row.createCell(cellnum++).setCellValue(Strings.UNITFAILED);
+								Cell cell =row.createCell(cellnum++);
+								cell.setCellValue(Strings.UNITFAILED);
+								createComment(workbook, sheet, row, cell, fork.stats());
 							}
 							
 						} else {
@@ -179,9 +190,11 @@ public class ForkStatusXls {
 								Cell cell = row.createCell(cellnum++);
 								cell.setCellValue(Strings.FAILED);
 								cell.setCellStyle(failStyle);
-								createComment(workbook, sheet, row, cell, Strings.INITIALISED);
+								createComment(workbook, sheet, row, cell, Strings.INITIALISED+" "+fork.stats());
 							} else {
-								row.createCell(cellnum++).setCellValue(Strings.INITIALISED);
+								Cell cell =row.createCell(cellnum++);
+								cell.setCellValue(Strings.INITIALISED);
+								createComment(workbook, sheet, row, cell, fork.stats());
 							}
 						}
 					}

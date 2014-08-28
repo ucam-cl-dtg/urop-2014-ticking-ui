@@ -280,7 +280,7 @@ public class User implements Comparable<User> {
 		if (!(o instanceof User)) {
 			return false;
 		}
-		return this.crsid == ((User) o).crsid;
+		return this.crsid.equals(((User) o).crsid);
 	}
 
 	/**

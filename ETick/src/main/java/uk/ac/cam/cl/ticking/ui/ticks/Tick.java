@@ -223,7 +223,10 @@ public class Tick implements Comparable<Tick> {
 	 * Initialises the tickId field for the Tick object
 	 */
 	public void initTickId() {
-		this.tickId = author + "," + name;
+		String decodedName = name.replaceAll("_", "__");
+		decodedName = decodedName.replace(' ', '_');
+		decodedName = decodedName.replaceAll("[^a-zA-Z0-9_-]", "");
+		this.tickId = author + "," + decodedName;
 	}
 
 	/**
@@ -263,7 +266,7 @@ public class Tick implements Comparable<Tick> {
 		if (!(o instanceof Tick)) {
 			return false;
 		}
-		return this.tickId == ((Tick) o).tickId;
+		return this.tickId.equals(((Tick) o).tickId);
 	}
 
 	/**

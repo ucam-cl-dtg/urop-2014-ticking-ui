@@ -42,21 +42,19 @@
 				<img class="profilePhoto" src="data:image/jpeg;base64,{{photo}}"/>
 			</template>
 			<template if="{{!photo}}">
-				<core-icon class="big" icon="{{isStudent ? 'social:school' : 'social:person'}}"></core-icon>
+				<core-icon class="big" icon="{{isStudent ? 'social:person' : 'social:school'}}"></core-icon>
 			</template>
 
-			<div id="rolesContainer" layout vertical flex>
+			<div id="rolesContainer" layout vertical>
 				<template repeat="{{role in roles}}">
 					<div>{{role}}</div>
 				</template>
 			</div>
 
-			<div id="container" layout vertical>
+			<div id="container" class="textContainer" layout vertical end flex>
+				<h2>{{crsid}}</h2>
 				<h1>{{name}}</h1>
-				<div layout horizontal center>
-					<h2 flex>{{college}}</h2>
-					<h2>{{crsid}}</h2>
-				</div>
+				<h2>{{college}}</h2>
 				<paper-ripple class="recenteringTouch" fit></paper-ripple>
 			</div>
 		</div>
