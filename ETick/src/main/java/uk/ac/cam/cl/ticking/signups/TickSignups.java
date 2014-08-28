@@ -586,7 +586,7 @@ public class TickSignups {
             @DefaultValue("false") @QueryParam("includeHistoricSheets") boolean includeHistoricSheets) {
         try {
             /* List all sheets in the group */
-            List<Sheet> sheets = service.listSheets(groupID);
+            List<Sheet> sheets = service.listSheets(groupID, db.getAuthCode(groupID));
             if (!includeHistoricSheets) {
                 /* Remove all sheets from the list whose end times are in the past */
                 Date now = new Date();
@@ -1226,21 +1226,17 @@ public class TickSignups {
                                         .getStartTime()), new Date(bean
                                         .getEndTime()), sheet
                                         .getSlotLengthInMinutes()));
-                        sheet = service.getSheet(sheetID);
                     }
                 }
                 for (String oldTicker : oldTickerNames) { // delete removed tickers
                     if (!bean.getTickerNames().contains(oldTicker)) {
                         service.deleteColumn(sheetID, oldTicker,
                                 db.getAuthCode(sheetID));
-                        sheet = service.getSheet(sheetID);
                     }
                 }
-                sheet.setTitle(bean.getTitle());
-                sheet.setDescription(bean.getDescription());
-                sheet.setLocation(bean.getLocation());
-                service.updateSheet(sheetID,
-                        new UpdateSheetBean(sheet, db.getAuthCode(sheetID)));
+                service.updateSheetInfo(sheetID,
+                        new UpdateSheetBean(bean.getTitle(), bean.getLocation(),
+                                bean.getDescription(), db.getAuthCode(sheetID)));
             } catch (InternalServerErrorException e0) { // Ignore this block
                 try {
                     throwRealException(e0);
@@ -1486,7 +1482,7 @@ public class TickSignups {
     public void deleteGroup(String groupID) {
         log.info("Deleting all sheets belonging to group of ID " + groupID);
         try {
-            for (Sheet sheet : service.listSheets(groupID)) {
+            for (Sheet sheet : service.listSheets(groupID, db.getAuthCode(groupID))) {
                 /* Delete all signups sheets belonging to group */
                 String id = sheet.get_id();
                 try {
