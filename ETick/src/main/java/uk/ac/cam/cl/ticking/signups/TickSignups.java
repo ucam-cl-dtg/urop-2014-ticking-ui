@@ -1138,7 +1138,7 @@ public class TickSignups {
                     return Response.status(Status.FORBIDDEN)
                             .entity(Strings.INVALIDROLE).build();
                 }
-                sheet = service.getSheet(sheetID);
+                sheet = service.getSheet(sheetID, db.getAuthCode(sheetID));
             } catch (InternalServerErrorException e0) {
                 try {
                     throwRealException(e0);
