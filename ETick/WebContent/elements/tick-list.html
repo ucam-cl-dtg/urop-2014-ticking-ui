@@ -59,33 +59,6 @@
 			ticking_service: ticking_service,
 			tickListResponse: function () {
                 this.tickForks = this.$.tickListAPI.response;
-
-                var statusCodes = forks.map(function(fork) {
-                        if (fork.deadlinePassed) {
-                            //deadline passed, so failed.
-                            return "F";
-                        } else if (!fork.reportAvailable) {
-                            //Not submitted.
-                            return "I";
-                        } else if (!fork.unitPass) {
-                            //Failed automated tests.
-                            return "UF";
-                        } else if (!fork.humanPass) {
-                            //Passed automated tests.
-                            return "UP";
-                        } else if (fork.humanPass) {
-                            //Passed by ticker
-                            return "P";
-                        } else {
-                            //invalid fork object state
-                            return "?";
-                        }
-                });
-                this.tickForks = [];
-
-                for (var i = 0; i < ticks.length; i++) {
-                    this.tickForks[i] = {tick: ticks[i], statusCode: statusCodes[i]};
-                }
 			},
 
             forkStatusUpdated: function(detail) {
