@@ -28,7 +28,7 @@
 
 		<!-- User roles API call. -->
 		<toast-ajax id="roleAjax"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/' + gid + '/roles'}}"
+			url="{{ticking_service + '/user/' + gid + '/roles'}}"
 			handleAs="json" on-core-response="{{roleResponse}}"
 
             popUpError
@@ -38,7 +38,7 @@
 
 		<!-- Available signup sheets API call. -->
 		<toast-ajax id="sheetListAPI"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/groups/' + gid }}"
+			url="{{ticking_service + '/signups/groups/' + gid }}"
 			handleAs="json"
 			on-core-response="{{sheetListResponse}}"
             
@@ -178,8 +178,11 @@
 
 
 	</template>
+    <script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('x-group', {  
+
+            ticking_service: ticking_service,
 
 			domReady: function () {
 				this.formattedEditedOn = this.formatDate(this.editedOn);

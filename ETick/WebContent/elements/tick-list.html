@@ -23,7 +23,7 @@
 		<toast-ajax
 			auto
 			id="tickListAPI"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/list/' + gid}}"
+			url="{{ticking_service + '/tick/list/' + gid}}"
 			handleAs="json"
 			on-core-response="{{tickListResponse}}"
 
@@ -53,8 +53,10 @@
 		</box-list>
 
 	</template>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('tick-list', {
+			ticking_service: ticking_service,
 			tickListResponse: function () {
 				var ticks = this.$.tickListAPI.response.ticks;
                 var forks = this.decompressForks(this.$.tickListAPI.response.forks, ticks);

@@ -50,7 +50,7 @@
 		<!-- Add Ssh Ajax call. -->
 		<toast-ajax id="addSSHAjax"
 			method="PUT"
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/ssh"
+			url="{{ticking_service}}/user/ssh"
 			contentType="text/plain"
 			handleAs="json"
 			on-core-response="{{addSSHResponse}}"
@@ -111,8 +111,10 @@
 		<paper-toast id="addErrorToast" text="Error updating public key." duration="3000"></paper-toast>
 		<paper-toast id="addSuccessToast" text="Successfully updated the public key." dutration="3000"></paper-toast>
 	</template>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('user-card', {
+			ticking_service: ticking_service,
 			domReady: function() {
 				this.newSsh = this.ldap.ssh;
 			},
