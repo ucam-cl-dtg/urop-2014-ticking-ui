@@ -18,7 +18,7 @@
         </style>
         
         <polymer-date-picker id="datePicker" selectedDate="{{selectedDate}}" relatedTarget="{{$.trigger.$.input}}" opened="{{opened}}"></polymer-date-picker>
-        <paper-input id="trigger" value="{{displayDate}}" on-click="{{toggle}}" required readonly error="{{error}}"></paper-input>
+        <paper-input id="trigger" value="{{selectedDate}}" on-click="{{toggle}}" required readonly error="{{error}}"></paper-input>
 
       </template>
     <script>
@@ -39,22 +39,12 @@
 
       	opened: false,
 
-        dateEntered: false,
-
-        displayDate: "No date selected...",
-
         toggle: function() {
             this.$.datePicker.toggle();
         },
         open: function() {
             this.$.datePicker.open();
         },
-
-        selectedDateChanged: function (oldValue, newValue) {
-          if (oldValue) {
-            this.displayDate = newValue;
-          }
-        }
       });
     </script>
 </polymer-element>

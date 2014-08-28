@@ -548,6 +548,12 @@
             this.job('reset-deleting', function() {
                 this.deleting = false;
             }, 500);
+        },
+
+        checkJavaChanged: function() {
+            this.job('firefox-fix', function() {
+                this.$.collapseStylistic.style.height = "auto";
+            }, 350);
         }
     });
 </script>
