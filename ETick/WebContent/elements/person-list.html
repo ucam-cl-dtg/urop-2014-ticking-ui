@@ -19,7 +19,7 @@
 						class="itemBox"
 						name="{{person.user.displayName}}"
 						crsid="{{person.user._id}}"
-						college="{{person.user.college == 'Unknown' ? '' : person.user.college}}"
+						college="{{person.user.college == 'Unknown' ? (person.user.institutions.length > 0 ? person.user.institutions[0] : ' ') : person.user.college}}"
 						isStudent="{{person.user.isStudent}}"
 						photo="{{person.user.photo === 'undefined' ? null : person.user.photo}}"
 						roles="{{person.roles}}">
