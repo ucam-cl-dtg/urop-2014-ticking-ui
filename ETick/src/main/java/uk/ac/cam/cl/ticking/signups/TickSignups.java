@@ -610,6 +610,10 @@ public class TickSignups {
             } catch (ItemNotFoundException e1) {
                 log.warn("Probably the group was not found - investigate if something else", e1);
                 return Response.status(Status.NOT_FOUND).entity("Not found error: " + e1.getMessage()).build();
+            } catch (NotAllowedException e1) {
+                log.error("AuthCode was rejected - the databases are inconsistent", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: authorisation code rejected; databases inconsistent").build();
             } catch (Throwable t) {
                 log.error("Something went wrong when processing the InternalServerErrorException", t);
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -619,6 +623,10 @@ public class TickSignups {
         } catch (ItemNotFoundException e) {
             log.warn("Probably the group was not found - investigate if something else", e);
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
+        } catch (NotAllowedException e1) {
+            log.error("AuthCode was rejected - the databases are inconsistent", e1);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Server Error: authorisation code rejected; databases inconsistent").build();
         }
     }
     
@@ -1153,6 +1161,10 @@ public class TickSignups {
                     log.warn("Sheet not found", e);
                     return Response.status(Status.NOT_FOUND)
                             .entity("The sheet was not found").build();
+                } catch (NotAllowedException e1) {
+                    log.error("AuthCode was rejected - the databases are inconsistent", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: authorisation code rejected; databases inconsistent").build();
                 } catch (Throwable t) {
                     log.error(
                             "Something went wrong when processing the InternalServerErrorException",
@@ -1166,6 +1178,10 @@ public class TickSignups {
                 log.info("Sheet not found", e);
                 return Response.status(Status.NOT_FOUND)
                         .entity("The sheet was not found").build();
+            } catch (NotAllowedException e1) {
+                log.error("AuthCode was rejected - the databases are inconsistent", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: authorisation code rejected; databases inconsistent").build();
             }
             int millisecondsInOneMinute = 60000;
             long sheetLengthInMinutes = (bean.getEndTime() - bean
@@ -1475,7 +1491,7 @@ public class TickSignups {
         log.info("Creating new group in signups database with ID " + groupID);
         /* Create group in signups database */
         String groupAuthCode = service.addGroup(new Group(groupID));
-        /* Store group authorisation code so we can have admin privileges for it */ 
+        /* Store group authorisation code so we can have admin privileges for it */
         db.addAuthCode(groupID, groupAuthCode);
         log.info("Group created");
     }
@@ -1508,6 +1524,8 @@ public class TickSignups {
         } catch (ItemNotFoundException e) {
             log.error("The group was not found in the signups database even though it "
                     + "shouldn't have been deleted yet");
+        } catch (NotAllowedException e1) {
+            log.error("AuthCode was rejected - the databases are inconsistent", e1);
         }
         
     }
