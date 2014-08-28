@@ -49,10 +49,6 @@
 	</template>
 	<script>
 		Polymer('todo-card', {
-			domReady: function () {
-				console.log(this.data);
-			},
-
 			tickListFilter: function(items, q) {
 				if (items && q) {
 					return items.filter(this.tickFilter.bind(this));

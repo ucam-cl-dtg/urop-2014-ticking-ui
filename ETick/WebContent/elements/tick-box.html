@@ -18,6 +18,7 @@
 	<script>	
 		Polymer('tick-box', {
 			deadlinePassed: false,
+            statusCode: "-",
 
 			domReady: function () {
 				if (this.tick.deadline && moment(this.tick.deadline) < moment()) {
@@ -26,7 +27,9 @@
 			},
             
             forkChanged: function() {
-                if (this.fork.deadlinePassed) {
+                if (this.fork == null) {
+                    this.statusCode = "-";
+                } else if (this.fork.deadlinePassed) {
                     //deadline passed, so failed.
                     this.statusCode = "F";
                 } else if (!this.fork.reportAvailable) {
