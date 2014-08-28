@@ -37,7 +37,8 @@ import uk.ac.cam.cl.signups.api.beans.BatchCreateBean;
 import uk.ac.cam.cl.signups.api.beans.BatchDeleteBean;
 import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
 import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
-import uk.ac.cam.cl.signups.api.beans.PermissionsBean;
+import uk.ac.cam.cl.signups.api.beans.AddPermissionsBean;
+import uk.ac.cam.cl.signups.api.beans.RemovePermissionsBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
 import uk.ac.cam.cl.signups.api.beans.UpdateSheetBean;
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
@@ -780,7 +781,7 @@ public class TickSignups {
             }
             Map<String, String> map = new HashMap<String, String>();
             map.put(tickID, null); // null means any ticker is allowed
-            service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            service.addPermissions(groupID, crsid, new AddPermissionsBean(map, groupAuthCode));
             log.info(crsid + " is now allowed to sign up for tick " + tickID + " in group " + groupID);
             return Response.ok().build();
         } catch(InternalServerErrorException e) { // Ignore this block
@@ -821,10 +822,10 @@ public class TickSignups {
     public Response disallowSignup(String crsid, String groupID, String tickID) {
         log.info("Removing submitter " + crsid + "'s permission to sign up for tick" +
                 tickID + " in group " + groupID);
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(tickID, null); // Only important bit is tickID - it is removed from the map in the signups database
+        List<String> toRemove = new ArrayList<>();
+        toRemove.add(tickID);
         try {
-            service.removePermissions(groupID, crsid, new PermissionsBean(map, db.getAuthCode(groupID)));
+            service.removePermissions(groupID, crsid, new RemovePermissionsBean(toRemove, db.getAuthCode(groupID)));
         } catch(InternalServerErrorException e) { // Ignore this block
             try {
                 throwRealException(e);
@@ -904,7 +905,7 @@ public class TickSignups {
         try {
             Map<String, String> map = new HashMap<String, String>();
             map.put(tickID, ticker);
-            service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            service.addPermissions(groupID, crsid, new AddPermissionsBean(map, groupAuthCode));
             log.info("Permissions updated");
             return Response.ok().build();
         } catch(InternalServerErrorException e) { // Ignore this block
