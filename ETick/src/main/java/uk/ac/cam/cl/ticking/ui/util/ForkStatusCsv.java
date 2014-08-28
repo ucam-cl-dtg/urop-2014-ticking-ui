@@ -76,7 +76,9 @@ public class ForkStatusCsv {
 		writer.append(',');
 		for (String tickId : tickIds) {
 			Tick tick = db.getTick(tickId);
-			String heading = ',' + tick.getName();
+			String name = tick.getName().replace(',', ';');
+			name = name.replaceAll("\\n", " ");
+			String heading = ',' + name;
 			heading += (tick.getDeadline() == null) ? "" : " "+tick.getDeadline().toString(dtf);
 			writer.append(heading);
 		}

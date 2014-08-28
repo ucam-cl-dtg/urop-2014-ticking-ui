@@ -223,9 +223,9 @@ public class Tick implements Comparable<Tick> {
 	 * Initialises the tickId field for the Tick object
 	 */
 	public void initTickId() {
-		String decodedName = name.replaceAll("[^a-zA-Z0-9\\s_-]", "");
-		decodedName = decodedName.replaceAll("_", "__");
+		String decodedName = name.replaceAll("_", "__");
 		decodedName = decodedName.replace(' ', '_');
+		decodedName = decodedName.replaceAll("[^a-zA-Z0-9_-]", "");
 		this.tickId = author + "," + decodedName;
 	}
 

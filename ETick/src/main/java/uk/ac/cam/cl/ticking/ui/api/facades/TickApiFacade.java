@@ -173,7 +173,7 @@ public class TickApiFacade implements ITickApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
-		List<Fork> forks = new ArrayList<>();
+		List<ToDoBean> todos = new ArrayList<>();
 		List<Tick> ticks = db.getGroupTicks(groupId);
 		for (Tick tick : ticks) {
 			DateTime extension = tick.getExtensions().get(crsid);
@@ -186,12 +186,10 @@ public class TickApiFacade implements ITickApiFacade {
 		
 		for (Tick tick: ticks) {
 			Fork fork = db.getFork(Fork.generateForkId(crsid, tick.getTickId()));
-			if (fork != null) {
-				forks.add(fork);
-			}
+			todos.add(new ToDoBean(tick, fork));
 		}
 
-		return Response.ok(new ToDoBean(ticks, forks)).build();
+		return Response.ok(todos).build();
 	}
 
 	/**

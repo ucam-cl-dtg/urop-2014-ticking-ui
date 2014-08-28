@@ -277,7 +277,7 @@ public class UserApiFacade implements IUserApiFacade {
 		}
 		
 		List<Tick> ticks = new ArrayList<>();
-		List<Fork> forks = db.getForks(crsid);
+		List<ToDoBean> todos = new ArrayList<>();
 		
 		for (Group group : db.getGroups(crsid, Role.SUBMITTER)) {
 			for (String tickId : group.getTicks()) {
@@ -290,7 +290,12 @@ public class UserApiFacade implements IUserApiFacade {
 		
 		Collections.sort(ticks, new DeadlineFirstComparator());
 		
-		return Response.ok(new ToDoBean(ticks, forks)).build();
+		for (Tick tick : ticks) {
+			Fork fork = db.getFork(Fork.generateForkId(crsid, tick.getTickId()));
+			todos.add(new ToDoBean(tick, fork));
+		}
+		
+		return Response.ok(todos).build();
 		
 	}
 }
