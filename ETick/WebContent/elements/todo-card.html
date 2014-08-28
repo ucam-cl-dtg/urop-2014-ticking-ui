@@ -1,34 +1,47 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="toast-ajax/toast-ajax.html">
+<link rel="import" href="box-list.html">
+<link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
 
-<polymer-element name="todo-card.html" attributes="">
+<polymer-element name="todo-card" attributes="data">
 	<template>
 		<style>
 			:host {
 				display: block;
+				height: 100%;
+				width: 100%;
+			}
+
+			core-header-panel {
+				height: 100%;
+				width: 100%;
+			}
+
+			core-toolbar {
+				background: #2D91EC;
+				color: #fff;
+			}
+
+			#content {
+
 			}
 		</style>
 
-		<!-- Ticks TODO API call. -->
-		<toast-ajax id="todoAPI"
-			auto
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/todo"
-			handleAs="json"
-			on-core-response="{{todoResponse}}"
-			
-			popUpError
-			captureError
-			waitMessage="Loading your to-do list...">
-		</toast-ajax>
+		<!-- <core-header-panel id="headerPanel" mode="seamed">
+			<core-toolbar>
+				<div>Ticks To-Do:</div>
+			</core-toolbar>
 
+			<div id="content">
+
+			</div>
+		</core-header-panel> -->
 
 	</template>
 	<script>
-		Polymer('todo-card.html', {
-			todoResponse: function () {
-				this.todoData = this.$.todoAPI.response;
-				console.log(this.todoData);
-			}	
+		Polymer('todo-card', {
+				
 		});
 	</script>
 </polymer-element>
