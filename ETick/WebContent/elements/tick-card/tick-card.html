@@ -246,6 +246,8 @@
             },
 
             computeStatusCode: function() {
+                var oldCode = this.statusCode;
+
                 if (!this.forked) {
                     //Not started.
                     this.statusCode = "-";
@@ -267,6 +269,11 @@
                 } else {
                     //invalid fork object state
                     this.statusCode = "?";
+                }
+
+                if (oldCode != this.statusCode) {
+                    console.log("status code changed!");
+                    this.fire('status-changed', {tickId: this.tickId, statusCode: this.statusCode});
                 }
             }
 
