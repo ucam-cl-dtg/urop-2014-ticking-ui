@@ -58,75 +58,8 @@
 		Polymer('tick-list', {
 			ticking_service: ticking_service,
 			tickListResponse: function () {
-				var ticks = this.$.tickListAPI.response.ticks;
-                var forks = this.decompressForks(this.$.tickListAPI.response.forks, ticks);
-                var statusCodes = forks.map(function(fork) {
-                    var mode;
-                    if (fork == -1) {
-                        mode = "?"; //don't show bed
-                    } else {
-                        if (fork.deadlinePassed) {
-                            //deadline passed, so failed.
-                            mode = "F";
-                        } else if (!fork.reportAvailable) {
-                            //Not submitted.
-                            mode = "I";
-                        } else if (!fork.unitPass) {
-                            //Failed automated tests.
-                            mode = "UF";
-                        } else if (!fork.humanPass) {
-                            //Passed automated tests.
-                            mode = "UP";
-                        } else if (fork.humanPass) {
-                            //Passed by ticker
-                            mode = "P";
-                        } else {
-                            //invalid fork object state
-                            mode = "?";
-                        }
-                    }
-                    return mode;
-                });
-                this.tickForks = [];
-
-                for (var i = 0; i < ticks.length; i++) {
-                    this.tickForks[i] = {tick: ticks[i], statusCode: statusCodes[i]};
-                }
+                this.tickForks = this.$.tickListAPI.response;
 			},
-
-            decompressForks: function(compressedForks, ticks) {
-                //assert ticks and compressedForks are both sorted in ascending order of id
-
-                //create a new list of fork objects
-                var forks = [];
-
-                //maintain a pointer to the position in the given fork list
-                var forksPointer = 0;
-
-                //for each element in the ticks list: if it matches the fork object at the fork pointer, insert it
-                //onto new fork list, otherwise insert an empty fork
-                for (var i = 0; i < ticks.length; i++) {
-                    if (forksPointer > compressedForks.length - 1) {
-                        forks[forks.length] = -1;
-                    } else {
-                        if (compressedForks[forksPointer]._id.lastIndexOf(ticks[i]._id) > -1) {
-                            //we have a match
-                            if (ticks[i].deadline == null) {
-                                compressedForks[forksPointer].deadlinePassed = false;
-                            } else {
-                                var datetime = moment(ticks[i].deadline);
-                                compressedForks[forksPointer].deadlinePassed = datetime < moment();
-                            }
-                            forks[forks.length] = compressedForks[forksPointer];
-                            forksPointer++;
-                        } else {
-                            forks[forks.length] = -1;
-                        }
-                    }
-                }
-
-                return forks;
-            },
 
             forkStatusUpdated: function(detail) {
                 if (detail.statusCode == "-") {

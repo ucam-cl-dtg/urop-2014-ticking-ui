@@ -3,6 +3,7 @@ package uk.ac.cam.cl.ticking.ui.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,8 +53,12 @@ public class ForkStatusXls {
 	public File generateXlsFile(Group group) throws IOException {
 
 		String groupId = group.getGroupId();
-		List<String> tickIds = group.getTicks();
-		Collections.sort(tickIds, new IgnoreCaseComparator());
+		List<Tick> ticks = new ArrayList<>();
+		for (String tickId : group.getTicks()) {
+			ticks.add(db.getTick(tickId));
+		}
+		
+		Collections.sort(ticks);
 		
 		List<User> submitters = db.getUsers(groupId, Role.SUBMITTER);
 		
@@ -101,8 +106,7 @@ public class ForkStatusXls {
 	    
 	    rightCell.setCellStyle(borderStyle);
 	    
-	    for (String tickId : tickIds) {
-	    	Tick tick = db.getTick(tickId);
+	    for (Tick tick : ticks) {
 			String heading = tick.getName();
 			heading += (tick.getDeadline() == null) ? "" : " "+tick.getDeadline().toString(dtf);
 			row.createCell(cellnum++).setCellValue(heading);
@@ -119,10 +123,9 @@ public class ForkStatusXls {
 			rightCell.setCellValue(user.getCollege());
 			rightCell.setCellStyle(borderStyle);
 			
-			for (String tickId : tickIds) {
+			for (Tick tick : ticks) {
 				Fork fork = db.getFork(Fork.generateForkId(user.getCrsid(),
-						tickId));
-				Tick tick = db.getTick(tickId);
+						tick.getTickId()));
 				
 				DateTime extension = tick.getExtensions().get(user.getCrsid());
 				if (extension != null) {
