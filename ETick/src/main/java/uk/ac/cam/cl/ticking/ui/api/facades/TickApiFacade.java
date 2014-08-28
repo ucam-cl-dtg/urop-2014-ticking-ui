@@ -94,7 +94,7 @@ public class TickApiFacade implements ITickApiFacade {
 		Tick tick = db.getTick(tickId);
 
 		if (tick == null) {
-			log.error("User " + crsid + " requested tick " + crsid
+			log.error("User " + crsid + " requested tick " + tickId
 					+ " for deletion, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
