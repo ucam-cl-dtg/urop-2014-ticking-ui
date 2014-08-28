@@ -3,8 +3,9 @@
 <link rel="import" href="box-list.html">
 <link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
 <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="tick-box.html">
 
-<polymer-element name="todo-card" attributes="data">
+<polymer-element name="todo-card" attributes="data rows">
 	<template>
 		<style>
 			:host {
@@ -26,12 +27,24 @@
 			#content {
 				padding: 20px;
 			}
+
+			h1 {
+				font-size: 1.8rem;
+				font-weight: 100;
+				padding: 0 0 0 10px;
+			}
 		</style>
 
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>Ticks</h1>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
+
+		<box-list id="list">
+			<template repeat="{{tickFork in data | tickListFilter($.searchBox.query)}}">
+				<tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
+			</template>
+		</box-list>
 
 		<!-- <core-header-panel id="headerPanel" mode="seamed">
 			<core-toolbar>
@@ -46,7 +59,22 @@
 	</template>
 	<script>
 		Polymer('todo-card', {
-				
+			domReady: function () {
+				console.log(this.data);
+			},
+
+			tickListFilter: function(items, q) {
+				if (items && q) {
+					return items.filter(this.tickFilter.bind(this));
+				}
+				return items;
+			},
+
+			tickFilter: function(item) {
+				var q = this.$.searchBox.query.toLowerCase();
+				return (item.tick.name.toLowerCase().indexOf(q) > -1 ||
+						item.tick.author.toLowerCase().indexOf(q) > -1);
+			},
 		});
 	</script>
 </polymer-element>

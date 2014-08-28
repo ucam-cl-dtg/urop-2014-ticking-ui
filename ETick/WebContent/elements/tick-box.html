@@ -1,16 +1,13 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="date-calendar.html">
-<polymer-element name="tick-box" attributes="tick statusCode tickId" noscript>
+
+<polymer-element name="tick-box" attributes="tick fork">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/box-element.css">
+		
 		<div layout horizontal center id="container">
-            <template if="{{tick.deadline}}">
-			<date-calendar datetime="{{tick.deadline}}"
-				hexColorPrimary="#F75EA7" hexColorSecondary="#CE00E0"></date-calendar>
-            </template>
-            <template if="{{fork != -1}}">
-                <status-icon id="statusIcon" big="true" mode="{{statusCode}}"></status-icon>
-            </template>
+			<status-icon id="statusIcon" big="true" mode="{{statusCode}}"></status-icon>
+			<date-calendar datetime="{{tick.deadline}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>
 			<div layout vertical end flex class="textContainer">
 				<h1>{{tick.name}}</h1>
 				<h2>Author: {{tick.author}}</h2>
@@ -18,4 +15,15 @@
 			<paper-ripple class="recenteringTouch" fit></paper-ripple>
 		</div>
 	</template>
+	<script>	
+		Polymer('tick-box', {
+			deadlinePassed: false,
+
+			domReady: function () {
+				if (this.tick.deadline && moment(this.tick.deadline) < moment()) {
+					this.deadlinePassed = true;
+				}
+			}
+		})
+	</script>
 </polymer-element>
