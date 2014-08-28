@@ -37,3 +37,7 @@ h3 {
 #statusIcon {
 	margin-right: 5px;
 }
+
+core-tooltip {
+	outline: none;
+}

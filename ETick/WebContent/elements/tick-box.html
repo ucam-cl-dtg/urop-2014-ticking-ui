@@ -1,18 +1,19 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="date-calendar.html">
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 
 <polymer-element name="tick-box" attributes="tick fork">
 	<template>
 		<link rel="stylesheet" type="text/css" href="../css/box-element.css">
 		
 		<div layout horizontal center id="container">
+            <paper-ripple class="recenteringTouch" fit></paper-ripple>
 			<status-icon id="statusIcon" big="true" mode="{{statusCode}}"></status-icon>
 			<date-calendar datetime="{{tick.deadline}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>
-			<div layout vertical end flex class="textContainer">
-				<h1>{{tick.name}}</h1>
-				<h2>Author: {{tick.author}}</h2>
-			</div>
-			<paper-ripple class="recenteringTouch" fit></paper-ripple>
+    			<div layout vertical end class="textContainer">
+        				<h1>{{tick.name}}</h1>
+        				<h2>Author: {{tick.author}}</h2>
+    			</div>
 		</div>
 	</template>
 	<script>	
