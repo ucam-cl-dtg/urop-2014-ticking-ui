@@ -78,9 +78,10 @@
           </div>
         </div>
 
-        <!-- Ticker comments -->
-        <div class="ticker-comments">
-          Ticker comments:
+        <!-- Ticker comments/error messages -->
+        <div class="ticker-comments"
+             hidden?="{{comments == null || comments == ''}}">
+          {{testResult == 'FAIL'? 'Error messages:' : 'Ticker comments:'}}
           <!-- Indentation due to marked element considering spaces -->
           <marked-element text="{{comments == null ? '' : comments}}">
           </marked-element>
