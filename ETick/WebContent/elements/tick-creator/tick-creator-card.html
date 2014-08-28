@@ -36,7 +36,7 @@
     <!-- get and update all other existing tick data -->
     <toast-ajax
             id="ajaxLoadTickData"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/'}}"
+            url="{{ticking_service + '/tick/' + tickId + '/'}}"
             handleAs="json"
             on-core-response="{{tickDataLoaded}}"
 
@@ -83,7 +83,7 @@
     <!-- get and update stylistic data -->
     <toast-ajax
             id="ajaxLoadDefaults"
-            url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/test/settings"
+            url="{{ticking_service}}/tick/test/settings"
             handleAs="json"
             on-core-response="{{defaultsLoaded}}"
 
@@ -93,7 +93,7 @@
     </toast-ajax>
     <toast-ajax
             id="ajaxLoadStatic"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/test/settings'}}"
+            url="{{ticking_service + '/tick/' + tickId + '/test/settings'}}"
             handleAs="json"
             on-core-response="{{staticDataLoaded}}"
 
@@ -105,7 +105,7 @@
     <!-- Delete this tick -->
     <toast-ajax
             id="ajaxDeleteTick"
-            url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/' + tickId + '/'}}"
+            url="{{ticking_service + '/tick/' + tickId + '/'}}"
             method="DELETE"
             handleAs="json"
             on-core-response="{{deleteTickSuccess}}"
@@ -218,6 +218,7 @@
 </template>
 <script src="../../bower_components/moment/moment.js"></script>
 <script src="../../js/prettyDate.js"></script>
+<script src="../../js/hardcoded.js"></script>
 <script>
     Polymer('tick-creator-card', {
         /**@namespace this.$.ajaxLoadGroups*/
@@ -228,10 +229,11 @@
         /**@namespace this.$.ajaxLoadStatic*/
         /**@namespace this.$.ajaxDeleteTick*/
 
+        ticking_service: ticking_service,
 
         ready: function() {
-            this.pathLoadGroups = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/AUTHOR/";
-            this.pathPutTickData = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick";
+            this.pathLoadGroups = ticking_service + "/user/AUTHOR/";
+            this.pathPutTickData = ticking_service + "/tick";
 
             this.checkJava = false; //for those using a confused IDE: useDefaults IS being used, for Polymer data binding awesomeness
             this.groups = [];
@@ -450,7 +452,7 @@
 
             if (!this.newTick) {
                 this.$.ajaxPutTickData.body = JSON.stringify(masterObject);
-                this.$.ajaxPutTickData.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/tick/" + this.tickId;
+                this.$.ajaxPutTickData.url = ticking_service + "/tick/" + this.tickId;
                 this.$.ajaxPutTickData.go();
             } else {
                 this.$.ajaxPostTickData.body = JSON.stringify(masterObject);

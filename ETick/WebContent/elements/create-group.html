@@ -62,6 +62,7 @@
 		<paper-toast id="createGroupSuccess" text="Created new group." dutration="3000"></paper-toast>
 
 	</template>
+    <script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('create-group', {
 			handleNameInput: function () {
@@ -79,7 +80,7 @@
 
 			resetAPI: function () {
 				var api = this.$.createGroupAPI;
-				api.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/group/";
+				api.url = ticking_service + "/group/";
 				api.body = "";
 			},
 
