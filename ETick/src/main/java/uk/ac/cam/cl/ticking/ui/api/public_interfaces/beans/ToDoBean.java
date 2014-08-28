@@ -7,32 +7,32 @@ import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
 public class ToDoBean {
 
-	private List<Tick> ticks;
-	private List<Fork> forks;
+	private Tick tick;
+	private Fork fork;
 	
-	public ToDoBean(List<Tick> ticks, List<Fork> forks) {
-		this.ticks = ticks;
-		this.forks = forks;
+	public ToDoBean(Tick tick, Fork fork) {
+		this.tick = tick;
+		this.fork = fork;
 	}
 	
 	public ToDoBean() {
 		//Default constructor for Jackson
 	}
 
-	public List<Tick> getTicks() {
-		return ticks;
+	public Tick getTick() {
+		return tick;
 	}
 
-	public void setTicks(List<Tick> ticks) {
-		this.ticks = ticks;
+	public void setTick(Tick tick) {
+		this.tick = tick;
 	}
 
-	public List<Fork> getForks() {
-		return forks;
+	public Fork getFork() {
+		return fork;
 	}
 
-	public void setForks(List<Fork> forks) {
-		this.forks = forks;
+	public void setFork(Fork fork) {
+		this.fork = fork;
 	}
 	
 	
