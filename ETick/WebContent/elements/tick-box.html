@@ -12,15 +12,17 @@
 
 			<!-- <date-calendar datetime="{{tick.deadline}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>-->
 			<div layout vertical end flex class="textContainer">
-				<h2>{{tick.deadline}}</h2>
+				<h2>{{prettyDate(tick.deadline)}}</h2>
 				<h1>{{tick.name}}</h1>
 				<h2>Author: {{tick.author}}</h2>
 			</div>
 			<paper-ripple class="recenteringTouch" fit></paper-ripple>
 		</div>
 	</template>
-	<script>	
+	<script src="../js/prettyDate.js"></script>
+	<script>
 		Polymer('tick-box', {
+			prettyDate:prettyDate,
 			deadlinePassed: false,
             statusCode: "-",
 
