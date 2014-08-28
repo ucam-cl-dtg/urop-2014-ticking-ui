@@ -45,13 +45,13 @@
 				<core-icon class="big" icon="{{isStudent ? 'social:person' : 'social:school'}}"></core-icon>
 			</template>
 
-			<div id="rolesContainer" layout vertical flex>
+			<div id="rolesContainer" layout vertical>
 				<template repeat="{{role in roles}}">
 					<div>{{role}}</div>
 				</template>
 			</div>
 
-			<div id="container" layout vertical end>
+			<div id="container" class="textContainer" layout vertical end flex>
 				<h2>{{crsid}}</h2>
 				<h1>{{name}}</h1>
 				<h2>{{college}}</h2>
