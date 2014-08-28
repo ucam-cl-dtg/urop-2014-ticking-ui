@@ -555,7 +555,9 @@
 
         checkJavaChanged: function() {
             this.job('firefox-fix', function() {
-                this.$.collapseStylistic.style.height = "auto";
+                if (this.$.collapseStatic.style.height > 0) {
+                    this.$.collapseStylistic.style.height = "auto";
+                }
             }, 350);
         }
     });
