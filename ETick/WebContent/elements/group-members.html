@@ -129,10 +129,10 @@
 			allowAdd: false,
 
 			observe: {
-				'$.searchBox.query' : 'searchBoxChanged'
+				'$.searchBox.query' : 'searchQueryChanged'
 			},
 
-			searchBoxChanged: function (oldValue, newValue) {
+			searchQueryChanged: function (oldValue, newValue) {
 				this.searchQuery = newValue;
                 /* Reselect selected members */
                 this.$.members.$.list.$.selector.selectedChanged();
