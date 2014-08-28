@@ -9,9 +9,7 @@
             display: block;
           }
 
-          polymer-date-picker {
-            z-index: 15;
-          }
+
 
           paper-input /deep/ input {
             margin: 0;
@@ -32,6 +30,11 @@
           headerPanel.addEventListener('scroll', function () {
             datePicker.reposition();
           })
+
+          var parentZ = this.parentNode.style.zIndex;
+          console.log(this.parentNode);
+          console.log(parentZ);
+          this.$.datePicker.style.zIndex = parentZ + 1;
         },
 
       	opened: false,
