@@ -21,7 +21,7 @@
 
 		<!-- Add session API call. -->
 		<toast-ajax id="addSessionAPI"
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/signups/sheets"
+			url="{{ticking_service}}/signups/sheets"
 			method="POST"
 			contentType="application/json"
 			on-core-response="{{addSessionResponse}}"
@@ -100,9 +100,10 @@
 			</template>
 		</paper-dialog>
 	</template>
+    <script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('add-session', {
-
+			ticking_service: ticking_service,
 			domReady: function () {
 				this.tickers = [];
 			},

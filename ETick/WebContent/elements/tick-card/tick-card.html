@@ -209,13 +209,9 @@
             },
 
             repoChanged: function() {
-                console.log("repo is now " + this.repo);
-
                 if (this.repo != null) {
                     this.displayRepo = this.repo;
                 }
-
-                console.log("so display repo is now " + this.displayRepo);
 
                 this.reportAvailableChanged();
             },
@@ -241,17 +237,15 @@
                 }, 330);
             },
 
-            displayRepoChanged: function() {
-                console.log("disp-repo", this.displayRepo);
-            },
-
             computeStatusCode: function() {
-                if (!this.forked) {
-                    //Not started.
-                    this.statusCode = "-";
-                } else if (this.deadlinePassed){
+                var oldCode = this.statusCode;
+
+                if (this.deadlinePassed){
                     //deadline passed, so failed.
                     this.statusCode = "F";
+                } else if (!this.forked) {
+                    //Not started.
+                    this.statusCode = "-";
                 } else if (!this.reportAvailable) {
                     //Not submitted.
                     this.statusCode = "I";
@@ -268,15 +262,12 @@
                     //invalid fork object state
                     this.statusCode = "?";
                 }
-            }
 
-            /* testRunningChanged: function() {
-                console.log(this.testRunning);
-
-                if (this.testRunning == true) {
-                    this.$.submitComponent.continuePolling();
+                if (oldCode != this.statusCode) {
+                    console.log("status code changed!");
+                    this.fire('status-changed', {tickId: this.tickId, statusCode: this.statusCode});
                 }
-            }*/
+            }
         });
     </script>
 </polymer-element>

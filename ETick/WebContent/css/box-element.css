@@ -23,13 +23,21 @@ h2 {
 
 h3 {
 	margin: 0;
-	font-size: 1rem;
-	color: #464646;
-	font-weight: 200;
+	font-size: 0.87rem;
+	color: #565656;
+	font-weight: 300;
 }
 
 .textContainer {
 	margin-left: 10px;
 	white-space: nowrap;
 	overflow: hidden;
+}
+
+#statusIcon {
+	margin-right: 5px;
+}
+
+core-tooltip {
+	outline: none;
 }

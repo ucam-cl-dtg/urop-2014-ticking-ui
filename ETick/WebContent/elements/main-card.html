@@ -15,7 +15,7 @@ on-trackstart="{{trackStart}}" on-track="{{track}}" on-trackend="{{trackEnd}}" o
 		Polymer('main-card', {
 
 			ready: function () {
-				this.setAttribute('touch-action', 'pan-y');
+				this.setAttribute('touch-action', 'pan-y pan-x pinch-zoom');
 				this.transitionEndListener = this.transitionEnd.bind(this)
 				
 				if (this.animated) {

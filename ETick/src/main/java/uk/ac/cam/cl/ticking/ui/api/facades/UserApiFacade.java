@@ -3,7 +3,9 @@ package uk.ac.cam.cl.ticking.ui.api.facades;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
@@ -276,21 +278,25 @@ public class UserApiFacade implements IUserApiFacade {
 					.build();
 		}
 		
-		List<Tick> ticks = new ArrayList<>();
-		List<Fork> forks = db.getForks(crsid);
+		Set<Tick> ticks = new HashSet<>();
+		List<ToDoBean> todos = new ArrayList<>();
 		
 		for (Group group : db.getGroups(crsid, Role.SUBMITTER)) {
 			for (String tickId : group.getTicks()) {
 				Tick tick = db.getTick(tickId);
-				if (!ticks.contains(tick)) {
-					ticks.add(tick);
-				}
+				ticks.add(tick);
 			}
 		}
 		
-		Collections.sort(ticks, new DeadlineFirstComparator());
+		List<Tick> tickList = new ArrayList<>(ticks);
+		Collections.sort(tickList, new DeadlineFirstComparator());
 		
-		return Response.ok(new ToDoBean(ticks, forks)).build();
+		for (Tick tick : tickList) {
+			Fork fork = db.getFork(Fork.generateForkId(crsid, tick.getTickId()));
+			todos.add(new ToDoBean(tick, fork));
+		}
+		
+		return Response.ok(todos).build();
 		
 	}
 }
