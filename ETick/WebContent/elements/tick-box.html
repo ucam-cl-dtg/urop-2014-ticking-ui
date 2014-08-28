@@ -12,7 +12,7 @@
 
 			<!-- <date-calendar datetime="{{tick.deadline}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>-->
 			<div layout vertical end flex class="textContainer">
-				<h2>{{prettyDate(tick.deadline)}}</h2>
+				<h3>{{tick.deadline ? prettyDate(tick.deadline) : ''}}</h3>
 				<h1>{{tick.name}}</h1>
 				<h2>Author: {{tick.author}}</h2>
 			</div>
