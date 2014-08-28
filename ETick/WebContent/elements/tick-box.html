@@ -7,8 +7,9 @@
 		
 		<div layout horizontal center id="container">
 			<status-icon id="statusIcon" big="true" mode="{{statusCode}}"></status-icon>
-			<date-calendar datetime="{{tick.deadline}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>
+			<!-- <date-calendar datetime="{{tick.deadline}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>-->
 			<div layout vertical end flex class="textContainer">
+				<h2>{{tick.deadline}}</h2>
 				<h1>{{tick.name}}</h1>
 				<h2>Author: {{tick.author}}</h2>
 			</div>
