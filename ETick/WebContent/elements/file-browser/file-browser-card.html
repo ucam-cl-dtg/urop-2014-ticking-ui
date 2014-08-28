@@ -78,9 +78,10 @@
           </div>
         </div>
 
-        <!-- Ticker comments -->
-        <div class="ticker-comments">
-          Ticker comments:
+        <!-- Ticker comments/error messages -->
+        <div class="ticker-comments"
+             hidden?="{{comments == null || comments == ''}}">
+          {{testResult == 'FAIL'? 'Error messages:' : 'Ticker comments:'}}
           <!-- Indentation due to marked element considering spaces -->
           <marked-element text="{{comments == null ? '' : comments}}">
           </marked-element>
@@ -211,7 +212,7 @@
             else if (this.tickerResult == "FAIL")
             {
               this.$.resultString.innerHTML =
-                "You have been failed by a ticker";
+                "You have been failed by a ticker.";
             }
             else
             {
