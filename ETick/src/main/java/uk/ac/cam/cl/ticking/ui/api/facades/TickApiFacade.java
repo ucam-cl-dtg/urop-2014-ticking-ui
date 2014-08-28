@@ -231,8 +231,7 @@ public class TickApiFacade implements ITickApiFacade {
 		String repo;
 		try {
 			repo = gitServiceProxy.addRepository(config.getConfig()
-					.getSecurityToken(), new RepoUserRequestBean(crsid + "/"
-					+ tickBean.getName(), crsid));
+					.getSecurityToken(), new RepoUserRequestBean(Tick.replaceDelimeter(tick.getTickId()), crsid));
 
 		} catch (InternalServerErrorException e) {
 			RemoteFailureHandler h = new RemoteFailureHandler();
