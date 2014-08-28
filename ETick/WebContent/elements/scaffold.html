@@ -55,7 +55,9 @@
 
 			<div layout horizontal end-justified>
 				<div>
-					<paper-button icon="exit-to-app" id="logoutButton" on-click="{{logoutClicked}}"></paper-button>
+					<core-tooltip label="Logout">
+						<paper-button icon="exit-to-app" id="logoutButton" on-click="{{logoutClicked}}"></paper-button>
+					</core-tooltip>
 				</div>
 			</div>
 		</core-toolbar>

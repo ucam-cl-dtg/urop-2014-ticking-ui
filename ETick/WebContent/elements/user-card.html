@@ -43,7 +43,7 @@
 		    }
 
 		    #sshSubmit {
-		    	color: #259b24;
+		    	color: #757575;
 		    }
 
 		</style>
@@ -93,7 +93,9 @@
 						on-input="{{handleAddInput}}">
 			</paper-input>
 			<template if="{{showSubmit}}">
-				<paper-icon-button id="sshSubmit" icon="check-circle" on-click="{{addSSH}}"></paper-icon-button>		
+				<core-tooltip label="Send">
+					<paper-icon-button id="sshSubmit" icon="lock" on-click="{{addSSH}}"></paper-icon-button>
+				</core-tooltip>	
 			</template>
 		</div>
 		<table width="50%">
