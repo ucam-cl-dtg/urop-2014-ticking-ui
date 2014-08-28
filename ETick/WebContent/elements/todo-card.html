@@ -9,7 +9,7 @@
 
 <polymer-element name="todo-card" attributes="data rows">
 	<template>
-		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css" shim-shadowdom>
 		<style>
 			:host {
 				display: block;
@@ -41,13 +41,13 @@
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>To do List ({{data ? data.length : 0}})</h1>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
-			<core-tooltip label="Show/Hide passed ticks.">
+			<core-tooltip label="Show/Hide passed ticks." position="{{data.length > 0 ? 'bottom' : 'left'}}">
 				<paper-icon-button id="showPassed" icon="more-horiz" on-click="{{showPassedClicked}}"></paper-icon-button>
 			</core-tooltip>
 		</div>
 
 		<box-list id="list">
-			<template repeat="{{tickFork in data | tickListFilter($.searchBox.query)}}">
+			<template repeat="{{tickFork in data | tickListFilter($.searchBox.query) | passedFilter(passedFilterOn)}}">
 				<tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
 			</template>
 		</box-list>
@@ -55,6 +55,9 @@
 	</template>
 	<script>
 		Polymer('todo-card', {
+
+			passedFilterOn: true,
+
 			tickListFilter: function(items, q) {
 				if (items && q) {
 					return items.filter(this.tickFilter.bind(this));
@@ -67,6 +70,17 @@
 				return (item.tick.name.toLowerCase().indexOf(q) > -1 ||
 						item.tick.author.toLowerCase().indexOf(q) > -1);
 			},
+
+			passedFilter: function(items, toFilter) {
+				if (!items || !toFilter) return items;
+				return items.filter(function (item) {
+					return !(moment(item.deadline) < moment());
+				});
+			},
+
+			showPassedClicked: function () {
+				this.passedFilterOn = !this.passedFilterOn;
+			}
 		});
 	</script>
 </polymer-element>
