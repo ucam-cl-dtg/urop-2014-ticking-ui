@@ -6,6 +6,7 @@
 <link rel="import" href="main-card.html">
 <link rel="import" href="upcoming-slots.html">
 <link rel="import" href="loading-spinner.html">
+<link rel="import" href="todo-card.html">
 
 <polymer-element name="user-dash" attributes="data">
 	<template>
@@ -28,7 +29,19 @@
 			
 			popUpError
 			captureError
-			waitMessage="Loading your upcoming signups....">
+			waitMessage="Loading your upcoming signups...">
+		</toast-ajax>
+
+		<!-- Ticks TODO API call. -->
+		<toast-ajax id="todoAPI"
+			auto
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/todo"
+			handleAs="json"
+			on-core-response="{{todoResponse}}"
+			
+			popUpError
+			captureError
+			waitMessage="Loading your to-do list...">
 		</toast-ajax>
 
 		<template if="{{data && !data.ssh}}">
@@ -48,6 +61,12 @@
 				<upcoming-slots slots="{{slots}}"></upcoming-slots>
 			</main-card>
 		</template>
+
+		<template if="{{todoData}}">
+			<main-card animated>
+				<todo-card data="{{todoData}}"></todo-card>
+			</main-card>
+		</template>
 		
 	</template>
 
@@ -63,12 +82,17 @@
 				if (newValue && this.$.loadingOverlay.opened) {
 					this.async(function () {
 						this.$.loadingOverlay.close();
-					}, null, 1000);
+					}, null, 500);
 				}
 			},
 
 			upcomingResponse: function() {
 				this.slots = this.$.upcomingAPI.response;
+			},
+
+			todoResponse: function () {
+				this.todoData = this.$.todoAPI.response;
+				console.log(this.todoData);
 			}
 		});
 	</script>

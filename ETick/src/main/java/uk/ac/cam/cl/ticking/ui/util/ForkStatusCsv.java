@@ -3,6 +3,8 @@ package uk.ac.cam.cl.ticking.ui.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,20 +37,39 @@ public class ForkStatusCsv {
 	}
 
 	public File generateCsvFile(Group group) throws IOException {
-
+		
 		String groupId = group.getGroupId();
+		
+		File temp = File.createTempFile(groupId, ".csv");
+		FileWriter writer = new FileWriter(temp);
+		
+		generateCsv(writer, group);
+
+		return temp;
+
+	}
+	
+	public String generateCsvString(Group group) throws IOException {
+		
+		StringWriter writer = new StringWriter();
+		
+		generateCsv(writer, group);
+
+		return writer.toString();
+
+	}
+	
+	public void generateCsv(Writer writer, Group group) throws IOException {
+		
+		String groupId = group.getGroupId();
+		
 		List<String> tickIds = group.getTicks();
+		
 		Collections.sort(tickIds, new IgnoreCaseComparator());
 		List<User> submitters = db.getUsers(groupId, Role.SUBMITTER);
-
-		File temp;
-		FileWriter writer;
 		
 		DateTimeFormatter dtf = DateTimeFormat.forPattern("dd/MM/yyyy");
-
-		temp = File.createTempFile(groupId, ".csv");
-		writer = new FileWriter(temp);
-
+		
 		writer.append("Display Name");
 		writer.append(",CRSid");
 		writer.append(",College");
@@ -124,8 +145,5 @@ public class ForkStatusCsv {
 		
 		writer.flush();
 		writer.close();
-		
-		return temp;
-
 	}
 }
