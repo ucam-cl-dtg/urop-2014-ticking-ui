@@ -9,6 +9,7 @@
 
 <polymer-element name="todo-card" attributes="data rows">
 	<template>
+		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css">
 		<style>
 			:host {
 				display: block;
@@ -38,8 +39,11 @@
 		</style>
 
 		<div id="headerBar" layout horizontal center>
-			<h1 flex>Ticks ({{data ? data.length : 0}})</h1>
+			<h1 flex>Ticks To-Do: ({{data ? data.length : 0}})</h1>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
+			<core-tooltip label="Show/Hide passed ticks." position="{{data && data.length > 0 ? 'bottom' : 'left'}}" class="delete-tooltip">
+				<paper-icon-button id="showPassed" icon="more-horiz" on-click="{{showPassedClicked}}"></paper-icon-button>
+			</core-tooltip>
 		</div>
 
 		<box-list id="list">
