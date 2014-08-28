@@ -209,13 +209,9 @@
             },
 
             repoChanged: function() {
-                console.log("repo is now " + this.repo);
-
                 if (this.repo != null) {
                     this.displayRepo = this.repo;
                 }
-
-                console.log("so display repo is now " + this.displayRepo);
 
                 this.reportAvailableChanged();
             },
@@ -239,10 +235,6 @@
                 this.job('new-status', function() {
                     this.computeStatusCode();
                 }, 330);
-            },
-
-            displayRepoChanged: function() {
-                console.log("disp-repo", this.displayRepo);
             },
 
             computeStatusCode: function() {
@@ -276,14 +268,6 @@
                     this.fire('status-changed', {tickId: this.tickId, statusCode: this.statusCode});
                 }
             }
-
-            /* testRunningChanged: function() {
-                console.log(this.testRunning);
-
-                if (this.testRunning == true) {
-                    this.$.submitComponent.continuePolling();
-                }
-            }*/
         });
     </script>
 </polymer-element>
