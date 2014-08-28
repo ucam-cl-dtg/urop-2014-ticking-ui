@@ -99,7 +99,7 @@
         </template>
 
         <!-- Pass/fail button -->
-        <template if="{{ticker != undefined}}">
+        <template if="{{ticker != undefined && selectedReport == (reportsListString.length-1) && reportResult != 'PASS'}}">
           <ticker-set-result commitId="{{commitId}}"
                              crsid="{{crsid}}"
                              ticker="{{ticker}}"
