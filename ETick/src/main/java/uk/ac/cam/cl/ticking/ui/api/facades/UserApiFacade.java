@@ -1,6 +1,7 @@
 package uk.ac.cam.cl.ticking.ui.api.facades;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,10 +21,13 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ToDoBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.DeadlineFirstComparator;
 import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -255,5 +259,38 @@ public class UserApiFacade implements IUserApiFacade {
 		user.setSsh(key);
 		db.saveUser(user);
 		return Response.status(Status.CREATED).entity(user).build();
+	}
+	
+	@Override
+	public Response getToDo(HttpServletRequest request) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		
+		/* Get the user object, returning if not found */
+		User user = db.getUser(crsid);
+
+		if (user == null) {
+			log.error("User " + crsid + " requested user " + crsid
+					+ " to get todos, but they couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+		
+		List<Tick> ticks = new ArrayList<>();
+		List<Fork> forks = db.getForks(crsid);
+		
+		for (Group group : db.getGroups(crsid, Role.SUBMITTER)) {
+			for (String tickId : group.getTicks()) {
+				Tick tick = db.getTick(tickId);
+				if (!ticks.contains(tick)) {
+					ticks.add(tick);
+				}
+			}
+		}
+		
+		Collections.sort(ticks, new DeadlineFirstComparator());
+		
+		return Response.ok(new ToDoBean(ticks, forks)).build();
+		
 	}
 }
