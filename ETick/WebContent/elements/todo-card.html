@@ -5,10 +5,11 @@
 <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="tick-box.html">
 
-<polymer-element name="todo-card" attributes="data">
+<polymer-element name="todo-card" attributes="data rows">
 	<template>
 		<style>
 			:host {
+				overflow: scroll;
 				display: block;
 				height: 100%;
 				width: 100%;
