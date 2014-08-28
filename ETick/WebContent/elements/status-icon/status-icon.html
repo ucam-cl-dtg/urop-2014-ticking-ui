@@ -35,7 +35,7 @@
             <!-- When core-icon is created, if icon="", then it displays no icon. However, if icon is set to a non-empty
                  string, then set back to "", a blank icon is not displayed.-->
             <core-icon class="{{big ? 'big' : 'small'}}"
-                       icon="{{mode == '-' ? (big ? 'maps:local-hotel' : '') : mode == 'I' ? 'directions-walk' : mode == 'UF' ? 'bug-report' : mode == 'UP' ? 'thumb-up' : mode == 'P' ? 'done' : mode == 'F' ? 'communication:dnd-on' : ''}}"
+                       icon="{{mode == '-' ? (big ? 'maps:local-hotel' : '') : mode == 'I' ? 'mapdirections-walk' : mode == 'UF' ? 'bug-report' : mode == 'UP' ? 'thumb-up' : mode == 'P' ? 'done' : mode == 'F' ? 'communication:dnd-on' : ''}}"
                        hidden?="{{!(mode == 'I' || mode == 'UF' || mode == 'UP' || mode == 'F' || mode == 'P' || (mode == '-' && big))}}">
             </core-icon>
         </div>
