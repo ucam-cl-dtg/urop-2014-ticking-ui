@@ -119,10 +119,14 @@ public class ForkStatusCsv {
 									+ fork.getLastTickedBy() + " on "
 									+ fork.getLastTickedOn().toString(dtf)+" "+fork.stats()+")");
 						} else {
-							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
-								writer.append(","+Strings.FAILED+" ("+Strings.UNITPASSED+" "+fork.stats()+")");
+							if (fork.isSignedUp()) {
+								writer.append(","+Strings.SIGNEDUPCODE+" ("+Strings.SIGNEDUP+" "+fork.stats()+")");
 							} else {
-								writer.append(","+Strings.UNITPASSEDCODE+" ("+Strings.UNITPASSED+" "+fork.stats()+")");
+								if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
+									writer.append(","+Strings.FAILED+" ("+Strings.UNITPASSED+" "+fork.stats()+")");
+								} else {
+									writer.append(","+Strings.UNITPASSEDCODE+" ("+Strings.UNITPASSED+" "+fork.stats()+")");
+								}
 							}
 						}
 					} else {

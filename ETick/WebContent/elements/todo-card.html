@@ -4,6 +4,8 @@
 <link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
 <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="tick-box.html">
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
 <polymer-element name="todo-card" attributes="data rows">
 	<template>
@@ -36,7 +38,7 @@
 		</style>
 
 		<div id="headerBar" layout horizontal center>
-			<h1 flex>Ticks</h1>
+			<h1 flex>Ticks ({{data ? data.length : 0}})</h1>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 		</div>
 

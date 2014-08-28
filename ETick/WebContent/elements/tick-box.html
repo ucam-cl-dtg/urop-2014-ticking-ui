@@ -6,17 +6,22 @@
 		<link rel="stylesheet" type="text/css" href="../css/box-element.css">
 		
 		<div layout horizontal center id="container">
+            <paper-ripple class="recenteringTouch" fit></paper-ripple>
 			<status-icon id="statusIcon" big="true" mode="{{statusCode}}"></status-icon>
-			<date-calendar datetime="{{tick.deadline}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>
+
+			<!-- <date-calendar datetime="{{tick.deadline}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>-->
 			<div layout vertical end flex class="textContainer">
+				<h3>{{tick.deadline ? prettyDate(tick.deadline) : ''}}</h3>
 				<h1>{{tick.name}}</h1>
 				<h2>Author: {{tick.author}}</h2>
 			</div>
 			<paper-ripple class="recenteringTouch" fit></paper-ripple>
 		</div>
 	</template>
-	<script>	
+	<script src="../js/prettyDate.js"></script>
+	<script>
 		Polymer('tick-box', {
+			prettyDate:prettyDate,
 			deadlinePassed: false,
             statusCode: "-",
 

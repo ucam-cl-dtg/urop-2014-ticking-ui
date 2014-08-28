@@ -150,19 +150,25 @@ public class ForkStatusXls {
 							
 							cell.setCellStyle(passStyle);
 							
-							String comment =  fork.getLastTickedBy()+" "+fork.getLastTickedOn().toString(dtf);
+							String comment =  fork.getLastTickedBy()+" "+fork.getLastTickedOn().toString(dtf)+" "+fork.stats();
 							
 							createComment(workbook, sheet, row, cell, comment);
 						    
 						} else {
-							
+							if (fork.isSignedUp()) {
+								Cell cell = row.createCell(cellnum++);
+								cell.setCellValue(Strings.SIGNEDUP);
+								createComment(workbook, sheet, row, cell, fork.stats());
+							}
 							if (tick.getDeadline()!=null&&tick.getDeadline().isBeforeNow()) {
 								Cell cell = row.createCell(cellnum++);
 								cell.setCellValue(Strings.FAILED);
 								cell.setCellStyle(failStyle);
-								createComment(workbook, sheet, row, cell, Strings.UNITPASSED);
+								createComment(workbook, sheet, row, cell, Strings.UNITPASSED+ " "+fork.stats());
 							} else {
-								row.createCell(cellnum++).setCellValue(Strings.UNITPASSED);
+								Cell cell = row.createCell(cellnum++);
+								cell.setCellValue(Strings.UNITPASSED);
+								createComment(workbook, sheet, row, cell, fork.stats());
 							}
 							
 						}
@@ -172,9 +178,11 @@ public class ForkStatusXls {
 								Cell cell = row.createCell(cellnum++);
 								cell.setCellValue(Strings.FAILED);
 								cell.setCellStyle(failStyle);
-								createComment(workbook, sheet, row, cell, Strings.UNITFAILED);
+								createComment(workbook, sheet, row, cell, Strings.UNITFAILED+ " "+fork.stats());
 							} else {
-								row.createCell(cellnum++).setCellValue(Strings.UNITFAILED);
+								Cell cell =row.createCell(cellnum++);
+								cell.setCellValue(Strings.UNITFAILED);
+								createComment(workbook, sheet, row, cell, fork.stats());
 							}
 							
 						} else {
@@ -182,9 +190,11 @@ public class ForkStatusXls {
 								Cell cell = row.createCell(cellnum++);
 								cell.setCellValue(Strings.FAILED);
 								cell.setCellStyle(failStyle);
-								createComment(workbook, sheet, row, cell, Strings.INITIALISED);
+								createComment(workbook, sheet, row, cell, Strings.INITIALISED+" "+fork.stats());
 							} else {
-								row.createCell(cellnum++).setCellValue(Strings.INITIALISED);
+								Cell cell =row.createCell(cellnum++);
+								cell.setCellValue(Strings.INITIALISED);
+								createComment(workbook, sheet, row, cell, fork.stats());
 							}
 						}
 					}
