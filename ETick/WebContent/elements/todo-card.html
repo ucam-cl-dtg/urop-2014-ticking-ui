@@ -9,7 +9,6 @@
 	<template>
 		<style>
 			:host {
-				overflow: scroll;
 				display: block;
 				height: 100%;
 				width: 100%;
@@ -42,8 +41,8 @@
 		</div>
 
 		<box-list id="list">
-			<template repeat="{{tick in data.ticks}}">
-				<tick-box class="itemBox" tickId="{{tick._id}}" tickName="{{tick.name}}" tick="{{tick}}"></tick-box>
+			<template repeat="{{tickFork in data}}">
+				<tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
 			</template>
 		</box-list>
 
@@ -62,7 +61,20 @@
 		Polymer('todo-card', {
 			domReady: function () {
 				console.log(this.data);
-			}
+			},
+
+			tickListFilter: function(items, q) {
+				if (items && q) {
+					return items.filter(this.tickFilter.bind(this));
+				}
+				return items;
+			},
+
+			tickFilter: function(item) {
+				var q = this.$.searchBox.query.toLowerCase();
+				return (item.tick.name.toLowerCase().indexOf(q) > -1 ||
+						item.tick.author.toLowerCase().indexOf(q) > -1);
+			},
 		});
 	</script>
 </polymer-element>
