@@ -48,7 +48,7 @@
 		<!-- Tick list. -->
 		<box-list id="list" selector on-core-select="{{selected}}" valueattr="tick">
 			<template repeat="{{tickFork in tickForks | tickListFilter($.searchBox.query)}}">
-				<tick-box class="itemBox" tickId="{{tick._id}}" tickName="{{tick.name}}" tick="{{tickFork.tick}}" statusCode="{{tickFork.statusCode}}"></tick-box>
+				<tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
 			</template>
 		</box-list>
 
