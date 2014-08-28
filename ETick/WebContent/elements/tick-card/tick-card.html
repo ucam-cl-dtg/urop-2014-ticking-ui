@@ -248,12 +248,12 @@
             computeStatusCode: function() {
                 var oldCode = this.statusCode;
 
-                if (!this.forked) {
-                    //Not started.
-                    this.statusCode = "-";
-                } else if (this.deadlinePassed){
+                if (this.deadlinePassed){
                     //deadline passed, so failed.
                     this.statusCode = "F";
+                } else if (!this.forked) {
+                    //Not started.
+                    this.statusCode = "-";
                 } else if (!this.reportAvailable) {
                     //Not submitted.
                     this.statusCode = "I";
