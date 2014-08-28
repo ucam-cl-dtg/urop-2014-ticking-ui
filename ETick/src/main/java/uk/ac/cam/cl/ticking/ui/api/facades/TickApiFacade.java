@@ -33,9 +33,11 @@ import uk.ac.cam.cl.ticking.ui.api.public_interfaces.ITickApiFacade;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ExtensionBean;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ExtensionReturnBean;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.TickBean;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ToDoBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
@@ -92,7 +94,7 @@ public class TickApiFacade implements ITickApiFacade {
 		Tick tick = db.getTick(tickId);
 
 		if (tick == null) {
-			log.error("User " + crsid + " requested tick " + crsid
+			log.error("User " + crsid + " requested tick " + tickId
 					+ " for deletion, but it couldn't be found");
 			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
 					.build();
@@ -171,6 +173,7 @@ public class TickApiFacade implements ITickApiFacade {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
+		List<Fork> forks = new ArrayList<>();
 		List<Tick> ticks = db.getGroupTicks(groupId);
 		for (Tick tick : ticks) {
 			DateTime extension = tick.getExtensions().get(crsid);
@@ -180,8 +183,15 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 
 		Collections.sort(ticks);
+		
+		for (Tick tick: ticks) {
+			Fork fork = db.getFork(Fork.generateForkId(crsid, tick.getTickId()));
+			if (fork != null) {
+				forks.add(fork);
+			}
+		}
 
-		return Response.ok().entity(ticks).build();
+		return Response.ok(new ToDoBean(ticks, forks)).build();
 	}
 
 	/**

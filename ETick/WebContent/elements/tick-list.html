@@ -58,7 +58,7 @@
 		Polymer('tick-list', {
 			ticking_service: ticking_service,
 			tickListResponse: function () {
-				this.ticks = this.$.tickListAPI.response;
+				this.ticks = this.$.tickListAPI.response.ticks;
 			},
 
 			tickListFilter: function(items, q) {

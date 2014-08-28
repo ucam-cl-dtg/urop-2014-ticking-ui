@@ -5,7 +5,7 @@
 <link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel="import" href="../toast-ajax/toast-ajax.html">
 
-<polymer-element name="dynamic-tests-component" attributes="dynamicOptions dynamicSelectedIndex opened">
+<polymer-element name="dynamic-tests-component" attributes="dynamicOptions dynamicSelectedIndex dynamicOpened">
     <template>
         <link rel="stylesheet" href="tick-creator-card.css">
 
@@ -13,7 +13,7 @@
             <h4>Correctness Tests</h4>
             <paper-toggle-button id="dynamicSwitch" on-change="{{toggleDynamic}}"></paper-toggle-button>
         </div>
-        <core-collapse id="collapseDynamic" opened?="{{opened}}">
+        <core-collapse id="collapseDynamic">
             <div layout horizontal wrap style="margin-left: 10px;">
                 <paper-radio-group selected="{{dynamicSelectedIndex}}">
                     <template repeat="{{dynamicOption in options}}">
@@ -29,6 +29,14 @@
     </template>
     <script>
         Polymer('dynamic-tests-component', {
+            observe: {
+              '$.collapseDynamic.opened': 'collapseDynamicOpened'
+            },
+
+            collapseDynamicOpened: function() {
+                this.dynamicOpened = this.$.collapseDynamic.opened;
+            },
+
             dynamicOptionsChanged: function() {
                 this.options = this.dynamicOptions.map(function(el, index) {
                     return {

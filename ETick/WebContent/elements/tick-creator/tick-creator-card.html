@@ -175,7 +175,7 @@
         <tick-workbook-link flex link="{{externalReference}}"></tick-workbook-link>
 
         <dynamic-tests-component id="dynamicTestsComponent" dynamicOptions="{{dynamicOptions}}"
-                                 dynamicSelectedIndex="{{dynamicSelectedIndex}}" opened="{{dynamicOpened}}">
+                                 dynamicSelectedIndex="{{dynamicSelectedIndex}}" dynamicOpened="{{dynamicOpened}}">
         </dynamic-tests-component>
 
         <required-files requiredFiles="{{displayRequiredFiles}}"></required-files>
@@ -509,13 +509,14 @@
             return sendData;
         },
         buildDynamicData: function() {
-//            if (this.dynamicSelectedIndex == null || !this.dynamicOpened) {
-//                console.log("returning null for dynamic data");
-//                return {containerId: null, testId: null};
-//            } else {
+            console.log("dynamicOpened", this.dynamicOpened);
+            if (this.dynamicSelectedIndex == null || !this.dynamicOpened) {
+                console.log("returning null for dynamic data");
+                return {containerId: null, testId: null};
+            } else {
                 console.log("returning", this.dynamicOptions[this.dynamicSelectedIndex]);
                 return this.dynamicOptions[this.dynamicSelectedIndex];
-//            }
+            }
         },
         bulidRequiredFiles: function() {
             return this.displayRequiredFiles.split("\n");
@@ -550,6 +551,12 @@
             this.job('reset-deleting', function() {
                 this.deleting = false;
             }, 500);
+        },
+
+        checkJavaChanged: function() {
+            this.job('firefox-fix', function() {
+                this.$.collapseStylistic.style.height = "auto";
+            }, 350);
         }
     });
 </script>

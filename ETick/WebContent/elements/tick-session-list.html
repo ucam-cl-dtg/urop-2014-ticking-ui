@@ -66,7 +66,9 @@
 	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('tick-session-list', {
+
 			sheetListFilter: function(items, q) {
+
 				if (items && q) {
 					return items.filter(this.sheetFilter.bind(this));
 				}
