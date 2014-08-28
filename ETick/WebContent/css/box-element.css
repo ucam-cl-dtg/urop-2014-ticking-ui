@@ -33,3 +33,7 @@ h3 {
 	white-space: nowrap;
 	overflow: hidden;
 }
+
+#statusIcon {
+	margin-right: 5px;
+}
