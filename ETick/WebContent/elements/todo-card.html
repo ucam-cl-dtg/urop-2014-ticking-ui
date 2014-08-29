@@ -12,7 +12,6 @@
 		<style>
 			:host {
 				display: block;
-				overflow: auto;
 			}
 
 			h1 {	
@@ -31,7 +30,7 @@
 			</core-tooltip>
 		</div>
 
-		<box-list id="list">
+		<box-list id="list" maxRows="5">
 			<template repeat="{{tickFork in data | tickListFilter($.searchBox.query) | passedFilter(passedFilterOn)}}">
 				<tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
 			</template>
