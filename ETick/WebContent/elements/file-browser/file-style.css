@@ -58,6 +58,11 @@ code ol li
   background-color: #faa;
 }
 
+.PASS
+{
+  background-color: #afa;
+}
+
 .tooltip
 {
   position: absolute;

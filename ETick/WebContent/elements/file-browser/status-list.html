@@ -76,11 +76,10 @@
                           }).sort().reduce(
                             function (prev, curr)
                             {
-                              var last = prev.pop();
+                              var last = prev[prev.length-1];
                               if (last !== curr)
-                                prev.push(last);
-                              prev.push(curr);
-                              return curr;
+                                prev.push(curr);
+                              return prev;
                             }, []);
 
                       return error;
