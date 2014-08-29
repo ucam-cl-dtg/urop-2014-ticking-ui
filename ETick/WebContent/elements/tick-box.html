@@ -36,6 +36,8 @@
             },
             
             forkChanged: function() {
+                console.log("fork changed!");
+
                 if (this.fork != null && this.fork.signedUp) {
                     this.statusCode = "SU";
                 } else if (this.deadlinePassed) {

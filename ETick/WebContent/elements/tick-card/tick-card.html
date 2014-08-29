@@ -174,7 +174,8 @@
                 reportAvailable: 'showNewStatusCode',
                 unitPass: 'showNewStatusCode',
                 humanPass: 'showNewStatusCode',
-                deadlinePassed: 'showNewStatusCode'
+                deadlinePassed: 'showNewStatusCode',
+                signedUp: 'showNewStatusCode'
             },
 
             domReady: function() {
@@ -241,7 +242,9 @@
             computeStatusCode: function() {
                 var oldCode = this.statusCode;
 
-                if (this.deadlinePassed){
+                if (this.signedUp) {
+                    this.statusCode = "SU";
+                } else if (this.deadlinePassed){
                     //deadline passed, so failed.
                     this.statusCode = "F";
                 } else if (!this.forked) {
@@ -266,7 +269,14 @@
 
                 if (oldCode != this.statusCode) {
                     console.log("status code changed!");
-                    this.fire('status-changed', {tickId: this.tickId, statusCode: this.statusCode});
+                    this.fire('status-changed', {tickId: this.tickId, forkBean: {
+                        deadlinePassed: this.deadlinePassed,
+                        forked: this.forked,
+                        reportAvailable: this.reportAvailable,
+                        unitPass: this.unitPass,
+                        humanPass: this.humanPass,
+                        signedUp: this.signedUp
+                    }});
                 }
             }
         });
