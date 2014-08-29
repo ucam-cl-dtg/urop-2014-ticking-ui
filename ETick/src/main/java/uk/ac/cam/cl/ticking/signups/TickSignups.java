@@ -37,7 +37,8 @@ import uk.ac.cam.cl.signups.api.beans.BatchCreateBean;
 import uk.ac.cam.cl.signups.api.beans.BatchDeleteBean;
 import uk.ac.cam.cl.signups.api.beans.CreateColumnBean;
 import uk.ac.cam.cl.signups.api.beans.GroupSheetBean;
-import uk.ac.cam.cl.signups.api.beans.PermissionsBean;
+import uk.ac.cam.cl.signups.api.beans.AddPermissionsBean;
+import uk.ac.cam.cl.signups.api.beans.RemovePermissionsBean;
 import uk.ac.cam.cl.signups.api.beans.SlotBookingBean;
 import uk.ac.cam.cl.signups.api.beans.UpdateSheetBean;
 import uk.ac.cam.cl.signups.api.exceptions.DuplicateNameException;
@@ -586,7 +587,7 @@ public class TickSignups {
             @DefaultValue("false") @QueryParam("includeHistoricSheets") boolean includeHistoricSheets) {
         try {
             /* List all sheets in the group */
-            List<Sheet> sheets = service.listSheets(groupID);
+            List<Sheet> sheets = service.listSheets(groupID, db.getAuthCode(groupID));
             if (!includeHistoricSheets) {
                 /* Remove all sheets from the list whose end times are in the past */
                 Date now = new Date();
@@ -609,6 +610,10 @@ public class TickSignups {
             } catch (ItemNotFoundException e1) {
                 log.warn("Probably the group was not found - investigate if something else", e1);
                 return Response.status(Status.NOT_FOUND).entity("Not found error: " + e1.getMessage()).build();
+            } catch (NotAllowedException e1) {
+                log.error("AuthCode was rejected - the databases are inconsistent", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: authorisation code rejected; databases inconsistent").build();
             } catch (Throwable t) {
                 log.error("Something went wrong when processing the InternalServerErrorException", t);
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -618,6 +623,10 @@ public class TickSignups {
         } catch (ItemNotFoundException e) {
             log.warn("Probably the group was not found - investigate if something else", e);
             return Response.status(Status.NOT_FOUND).entity("Not found error: " + e.getMessage()).build();
+        } catch (NotAllowedException e1) {
+            log.error("AuthCode was rejected - the databases are inconsistent", e1);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Server Error: authorisation code rejected; databases inconsistent").build();
         }
     }
     
@@ -780,7 +789,7 @@ public class TickSignups {
             }
             Map<String, String> map = new HashMap<String, String>();
             map.put(tickID, null); // null means any ticker is allowed
-            service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            service.addPermissions(groupID, crsid, new AddPermissionsBean(map, groupAuthCode));
             log.info(crsid + " is now allowed to sign up for tick " + tickID + " in group " + groupID);
             return Response.ok().build();
         } catch(InternalServerErrorException e) { // Ignore this block
@@ -821,10 +830,10 @@ public class TickSignups {
     public Response disallowSignup(String crsid, String groupID, String tickID) {
         log.info("Removing submitter " + crsid + "'s permission to sign up for tick" +
                 tickID + " in group " + groupID);
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(tickID, null); // Only important bit is tickID - it is removed from the map in the signups database
+        List<String> toRemove = new ArrayList<>();
+        toRemove.add(tickID);
         try {
-            service.removePermissions(groupID, crsid, new PermissionsBean(map, db.getAuthCode(groupID)));
+            service.removePermissions(groupID, crsid, new RemovePermissionsBean(toRemove, db.getAuthCode(groupID)));
         } catch(InternalServerErrorException e) { // Ignore this block
             try {
                 throwRealException(e);
@@ -904,7 +913,7 @@ public class TickSignups {
         try {
             Map<String, String> map = new HashMap<String, String>();
             map.put(tickID, ticker);
-            service.addPermissions(groupID, crsid, new PermissionsBean(map, groupAuthCode));
+            service.addPermissions(groupID, crsid, new AddPermissionsBean(map, groupAuthCode));
             log.info("Permissions updated");
             return Response.ok().build();
         } catch(InternalServerErrorException e) { // Ignore this block
@@ -1137,7 +1146,7 @@ public class TickSignups {
                     return Response.status(Status.FORBIDDEN)
                             .entity(Strings.INVALIDROLE).build();
                 }
-                sheet = service.getSheet(sheetID);
+                sheet = service.getSheet(sheetID, db.getAuthCode(sheetID));
             } catch (InternalServerErrorException e0) {
                 try {
                     throwRealException(e0);
@@ -1152,6 +1161,10 @@ public class TickSignups {
                     log.warn("Sheet not found", e);
                     return Response.status(Status.NOT_FOUND)
                             .entity("The sheet was not found").build();
+                } catch (NotAllowedException e1) {
+                    log.error("AuthCode was rejected - the databases are inconsistent", e1);
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity("Server Error: authorisation code rejected; databases inconsistent").build();
                 } catch (Throwable t) {
                     log.error(
                             "Something went wrong when processing the InternalServerErrorException",
@@ -1165,6 +1178,10 @@ public class TickSignups {
                 log.info("Sheet not found", e);
                 return Response.status(Status.NOT_FOUND)
                         .entity("The sheet was not found").build();
+            } catch (NotAllowedException e1) {
+                log.error("AuthCode was rejected - the databases are inconsistent", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: authorisation code rejected; databases inconsistent").build();
             }
             int millisecondsInOneMinute = 60000;
             long sheetLengthInMinutes = (bean.getEndTime() - bean
@@ -1226,21 +1243,17 @@ public class TickSignups {
                                         .getStartTime()), new Date(bean
                                         .getEndTime()), sheet
                                         .getSlotLengthInMinutes()));
-                        sheet = service.getSheet(sheetID);
                     }
                 }
                 for (String oldTicker : oldTickerNames) { // delete removed tickers
                     if (!bean.getTickerNames().contains(oldTicker)) {
                         service.deleteColumn(sheetID, oldTicker,
                                 db.getAuthCode(sheetID));
-                        sheet = service.getSheet(sheetID);
                     }
                 }
-                sheet.setTitle(bean.getTitle());
-                sheet.setDescription(bean.getDescription());
-                sheet.setLocation(bean.getLocation());
-                service.updateSheet(sheetID,
-                        new UpdateSheetBean(sheet, db.getAuthCode(sheetID)));
+                service.updateSheetInfo(sheetID,
+                        new UpdateSheetBean(bean.getTitle(), bean.getLocation(),
+                                bean.getDescription(), db.getAuthCode(sheetID)));
             } catch (InternalServerErrorException e0) { // Ignore this block
                 try {
                     throwRealException(e0);
@@ -1478,7 +1491,7 @@ public class TickSignups {
         log.info("Creating new group in signups database with ID " + groupID);
         /* Create group in signups database */
         String groupAuthCode = service.addGroup(new Group(groupID));
-        /* Store group authorisation code so we can have admin privileges for it */ 
+        /* Store group authorisation code so we can have admin privileges for it */
         db.addAuthCode(groupID, groupAuthCode);
         log.info("Group created");
     }
@@ -1486,7 +1499,7 @@ public class TickSignups {
     public void deleteGroup(String groupID) {
         log.info("Deleting all sheets belonging to group of ID " + groupID);
         try {
-            for (Sheet sheet : service.listSheets(groupID)) {
+            for (Sheet sheet : service.listSheets(groupID, db.getAuthCode(groupID))) {
                 /* Delete all signups sheets belonging to group */
                 String id = sheet.get_id();
                 try {
@@ -1511,6 +1524,8 @@ public class TickSignups {
         } catch (ItemNotFoundException e) {
             log.error("The group was not found in the signups database even though it "
                     + "shouldn't have been deleted yet");
+        } catch (NotAllowedException e1) {
+            log.error("AuthCode was rejected - the databases are inconsistent", e1);
         }
         
     }

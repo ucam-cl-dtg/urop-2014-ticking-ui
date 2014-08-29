@@ -18,9 +18,8 @@ h1 {
 h2 {
 	margin: 0;
 	font-size: 0.7rem;
-	/*color: #808080;*/
+	color: #808080;
 	font-weight: 300;
-    color: black;
 }
 
 h3 {
@@ -38,8 +37,4 @@ h3 {
 
 #statusIcon {
 	margin-right: 5px;
-}
-
-core-tooltip {
-	outline: none;
 }
