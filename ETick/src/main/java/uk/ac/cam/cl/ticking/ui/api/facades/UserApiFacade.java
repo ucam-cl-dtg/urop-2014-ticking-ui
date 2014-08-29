@@ -88,6 +88,8 @@ public class UserApiFacade implements IUserApiFacade {
 	 */
 	@Override
 	public Response getUserFromCrsid(HttpServletRequest request, String crsid) {
+		//Currently unused but may be needed in future for permissions checking
+		@SuppressWarnings("unused")
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
