@@ -148,8 +148,9 @@ public class ForkStatusXls {
 				} else {
 					if (fork.getUnitPass()) {
 						if (fork.getHumanPass()) {
+							String code = tick.isStar() ? Strings.STAR : Strings.PASSED;
 							Cell cell = row.createCell(cellnum++);
-							cell.setCellValue("PASSED");
+							cell.setCellValue(code);
 
 							cell.setCellStyle(passStyle);
 

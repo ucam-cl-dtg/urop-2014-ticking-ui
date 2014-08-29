@@ -51,6 +51,7 @@ public class Strings {
 	
 	public static final String NOTSTARTED = "Not started";
 	public static final String PASSED = "PASSED";
+	public static final String STAR = "PASSED*";
 	public static final String FAILED = "FAILED";
 	public static final String UNITPASSEDCODE = "UP";
 	public static final String UNITFAILEDCODE = "UF";
@@ -60,6 +61,8 @@ public class Strings {
 	public static final String INITIALISED = "Not submitted";
 	public static final String SIGNEDUP = "Signed up";
 	public static final String SIGNEDUPCODE = "SU";
+	
+	public static final String TICKERSLOT = "Unavailable";
 
 	/**
 	 * Private constructor to prevent this class being created
