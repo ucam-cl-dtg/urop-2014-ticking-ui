@@ -76,7 +76,7 @@
 
                     <div layout vertical>
                         <div flex></div>
-                        <status-icon style="vertical-align: middle" mode="{{statusCode}}" showText="true" big="true"></status-icon>
+                        <status-icon style="vertical-align: middle" mode="{{statusCode}}" showText="true" big="true" star="{{star}}"></status-icon>
                         <div flex></div>
                     </div>
 
@@ -198,6 +198,8 @@
                 }
 
                 this.forking = false;
+
+                this.star = this.tickObj.star;
 
                 if (this.tickObj.externalReference != null)
                 {

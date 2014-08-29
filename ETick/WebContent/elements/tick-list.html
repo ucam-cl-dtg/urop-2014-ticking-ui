@@ -7,7 +7,7 @@
 <link rel="import" href="box-list.html">
 <link rel="import" href="add-tick.html">
 
-<polymer-element name="tick-list" attributes="gid canFork maxRows">
+<polymer-element name="tick-list" attributes="gid isAuthor canFork maxRows">
 	<template>
         <link rel="stylesheet" href="../css/shared-styles.css">
 		<style>
@@ -40,9 +40,14 @@
 			<!--<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>-->
             <span flex></span>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
-            <core-tooltip label="Add Tick" class="add-tick-tooltip">
-			    <paper-icon-button id="addTickButton" icon="add" on-click="{{addTickClicked}}"></paper-icon-button>
-            </core-tooltip>
+			<template if="{{isAuthor}}">
+	            <core-tooltip label="Add">
+				    <paper-icon-button id="addTickButton" icon="add" on-click="{{addTickClicked}}"></paper-icon-button>
+	            </core-tooltip>
+	            <core-tooltip label="Delete" class="delete-tooltip">
+				    <paper-icon-button id="deleteTickButton" icon="delete" on-click="{{deleteTickClicked}}"></paper-icon-button>
+	            </core-tooltip>
+	        </template>
 		</div>
 
 		<!-- Tick list. -->
