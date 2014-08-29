@@ -1,6 +1,52 @@
+.core-selected div
+{
+    font-weight: bold;
+}
+
+.tooltipFiles
+{
+    font-size: 11pt;
+    line-height: 11pt;
+    position: absolute;
+    visibility: hidden;
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    border-radius: 3px;
+    z-index: 1002;
+    padding: 8px;
+}
+
+div:hover .tooltipFiles
+{
+    display: none;
+}
+
+div.tooltipFiles-container:hover .tooltipFiles
+{
+    visibility: visible !important;
+    display: block;
+}
+
+div.tooltipFiles-container:active .tooltipFiles
+{
+    visibility: visible !important;
+    display: block;
+}
+
+div.tooltipFiles-container:focus .tooltipFiles
+{
+    visibility: visible !important;
+    display: block;
+}
+
 .ERROR
 {
     color: #b0120a;
+}
+
+.MANUALCHECK
+{
+    color: #3f51b5;
 }
 
 .WARNING
