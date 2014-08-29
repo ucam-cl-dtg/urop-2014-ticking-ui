@@ -151,26 +151,26 @@
               window.scroll(element.offsetLeft, element.offsetTop);
             }
 
-  		  , updateTickerView:
-  		    function(reason)
-  			{
-  			  this.fire("hide-report", {"result": reason});
-  			}
-  		  , tickPassed:
-  		    function()
-  			{
-  			  this.updateTickerView("pass");
-  			}
-  		  , tickFailed:
-  		    function()
-  			{
-  			  this.updateTickerView("fail");
-  			}
-  		  , tickNoShow:
-  		    function()
-  			{
-  			  this.updateTickerView("noShow");
-  			}
+        , updateTickerView:
+          function(reason)
+          {
+            this.fire("hide-report", {"result": reason});
+          }
+        , tickPassed:
+          function()
+          {
+            this.updateTickerView("pass");
+          }
+        , tickFailed:
+          function()
+          {
+            this.updateTickerView("fail");
+          }
+        , tickNoShow:
+          function()
+          {
+            this.updateTickerView("noShow");
+          }
 
         , getTickURL:
           function ()

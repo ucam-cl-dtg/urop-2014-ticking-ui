@@ -24,8 +24,10 @@
             </paper-input>
         </span>
     </template>
+    <script src="../js/hardcoded.js"></script>
     <script>
         Polymer('date-entry',{
+            ticking_service: ticking_service,
             ready: function() {
                 this.validate();
             },

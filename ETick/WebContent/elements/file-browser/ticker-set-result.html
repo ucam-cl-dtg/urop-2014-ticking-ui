@@ -19,14 +19,15 @@
     <link rel="stylesheet" href="ticker-set-result-style.css"/>
 
     <toast-ajax id="setTickResult"
-               method="PUT"
-               contentType="application/json"
+                method="PUT"
+                contentType="application/json"
 
-               popUpError
-               captureError
-               popUpResponse
-               waitMessage="Marking tick...."
-               responseMessage="Tick for {{crsid}} marked as {{tickStatus}}.">
+                popUpError
+                captureError
+                popUpResponse
+                waitMessage="Marking tick...."
+                on-core-response="{{hideCard}}"
+                responseMessage="Tick for {{crsid}} marked as {{tickStatus}}.">
     </toast-ajax>
 
     <toast-ajax id="setNoShow"
@@ -79,6 +80,7 @@
     Polymer('ticker-set-result'
       , {   tickStatus: null
           , sure: false
+          , fireEvent: null
           , sendTick:
             function (tickStatus, comment)
             {
@@ -124,7 +126,7 @@
               {
                 this.sendTick(true,  this.$.tickerComment.value);
                 this.tickStatus = "passed";
-                this.fire("tick-passed",{});
+                this.fireEvent = "tick-passed";
               }
               else
               {
@@ -140,7 +142,7 @@
               {
                 this.sendTick(false, this.$.tickerComment.value);
                 this.tickStatus = "failed";
-                this.fire("tick-failed",{});
+                this.fireEvent = "tick-failed";
               }
               else
               {
@@ -158,12 +160,18 @@
                       "/signups/students/" + this.crsid
                       + "/bookings/" + this.sheetId;
                 this.$.setNoShow.go();
-                this.fire("tick-no-show",{});
+                this.fireEvent = "tick-no-show";
               }
               else
               {
                 this.$.confirmElement.currentConfirm = this.$.noShow;
               }
+            }
+
+          , hideCard:
+            function ()
+            {
+              this.fire(this.fireEvent, {});
             }
         });
   </script>

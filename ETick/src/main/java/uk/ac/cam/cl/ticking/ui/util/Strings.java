@@ -51,16 +51,21 @@ public class Strings {
 	
 	public static final String NOTSTARTED = "Not started";
 	public static final String PASSED = "PASSED";
-	public static final String STAR = "PASSED*";
+	public static final String STARPASSED = "PASSED*";
 	public static final String FAILED = "FAILED";
+	public static final String STARFAILED = "FAILED*";
 	public static final String UNITPASSEDCODE = "UP";
 	public static final String UNITFAILEDCODE = "UF";
 	public static final String INITCODE = "I";
+	public static final String STARUNITPASSEDCODE = "UP*";
+	public static final String STARUNITFAILEDCODE = "UF*";
+	public static final String STARINITCODE = "I*";
 	public static final String UNITPASSED = "Passed automated tests";
 	public static final String UNITFAILED = "Failed automated tests";
 	public static final String INITIALISED = "Not submitted";
 	public static final String SIGNEDUP = "Signed up";
 	public static final String SIGNEDUPCODE = "SU";
+	public static final String STARSIGNEDUPCODE = "SU*";
 	
 	public static final String TICKERSLOT = "Unavailable";
 

@@ -32,10 +32,6 @@
 
 			listFilter: function(item) {
 				var q = this.query.toLowerCase();
-
-				// Fall back case if selector doesn't work.
-				this.$.list.$.selector.selected = null;
-
 				return (item.user.displayName.toLowerCase().indexOf(q) > -1 ||
 						item.user._id.toLowerCase().indexOf(q) > -1 ||
 						item.user.college.toLowerCase().indexOf(q) > -1 ||

@@ -30,10 +30,10 @@
                 if (this.$.inputResources.scrollHeight > this.$.inputResources.clientHeight) {
                     this.$.inputResources.style.height = this.$.inputResources.scrollHeight + "px";
                 }
-                this.link = this.$.inputResources.value;
             },
 
             linkChanged: function() {
+                console.log("link changed!");
                 this.job('job-title', function() {
                     this.changedTextArea();
                 }, 200);

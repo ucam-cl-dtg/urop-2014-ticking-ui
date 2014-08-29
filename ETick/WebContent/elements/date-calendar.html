@@ -68,8 +68,10 @@
 	</template>
     <script src="../bower_components/moment/moment.js"></script>
     <script src="../js/prettyDate.js"></script>
+    <script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('date-calendar', {
+            ticking_service: ticking_service,
 			domReady: function () {
 				if (!this.datetime) {
 					this.$.cal.classList.add('blank');

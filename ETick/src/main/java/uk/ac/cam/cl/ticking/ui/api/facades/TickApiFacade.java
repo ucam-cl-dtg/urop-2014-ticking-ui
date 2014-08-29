@@ -410,7 +410,7 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 
 		/* Check permissions */
-		if (!(permissions.hasRole(crsid, groupId, Role.AUTHOR) || (permissions
+		if (!(permissions.hasRole(crsid, groupId, Role.AUTHOR) && (permissions
 				.tickCreator(crsid, tick)))) {
 			log.warn("User " + crsid + " tried to add tick " + tickId
 					+ " to group " + groupId + " but was denied permission");

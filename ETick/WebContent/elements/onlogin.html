@@ -2,7 +2,7 @@
 
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="on-login" attributes="">
+<polymer-element name="on-login" attributes="ldap">
 
 	<template>
 			<!-- API call: adds user if not already registered. -->
@@ -13,14 +13,14 @@
 				on-core-error="{{loginError}}">
 			</core-ajax>
 
-			<!-- API call to populate sidebar menu. -->
+			<!-- API call to populate sidebar menu if admin. -->
 			<core-ajax id="sidebarAdminAjax"
 				url="{{ticking_service}}/group"
 				handleAs="json"
-				on-core-response="{{sidebarResponse}}">
+				on-core-response="{{sidebarAdminResponse}}">
 			</core-ajax>
 			
-			<!-- API call to populate sidebar menu if admin. -->
+			<!-- API call to populate sidebar menu. -->
 			<core-ajax id="sidebarAjax"
 				url="{{ticking_service}}/user/groups"
 				handleAs="json"
@@ -76,6 +76,10 @@
 			
 			sidebarResponse: function() {
 				this.groupItems = this.$.sidebarAjax.response;
+			},
+
+			sidebarAdminResponse: function () {
+				this.groupItems = this.$.sidebarAdminAjax.response;
 			},
 
 			sidebarTickResponse: function() {

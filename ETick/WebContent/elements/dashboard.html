@@ -73,6 +73,7 @@
 	<script>
 		Polymer('user-dash', {
 			ticking_service: ticking_service,
+
 			ready: function () {
 				if (!this.data) {
 					this.$.loadingOverlay.open();
@@ -81,9 +82,7 @@
 
 			dataChanged: function (oldValue, newValue) {
 				if (newValue && this.$.loadingOverlay.opened) {
-					this.async(function () {
 						this.$.loadingOverlay.close();
-					}, null, 500);
 				}
 			},
 
