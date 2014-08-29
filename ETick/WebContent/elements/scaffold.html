@@ -53,7 +53,7 @@
 
 			</core-selector>
 			
-			<template if="{{!$.loginAPIs.ldap.isAdmin}}">
+			<template if="{{$.loginAPIs.ldap.isAdmin}}">
 				<div layout horizontal end-justified>
 					<div>
 						<core-tooltip label="{{admin ? 'Show all groups' : 'Show my groups'}}">
