@@ -100,7 +100,7 @@
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
                         <overview-users-bar sortField="{{sortField}}" users="{{displayUsers}}" userId="{{userId}}"></overview-users-bar>
-                        <div style="height: 30px;"></div>
+                        <div style="height: 20px;"></div>
                     </div>
                 </div>
 
@@ -431,15 +431,17 @@
 
                 this.scrollAreaWidth = parseInt(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
 
-                /*console.log("saw", this.scrollAreaWidth, "ovmac", this.$.overviewMainContainer.style.width);
-                if (this.scrollAreaWidth > this.$.overviewMainContainer.style.width - 440) {
+//                console.log("saw", this.scrollAreaWidth, "ovmac", this.$.overviewMainContainer.style.width);
+//                console.log(this.scrollAreaWidth, parseInt(getComputedStyle(this.$.overviewMainContainer).getPropertyValue("width")));
+                if (this.scrollAreaWidth > parseInt(getComputedStyle(this.$.overviewMainContainer).getPropertyValue("width")) - 470) {
                     //horizontal scroll bar exists
-                    this.$.overviewMainContainer.style.height = "1000px";
-                } else {*/
+//                    console.log("hsb!");
+                    this.$.overviewMainContainer.style.height = 34 * this.displayUsers.length + 165 + "px";
+                } else {
                     if (this.displayUsers != undefined) {
-                        this.$.overviewMainContainer.style.height = 34 * (this.displayUsers.length - 0.5) + 144 + "px";
+                        this.$.overviewMainContainer.style.height = 34 * this.displayUsers.length + 144 + "px";
                     }
-                //}
+                }
 
 //                if (34 * (this.displayUsers.length - 0.5) > 600-144) {
 //                    this.$.scrollArea.style.overflowY = "auto";
