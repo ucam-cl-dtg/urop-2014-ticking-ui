@@ -114,7 +114,11 @@ public class ForkStatusCsv {
 						writer.append("," + code + " ("
 								+ Strings.NOTSTARTED + ")");
 					} else {
-						writer.append(',');
+						if (tick.isStar()) {
+							writer.append(",*");
+						} else {
+							writer.append(',');
+						}
 					}
 				} else {
 					if (fork.getUnitPass()) {

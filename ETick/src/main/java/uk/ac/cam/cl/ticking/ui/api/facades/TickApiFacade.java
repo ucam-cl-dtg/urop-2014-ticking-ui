@@ -432,7 +432,7 @@ public class TickApiFacade implements ITickApiFacade {
 		db.saveGroup(group);
 		db.saveTick(tick);
 
-		return Response.status(Status.CREATED).entity(group).build();
+		return getTicks(request, groupId);
 	}
 	
 	/**
@@ -465,8 +465,7 @@ public class TickApiFacade implements ITickApiFacade {
 		}
 
 		/* Check permissions */
-		if (!(permissions.hasRole(crsid, groupId, Role.AUTHOR) && (permissions
-				.tickCreator(crsid, tick)))) {
+		if (!(permissions.hasRole(crsid, groupId, Role.AUTHOR))) {
 			log.warn("User " + crsid + " tried to add tick " + tickId
 					+ " to group " + groupId + " but was denied permission");
 			return Response.status(Status.FORBIDDEN)
@@ -487,7 +486,7 @@ public class TickApiFacade implements ITickApiFacade {
 		db.saveGroup(group);
 		db.saveTick(tick);
 
-		return Response.status(Status.CREATED).entity(group).build();
+		return getTicks(request, groupId);
 	}
 	
 	
