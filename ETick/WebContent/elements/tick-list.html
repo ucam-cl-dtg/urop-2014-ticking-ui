@@ -41,8 +41,11 @@
             <span flex></span>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 			<template if="{{isAuthor}}">
-	            <core-tooltip label="Add Tick" class="add-tick-tooltip">
+	            <core-tooltip label="Add">
 				    <paper-icon-button id="addTickButton" icon="add" on-click="{{addTickClicked}}"></paper-icon-button>
+	            </core-tooltip>
+	            <core-tooltip label="Delete" class="delete-tooltip">
+				    <paper-icon-button id="deleteTickButton" icon="delete" on-click="{{deleteTickClicked}}"></paper-icon-button>
 	            </core-tooltip>
 	        </template>
 		</div>
