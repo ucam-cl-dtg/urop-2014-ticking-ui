@@ -94,13 +94,6 @@
                     </core-collapse>
                 </div>
 
-                <h2>Status</h2>
-                <div layout horizontal>
-                    <template repeat="{{status in ['-', 'I', 'UF', 'UP', 'SU', 'P']}}">
-                        <status-icon big="true" mode="{{status}}"></status-icon>
-                    </template>
-                </div>
-
                 <core-collapse opened?="{{displayRepo != ' '}}">
                     <h2>Repository</h2>
                     <div layout horizontal start>
