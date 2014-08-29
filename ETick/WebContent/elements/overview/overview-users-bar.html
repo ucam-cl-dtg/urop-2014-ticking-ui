@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
+<link rel="import" href="../progress-ring.html">
 
 <polymer-element name="overview-users-bar" attributes="users userId sortField">
     <template>
@@ -38,10 +39,15 @@
 
         <template repeat="{{user in users}}">
             <div id="user-div" layout horizontal class="{{user.crsId == userId ? 'this-user' : ''}}">
-                <div id="userProgress" class="user-progress" style="{{user.displayWidth}}"></div>
                 <!-- If the user hasn't logged into the system yet then their LDAP info is unavailable, so their names
                      and college are null. The databindings in the innerHTML display their crsId in this instance instead-->
-                <div id="wrapper" layout horizontal class="relative" style="{{user.leftOffset}}">
+                <div id="wrapper" layout horizontal class="relative">
+                    <div layout vertical>
+                        <div flex></div>
+                        <progress-ring progress="{{user.progress}}"></progress-ring>
+                        <div flex></div>
+                    </div>
+
                     <div style="margin-left: 30px;" class="{{'user-label relative' + (sortField == 'Name' ? ' sort-field' : '')}}">{{user.lastName == 'null' ? user.crsId : user.lastName}}</div>
                     <div class="{{'user-label relative' + (sortField == 'Forename(s)' ? ' sort-field' : '')}}">{{user.foreNames}}</div>
                     <div class="{{'user-label relative' + (sortField == 'College'     ? ' sort-field' : '')}}">{{user.college == 'null' ? '' : user.college}}</div>

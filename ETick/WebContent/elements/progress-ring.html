@@ -51,8 +51,9 @@
                     ctx.stroke();
                 };
 
-//                drawCircle('#efefef', options.lineWidth, 100 / 100);
-                drawCircle('#555555', options.lineWidth, options.percent / 100);
+                if (options.percent != 0) {
+                    drawCircle('#555555', options.lineWidth, options.percent / 100);
+                }
             }
         })
     </script>
