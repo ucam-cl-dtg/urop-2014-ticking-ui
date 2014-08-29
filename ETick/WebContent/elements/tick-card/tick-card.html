@@ -258,7 +258,11 @@
                     this.statusCode = "UP";
                 } else if (this.humanPass) {
                     //Passed by ticker
-                    this.statusCode = "P";
+                    if (this.star) {
+                    	this.statusCode = "PS";
+                    } else {
+                    	this.statusCode = "P";
+                    }
                 } else {
                     //invalid fork object state
                     this.statusCode = "?";
