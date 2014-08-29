@@ -243,8 +243,9 @@
 
             computeStatusCode: function() {
                 var oldCode = this.statusCode;
-
-                if (this.deadlinePassed){
+                if (this.signedUp && !this.humanPass) {
+                    this.statusCode = "SU";
+                } else  if (this.deadlinePassed){
                     //deadline passed, so failed.
                     this.statusCode = "F";
                 } else if (!this.forked) {

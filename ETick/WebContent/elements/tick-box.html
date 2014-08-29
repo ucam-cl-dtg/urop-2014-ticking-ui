@@ -36,7 +36,7 @@
             },
             
             forkChanged: function() {
-                if (this.fork != null && this.fork.signedUp) {
+                if (this.fork != null && this.fork.signedUp && !this.fork.humanPass) {
                     this.statusCode = "SU";
                 } else if (this.deadlinePassed) {
                     //deadline passed, so failed.
