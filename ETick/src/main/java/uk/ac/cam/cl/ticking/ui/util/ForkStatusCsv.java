@@ -85,8 +85,6 @@ public class ForkStatusCsv {
 			String name = tick.getName().replace(',', ';');
 			name = name.replaceAll("\\n", " ");
 			String heading = ',' + name;
-			heading += (tick.getDeadline() == null) ? "" : " "
-					+ tick.getDeadline().toString(dtf);
 			writer.append(heading);
 		}
 
@@ -120,7 +118,8 @@ public class ForkStatusCsv {
 				} else {
 					if (fork.getUnitPass()) {
 						if (fork.getHumanPass()) {
-							writer.append("," + Strings.PASSED + " (Ticked by "
+							String code = tick.isStar() ? Strings.STAR : Strings.PASSED;
+							writer.append("," + code + " (Ticked by "
 									+ fork.getLastTickedBy() + " on "
 									+ fork.getLastTickedOn().toString(dtf)
 									+ " " + fork.stats() + ")");
