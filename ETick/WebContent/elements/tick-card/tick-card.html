@@ -58,7 +58,6 @@
                 tickId="{{tickId}}"
                 unitPass="{{unitPass}}"
                 humanPass="{{humanPass}}"
-                star="{{star}}"
                 signedUp="{{signedUp}}"
                 testRunning="{{testRunning}}"
                 reportAvailable="{{reportAvailable}}"
@@ -159,7 +158,6 @@
             created: function() {
                 this.unitPass = null;
                 this.humanPass = null;
-                this.star = null;
                 this.signedUp = null;
                 this.testRunning = null;
                 this.reportAvailable  = null;
@@ -262,7 +260,7 @@
                     this.statusCode = "UP";
                 } else if (this.humanPass) {
                     //Passed by ticker
-                    if (this.star) {
+                    if (this.tickObj.star) {
                     	this.statusCode = "PS";
                     } else {
                     	this.statusCode = "P";
