@@ -1,4 +1,4 @@
-.core-selected div
+.core-selected /deep/ div
 {
     font-weight: bold;
 }
@@ -6,6 +6,7 @@
 .tooltipFiles
 {
     font-size: 11pt;
+    font-weight: normal;
     line-height: 11pt;
     position: absolute;
     visibility: hidden;
