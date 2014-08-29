@@ -73,7 +73,15 @@
                           function (fileDetail)
                           {
                             return fileDetail.file;
-                          });
+                          }).sort().reduce(
+                            function (prev, curr)
+                            {
+                              var last = prev.pop();
+                              if (last !== curr)
+                                prev.push(last);
+                              prev.push(curr);
+                              return curr;
+                            }, []);
 
                       return error;
                     });
@@ -82,8 +90,9 @@
               this.errors.filter(
                   function (error)
                   {
-                    return (error.outcome == "ERROR"
-                            || error.outcome == "WARNING")
+                    return error.fileDetails.length > 0
+                      && Number.isInteger(error.fileDetails[0].lineNumber)
+                      && error.fileDetails[0].lineNumber > 0
                       && typeof error.className != typeof undefined;
                   }).map(
                     function (error)
