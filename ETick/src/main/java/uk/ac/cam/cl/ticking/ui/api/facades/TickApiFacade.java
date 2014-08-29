@@ -384,7 +384,7 @@ public class TickApiFacade implements ITickApiFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Response addTick(HttpServletRequest request, String tickId,
+	public Response addTickToGroup(HttpServletRequest request, String tickId,
 			String groupId) {
 		String crsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
@@ -434,6 +434,63 @@ public class TickApiFacade implements ITickApiFacade {
 
 		return Response.status(Status.CREATED).entity(group).build();
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Response removeTickFromGroup(HttpServletRequest request, String tickId,
+			String groupId) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+
+		/* Get the group object and return if it doesn't exist */
+		Group group = db.getGroup(groupId);
+
+		if (group == null) {
+			log.error("User " + crsid + " requested group " + groupId
+					+ " to add a tick, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Get the tick object and return if it doesn't exist */
+		Tick tick = db.getTick(tickId);
+
+		if (tick == null) {
+			log.error("User " + crsid + " requested tick " + tickId
+					+ " to add to a group, but it couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+
+		/* Check permissions */
+		if (!(permissions.hasRole(crsid, groupId, Role.AUTHOR) && (permissions
+				.tickCreator(crsid, tick)))) {
+			log.warn("User " + crsid + " tried to add tick " + tickId
+					+ " to group " + groupId + " but was denied permission");
+			return Response.status(Status.FORBIDDEN)
+					.entity(Strings.INVALIDROLE).build();
+		}
+
+		if (!tick.getGroups().contains(groupId)) {
+			log.warn("User " + crsid + " tried to remove tick " + tickId
+					+ " from group " + groupId
+					+ " but it was not part of the group");
+			return Response.status(Status.BAD_REQUEST)
+					.entity(Strings.TICKISINGROUP).build();
+		}
+
+		/* Add the references and save */
+		group.removeTick(tickId);
+		tick.removeGroup(groupId);
+		db.saveGroup(group);
+		db.saveTick(tick);
+
+		return Response.status(Status.CREATED).entity(group).build();
+	}
+	
+	
 
 	/**
 	 * {@inheritDoc}

@@ -28,14 +28,14 @@
                                   position="{{displayString.index + 4 > leftMostIndex + widthIndexes ? 'left' : 'right'}}"
                                   style="min-width: 60px; outline: none;">
                         <div class="tick-label" vertical layout center>
-                            <status-icon class="overview-status-icon" mode="{{displayString.iconCode}}"></status-icon>
+                            <status-icon class="overview-status-icon" mode="{{displayString.iconCode}}" star="{{displayString.star}}"></status-icon>
                         </div>
                     </core-tooltip>
                 </template>
 
                 <template if="{{!enableTooltip}}">
                     <div class="tick-label" vertical layout center>
-                        <status-icon class="overview-status-icon" mode="{{displayString.iconCode}}"></status-icon>
+                        <status-icon class="overview-status-icon" mode="{{displayString.iconCode}}" star="{{displayString.star}}"></status-icon>
                     </div>
                 </template>
             </template>
