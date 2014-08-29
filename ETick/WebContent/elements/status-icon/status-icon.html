@@ -1,7 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
 <link rel="import" href="../../bower_components/core-icons/maps-icons.html">
+<link rel="import" href="../../bower_components/core-icons/device-icons.html">
 <link rel="import" href="../../bower_components/core-icons/av-icons.html">
+<link rel="import" href="../custom-icons/custom-icons.html">
 
 <polymer-element name="status-icon" attributes="mode big showText" noscript>
     <template>
@@ -14,6 +16,7 @@
             .big{
                 width: 48px;
                 height: 48px;
+                min-height: 48px;
                 /*opacity: 0.35;*/
             }
             .pass{
@@ -33,7 +36,7 @@
                 <div layout vertical>
                     <div flex></div>
                     <div class="status-icon-label error">
-                        {{mode == '-' ? 'Not started' : mode == 'I' ? 'Not submitted' : mode == 'UF' ? 'Failed automated tests' : mode == 'UP' ? 'Passed automated tests' : mode == 'P' ? 'Passed' : mode == 'F' ? 'Failed' : 'Unknown status code'}}
+                        {{mode == '-' ? 'Not started' : mode == 'I' ? 'Not submitted' : mode == 'UF' ? 'Failed automated tests' : mode == 'UP' ? 'Passed automated tests' : mode == 'SU' ? 'Booked ticking slot' : mode == 'P' ? 'Passed' : mode == 'F' ? 'Failed' : 'Unknown status code'}}
                     </div>
                     <div flex></div>
                 </div>
@@ -42,8 +45,8 @@
             <!-- When core-icon is created, if icon="", then it displays no icon. However, if icon is set to a non-empty
                  string, then set back to "", a blank icon is not displayed.-->
             <core-icon class="{{mode == 'P' ? 'pass' : mode == 'F' ? 'fail' : ''}} {{big ? 'big' : 'small'}}"
-                       icon="{{mode == '-' ? (big ? 'maps:local-hotel' : '') : mode == 'I' ? 'device:data-usage' : mode == 'UF' ? 'block' : mode == 'UP' ? 'check-circle-outline-blank' : mode == 'P' ? 'check-circle-outline' : mode == 'F' ? 'close' : ''}}"
-                       hidden?="{{!(mode == 'I' || mode == 'UF' || mode == 'UP' || mode == 'F' || mode == 'P' || (mode == '-' && big))}}">
+                       icon="{{mode == '-' ? (big ? 'maps:local-hotel' : '') : mode == 'I' ? 'custom-icons:unit-pass' : mode == 'UF' ? 'block' : mode == 'UP' ? 'check-circle-outline-blank' : mode == 'SU' ? 'schedule' : mode == 'P' ? 'check-circle-outline' : mode == 'F' ? 'close' : ''}}"
+                       hidden?="{{!(mode == 'I' || mode == 'UF' || mode == 'UP' || mode == 'F' || mode == 'P' || mode == 'SU' || (mode == '-' && big))}}">
             </core-icon>
         </div>
     </template>

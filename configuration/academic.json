@@ -1,0 +1,19 @@
+{
+    /* If you match either of the CRSID, institutions or college below,
+       you are considered an academic */
+    "crsid" : [
+        "as2388",
+        "tl364",
+        "rds46",
+        "ird28",
+        "kls82",
+        "rmk35"
+    ],
+
+    "institutions" : [
+        "Computer Laboratory"
+    ],
+    "college" : [
+        "Unknown"
+    ]
+}
