@@ -30,5 +30,13 @@ function isHidden (file)
     fileName = file.name.split("/").pop();
 
     return fileName.startsWith(".")
-        || fileName.endsWith(".class");
+        || fileName.endsWith(".class")
+        || fileName.endsWith(".jar")
+        || fileName.endsWith(".png")
+        || fileName.endsWith(".gif")
+        || fileName.endsWith(".bin")
+        || fileName == "a.out"
+        || fileName.endsWith(".so")
+        || fileName == "main"
+        || fileName.endsWith(".o");
 }
