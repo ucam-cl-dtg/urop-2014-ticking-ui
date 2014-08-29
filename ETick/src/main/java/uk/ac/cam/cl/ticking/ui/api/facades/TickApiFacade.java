@@ -363,6 +363,7 @@ public class TickApiFacade implements ITickApiFacade {
 			/* Update the deadline, external resource, save and return */
 			prevTick.setDeadline(tickBean.getDeadline());
 			prevTick.setExternalReference(tickBean.getExternalReference());
+			prevTick.setStar(tickBean.isStar());
 			db.saveTick(prevTick);
 			return Response.status(Status.CREATED).entity(prevTick).build();
 		} else {
