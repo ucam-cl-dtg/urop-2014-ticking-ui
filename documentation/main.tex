@@ -49,15 +49,15 @@ We also need to configure the system a bit more, before the project can be deplo
   \item Make {\tt rssh} the shell of {\tt tomcat7} with {\tt sudo chsh tomcat7 -{}-shell /usr/bin/rssh}.
 
   \item If the gitolite installation did not already do so, create a user for gitolite, with {\tt sudo useradd -{}-system -{}-user-group -{}-create-home -{}-base-dir /var/lib -{}-shell /bin/bash git} (you may wish to have the {\tt base-dir} on {\tt /local/data}, if it is a different mountpoint).
-    Also, under the user {\tt git}, run {\tt gitolite setup -pk Your public SSH key}.
+    Also, under the user {\tt git} (run {\tt sudo su git} to log on as {\tt git}), run {\tt gitolite setup -pk Your public SSH key}.
 
   \item Then clone the gitolite administration repository with {\tt git clone git@localhost:\hspace{0pt}gitolite-admin.git} and edit {\tt conf/gitolite.conf} to have {\tt include \textquotedbl{}/\hspace{0pt}var/\hspace{0pt}lib/\hspace{0pt}tomcat7/\hspace{0pt}webapps/\hspace{0pt}urop\_gitolite.conf\textquotedbl} and push these changes.
 
   \item You may also wish to put MongoDB onto a different path, which can be done in {\tt /etc/mongodb.conf}
 
-  \item Add {\tt tomcat7} to group {\tt git}, so that it can add SSH keys, read repositories with {\tt usermod -{}-append -{}-groups git tomcat7}.
+  \item Add {\tt tomcat7} to group {\tt git}, so that it can add SSH keys, read repositories with {\tt sudo usermod -{}-append -{}-groups git tomcat7}.
 
-  \item To allow Tomcat to use gitolite, change the permissions on {\tt \~{}git/.gitolite/*} to {\tt 0770}.
+  \item To allow Tomcat to use gitolite, change the permissions on {\tt \~{}git/.gitolite/*} to {\tt 0770} with {\tt sudo chmod 0770 \~{}git/.gitolite/*}
 
   \item Similarly, we need to make gitolite use a {\tt umask} of {\tt 0007}, so that created files (repositories) can be removed by Tomcat.
     This can be done in \gitoliteRc{}.
@@ -141,12 +141,13 @@ To download the dependencies of these projects, you need to be able to access th
 </settings>
 \end{verbatim}
 
-First, before creating a war package, install bower (JavaScript dependency downloader) using {\tt npm install -g bower}, change into {\tt urop-2014-ticking-ui/ETick} and run {\tt bower install}.
+First, before creating a war package, install bower (JavaScript dependency downloader) using {\tt sudo npm install -g bower}, change into {\tt urop-2014-ticking-ui/ETick} and run {\tt bower install}.
+If you get questions about version selection, we have got Tickl working with version 0.3.5, use other versions at your own risk.
 This downloads all the JavaScript dependencies that we need.
 Also, because Tomcat serves the front-end webpages too, the hard-coded strings can not be in an external configuration file, they are in \localHardcodedJs, you may want to set it now (you can also just edit \deployedHardcodedJs, but a re-deploy will overwrite those changes).
 
 To speed up serving of files, all the HTML imports should be put into one file, this is called vulcanizing.
-To do this, run {\tt npm install -g vulcanize} then {\tt vulcanize index.html -{}-strip -o vulc.html} in the {\tt urop-2014-ticking-ui/\hspace{0pt}ETick/\hspace{0pt}WebContent} directory.
+To do this, run {\tt sudo npm install -g vulcanize} then {\tt vulcanize index.html -{}-strip -o vulc.html} in the {\tt urop-2014-ticking-ui/\hspace{0pt}ETick/\hspace{0pt}WebContent} directory.
 
 Then for each of the directories {\tt urop-2014-git/server}, {\tt urop-2014-signup/core}, {\tt urop-2014-tester/private} and {\tt urop-2014-ticking-ui/ETick} you want to change into it and run {\tt mvn clean package}.
 Installing each war file is then just a matter of moving it into \tomcatwd{}{\tt/webapps}.
@@ -166,13 +167,14 @@ For this reason, there are a few maintenance-only endpoints, highlighted below.
 \section{Troubleshooting}
 \begin{description}
   \item[FATAL\@: errors found but the logfile could not be created] happen when the user {\tt git} has not got correct permissions or ownership on its home directory (or where it stores the logs).
+    You may also want to run {\tt mkdir -p \~{}git/.gitolite/logs} under user {\tt git}.
 
   \item[NoClassDefFoundError{\rm s and} ClassNotFoundException{\rm s}] may arise due to loading old class files, if a different version was compiled. Run {\tt mvn clean} and also delete {\tt WebContent/WEB-INF/lib} and {\tt WebContent/WEB-INF/classes} before re-installing.
   \item[/usr/bin/env: node: No such file or directory] means you need to do {\tt sudo ln -s /usr/bin/nodejs /usr/bin/node}.
 
   \item[Unable to initialise extensions] happened to me because I accidentally installed {\tt maven2}, not {\tt maven}.
 
-  \item[Failure to find com.fasterxml.jackson.core:jackson-annotations:jar:2.4.1] can be solved by downloading it manually from \url{maven.org} and moving it into  the correct place.
+  \item[Failure to find com.fasterxml.jackson.core:jackson-annotations:jar:2.4.1] can be solved by downloading \url{https://github.com/FasterXML/jackson-annotations/archive/jackson-annotations-2.4.1.tar.gz} and doing a {\tt mvn install} in the extracted directory.
 
 \end{description}
 \end{document}
