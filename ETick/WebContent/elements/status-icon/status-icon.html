@@ -22,6 +22,9 @@
             .pass{
                 color: #259b24;
             }
+            .star{
+                color: #ffeb3b;
+            }
             .fail{
                 color: #e51c23;
             }
@@ -44,7 +47,7 @@
 
             <!-- When core-icon is created, if icon="", then it displays no icon. However, if icon is set to a non-empty
                  string, then set back to "", a blank icon is not displayed.-->
-            <core-icon class="{{(mode == 'P' || mode == PS) ? 'pass' : mode == 'F' ? 'fail' : ''}} {{big ? 'big' : 'small'}}"
+            <core-icon class="{{mode == 'P' ? 'pass' : mode == PS ? 'star' : mode == 'F' ? 'fail' : ''}} {{big ? 'big' : 'small'}}"
                        icon="{{mode == '-' ? (big ? 'maps:local-hotel' : '') : mode == 'I' ? 'custom-icons:unit-pass' : mode == 'UF' ? 'block' : mode == 'UP' ? 'check-circle-outline-blank' : mode == 'SU' ? 'schedule' : mode == 'P' ? 'check-circle-outline' : mode == 'PS' ? 'star-outline' : mode == 'F' ? 'close' : ''}}"
                        hidden?="{{!(mode == 'I' || mode == 'UF' || mode == 'UP' || mode == 'F' || mode == 'P' || mode == 'SU' || (mode == '-' && big))}}">
             </core-icon>
