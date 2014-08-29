@@ -35,7 +35,7 @@
 		<!-- Ticks TODO API call. -->
 		<toast-ajax id="todoAPI"
 			auto
-			url="{{ticking_service}}/user/todo"
+			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI/api/user/todo"
 			handleAs="json"
 			on-core-response="{{todoResponse}}"
 			
@@ -73,8 +73,6 @@
 	<script>
 		Polymer('user-dash', {
 			ticking_service: ticking_service,
-
-			data: null,
 
 			ready: function () {
 				if (!this.data) {

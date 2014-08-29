@@ -113,8 +113,6 @@
                 </core-collapse>
 
                 <core-collapse opened?="{{!forked}}">
-                    <div>&nbsp;</div>
-                    <br>
                     <fork-component
                             on-create-fork="{{createFork}}"
                             repo="{{repo}}"
@@ -177,8 +175,7 @@
                 unitPass: 'showNewStatusCode',
                 humanPass: 'showNewStatusCode',
                 star: 'showNewStatusCode',
-                deadlinePassed: 'showNewStatusCode',
-                signedUp: 'showNewStatusCode'
+                deadlinePassed: 'showNewStatusCode'
             },
 
             domReady: function() {
@@ -231,7 +228,7 @@
 
             showReport: function() {
                 this.job('show-report', function(){
-                    var regex = /^[^:]*:\/\/[^/]*\/(.*)\.git$/;
+                    var regex = /urop2014\.dtg\.cl\.cam\.ac\.uk\/(.*)\.git/;
                     this.repoName = this.repo.match(regex)[1];
                 }, 500);
             },
@@ -244,11 +241,11 @@
 
             computeStatusCode: function() {
                 var oldCode = this.statusCode;
-                if (this.deadlinePassed) {
+                if (this.signedUp && !this.humanPass) {
+                    this.statusCode = "SU";
+                } else  if (this.deadlinePassed){
                     //deadline passed, so failed.
                     this.statusCode = "F";
-                } else if (this.signedUp && !this.humanPass) {
-                    this.statusCode = "SU";
                 } else if (!this.forked) {
                     //Not started.
                     this.statusCode = "-";
@@ -264,9 +261,9 @@
                 } else if (this.humanPass) {
                     //Passed by ticker
                     if (this.tickObj.star) {
-                        this.statusCode = "PS";
+                    	this.statusCode = "PS";
                     } else {
-                        this.statusCode = "P";
+                    	this.statusCode = "P";
                     }
                 } else {
                     //invalid fork object state
@@ -275,14 +272,7 @@
 
                 if (oldCode != this.statusCode) {
                     console.log("status code changed!");
-                    this.fire('status-changed', {tickId: this.tickId, forkBean: {
-                        forked: this.forked,
-                        reportAvailable: this.reportAvailable,
-                        unitPass: this.unitPass,
-                        humanPass: this.humanPass,
-                        signedUp: this.signedUp,
-                        star: this.star
-                    }});
+                    this.fire('status-changed', {tickId: this.tickId, statusCode: this.statusCode});
                 }
             }
         });

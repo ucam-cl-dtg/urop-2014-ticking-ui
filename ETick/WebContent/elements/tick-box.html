@@ -36,11 +36,11 @@
             },
             
             forkChanged: function() {
-                if (this.deadlinePassed) {
+                if (this.fork != null && this.fork.signedUp && !this.fork.humanPass) {
+                    this.statusCode = "SU";
+                } else if (this.deadlinePassed) {
                     //deadline passed, so failed.
                     this.statusCode = "F";
-                } else if (this.fork != null && this.fork.signedUp && !this.fork.humanPass) {
-                    this.statusCode = "SU";
                 } else if (this.fork == null) {
                     this.statusCode = "?"; //hide beds
                 } else if (!this.fork.reportAvailable) {
