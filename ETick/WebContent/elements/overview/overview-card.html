@@ -165,7 +165,9 @@
                                el.splice(4, el.length - 1).map(function (el, index) {
                                    //display strings should be either blank or of the form "STATUSCODE (detail)"
                                    if (el == "") {
-                                       return {iconCode: "-", tooltip: "Not started", index: index};
+                                       return {iconCode: "-", tooltip: "Not started", index: index, star: false};
+                                   } else if (el == "*") {
+                                       return {iconCode: "-", tooltip: "Not started", index: index, star: true};
                                    }
 
                                    if (!(/^(.* \(.*\))$/.test(el))) {
@@ -191,11 +193,18 @@
                 });
 
                 users = users.map(function(el) {
-                    el.progress = el.displayStrings.filter(function(el) {
+                    var a = el.displayStrings.filter(function(el) {
                         return el.iconCode == "P";
-                    }).length / el.displayStrings.filter(function(el) {
-                        return el.star;
-                    }).length * 100;
+                    }).length;
+
+                    var b = el.displayStrings.filter(function(el) {
+                        return !el.star;
+                    }).length;
+
+                    console.log(a, b);
+
+                    el.progress = a / b * 100;
+
                     return el;
                 });
 

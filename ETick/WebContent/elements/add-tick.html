@@ -62,7 +62,7 @@
 				var selectedTick = sel.options[sel.selectedIndex].value;
 				console.log(selectedTick);
 
-				s;
+				this.$.addTickAPI.url = ticking_service + "/tick/" + selectedTick + "/" + this.gid;
 				this.$.addTickAPI.go();
 			},
 

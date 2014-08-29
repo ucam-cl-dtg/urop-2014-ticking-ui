@@ -53,7 +53,19 @@
             on-core-response="{{tickersDataLoaded}}">
     </toast-ajax>
 
-    <!-- Get slots for this session and ticker -->
+	<!-- Get slots for this session and ticker -->
+	<toast-ajax
+		id="ajaxLoadSlots"
+		url="{{pathLoadSlots}}"
+		waitMessage="Loading slots..."
+		captureError
+		waitBeforeToast="1000"
+		handleAs="json"
+		contentType="application/json"
+		on-core-response="{{slotsDataLoaded}}">
+	</toast-ajax>
+	
+    <!-- Ticker can kick student from slot -->
     <toast-ajax
 		id="ajaxKick"
         url="{{ticking_service}}/signups/students/{{crsId}}/ticks/{{tickId}}"
@@ -61,7 +73,6 @@
 		contentType="application/json"
 		handleAs="text"
 		on-core-response="{{kickDone}}"
-		
 		waitMessage="Kicking...."
 		popUpError
 		captureError>
@@ -323,12 +334,14 @@
                 ticker: this.ticker,
                 startTime: this.startTime
             };
+            console.log("self booking");
             this.$.ajaxMarkAsUnavailable.body = JSON.stringify(MyObject);
             this.$.ajaxMarkAsUnavailable.go();
         },
         tickerUnsignup: function() {
             var startTime = event.target.id;
             this.startTime = prettyParse(startTime).valueOf();
+            console.log("self unbooking");
             this.$.ajaxMarkerUnbook.go();
         }
     })
