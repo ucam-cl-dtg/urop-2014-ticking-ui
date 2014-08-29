@@ -23,7 +23,7 @@
 		Polymer('tick-box', {
 			prettyDate:prettyDate,
 			deadlinePassed: false,
-            statusCode: "-",
+            statusCode: "",
 
 			domReady: function () {
 				if (this.tick.deadline && moment(this.tick.deadline) < moment()) {
@@ -40,7 +40,7 @@
                     //deadline passed, so failed.
                     this.statusCode = "F";
                 } else if (this.fork == null) {
-                    this.statusCode = "-";
+                    this.statusCode = "?"; //hide beds
                 } else if (!this.fork.reportAvailable) {
                     //Not submitted.
                     this.statusCode = "I";
