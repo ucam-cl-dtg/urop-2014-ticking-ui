@@ -115,7 +115,25 @@ public interface ITickApiFacade {
 	@PUT
 	@Path("/{tickId}/{groupId}")
 	@Produces("application/json")
-	public abstract Response addTick(@Context HttpServletRequest request,
+	public abstract Response addTickToGroup(@Context HttpServletRequest request,
+			@PathParam("tickId") String tickId,
+			@PathParam("groupId") String groupId) throws IOException,
+			DuplicateRepoNameException;
+	
+	/**
+	 * Removes a Tick from a Group given a tickId and groupId
+	 * 
+	 * @param request
+	 * @param tick
+	 * @return the group object that the tick has been added to
+	 * @throws IOException
+	 * @throws DuplicateRepoNameException
+	 * 
+	 */
+	@DELETE
+	@Path("/{tickId}/{groupId}")
+	@Produces("application/json")
+	public abstract Response removeTickFromGroup(@Context HttpServletRequest request,
 			@PathParam("tickId") String tickId,
 			@PathParam("groupId") String groupId) throws IOException,
 			DuplicateRepoNameException;
