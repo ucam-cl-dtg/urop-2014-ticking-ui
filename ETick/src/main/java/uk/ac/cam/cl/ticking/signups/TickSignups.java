@@ -383,7 +383,7 @@ public class TickSignups {
     
     @DELETE
     @Path("/signups/sheets/{sheetID}/tickers/{ticker}/times/{startTime}")
-    public Response tickerUnbookSlotByTime(@Context HttpServletRequest request,
+    public Response tickerUnreserveSlot(@Context HttpServletRequest request,
             @PathParam("sheetID") String sheetID, @PathParam("ticker") String ticker,
             @PathParam("startTime") Long startTime) {
         String callingCrsid = (String) request.getSession().getAttribute("RavenRemoteUser");
@@ -394,17 +394,10 @@ public class TickSignups {
             if (!permissions.hasRole(callingCrsid, getGroupID(sheetID), Role.MARKER)) {
                 log.warn("The user " + callingCrsid + " is not a marker in the group");
                 return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
-            }
-            uk.ac.cam.cl.signups.api.BookingInfo info = service.showBooking(sheetID, ticker, startTime); 
+            } 
             /* Unbook slot */
             service.book(sheetID, ticker, startTime,
                     new SlotBookingBean(null, null, null, db.getAuthCode(sheetID)));
-            if (!info.getComment().equals(Strings.TICKERSLOT)) {
-                /* Update fork object */
-                Fork f = db.getFork(Fork.generateForkId(info.getUser(), info.getComment()));
-                f.setSignedUp(false);
-                db.saveFork(f);
-            }
             log.info("The slot was successfully unbooked (sheet: " + sheetID + ", ticker: " + ticker
                     + ", start time: " + new Date(startTime) + ")");
             return Response.noContent().build();
