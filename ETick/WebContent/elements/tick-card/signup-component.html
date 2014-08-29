@@ -6,7 +6,7 @@
 <link rel="import" href="../date-calendar.html">
 <link rel="import" href="../time-clock.html">
 
-<polymer-element name="signup-component" attributes="tickId sheets signedUp unitPass testRunning humanPass">
+<polymer-element name="signup-component" attributes="tickId sheets signedUp unitPass testRunning humanPass deadlinePassed">
     <template>
         <link rel="stylesheet" type="text/css" href="../../css/shared-styles.css" shim-shadowdom>
         <link rel="stylesheet" type="text/css" href="tick-components.css" shim-shadowdom>
@@ -65,27 +65,31 @@
         <br>
 
         <!-- Sign up button -->
-        <core-collapse opened?="{{!signedUp && !testRunning && unitPass && !humanPass}}">
+        <core-collapse opened?="{{!signedUp && !testRunning && unitPass && !humanPass && !deadlinePassed}}">
             <paper-button class="tick-component" label="BOOK TICKING SLOT" on-tap="{{openSignupDialog}}"></paper-button>
         </core-collapse>
 
         <!-- Cancel sign up button -->
-        <core-collapse opened?="{{signedUp && !humanPass}}">
+        <core-collapse opened?="{{signedUp && !humanPass && !deadlinePassed}}">
             <paper-button class="tick-component" label="CANCEL TICKING SLOT" on-tap="{{showCancelDialog}}"></paper-button>
         </core-collapse>
 
         <!-- Error message: sign up unavailable because the unit tester has not been passed -->
-        <core-collapse opened?="{{!testRunning && !unitPass && !humanPass}}">
+        <core-collapse opened?="{{!testRunning && !unitPass && !humanPass && !deadlinePassed}}">
             <div class="error">Booking unavailable (automated tests not passed)</div>
         </core-collapse>
 
+        <core-collapse opened?="{{deadlinePassed}}">
+            <div class="error">Failed</div>
+        </core-collapse>
+
         <!-- Error message: sign up unavailable because a test is running -->
-        <core-collapse opened?="{{testRunning && !humanPass}}">
+        <core-collapse opened?="{{testRunning && !humanPass && !deadlinePassed}}">
             <div class="error">Booking unavailable (test running)</div>
         </core-collapse>
 
         <!-- Error message: tick has been passed -->
-        <core-collapse opened?="{{humanPass}}">
+        <core-collapse opened?="{{humanPass && !deadlinePassed}}">
             <div class="error">PASSED</div>
         </core-collapse>
 

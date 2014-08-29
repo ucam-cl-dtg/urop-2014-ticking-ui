@@ -24,13 +24,13 @@
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>To do List ({{data ? number : 0}})</h1>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
-			<core-tooltip id="toggleTooltip" label="{{(passedFilterOn ? 'Show' : 'Hide') + ' passed ticks.'}}" 
+			<core-tooltip id="toggleTooltip" label="{{(passedFilterOn ? 'Show' : 'Hide') + ' past ticks.'}}" 
 				position="left">
 				<paper-icon-button id="showPassed" icon="more-horiz" on-click="{{showPassedClicked}}"></paper-icon-button>
 			</core-tooltip>
 		</div>
 
-		<box-list id="list">
+		<box-list id="list" maxRows="5">
 			<template repeat="{{tickFork in data | tickListFilter($.searchBox.query) | passedFilter(passedFilterOn)}}">
 				<tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
 			</template>

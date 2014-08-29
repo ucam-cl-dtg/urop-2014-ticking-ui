@@ -131,6 +131,7 @@
                 this.iconCodeDict = {};
                 this.iconCodeDict["PASSED"] = "P";
                 this.iconCodeDict["FAILED"] = "F";
+                this.iconCodeDict["SU"]     = "SU";
                 this.iconCodeDict["UP"]     = "UP";
                 this.iconCodeDict["UF"]     = "UF";
                 this.iconCodeDict["I"]      = "I";
@@ -243,7 +244,8 @@
                 comparisonDict["I"]  = 2;
                 comparisonDict["UF"] = 3;
                 comparisonDict["UP"] = 4;
-                comparisonDict["P"]  = 5;
+                comparisonDict["SU"] = 5;
+                comparisonDict["P"]  = 6;
 
                 this.users.sort(function(a, b) {
                     return params.mode * (comparisonDict[a.displayStrings[params.selectedIndex].iconCode] -
