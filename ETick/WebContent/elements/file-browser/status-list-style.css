@@ -3,10 +3,14 @@
     font-weight: bold;
 }
 
+.tooltipFiles li
+{
+    font-weight: normal;
+}
+
 .tooltipFiles
 {
     font-size: 11pt;
-    font-weight: normal;
     line-height: 11pt;
     position: absolute;
     visibility: hidden;
