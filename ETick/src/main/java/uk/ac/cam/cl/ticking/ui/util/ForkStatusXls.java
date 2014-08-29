@@ -250,7 +250,7 @@ public class ForkStatusXls {
 		// When the comment box is visible, have it show in a 1x3 space
 		ClientAnchor anchor = factory.createClientAnchor();
 		anchor.setCol1(cell.getColumnIndex());
-		anchor.setCol2(cell.getColumnIndex() + 1);
+		anchor.setCol2(cell.getColumnIndex() + 3);
 		anchor.setRow1(row.getRowNum());
 		anchor.setRow2(row.getRowNum() + 3);
 

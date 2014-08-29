@@ -381,6 +381,67 @@ public class TickSignups {
         return unbookSlot(crsid, tickID);
     }
     
+    @DELETE
+    @Path("/signups/sheets/{sheetID}/tickers/{ticker}/times/{startTime}")
+    public Response tickerUnbookSlotByTime(@Context HttpServletRequest request,
+            @PathParam("sheetID") String sheetID, @PathParam("ticker") String ticker,
+            @PathParam("startTime") Long startTime) {
+        String callingCrsid = (String) request.getSession().getAttribute("RavenRemoteUser");
+        log.info("The user " + callingCrsid + " is trying to unbook whoever is booked into the "
+                + " slot at time " + new Date(startTime) + " with ticker " + ticker + " in the "
+                + " sheet of ID " + sheetID);
+        try {
+            if (!permissions.hasRole(callingCrsid, getGroupID(sheetID), Role.MARKER)) {
+                log.warn("The user " + callingCrsid + " is not a marker in the group");
+                return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
+            }
+            uk.ac.cam.cl.signups.api.BookingInfo info = service.showBooking(sheetID, ticker, startTime); 
+            /* Unbook slot */
+            service.book(sheetID, ticker, startTime,
+                    new SlotBookingBean(null, null, null, db.getAuthCode(sheetID)));
+            if (!info.getComment().equals(Strings.TICKERSLOT)) {
+                /* Update fork object */
+                Fork f = db.getFork(Fork.generateForkId(info.getUser(), info.getComment()));
+                f.setSignedUp(false);
+                db.saveFork(f);
+            }
+            log.info("The slot was successfully unbooked (sheet: " + sheetID + ", ticker: " + ticker
+                    + ", start time: " + new Date(startTime) + ")");
+            return Response.noContent().build();
+        } catch(InternalServerErrorException e) { // Ignore this block
+            try {
+                throwRealException(e);
+                log.error("Something went wrong when processing the InternalServerErrorException", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            } catch (ItemNotFoundException e1) {
+                log.warn("The slot was not found", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: The slot was not found").build();
+            } catch (NotAllowedException e1) {
+                log.error("The unbooking should have been allowed but was not", e1);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: The authorisation code was rejected; "
+                                + "the databases are inconsistent").build();
+            } catch (Throwable t) {
+                log.error("Something went wrong when processing the InternalServerErrorException", t);
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Server Error: Something went wrong when processing the InternalServerErrorException")
+                        .build();
+            }
+        } catch (ItemNotFoundException e) {
+            log.warn("The slot was not found", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Server Error: The slot was not found").build();
+        } catch (NotAllowedException e) {
+            log.error("The unbooking should have been allowed but was not", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Server Error: The authorisation code was rejected; "
+                            + "the databases are inconsistent").build();
+        }
+    }
+    
     /**
      * Unbooks the student of the given crsid from the slot they've booked for the specified tick,
      * if the current raven user is a marker in the group the slot is booked in.

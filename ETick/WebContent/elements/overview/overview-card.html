@@ -432,10 +432,10 @@
                 this.scrollAreaWidth = parseInt(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
 
 //                console.log("saw", this.scrollAreaWidth, "ovmac", this.$.overviewMainContainer.style.width);
-                console.log(this.scrollAreaWidth, parseInt(getComputedStyle(this.$.overviewMainContainer).getPropertyValue("width")));
+//                console.log(this.scrollAreaWidth, parseInt(getComputedStyle(this.$.overviewMainContainer).getPropertyValue("width")));
                 if (this.scrollAreaWidth > parseInt(getComputedStyle(this.$.overviewMainContainer).getPropertyValue("width")) - 470) {
                     //horizontal scroll bar exists
-                    console.log("hsb!");
+//                    console.log("hsb!");
                     this.$.overviewMainContainer.style.height = 34 * this.displayUsers.length + 165 + "px";
                 } else {
                     if (this.displayUsers != undefined) {
