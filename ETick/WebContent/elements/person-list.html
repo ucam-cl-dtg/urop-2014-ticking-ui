@@ -13,7 +13,7 @@
 				width: 100%;
 			}
 		</style>
-		<box-list id="list" multi selector valueattr="crsid">
+		<box-list id="list" multi selector valueattr="crsid" maxRows="1">
 			<template repeat="{{person in people | filter(query) }}">
 					<person-box
 						class="itemBox"

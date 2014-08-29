@@ -85,8 +85,6 @@ public class ForkStatusCsv {
 			String name = tick.getName().replace(',', ';');
 			name = name.replaceAll("\\n", " ");
 			String heading = ',' + name;
-			heading += (tick.getDeadline() == null) ? "" : " "
-					+ tick.getDeadline().toString(dtf);
 			writer.append(heading);
 		}
 
