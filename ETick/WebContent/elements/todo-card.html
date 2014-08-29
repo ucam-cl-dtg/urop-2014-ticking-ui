@@ -9,29 +9,12 @@
 
 <polymer-element name="todo-card" attributes="data rows">
 	<template>
-		<link rel="stylesheet" type="text/css" href="../css/shared-styles.css" shim-shadowdom>
 		<style>
 			:host {
 				display: block;
-				height: 100%;
-				width: 100%;
 			}
 
-			core-header-panel {
-				height: 100%;
-				width: 100%;
-			}
-
-			core-toolbar {
-				background: #2D91EC;
-				color: #fff;
-			}
-
-			#content {
-				padding: 20px;
-			}
-
-			h1 {
+			h1 {	
 				font-size: 1.8rem;
 				font-weight: 100;
 				padding: 0 0 0 10px;
@@ -39,10 +22,10 @@
 		</style>
 
 		<div id="headerBar" layout horizontal center>
-			<h1 flex>To do List ({{data ? data.length : 0}})</h1>
+			<h1 flex>To do List ({{data ? number : 0}})</h1>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 			<core-tooltip label="{{(passedFilterOn ? 'Show' : 'Hide') + ' passed ticks.'}}" 
-				position="{{data.length > 0 ? 'bottom' : 'left'}}">
+				position="{{number > 0 ? 'bottom' : 'left'}}" class="showHideTooltip">
 				<paper-icon-button id="showPassed" icon="more-horiz" on-click="{{showPassedClicked}}"></paper-icon-button>
 			</core-tooltip>
 		</div>
@@ -73,10 +56,17 @@
 			},
 
 			passedFilter: function(items, toFilter) {
-				if (!items || !toFilter) return items;
-				return items.filter(function (item) {
-					return !item.tick.deadline || !(moment(item.tick.deadline) < moment());
-				});
+				if (!items || !toFilter) {
+					this.number = items.length;
+					return items;
+				}
+				else {
+					var tmp = items.filter(function (item) {
+						return !item.tick.deadline || !(moment(item.tick.deadline) < moment());
+					});
+					this.number = tmp.length;
+				}
+				return tmp;
 			},
 
 			showPassedClicked: function () {
