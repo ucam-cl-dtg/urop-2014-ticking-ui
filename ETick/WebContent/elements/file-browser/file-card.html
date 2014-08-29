@@ -1,7 +1,6 @@
 <!-- vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=72 : -->
 <link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/highlightjs-element/highlightjs-element.html"/>
-<link rel="import" href="../../elements/main-card.html"/>
 
 <polymer-element name="file-card"
     attributes="content comments
@@ -13,15 +12,13 @@
     <link rel="stylesheet" href="file-style.css"/>
 
     <div class="container" vertical layout>
-      <span class="file-name"> {{name}} </span>
-      <main-card unresolved>
-        <pre class="hljs code-container">
-          <code style="font-family:'Ubuntu Mono' monospace;">
-  <!-- Deliberately unindented (because of pre tag) -->
-  <content id="codeContent" select="code"></content>
-          </code>
-        </pre>
-      </main-card>
+    <span class="file-name"> {{name}} </span>
+      <pre class="hljs code-container">
+        <code style="font-family:'Ubuntu Mono' monospace;">
+<!-- Deliberately unindented (because of pre tag) -->
+<content id="codeContent" select="code"></content>
+        </code>
+      </pre>
     </div>
   </template>
   <script src="mixin_comments_with_data.js"></script>
