@@ -130,6 +130,7 @@
 
                 this.iconCodeDict = {};
                 this.iconCodeDict["PASSED"] = "P";
+                this.iconCodeDict["PASSED*"] = "PS";
                 this.iconCodeDict["FAILED"] = "F";
                 this.iconCodeDict["SU"]     = "SU";
                 this.iconCodeDict["UP"]     = "UP";
@@ -246,6 +247,7 @@
                 comparisonDict["UP"] = 4;
                 comparisonDict["SU"] = 5;
                 comparisonDict["P"]  = 6;
+                comparisonDict["PS"]  = 7;
 
                 this.users.sort(function(a, b) {
                     return params.mode * (comparisonDict[a.displayStrings[params.selectedIndex].iconCode] -
