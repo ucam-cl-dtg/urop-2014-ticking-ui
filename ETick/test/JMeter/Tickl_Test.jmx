@@ -27,7 +27,7 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Fork then Submit then Sign Up" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Main Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -46,7 +46,7 @@
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Raven Account Data Config" enabled="true">
           <stringProp name="delimiter">,</stringProp>
           <stringProp name="fileEncoding"></stringProp>
-          <stringProp name="filename">clare_crsids.txt</stringProp>
+          <stringProp name="filename">ravenaccounts.txt</stringProp>
           <boolProp name="quotedData">false</boolProp>
           <boolProp name="recycle">false</boolProp>
           <stringProp name="shareMode">shareMode.all</stringProp>
@@ -61,18 +61,6 @@
               <stringProp name="Argument.name">TICKID</stringProp>
               <stringProp name="Argument.value">ird28,demo_tick</stringProp>
               <stringProp name="Argument.desc">ID of tick to use</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="POLL_RESPONSE" elementType="Argument">
-              <stringProp name="Argument.name">POLL_RESPONSE</stringProp>
-              <stringProp name="Argument.value">Loading</stringProp>
-              <stringProp name="Argument.desc">String returned by test status poll</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="LOOP" elementType="Argument">
-              <stringProp name="Argument.name">LOOP</stringProp>
-              <stringProp name="Argument.value">true</stringProp>
-              <stringProp name="Argument.desc">Keep looping</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="SHEETID" elementType="Argument">
@@ -91,10 +79,24 @@
               <stringProp name="Argument.name">GROUPID</stringProp>
               <stringProp name="Argument.value">53f71340e4b04c20710d58a2</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">ID of group to be used</stringProp>
             </elementProp>
             <elementProp name="TICKER" elementType="Argument">
               <stringProp name="Argument.name">TICKER</stringProp>
               <stringProp name="Argument.value">Ticker A</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Ticker to try to sign up with</stringProp>
+            </elementProp>
+            <elementProp name="POLL_RESPONSE" elementType="Argument">
+              <stringProp name="Argument.name">POLL_RESPONSE</stringProp>
+              <stringProp name="Argument.value">Loading</stringProp>
+              <stringProp name="Argument.desc">String returned by test status poll - used to set LOOP</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="LOOP" elementType="Argument">
+              <stringProp name="Argument.name">LOOP</stringProp>
+              <stringProp name="Argument.value">true</stringProp>
+              <stringProp name="Argument.desc">Keep looping - should be true when loop is entered</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -183,7 +185,7 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Ticks" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Ticks in Group" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -223,7 +225,7 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Submit Tick for Testing" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Submit Tick for Testing" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -256,7 +258,7 @@
           </BeanShellPreProcessor>
           <hashTree/>
         </hashTree>
-        <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="Wait for Tests to Complete" enabled="false">
+        <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="Wait for Tests to Complete" enabled="true">
           <stringProp name="WhileController.condition">${LOOP}</stringProp>
         </WhileController>
         <hashTree>
@@ -308,7 +310,7 @@ if (testsRunning) {
           </ConstantTimer>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Ticking Sessions" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Ticking Sessions in Group" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -440,7 +442,7 @@ if (testsRunning) {
         </HTTPSamplerProxy>
         <hashTree>
           <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Wait for other users before signing up" enabled="true">
-            <stringProp name="TestPlan.comments">So signups service gets all requests at once</stringProp>
+            <stringProp name="TestPlan.comments">So signups service gets all requests at once to test concurrency</stringProp>
             <intProp name="groupSize">1</intProp>
           </SyncTimer>
           <hashTree/>
