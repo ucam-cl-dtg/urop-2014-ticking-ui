@@ -73,6 +73,7 @@ public class Tick implements Comparable<Tick> {
 		this.setGroups(bean.getGroups());
 		this.setExtensions(bean.getExtensions());
 		this.setExternalReference(bean.getExternalReference());
+		this.setStar(bean.isStar());
 	}
 
 	/**
@@ -115,7 +116,6 @@ public class Tick implements Comparable<Tick> {
 	 */
 	public void setName(String name) {
 		this.name = name;
-		this.setStar((name.endsWith("*")||name.endsWith("STAR")||name.endsWith("Star")||name.endsWith("star")));
 	}
 
 	/**

@@ -32,6 +32,8 @@ public class TickBean {
 	private String containerId;
 	
 	private String testId;
+	
+	private boolean star;
 
 	/**
 	 * @param name
@@ -168,6 +170,14 @@ public class TickBean {
 
 	public void setTestId(String testId) {
 		this.testId = testId;
+	}
+
+	public boolean isStar() {
+		return star;
+	}
+
+	public void setStar(boolean star) {
+		this.star = star;
 	}
 
 }
