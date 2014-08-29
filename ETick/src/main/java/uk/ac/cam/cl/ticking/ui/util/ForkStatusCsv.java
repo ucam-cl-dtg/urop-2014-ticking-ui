@@ -117,7 +117,7 @@ public class ForkStatusCsv {
 						if (tick.isStar()) {
 							writer.append(",*");
 						} else {
-							writer.append('*');
+							writer.append(',');
 						}
 					}
 				} else {

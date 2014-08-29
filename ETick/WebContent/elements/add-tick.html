@@ -23,7 +23,6 @@
 		<toast-ajax id="addTickAPI"
 			method="PUT"
 			on-core-response="{{addTickResponse}}"
-			on-core-error="{{addTickError}}"
 
 			popUpResponse
 			responseMessage="Successfully added tick to group."
@@ -63,7 +62,7 @@
 				var selectedTick = sel.options[sel.selectedIndex].value;
 				console.log(selectedTick);
 
-				this.$.addTickAPI.url = ticking_service + "/tick/" + selectedTick + "/" + this.gid;
+				s;
 				this.$.addTickAPI.go();
 			},
 
