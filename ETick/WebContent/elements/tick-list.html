@@ -20,6 +20,7 @@
 				padding: 0 0 0 10px;
 			}
 	    </style>
+
 		<toast-ajax
 			auto
 			id="tickListAPI"
@@ -35,6 +36,20 @@
 		<!-- Add Tick Element -->
 		<add-tick id="tickAdder" gid="{{gid}}" on-tick-added="{{tickAddedHandler}}"></add-tick>
 
+		<!-- Delete tick from group API. -->
+		<toast-ajax id="deleteTickAPI"
+			method="DELETE"
+			on-core-response="{{deleteTickResponse}}"
+			on-core-error="{{deleteTickError}}"
+
+			popUpResponse
+			responseMessage="Successfully removed tick from group."
+			waitBeforeToast="500"
+            waitMessage="Removing tick..."
+            popUpError
+            captureError>
+    	</toast-ajax>
+
 		<!-- Tick list card header. -->
 		<div id="headerBar" layout horizontal center>
 			<!--<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>-->
@@ -44,7 +59,7 @@
 	            <core-tooltip label="Add">
 				    <paper-icon-button id="addTickButton" icon="add" on-click="{{addTickClicked}}"></paper-icon-button>
 	            </core-tooltip>
-	            <core-tooltip label="Delete" class="delete-tooltip">
+	            <core-tooltip label="Remove" class="delete-tooltip">
 				    <paper-icon-button id="deleteTickButton" icon="delete" on-click="{{deleteTickClicked}}"></paper-icon-button>
 	            </core-tooltip>
 	        </template>
@@ -120,6 +135,23 @@
 
 			addTickClicked: function () {
 				this.$.tickAdder.$.dialog.toggle();
+			},
+
+			deleteTickClicked: function () {
+				if (this.selectedTickId) {
+					this.$.deleteTickAPI.url = ticking_service + "/tick/" + this.selectedTickId + "/" + this.gid
+					this.$.deleteTickAPI.go();
+				}
+			},
+
+			deleteTickResponse: function () {
+				this.$.tickListAPI.go();
+				this.$.list.$.selector.selected = null;
+				this.fire('fork-clicked', {
+						tickId: null,
+						tickName: null,
+                        tickObj: null,
+					});
 			}
 		});
 	</script>
