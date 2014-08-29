@@ -14,6 +14,13 @@
 			</core-ajax>
 
 			<!-- API call to populate sidebar menu. -->
+			<core-ajax id="sidebarAdminAjax"
+				url="{{ticking_service}}/group"
+				handleAs="json"
+				on-core-response="{{sidebarResponse}}">
+			</core-ajax>
+			
+			<!-- API call to populate sidebar menu if admin. -->
 			<core-ajax id="sidebarAjax"
 				url="{{ticking_service}}/user/groups"
 				handleAs="json"
@@ -52,6 +59,14 @@
 				// Do somthing with this.$.loginAjax.response if needed.
 				this.$.sidebarAjax.go();
 				this.$.sidebarTickAjax.go();
+			},
+			
+			repopulateGroups(boolean admin) {
+				if (admin) {
+					this.$.sidebarAdminAjax.go();
+				} else {
+					this.$.sidebarAjax.go();
+				}
 			},
 			
 			loginError: function() {

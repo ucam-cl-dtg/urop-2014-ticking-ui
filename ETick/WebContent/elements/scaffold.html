@@ -52,7 +52,17 @@
 				<paper-button id="dashButton" label="DASHBOARD"></paper-button>
 
 			</core-selector>
-
+			
+			<template if="{{!$.loginAPIs.ldap.isAdmin}}">
+				<div layout horizontal end-justified>
+					<div>
+						<core-tooltip label="{{admin ? 'Show all groups' : 'Show my groups'}}">
+							<paper-button icon="more-vert" id="adminButton" on-click="{{adminClicked}}"></paper-button>
+						</core-tooltip>
+					</div>
+				</div>
+			</template>
+			
 			<div layout horizontal end-justified>
 				<div>
 					<core-tooltip label="Logout">
@@ -100,6 +110,7 @@
 			toSelect: "-1",
             oldValue: undefined,
             newValue: undefined,
+            admin: false,
 
 			observe: {
 				'$.groupsMenu.selection': 'groupSelectionChanged',
@@ -227,6 +238,12 @@
 					else
 						return 0;
 				});
+			},
+			
+			adminClicked: function() {
+				this.admin = !this.admin;
+				this.$.
+				this.$.loginAPIs.repopulateGroups(this.admin);
 			}
             
 		});
