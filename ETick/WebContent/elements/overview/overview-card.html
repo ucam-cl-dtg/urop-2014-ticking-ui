@@ -173,13 +173,19 @@
                                    }
 
                                    var iconCode = el.split(" (")[0];
+
+                                   var star = iconCode.lastIndexOf("*") > -1;
+
+                                   if (iconCode != "PASSED*") {
+                                       iconCode = iconCode.replace("*", "");
+                                   }
                                    var tooltip = el.split(" (")[1].replace(")", "");
 
                                    if (iconCodeDict.hasOwnProperty(iconCode)) {
                                        iconCode = iconCodeDict[iconCode];
                                    }
 
-                                   return {iconCode: iconCode, tooltip: tooltip, index: index};
+                                   return {iconCode: iconCode, tooltip: tooltip, index: index, star: star};
                                })
                    }
                 });
@@ -187,7 +193,9 @@
                 users = users.map(function(el) {
                     el.progress = el.displayStrings.filter(function(el) {
                         return el.iconCode == "P";
-                    }).length / el.displayStrings.length * 100;
+                    }).length / el.displayStrings.filter(function(el) {
+                        return el.star;
+                    }).length * 100;
                     return el;
                 });
 
@@ -297,8 +305,7 @@
                         college: temp[i].college,
                         displayStrings: temp[i].displayStrings.length == 0 ? [{iconCode: "", tooltip: "", index: 0}] : temp[i].displayStrings,
                         cssClass: i % 2 == 0 ? "overview-even" : "overview-odd",
-                        displayWidth: 'width: ' + temp[i].progress * 4.75 + 'px',
-                        leftOffset: 'left: ' + temp[i].progress * -4.75 + 'px'
+                        progress: temp[i].progress
                     }
                 }
             },

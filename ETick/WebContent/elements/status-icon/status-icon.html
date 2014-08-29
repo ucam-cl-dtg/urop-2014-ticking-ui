@@ -5,7 +5,7 @@
 <link rel="import" href="../../bower_components/core-icons/av-icons.html">
 <link rel="import" href="../custom-icons/custom-icons.html">
 
-<polymer-element name="status-icon" attributes="mode big showText" noscript>
+<polymer-element name="status-icon" attributes="mode big showText star" noscript>
     <template>
         <link rel="stylesheet" href="../tick-card/tick-components.css">
         <style>
@@ -47,7 +47,7 @@
 
             <!-- When core-icon is created, if icon="", then it displays no icon. However, if icon is set to a non-empty
                  string, then set back to "", a blank icon is not displayed.-->
-            <core-icon class="{{mode == 'P' ? 'pass' : mode == 'PS' ? 'star' : mode == 'F' ? 'fail' : ''}} {{big ? 'big' : 'small'}}"
+            <core-icon class="{{star ? 'star' : mode == 'P' ? 'pass' : mode == 'F' ? 'fail' : ''}} {{big ? 'big' : 'small'}}"
                        icon="{{mode == '-' ? (big ? 'maps:local-hotel' : '') : mode == 'I' ? 'custom-icons:unit-pass' : mode == 'UF' ? 'block' : mode == 'UP' ? 'check-circle-outline-blank' : mode == 'SU' ? 'schedule' : mode == 'P' ? 'check-circle-outline' : mode == 'PS' ? 'star-outline' : mode == 'F' ? 'close' : ''}}"
                        hidden?="{{!(mode == 'I' || mode == 'UF' || mode == 'UP' || mode == 'F' || mode == 'P' || mode == 'SU' || mode == 'PS' || (mode == '-' && big))}}">
             </core-icon>
