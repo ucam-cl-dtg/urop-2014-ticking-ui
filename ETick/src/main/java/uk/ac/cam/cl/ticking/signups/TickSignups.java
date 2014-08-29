@@ -382,7 +382,7 @@ public class TickSignups {
     }
     
     @DELETE
-    @Path("/signups/sheets/{sheetID}/tickers/{ticker}/times/{startTime}")
+    @Path("/sheets/{sheetID}/tickers/{ticker}/times/{startTime}")
     public Response tickerUnreserveSlot(@Context HttpServletRequest request,
             @PathParam("sheetID") String sheetID, @PathParam("ticker") String ticker,
             @PathParam("startTime") Long startTime) {
