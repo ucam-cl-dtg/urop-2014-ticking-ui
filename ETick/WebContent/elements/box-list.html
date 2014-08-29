@@ -2,7 +2,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
 
-<polymer-element name="box-list" attributes="selector valueattr multi">
+<polymer-element name="box-list" attributes="selector valueattr multi rows">
 	<template>
 		<style shim-shadowdom>
 
@@ -60,6 +60,15 @@
 			multi: false,
 
 			selector: false,
+
+			domReady: function () {
+				if (this.rows) {
+					var boxHeight = this.querySelector('.itemBox').clientHeight;
+					var listHeight = this.rows * boxHeight;
+					this.style.maxHeight = listHeight + 'px';
+					console.log(this.style.maxHeight);
+				}
+			}
 			
 		});
 	</script>
