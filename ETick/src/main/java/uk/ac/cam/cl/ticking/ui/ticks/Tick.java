@@ -29,6 +29,8 @@ public class Tick implements Comparable<Tick> {
 	private String stubRepo;
 	private DateTime deadline;
 	private List<String> groups = new ArrayList<>();
+	
+	private boolean star;
 
 	private Map<String, DateTime> extensions = new HashMap<>();
 
@@ -113,6 +115,7 @@ public class Tick implements Comparable<Tick> {
 	 */
 	public void setName(String name) {
 		this.name = name;
+		this.setStar((name.endsWith("*")||name.endsWith("STAR")||name.endsWith("Star")||name.endsWith("star")));
 	}
 
 	/**
@@ -275,6 +278,14 @@ public class Tick implements Comparable<Tick> {
 	@Override
 	public int hashCode() {
 		return tickId.hashCode();
+	}
+
+	public boolean isStar() {
+		return star;
+	}
+
+	public void setStar(boolean star) {
+		this.star = star;
 	}
 
 }

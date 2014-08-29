@@ -51,6 +51,7 @@ public class Strings {
 	
 	public static final String NOTSTARTED = "Not started";
 	public static final String PASSED = "PASSED";
+	public static final String STAR = "PASSED*";
 	public static final String FAILED = "FAILED";
 	public static final String UNITPASSEDCODE = "UP";
 	public static final String UNITFAILEDCODE = "UF";
