@@ -63,11 +63,11 @@
 			selector: false,
 
 			domReady: function () {
+				console.log(this);
 				if (this.maxRows) {
 					var boxHeight = this.querySelector('.itemBox').clientHeight;
 					var listHeight = this.maxRows * boxHeight;
 					this.style.maxHeight = listHeight + 'px';
-					console.log(this.style.maxHeight);
 				}
 			}
 			

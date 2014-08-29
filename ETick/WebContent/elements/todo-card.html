@@ -24,7 +24,7 @@
 		<div id="headerBar" layout horizontal center>
 			<h1 flex>To do List ({{data ? number : 0}})</h1>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
-			<core-tooltip id="toggleTooltip" label="{{(passedFilterOn ? 'Show' : 'Hide') + ' passed ticks.'}}" 
+			<core-tooltip id="toggleTooltip" label="{{(passedFilterOn ? 'Show' : 'Hide') + ' past ticks.'}}" 
 				position="left">
 				<paper-icon-button id="showPassed" icon="more-horiz" on-click="{{showPassedClicked}}"></paper-icon-button>
 			</core-tooltip>
