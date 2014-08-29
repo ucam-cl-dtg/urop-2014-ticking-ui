@@ -1,0 +1,49 @@
+TICKL CONCURRENCY/LOAD TESTING
+
+Checkout the "demo-raven" branch of urop-2014-ticking-ui.
+
+Change the configuration of the tomcat plugin in the pom.xml so that the project deploys to the desired path (e.g. when you pull it will probably be set to http://urop2014.dtg.cl.cam.ac.uk/LOAD_TEST_TEST/). You might also want to change to artifactId in the pom.xml, and the display name in the web.xml.
+
+The string uiApiLocation in uk.ac.cam.cl.ticking.ui.configuration.Configuration needs to be updated to the same path, as do all endpoints in the HTML (they can't use the main website because that has the proper raven filter). The HTML endpoints *should* be all controlled in ETick/WebContent/js/hardcoded.js, but it is definitely worth grep-ing and double checking that the old path can't be found hardcoded into the html files.
+
+The web.xml should specify that the filter being used is the DemoRavenFilter. I have brutally savaged the existing raven filter so that if you supply a query parameter "raven_test_user", it will authenticate you as whatever crsid you pass it. I don't understand how it works, really, but it seems to.
+
+The mongo collection used should also be different from the main website - edit the field DBNAME in uk.ac.cam.cl.ticking.ui.util.Strings to change this.
+
+When the database collection and all paths referring to the front end of the website have been changed to something for testing, deploy the project.
+
+The JMeter test plan I have been using should be in urop-2014-ticking-ui/ETick/test/JMeter along with some files of crsids. The main thread group is called Main Thread Group. It should fork a tick, submit it for testing, poll until the tests complete, and then attempt to book a signup slot, as well as making various arbitrary get requests. I assume you know how to use JMeter, so I will just explain how to set up the test I have written.
+
+The Raven Account Data Config component reads in a file of crsids, and assigns each to consecutive threads. There are some .txt and .csv files in the JMeter folder which can be used for fresh crsids: ravenaccounts.txt has test0001 to test0500, and the others have genuine LDAP users to test the pulling in of information from LDAP.
+
+The "Server Name or IP" field in the HTTP Request Defaults component should be changed to whatever path you have deployed the project to.
+
+The User Defined Variables are necessary for the test to run. The simplest way to set it up is to navigate in your browser to the deployed project (remember to attach raven_test_user={your crsid} as a query parameter), and create a group, tick, and ticking session. For the submission of the tick for testing to work, the tick stub repository needs to have files in it, and for the signing up to be allowed, these files have to pass whatever tests you have put on the tick. I wrote myself a script which put passable java files in the stub repository, which I have included in the appendix. You need to add the crsids you are testing with to the group (e.g. copy and paste the contents of ravenaccounts.txt to the add members dialog - it should work). Fill in the table of user defined variables as follows:
+
+	TICKID: should be {your crsid},{the name of your tick} if the name of your tick had no spaces or special characters.
+	SHEETID: you will have to use mongo, unfortunately. Use the "signups" database (the same one the normal deployment uses), use the query db.sheets.find({"title":"{the title you gave the signups session}"}), and the field you want is "_id".
+	STARTTIME: probably the simplest way to get this is to simply convert the time you want to the milliseconds format (e.g. by using http://epochconverter.com/)
+	GROUPID: again use mongo. Use the database you assigned for this deployment, and the query db.Groups.find({"name":"{the name you gave the group}"}); the field you want is again "_id".
+	TICKER: Simply the name of a ticker in your signups session (e.g. "Ticker A").
+	POLL_RESPONSE: leave set to "Loading".
+	LOOP: leave set to "true".
+
+This should be sufficient for the test plan to run successfully.
+
+TROUBLESHOOTING	
+
+If something to do with deploying goes wrong, delete WEB-INF/lib and so on and try again.
+
+APPENDIX
+
+The below script takes a single argument, the name of your tick (e.g. test_tick_1), and puts the files file1 and file2 from your home directory into the tick stub repository. You should replace {your crsid} with your crsid.
+
+git clone ssh://gitolite3@urop2014.dtg.cl.cam.ac.uk/{your crsid}/$1.git TEMP-DIR-FOR-PUTTING-STUFF-IN-TICK-DO-NOT-USE-OR-IT-WILL-BE-DELETED
+cp file1 file2 TEMP-DIR-FOR-PUTTING-STUFF-IN-TICK-DO-NOT-USE-OR-IT-WILL-BE-DELETED
+cd TEMP-DIR-FOR-PUTTING-STUFF-IN-TICK-DO-NOT-USE-OR-IT-WILL-BE-DELETED
+git add .
+git commit -m "Auto added files"
+git push
+cd
+rm -r TEMP-DIR-FOR-PUTTING-STUFF-IN-TICK-DO-NOT-USE-OR-IT-WILL-BE-DELETED
+
