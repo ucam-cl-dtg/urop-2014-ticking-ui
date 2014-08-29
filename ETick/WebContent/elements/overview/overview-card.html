@@ -187,7 +187,9 @@
                 users = users.map(function(el) {
                     el.progress = el.displayStrings.filter(function(el) {
                         return el.iconCode == "P";
-                    }).length / el.displayStrings.length * 100;
+                    }).length / el.displayStrings.filter(function(el) {
+                        return !el.star;
+                    }).length * 100;
                     return el;
                 });
 

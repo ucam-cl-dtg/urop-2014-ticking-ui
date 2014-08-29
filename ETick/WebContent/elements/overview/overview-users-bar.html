@@ -44,13 +44,25 @@
                 <div id="wrapper" layout horizontal class="relative">
                     <div layout vertical>
                         <div flex></div>
-                        <progress-ring progress="{{user.progress}}"></progress-ring>
+                        <progress-ring progress="{{user.progress}}" highlight?="{{user.crsId == userId}}"></progress-ring>
                         <div flex></div>
                     </div>
 
-                    <div style="margin-left: 30px;" class="{{'user-label relative' + (sortField == 'Name' ? ' sort-field' : '')}}">{{user.lastName == 'null' ? user.crsId : user.lastName}}</div>
-                    <div class="{{'user-label relative' + (sortField == 'Forename(s)' ? ' sort-field' : '')}}">{{user.foreNames}}</div>
-                    <div class="{{'user-label relative' + (sortField == 'College'     ? ' sort-field' : '')}}">{{user.college == 'null' ? '' : user.college}}</div>
+                    <div layout vertical>
+                        <div flex></div>
+                        <div style="margin-left: 5px;" class="{{'user-label relative' + (sortField == 'Name' ? ' sort-field' : '')}}">{{user.lastName == 'null' ? user.crsId : user.lastName}}</div>
+                        <div flex></div>
+                    </div>
+                    <div layout vertical>
+                        <div flex></div>
+                        <div class="{{'user-label relative' + (sortField == 'Forename(s)' ? ' sort-field' : '')}}">{{user.foreNames}}</div>
+                        <div flex></div>
+                    </div>
+                    <div layout vertical>
+                        <div flex></div>
+                        <div class="{{'user-label relative' + (sortField == 'College'     ? ' sort-field' : '')}}">{{user.college == 'null' ? '' : user.college}}</div>
+                        <div flex></div>
+                    </div>
                 </div>
             </div>
         </template>

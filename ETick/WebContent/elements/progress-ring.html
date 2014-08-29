@@ -1,6 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
-<polymer-element name="progress-ring" attributes="progress">
+<polymer-element name="progress-ring" attributes="progress highlight">
     <template>
         <style>
             #graph {
@@ -52,7 +52,11 @@
                 };
 
                 if (options.percent != 0) {
-                    drawCircle('#555555', options.lineWidth, options.percent / 100);
+                    var color = '#555555';
+                    if (this.highlight = "true") {
+                        color = '#6300CE'; //purple
+                    }
+                    drawCircle(color, options.lineWidth, options.percent / 100);
                 }
             }
         })
