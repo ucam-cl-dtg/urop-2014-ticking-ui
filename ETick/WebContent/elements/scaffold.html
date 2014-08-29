@@ -53,22 +53,15 @@
 
 			</core-selector>
 			
-			<template if="{{$.loginAPIs.ldap.isAdmin}}">
-				<div layout horizontal end-justified>
-					<div>
-						<core-tooltip label="{{admin ? 'Show all groups' : 'Show my groups'}}">
-							<paper-button icon="more-vert" id="adminButton" on-click="{{adminClicked}}"></paper-button>
-						</core-tooltip>
-					</div>
-				</div>
-			</template>
-			
 			<div layout horizontal end-justified>
-				<div>
-					<core-tooltip label="Logout">
-						<paper-button icon="exit-to-app" id="logoutButton" on-click="{{logoutClicked}}"></paper-button>
+				<template if="{{!$.loginAPIs.ldap.isAdmin}}">
+					<core-tooltip label="{{admin ? 'Show all groups' : 'Show my groups'}}">
+						<paper-button icon="more-vert" id="adminButton" on-click="{{adminClicked}}"></paper-button>
 					</core-tooltip>
-				</div>
+				</template>
+				<core-tooltip label="Logout">
+					<paper-button icon="exit-to-app" id="logoutButton" on-click="{{logoutClicked}}"></paper-button>
+				</core-tooltip>
 			</div>
 		</core-toolbar>
 
