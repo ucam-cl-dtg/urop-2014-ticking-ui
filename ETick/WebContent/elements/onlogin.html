@@ -13,6 +13,13 @@
 				on-core-error="{{loginError}}">
 			</core-ajax>
 
+			<!-- API call to populate sidebar menu if admin. -->
+			<core-ajax id="sidebarAdminAjax"
+				url="{{ticking_service}}/group"
+				handleAs="json"
+				on-core-response="{{sidebarAdminResponse}}">
+			</core-ajax>
+			
 			<!-- API call to populate sidebar menu. -->
 			<core-ajax id="sidebarAjax"
 				url="{{ticking_service}}/user/groups"
@@ -54,6 +61,14 @@
 				this.$.sidebarTickAjax.go();
 			},
 			
+			repopulateGroups: function(admin) {
+				if (admin) {
+					this.$.sidebarAdminAjax.go();
+				} else {
+					this.$.sidebarAjax.go();
+				}
+			},
+			
 			loginError: function() {
 				location.reload(forceGet);
 				console.log("Reloading");
@@ -61,6 +76,10 @@
 			
 			sidebarResponse: function() {
 				this.groupItems = this.$.sidebarAjax.response;
+			},
+
+			sidebarAdminResponse: function () {
+				this.groupItems = this.$.sidebarAdminAjax.response;
 			},
 
 			sidebarTickResponse: function() {

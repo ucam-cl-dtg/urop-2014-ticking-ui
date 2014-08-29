@@ -47,11 +47,7 @@
 			},
 
 			deleteResponse: function () {
-				// QUICK FIX (BAD): This hack fixes the persistant overlay bug.
-				// TODO: Find better fix. 
-				this.async(function () {
-					this.fire('group-deleted');
-					}, null, 500);
+				this.fire('group-deleted');
 			},
 
 			deleteError: function (e, detail) {
