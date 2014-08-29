@@ -34,8 +34,10 @@
                    repoName="{{repoName}}"
                    comments="{{comments}}"
                    commitId="{{commitId}}"
+                   failCause="{{failCause}}"
                    testCount="{{testCount}}"
                    testResult="{{testResult}}"
+                   attachments="{{attachments}}"
                    reportsList="{{reportsList}}"
                    tickerResult="{{tickerResult}}"
                    reportResult="{{reportResult}}"
@@ -61,7 +63,7 @@
       <div class="main">
 
         <!-- Report selection and refresh -->
-        <div horizontal layout>
+        <div horizontal layout wrap>
           <div flex>
             <core-dropdown id="reportSelector"
                            selected="{{selectedReport}}">
@@ -81,11 +83,30 @@
         <!-- Ticker comments/error messages -->
         <div class="ticker-comments"
              hidden?="{{comments == null || comments == ''}}">
-          {{testResult == 'FAIL'? 'Error messages:' : 'Ticker comments:'}}
+          Ticker comments:
           <!-- Indentation due to marked element considering spaces -->
           <marked-element text="{{comments == null ? '' : comments}}">
           </marked-element>
         </div>
+        <div class="ticker-comments"
+             hidden?="{{failCause == null || failCause == ''}}">
+          Compilation failed:
+          <pre>
+{{failCause}}
+          </pre>
+          <!-- Indentation due to marked element considering spaces -->
+
+        </div>
+
+        <!-- Attachments to report -->
+        <template repeat="{{attachment in attachments}}">
+          <span style="margin: 0.5rem 1.5rem; font-size: 14pt; font-weight: 500;">
+            {{attachment.attachmentName}}
+          </span>
+          <main-card unresolved>
+            <img src="data:attachment.mimeType;base64,{{attachment.content}}"/>
+          </main-card>
+        </template>
 
         <!-- File contents -->
         <template repeat="{{file in files}}">

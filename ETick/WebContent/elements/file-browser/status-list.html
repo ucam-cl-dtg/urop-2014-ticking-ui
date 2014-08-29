@@ -8,48 +8,6 @@
   <template>
     <link rel="stylesheet" href="../../css/shared-styles.css"/>
     <link rel="stylesheet" href="status-list-style.css"/>
-    <style>
-      .core-selected /deep/ div
-      {
-        font-weight: bold;
-      }
-
-      .tooltipFiles
-      {
-        font-size: 11pt;
-        line-height: 11pt;
-        position: absolute;
-        visibility: hidden;
-        background-color: rgba(0,0,0,0.8);
-        color: white;
-        border-radius: 3px;
-        z-index: 1002;
-        padding: 8px;
-      }
-
-      div:hover .tooltipFiles
-      {
-        display: none;
-      }
-
-      div.tooltipFiles-container:hover .tooltipFiles
-      {
-        visibility: visible !important;
-        display: block;
-      }
-
-      div.tooltipFiles-container:active .tooltipFiles
-      {
-        visibility: visible !important;
-        display: block;
-      }
-
-      div.tooltipFiles-container:focus .tooltipFiles
-      {
-        visibility: visible !important;
-        display: block;
-      }
-    </style>
 
     <core-item icon="backspace"
                on-tap="{{clearHighlighting}}"
@@ -97,6 +55,10 @@
                       {
                         case "PASS":
                           error.icon = "check";
+                          break;
+
+                        case "MANUALCHECK":
+                          error.icon = "check-box-outline-blank";
                           break;
 
                         case "WARNING":

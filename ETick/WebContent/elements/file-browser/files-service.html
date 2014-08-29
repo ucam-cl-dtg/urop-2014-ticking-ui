@@ -10,9 +10,11 @@
                 comments
                 commitId
                 repoName
+                failCause
                 testCount
                 testResult
                 reportsList
+                attachments
                 tickerResult
                 reportResult
                 selectedReport
@@ -137,8 +139,10 @@
             this.tickerResult = selReport.tickerResult;
             this.reportResult = selReport.reportResult;
             this.comments     = selReport.tickerComments;
+            this.failCause    = selReport.failCause;
             this.commitId     = selReport.commitId;
             this.testCount    = selReport.noOfTests;
+            this.attachments  = this.attachmentsList;
             this.date         = prettyParse(selReport.creationDate)
             this.errors       =
               selReport.items.reduce(
