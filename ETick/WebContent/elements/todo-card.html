@@ -25,7 +25,7 @@
 			<h1 flex>To do List ({{data ? number : 0}})</h1>
 			<search-box id="searchBox" placeholder="Search..."></search-box>
 			<core-tooltip label="{{(passedFilterOn ? 'Show' : 'Hide') + ' passed ticks.'}}" 
-				position="{{number > 0 ? 'bottom' : 'left'}}" class="showHideTooltip">
+				position="left">
 				<paper-icon-button id="showPassed" icon="more-horiz" on-click="{{showPassedClicked}}"></paper-icon-button>
 			</core-tooltip>
 		</div>
