@@ -8,14 +8,15 @@
                 name highlight">
   <template>
     <link rel="stylesheet" href="../../css/shared-styles.css"/>
-    <link rel="stylesheet" href="../../bower_components/highlightjs/styles/default.css"/>
+    <!--<link rel="stylesheet" href="../../bower_components/highlightjs/styles/github.css"/>-->
+    <link rel="stylesheet" href="../../css/material-design-code-highlight.css">
     <link rel="stylesheet" href="file-style.css"/>
 
     <div class="container" vertical layout>
       <span class="file-name"> {{name}} </span>
       <main-card unresolved>
         <pre class="hljs code-container">
-          <code style="font-family:'Ubuntu Mono' monospace; ">
+          <code style="font-family:'Ubuntu Mono' monospace;">
   <!-- Deliberately unindented (because of pre tag) -->
   <content id="codeContent" select="code"></content>
           </code>
