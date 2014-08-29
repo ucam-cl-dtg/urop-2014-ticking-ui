@@ -61,6 +61,8 @@ public class Strings {
 	public static final String INITIALISED = "Not submitted";
 	public static final String SIGNEDUP = "Signed up";
 	public static final String SIGNEDUPCODE = "SU";
+	
+	public static final String TICKERSLOT = "Unavailable";
 
 	/**
 	 * Private constructor to prevent this class being created
