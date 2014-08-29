@@ -142,22 +142,37 @@ To download the dependencies of these projects, you need to be able to access th
 \end{verbatim}
 
 First, before creating a war package, install bower (JavaScript dependency downloader) using {\tt npm install -g bower}, change into {\tt urop-2014-ticking-ui/ETick} and run {\tt bower install}.
-If you get {\tt /usr/bin/env: node: No such file or directory}, you need to do {\tt sudo ln -s /usr/bin/nodejs /usr/bin/node}.
 This downloads all the JavaScript dependencies that we need.
 Also, because Tomcat serves the front-end webpages too, the hard-coded strings can not be in an external configuration file, they are in \localHardcodedJs, you may want to set it now (you can also just edit \deployedHardcodedJs, but a re-deploy will overwrite those changes).
+
+To speed up serving of files, all the HTML imports should be put into one file, this is called vulcanizing.
+To do this, run {\tt npm install -g vulcanize} then {\tt vulcanize index.html -{}-strip -o vulc.html} in the {\tt urop-2014-ticking-ui/\hspace{0pt}ETick/\hspace{0pt}WebContent} directory.
 
 Then for each of the directories {\tt urop-2014-git/server}, {\tt urop-2014-signup/core}, {\tt urop-2014-tester/private} and {\tt urop-2014-ticking-ui/ETick} you want to change into it and run {\tt mvn clean package}.
 Installing each war file is then just a matter of moving it into \tomcatwd{}{\tt/webapps}.
 
 The sample configuration files for the project are in {\tt urop-2014-ticking-ui/defaults}, copy them to \tomcatwd{}{} and edit them to suit the set-up.
 
+\section{Maintenance}
+The databases should not be manually edited, as this can cause consistency problems.
+For this reason, there are a few maintenance-only endpoints, highlighted below.
+\begin{description}
+  \item[Remove users] {\tt http://\{urop-2014-ticking-ui\}/\hspace{0pt}api/\hspace{0pt}user/\hspace{0pt}\{crsid\}}
+  \item[Rebuild Git MongoDB database] {\tt http://\{uropp-2014-git\}/\hspace{0pt}rest/\hspace{0pt}rebuild-database?\hspace{0pt}securityToken=\hspace{0pt}\{securityToken\}}
+  \item[List dangling repos] {\tt http://\{urop-2014-git\}/\hspace{0pt}rest/\hspace{0pt}dangling-repos?\hspace{0pt}securityToken=\hspace{0pt}\{securityToken\}}\\
+    (Use a {\tt DELETE} request to remove them.)
+\end{description}
+
 \section{Troubleshooting}
 \begin{description}
   \item[FATAL\@: errors found but the logfile could not be created] happen when the user {\tt git} has not got correct permissions or ownership on its home directory (or where it stores the logs).
 
   \item[NoClassDefFoundError{\rm s and} ClassNotFoundException{\rm s}] may arise due to loading old class files, if a different version was compiled. Run {\tt mvn clean} and also delete {\tt WebContent/WEB-INF/lib} and {\tt WebContent/WEB-INF/classes} before re-installing.
+  \item[/usr/bin/env: node: No such file or directory] means you need to do {\tt sudo ln -s /usr/bin/nodejs /usr/bin/node}.
 
   \item[Unable to initialise extensions] happened to me because I accidentally installed {\tt maven2}, not {\tt maven}.
+
+  \item[Failure to find com.fasterxml.jackson.core:jackson-annotations:jar:2.4.1] can be solved by downloading it manually from \url{maven.org} and moving it into  the correct place.
 
 \end{description}
 \end{document}
