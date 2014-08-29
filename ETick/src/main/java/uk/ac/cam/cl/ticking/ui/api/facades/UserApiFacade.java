@@ -20,6 +20,7 @@ import uk.ac.cam.cl.dtg.teaching.exceptions.SerializableException;
 import uk.ac.cam.cl.git.api.KeyException;
 import uk.ac.cam.cl.git.interfaces.WebInterface;
 import uk.ac.cam.cl.ticking.ui.actors.Group;
+import uk.ac.cam.cl.ticking.ui.actors.Grouping;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
@@ -146,7 +147,14 @@ public class UserApiFacade implements IUserApiFacade {
 				"RavenRemoteUser");
 
 		User user = db.getUser(crsid);
-		List<Group> groups = db.getGroups(crsid);
+		List<Group> groups = new ArrayList<>();
+		List<Grouping> groupings = db.getGroupings(crsid, true);
+		
+		for (Grouping grouping :groupings) {
+			if (grouping.getRole()!=Role.ADMIN) {
+				groups.add(db.getGroup(grouping.getGroup()));
+			}
+		}
 
 		Collections.sort(groups);
 		return Response.ok(groups).build();
