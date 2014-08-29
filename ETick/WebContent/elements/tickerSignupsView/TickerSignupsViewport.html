@@ -79,6 +79,26 @@
 		captureError>
 	</toast-ajax>
 	
+	<!-- Ticker can mark slot as unavailable -->
+    <core-ajax
+		id="ajaxMarkAsUnavailable"
+        url="{{ticking_service}}/signups/sheets/{{sessionId}}/tickerbookings"
+		method = "POST"
+		contentType="application/json"
+		handleAs="text" 
+		on-core-response="{{refresh}}">	
+	</core-ajax>
+	
+	<!-- Ticker can mark slot as available again -->
+    <core-ajax
+		id="ajaxMarkerUnbook"
+        url="{{ticking_service}}/signups/sheets/{{sessionId}}/tickers/{{ticker}}/times/{{startTime}}"
+		method = "DELETE"
+		contentType="application/json"
+		handleAs="text" 
+		on-core-response="{{refresh}}">	
+	</core-ajax>
+	
 	<div layout vertical>
 		<div id="card-header" layout vertical>
 			<div class="infoFieldContainer" layout horizontal center>
@@ -103,25 +123,35 @@
 		</div>
 		<div id="slots-view-panel">
 				<template repeat="{{slot in slots}}">
-					<span layout vertical id="listTemplate" style="border-bottom: black solid 1px;">
-						<span layout horizontal center>
+					<span layout vertical id="listTemplate" style="border-bottom:black solid 1px;min-height:40px">
+						<span layout horizontal flex>
 							<div align="center" style="min-width:60px">
 								<core-icon-button hidden?="{{((slot.hidden)||(studentMode))}}" on-tap="{{toggleInfo}}" align="center" id="{{slot._id}}" icon="{{slot.collapse ? 'expand-less' : 'expand-more'}}"></core-icon-button>
-								<core-icon hidden?="{{!studentMode}}" icon="chevron-right"></core-icon>
+								<core-icon hidden?="{{!studentMode}}" icon="chevron-right" vertical align center></core-icon>
 							</div>
-							<div align="left" style="color:{{slot.inPast ? 'gray' : (slot.currentSlot ? '#9c27b0' : 'black')}}" flex eight>
-									<div>
-										<core-item label="{{slot.timeStamp + (slot.student=='' ? '  Empty Slot' : '  CRSID: ' + slot.student + ',  tick: ' + slot.comment + (slot.outcome==null?'':', outcome: ' + slot.outcome))}}" style="min-height:20px" span>
-										</core-item>
+							<div align="left" style="color:{{slot.inPast ? 'gray' : (slot.currentSlot ? '#9c27b0' : 'black')}}" layout horizontal center flex three>
+									<div hidden?="{{slot.comment == 'Unavailable'}}">
+										<core-item label="{{slot.student=='' ? slot.timeStamp + '  Empty Slot' : slot.timeStamp + '  crsid : ' + slot.student + ' ,  tick : ' + slot.comment}}" style="min-height:20px" span></core-item>
+									</div>
+									<div hidden?="{{slot.comment != 'Unavailable'}}">
+										<core-item label="{{slot.timeStamp + '  Booking unavailable - Slot taken by ticker'}}" style="min-height:20px" span></core-item>
 									</div>
 							</div>
-							<div hidden?="{{((slot.hidden)||(studentMode))}}" flex two>
+							<div hidden?="{{((slot.student != '')||(studentMode)||(slot.inPast)||(slot.comment == 'Unavailable'))}}" flex>
+								<span>Mark as Slot Unavailable</span>
+								<core-icon-button on-tap="{{selfBook}}" label="Mark as Slot Unavailable" align="left" id="{{slot.startTime}}" icon="block"></core-icon-button>
+							</div>
+							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.comment == 'Unavailable'))}}" flex>
 								<span>View Report</span>
 								<core-icon-button on-tap="{{getReport}}" label="View Report" align="right" id="{{slot._id}}" icon="archive"></core-icon-button>
 							</div>
-							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast))}}" flex three>
-								<span>Remove {{slot.student}} from slot</span>
+							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast)||(slot.comment == 'Unavailable'))}}" flex>
+								<span>Remove {{slot.student}} from Slot</span>
 								<core-icon-button on-tap="{{kick}}" label="Remove {{slot.student}} from Slot" align="left" id="{{slot._id}}" icon="exit-to-app"></core-icon-button>
+							</div>
+							<div hidden?="{{((slot.hidden)||(studentMode)||(slot.inPast)||(slot.comment != 'Unavailable'))}}" flex>
+								<span>Free up the Slot</span>
+								<core-icon-button on-tap="{{tickerUnsignup}}" label="Free up the Slot" align="left" id="{{slot.startTime}}" icon="exit-to-app"></core-icon-button>
 							</div>
 						</span>
 						<div>
@@ -176,12 +206,10 @@
 				var timeToNextSlot = Number.POSITIVE_INFINITY;
 				this.slots = [];
 				for (var i = 0; i < loadedSlots.length; i++) {
-
 					var startTime = prettyParse(loadedSlots[i].startTime);
 					var endTime   = startTime.clone()
 						.add(loadedSlots[i].duration, 'milliseconds');
 					var now = moment();
-
 					var student = loadedSlots[i].bookedUser;
 					var comment = loadedSlots[i].comment;
 					var hidden = false;
@@ -208,7 +236,6 @@
 							.subtract(now)
 							.asMilliseconds();
 					}
-
 					var timeStamp = startTime.format("HH:mm") +
 						" - " + endTime.format("HH:mm");
 					this.slots.push(
@@ -219,10 +246,10 @@
 								, "comment"     : comment
 								, "timeStamp"   : timeStamp
 								, "hidden"      : hidden
-								, "outcome"     : null
 								, "collapse"    : false
 								, "inPast"      : past
 								, "currentSlot" : current
+								, "startTime"   : startTime
 							});
 				}
 
@@ -242,7 +269,6 @@
 							}.bind(this),
 							Math.max(timeToNextSlot, 30000 /* 30 seconds */));
 				}
-
 				this.date = prettyDate(prettyParse(loadedSlots[0].startTime));
 			},
 			tickerChange: function(event) {
@@ -301,6 +327,21 @@
 			},
 			kickDone : function() {
 				this.$.ajaxLoadSlots.go();
+			},
+			selfBook: function() {
+				var startTime = event.target.id;
+				this.startTime = startTime.valueOf();
+				var MyObject = {
+					ticker: this.ticker,
+					startTime: this.startTime
+				};
+				this.$.ajaxMarkAsUnavailable.body = JSON.stringify(MyObject);
+				this.$.ajaxMarkAsUnavailable.go();
+			},
+			tickerUnsignup: function() {
+				var startTime = event.target.id;
+				this.startTime = startTime.valueOf();
+				this.$.ajaxMarkerUnbook.go();
 			}
 		})
   </script>
