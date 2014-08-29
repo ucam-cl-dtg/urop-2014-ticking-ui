@@ -188,7 +188,8 @@
                     el.progress = el.displayStrings.filter(function(el) {
                         return el.iconCode == "P";
                     }).length / el.displayStrings.filter(function(el) {
-                        return !el.star;
+                        console.log(el.iconCode);
+                        return el.iconCode != "PS";
                     }).length * 100;
                     return el;
                 });
