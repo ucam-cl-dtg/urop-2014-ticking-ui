@@ -93,7 +93,8 @@
 
             <!-- Ticks Tab -->
             <span id="ticks" hidden>
-                <tick-list gid="{{gid}}" 
+                <tick-list gid="{{gid}}"
+                	isAuthor="{{isAuthor}}" 
                 	on-fork-clicked="{{forkClickedHandler}}"
                 	canFork="{{isSubmitter||isAdmin}}"
                     id="tickList"
