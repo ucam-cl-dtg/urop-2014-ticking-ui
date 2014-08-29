@@ -1,7 +1,5 @@
 package uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans;
 
-import java.util.List;
-
 import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
 
