@@ -44,7 +44,9 @@
                 <div id="wrapper" layout horizontal class="relative">
                     <div layout vertical>
                         <div flex></div>
-                        <progress-ring progress="{{user.progress}}" highlight?="{{user.crsId == userId}}"></progress-ring>
+                            <core-tooltip label="{{user.progress + '% complete'}}" position="right">
+                                <progress-ring progress="{{user.progress}}" highlight?="{{user.crsId == userId}}"></progress-ring>
+                            </core-tooltip>
                         <div flex></div>
                     </div>
 
