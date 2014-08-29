@@ -333,7 +333,6 @@ public class TickSignups {
     @Path("/sheets/{sheetID}/tickerbookings")
     public Response tickerReserveSlot(@Context HttpServletRequest request,
             @PathParam("sheetID") String sheetID, TickerReserveSlotBean bean) {
-        String commentToBook = "Unavailable";
         String crsid = (String) request.getSession().getAttribute("RavenRemoteUser");
         String groupID;
         try {
@@ -351,11 +350,11 @@ public class TickSignups {
             return Response.status(Status.FORBIDDEN).entity(Strings.INVALIDROLE).build();
         }
         /* Tell the signups service to allow the booking */
-        allowSignup(crsid, groupID, commentToBook);
+        allowSignup(crsid, groupID, Strings.TICKERSLOT);
         try {
             /* Book slot */
             service.book(sheetID, bean.getTicker(), bean.getStartTime(),
-                    new SlotBookingBean(null, crsid, commentToBook, db.getAuthCode(sheetID)));
+                    new SlotBookingBean(null, crsid, Strings.TICKERSLOT, db.getAuthCode(sheetID)));
         } catch (ItemNotFoundException e) {
             log.error("Something was not found which definitely should have been; there is an inconsistency", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Server Error: inconsistent databases; "
