@@ -19,7 +19,7 @@
 		<link rel="stylesheet" type="text/css" href="../css/elements/scaffold.css">
 
 	<!-- API calls. -->
-	<on-login id="loginAPIs"></on-login>
+	<on-login id="loginAPIs" ldap="{{user}}"></on-login>
 
 	<core-header-panel id="headerPanel">
 
@@ -31,7 +31,7 @@
 			<core-selector id="navMenu" valueattr="id" selected="dashButton" selectedAttribute=""
 				flex layout horizontal end-justified>
 
-				<template if="{{!$.loginAPIs.ldap.isStudent}}">
+				<template if="{{!user.isStudent}}">
 	                <menu-button id="ticksMenu" label="Ticks" valueattr="label">
 	                    <template repeat="{{tick in ticks}}">
 	                        <core-item icon="check-box" label="{{tick.name}}" tickId="{{tick._id}}"></core-item>
@@ -44,7 +44,7 @@
 					<template repeat="{{item in items}}">
 						<core-item icon="folder-shared" label="{{item.name}}" gid="{{item._id}}" info="{{item.info}}" creator="{{item.creator}}" editedBy="{{item.editedBy}}" editedOn="{{item.edited}}"></core-item>
 					</template>
-					<template if="{{!$.loginAPIs.ldap.isStudent}}">
+					<template if="{{!user.isStudent}}">
 						<core-item id="createGroupItem" icon="add" label="Create..."></core-item>
 					</template>
 				</menu-button>
@@ -54,7 +54,7 @@
 			</core-selector>
 			
 			<div layout horizontal end-justified>
-				<template if="{{!$.loginAPIs.ldap.isAdmin}}">
+				<template if="{{!user.isAdmin}}">
 					<core-tooltip label="{{admin ? 'Show all groups' : 'Show my groups'}}">
 						<paper-button icon="more-vert" id="adminButton" on-click="{{adminClicked}}"
 						class="toolbarButton"></paper-button>
@@ -72,7 +72,7 @@
 
 		<!-- Page content cards. -->
 		<template id="dashTemp" if="{{showDash}}">
-			<user-dash id="dash" data="{{$.loginAPIs.ldap}}"></user-dash>
+			<user-dash id="dash" data="{{user}}"></user-dash>
 		</template>
 
 		<template id="groupTemp" if="{{gid}}">

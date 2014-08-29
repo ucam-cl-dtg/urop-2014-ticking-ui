@@ -81,9 +81,9 @@
 
 			dataChanged: function (oldValue, newValue) {
 				if (newValue && this.$.loadingOverlay.opened) {
-					this.async(function () {
+					// this.async(function () {
 						this.$.loadingOverlay.close();
-					}, null, 500);
+					// }, null, 500);
 				}
 			},
 
