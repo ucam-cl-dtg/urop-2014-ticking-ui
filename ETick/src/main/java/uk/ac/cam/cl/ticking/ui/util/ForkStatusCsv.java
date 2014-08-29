@@ -110,7 +110,8 @@ public class ForkStatusCsv {
 
 					if (tick.getDeadline() != null
 							&& tick.getDeadline().isBeforeNow()) {
-						writer.append("," + Strings.FAILED + " ("
+						String code = tick.isStar() ? Strings.STARFAILED : Strings.FAILED;
+						writer.append("," + code + " ("
 								+ Strings.NOTSTARTED + ")");
 					} else {
 						writer.append(',');
@@ -118,24 +119,27 @@ public class ForkStatusCsv {
 				} else {
 					if (fork.getUnitPass()) {
 						if (fork.getHumanPass()) {
-							String code = tick.isStar() ? Strings.STAR : Strings.PASSED;
+							String code = tick.isStar() ? Strings.STARPASSED : Strings.PASSED;
 							writer.append("," + code + " (Ticked by "
 									+ fork.getLastTickedBy() + " on "
 									+ fork.getLastTickedOn().toString(dtf)
 									+ " " + fork.stats() + ")");
 						} else {
 							if (fork.isSignedUp()) {
-								writer.append("," + Strings.SIGNEDUPCODE + " ("
+								String code = tick.isStar() ? Strings.STARSIGNEDUPCODE : Strings.SIGNEDUPCODE;
+								writer.append("," + code + " ("
 										+ Strings.SIGNEDUP + " " + fork.stats()
 										+ ")");
 							} else {
 								if (tick.getDeadline() != null
 										&& tick.getDeadline().isBeforeNow()) {
-									writer.append("," + Strings.FAILED + " ("
+									String code = tick.isStar() ? Strings.STARFAILED : Strings.FAILED;
+									writer.append("," + code + " ("
 											+ Strings.UNITPASSED + " "
 											+ fork.stats() + ")");
 								} else {
-									writer.append("," + Strings.UNITPASSEDCODE
+									String code = tick.isStar() ? Strings.STARUNITPASSEDCODE : Strings.UNITPASSEDCODE;
+									writer.append("," + code
 											+ " (" + Strings.UNITPASSED + " "
 											+ fork.stats() + ")");
 								}
@@ -145,22 +149,26 @@ public class ForkStatusCsv {
 						if (fork.isReportAvailable()) {
 							if (tick.getDeadline() != null
 									&& tick.getDeadline().isBeforeNow()) {
-								writer.append("," + Strings.FAILED + " ("
+								String code = tick.isStar() ? Strings.STARFAILED : Strings.FAILED;
+								writer.append("," + code + " ("
 										+ Strings.UNITFAILED + " "
 										+ fork.stats() + ")");
 							} else {
-								writer.append("," + Strings.UNITFAILEDCODE
+								String code = tick.isStar() ? Strings.STARUNITFAILEDCODE : Strings.UNITFAILEDCODE;
+								writer.append("," + code
 										+ " (" + Strings.UNITFAILED + " "
 										+ fork.stats() + ")");
 							}
 						} else {
 							if (tick.getDeadline() != null
 									&& tick.getDeadline().isBeforeNow()) {
-								writer.append("," + Strings.FAILED + " ("
+								String code = tick.isStar() ? Strings.STARFAILED : Strings.FAILED;
+								writer.append("," + code + " ("
 										+ Strings.INITIALISED + " "
 										+ fork.stats() + ")");
 							} else {
-								writer.append("," + Strings.INITCODE + " ("
+								String code = tick.isStar() ? Strings.STARINITCODE : Strings.INITCODE;
+								writer.append("," + code + " ("
 										+ Strings.INITIALISED + " "
 										+ fork.stats() + ")");
 							}
