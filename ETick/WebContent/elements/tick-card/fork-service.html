@@ -42,7 +42,7 @@
 
             forkPostSuccess: function() {
                 //only do this if the tick-card's context hasn't changed
-                if (this.tickId.lastIndexOf(this.$.ajaxCreat.response._id) > -1) {
+                if (this.$.ajaxCreate.response._id.lastIndexOf(this.tick._id) > -1) {
                     this.forkObjectLoaded(this.$.ajaxCreate.response);
                 }
             },
