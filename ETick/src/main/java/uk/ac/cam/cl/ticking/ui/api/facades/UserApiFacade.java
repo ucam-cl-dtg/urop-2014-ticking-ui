@@ -147,7 +147,7 @@ public class UserApiFacade implements IUserApiFacade {
 				"RavenRemoteUser");
 
 		User user = db.getUser(crsid);
-		List<Group> groups = new ArrayList<>();
+		Set<Group> groups = new HashSet<>();
 		List<Grouping> groupings = db.getGroupings(crsid, true);
 		
 		for (Grouping grouping :groupings) {
@@ -155,9 +155,10 @@ public class UserApiFacade implements IUserApiFacade {
 				groups.add(db.getGroup(grouping.getGroup()));
 			}
 		}
-
-		Collections.sort(groups);
-		return Response.ok(groups).build();
+		
+		List<Group> listGroups = new ArrayList<Group>(groups);
+		Collections.sort(listGroups);
+		return Response.ok(listGroups).build();
 	}
 
 	/**
