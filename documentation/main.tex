@@ -1,0 +1,93 @@
+% vim: autoindent sw=2 sts=2 ts=2 fdm=marker spell spelllang=en_gb iskeyword+=_ efm=[31m%f\:%l\:\ %m[m,nuweb\:\ %m\ (%f\\,\ %l)
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+
+\title{\vspace{-48pt}
+  UROP 2014 Tickl Project
+}
+\author{Isaac Dunn
+  \and Robert Kovacsics
+  \and Tom Lefley
+  \and Katie Scott
+  \and Raahil Shah
+  \and Alexander Simpson
+}
+
+\newcommand{\tomcatwd}{{\tt /var/\hspace{0pt}lib/\hspace{0pt}tomcat7}}
+\newcommand{\localHardcodedJs}{{\tt urop-2014-ticking-ui/\hspace{0pt}ETick/\hspace{0pt}WebContent/\hspace{0pt}js/\hspace{0pt}hardcoded.js}}
+\newcommand{\deployedHardcodedJs}{\tomcatwd{\tt/\hspace{0pt}webapps/\hspace{0pt}\{deployed name\}/\hspace{0pt}js/\hspace{0pt}hardcoded.js}}
+
+\usepackage{fullpage}
+
+\begin{document}
+\maketitle
+\section{Installing and configuring}
+The steps in this manual were tested using a new server image from \url{http://www.ubuntu.com/}, version 14.04.1 (Trusty) using QEMU 2.1.0 and also a virtual machine on the DTG server.
+The necessary programs for the running of the server are:
+\begin{itemize}
+  \item Apache Tomcat version 7 ({\tt tomcat7}); server used in the project.
+  \item Maven version 3 ({\tt maven}); tool to compile the project.
+  \item Java Development Kit version 7 ({\tt default-jdk}); compiler for the project.
+  \item NodeJS package manager ({\tt npm}); to install bower which fetches JavaScript dependencies.
+  \item NodeJS runtime ({\tt nodejs}); needed to run bower.
+  \item Git version control ({\tt git}); acts as a database for user's submissions.
+  \item Gitolite version 3 ({\tt gitolite3}); adds on user based control for git.
+  \item MongoDB database ({\tt mongodb}); database used in the project.
+  \item Restricted shell ({\tt rssh}); for the {\tt tomcat7} user.
+  \item A server using Andrew Rice's dynamic tester; for the dynamic testing of ticks.
+\end{itemize}
+
+Then the source files for the Tickl software can now be downloaded with the following three commands.
+\begin{verbatim}
+git clone --depth 1 https://github.com/ucam-cl-dtg/urop-2014-git.git
+git clone --depth 1 https://github.com/ucam-cl-dtg/urop-2014-signup.git
+git clone --depth 1 https://github.com/ucam-cl-dtg/urop-2014-tester.git
+git clone --depth 1 https://github.com/ucam-cl-dtg/urop-2014-ticking-ui.git
+\end{verbatim}
+
+To download the dependencies of these projects, you need to be able to access the {\tt maven.dtg.cl.cam.ac.uk} server and have the following in your {\tt \~{}/.m2/settings.xml}.
+\begin{verbatim}
+<settings>
+  <profiles>
+    <profile>
+      <id>repositories</id>
+      <repositories>
+        <repository>
+          <id>dtg-repository</id>
+          <url>sftp://maven@maven.dtg.cl.cam.ac.uk/mirror/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>repositories</activeProfile>
+  </activeProfiles>
+</settings>
+\end{verbatim}
+
+First, before creating a war package, install bower (JavaScript dependency downloader) using {\tt npm install -g bower}, change into {\tt urop-2014-ticking-ui/ETick} and run {\tt bower install}.
+If you get {\tt /usr/bin/env: node: No such file or directory}, you need to do {\tt sudo ln -s /usr/bin/nodejs /usr/bin/node}.
+This downloads all the JavaScript dependencies that we need.
+Also, because Tomcat serves the front-end webpages too, the hard-coded strings can not be in an external configuration file, they are in \localHardcodedJs, you may want to set it now (you can also just edit \deployedHardcodedJs, but a re-deploy will overwrite those changes).
+
+Then for each of the directories {\tt urop-2014-git/server}, {\tt urop-2014-signup/core}, {\tt urop-2014-tester/private} and {\tt urop-2014-ticking-ui/ETick} you want to change into it and run {\tt mvn clean package}.
+Installing each war file is then just a matter of moving it into \tomcatwd{}{\tt/webapps}.
+
+The sample configuration files for the project are in {\tt urop-2014-ticking-ui/defaults}, copy them to \tomcatwd{}{} and edit them to suit the set-up.
+
+\section{Troubleshooting}
+\begin{description}
+  \item[NoClassDefFoundError{\rm s and} ClassNotFoundException{\rm s}] may arise due to loading old class files, if a different version was compiled. Run {\tt mvn clean} and also delete {\tt WebContent/WEB-INF/lib} and {\tt WebContent/WEB-INF/classes} before re-installing.
+
+  \item[Unable to initialise extensions] happened to me because I accidentally installed {\tt maven2}, not {\tt maven}.
+
+\end{description}
+\end{document}
