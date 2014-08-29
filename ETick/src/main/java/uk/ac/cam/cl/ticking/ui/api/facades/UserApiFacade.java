@@ -148,9 +148,6 @@ public class UserApiFacade implements IUserApiFacade {
 		User user = db.getUser(crsid);
 		List<Group> groups = db.getGroups(crsid);
 
-		if (user.isAdmin()) {
-			groups = db.getGroups();
-		}
 		Collections.sort(groups);
 		return Response.ok(groups).build();
 	}
