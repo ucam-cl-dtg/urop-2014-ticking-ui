@@ -31,9 +31,9 @@ code ol li
   /* Line continuation */
   background-image: url('../../images/line-continuation-right.svg');
   background-attachment: local;
-  background-position: 100% 14px;
+  background-position: 100% 16pt;
   background-repeat: no-repeat;
-  padding-right: 14px;
+  padding-right: 16pt;
 }
 
 .file-name

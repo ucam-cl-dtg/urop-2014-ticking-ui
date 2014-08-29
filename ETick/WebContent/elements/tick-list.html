@@ -7,7 +7,7 @@
 <link rel="import" href="box-list.html">
 <link rel="import" href="add-tick.html">
 
-<polymer-element name="tick-list" attributes="gid canFork">
+<polymer-element name="tick-list" attributes="gid canFork maxRows">
 	<template>
         <link rel="stylesheet" href="../css/shared-styles.css">
 		<style>
@@ -46,7 +46,7 @@
 		</div>
 
 		<!-- Tick list. -->
-		<box-list id="list" selector on-core-select="{{selected}}" valueattr="tick">
+		<box-list id="list" selector on-core-select="{{selected}}" valueattr="tick" maxRows="{{maxRows}}">
 			<template repeat="{{tickFork in tickForks | tickListFilter($.searchBox.query)}}">
 				<tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
 			</template>
@@ -56,7 +56,9 @@
 	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('tick-list', {
+
 			ticking_service: ticking_service,
+
 			tickListResponse: function () {
                 this.tickForks = this.$.tickListAPI.response;
 			},
@@ -75,6 +77,7 @@
 
 			tickListFilter: function(items, q) {
 				if (items && q) {
+					this.$.list.resize();
 					return items.filter(this.tickFilter.bind(this));
 				}
 				return items;
