@@ -247,7 +247,7 @@ public class ForkStatusXls {
 
 		Drawing drawing = sheet.createDrawingPatriarch();
 
-		// When the comment box is visible, have it show in a 1x3 space
+		// When the comment box is visible, have it show in a 3x3 space
 		ClientAnchor anchor = factory.createClientAnchor();
 		anchor.setCol1(cell.getColumnIndex());
 		anchor.setCol2(cell.getColumnIndex() + 3);

@@ -174,7 +174,9 @@
                 reportAvailable: 'showNewStatusCode',
                 unitPass: 'showNewStatusCode',
                 humanPass: 'showNewStatusCode',
-                deadlinePassed: 'showNewStatusCode'
+                star: 'showNewStatusCode',
+                deadlinePassed: 'showNewStatusCode',
+                signedUp: 'showNewStatusCode'
             },
 
             domReady: function() {
@@ -240,10 +242,11 @@
 
             computeStatusCode: function() {
                 var oldCode = this.statusCode;
-
-                if (this.deadlinePassed){
+                if (this.deadlinePassed) {
                     //deadline passed, so failed.
                     this.statusCode = "F";
+                } else if (this.signedUp && !this.humanPass) {
+                    this.statusCode = "SU";
                 } else if (!this.forked) {
                     //Not started.
                     this.statusCode = "-";
@@ -258,7 +261,11 @@
                     this.statusCode = "UP";
                 } else if (this.humanPass) {
                     //Passed by ticker
-                    this.statusCode = "P";
+                    if (this.tickObj.star) {
+                        this.statusCode = "PS";
+                    } else {
+                        this.statusCode = "P";
+                    }
                 } else {
                     //invalid fork object state
                     this.statusCode = "?";
@@ -266,7 +273,14 @@
 
                 if (oldCode != this.statusCode) {
                     console.log("status code changed!");
-                    this.fire('status-changed', {tickId: this.tickId, statusCode: this.statusCode});
+                    this.fire('status-changed', {tickId: this.tickId, forkBean: {
+                        forked: this.forked,
+                        reportAvailable: this.reportAvailable,
+                        unitPass: this.unitPass,
+                        humanPass: this.humanPass,
+                        signedUp: this.signedUp,
+                        star: this.star
+                    }});
                 }
             }
         });
