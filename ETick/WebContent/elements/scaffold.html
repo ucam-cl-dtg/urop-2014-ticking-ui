@@ -56,11 +56,13 @@
 			<div layout horizontal end-justified>
 				<template if="{{!$.loginAPIs.ldap.isAdmin}}">
 					<core-tooltip label="{{admin ? 'Show all groups' : 'Show my groups'}}">
-						<paper-button icon="more-vert" id="adminButton" on-click="{{adminClicked}}"></paper-button>
+						<paper-button icon="more-vert" id="adminButton" on-click="{{adminClicked}}"
+						class="toolbarButton"></paper-button>
 					</core-tooltip>
 				</template>
 				<core-tooltip label="Logout">
-					<paper-button icon="exit-to-app" id="logoutButton" on-click="{{logoutClicked}}"></paper-button>
+					<paper-button icon="exit-to-app" id="logoutButton" on-click="{{logoutClicked}}"
+					class="toolbarButton"></paper-button>
 				</core-tooltip>
 			</div>
 		</core-toolbar>

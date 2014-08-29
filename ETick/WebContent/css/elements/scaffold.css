@@ -15,6 +15,10 @@ core-toolbar {
 	color: #fff;
 }
 
+.toolbarButton {
+	display: inherit;
+}
+
 #logoutButton {
 	display: block;
 }
