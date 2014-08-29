@@ -65,6 +65,7 @@
     <script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('create-group', {
+            ticking_service: ticking_service,
 			handleNameInput: function () {
 				if (this.$.newGroupName.inputValue === "") {
 					this.showSubmit = false;

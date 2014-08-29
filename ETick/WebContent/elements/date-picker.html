@@ -21,8 +21,10 @@
         <paper-input id="trigger" value="{{selectedDate}}" on-click="{{toggle}}" required readonly error="{{error}}"></paper-input>
 
       </template>
+      <script src="../js/hardcoded.js"></script>
     <script>
       Polymer('date-picker', {
+        ticking_service: ticking_service,
 
         domReady: function () {
           var datePicker = this.$.datePicker;

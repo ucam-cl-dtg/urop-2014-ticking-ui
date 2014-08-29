@@ -30,6 +30,7 @@
 	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('export-members', {
+            ticking_service: ticking_service,
 
 			exportMembers: function () {
 				$.fileDownload(ticking_service + '/group/' + this.gid)
