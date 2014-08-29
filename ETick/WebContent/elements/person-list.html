@@ -30,6 +30,10 @@
 	<script>
 		Polymer('person-list', {
 
+			queryChanged: function () {
+				this.$.list.$.selector.updateSelected();
+			},
+
 			listFilter: function(item) {
 				var q = this.query.toLowerCase();
 				return (item.user.displayName.toLowerCase().indexOf(q) > -1 ||

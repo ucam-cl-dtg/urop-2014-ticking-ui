@@ -77,7 +77,6 @@
 
 			tickListFilter: function(items, q) {
 				if (items && q) {
-					this.$.list.resize();
 					return items.filter(this.tickFilter.bind(this));
 				}
 				return items;
