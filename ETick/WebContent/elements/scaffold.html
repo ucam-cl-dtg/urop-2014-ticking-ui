@@ -54,7 +54,7 @@
 			</core-selector>
 			
 			<div layout horizontal end-justified>
-				<template if="{{user.isAdmin}}">
+				<template if="{{user.admin}}">
 					<core-tooltip label="{{admin ? 'Show all groups' : 'Show my groups'}}">
 						<paper-button icon="more-vert" id="adminButton" on-click="{{adminClicked}}"
 						class="toolbarButton"></paper-button>
