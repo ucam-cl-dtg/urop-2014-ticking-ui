@@ -304,6 +304,7 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 		 * save it
 		 */
 		fork.setUnitPass(status.getTestResult().equals(ReportResult.PASS));
+		fork.setLastReport(new DateTime(status.getCreationDate()));
 		db.saveFork(fork);
 
 		/* Return the report */
@@ -364,6 +365,13 @@ public class SubmissionApiFacade implements ISubmissionApiFacade {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
 					.build();
 		}
+		
+		/*
+		 * Set the fork's last report date from the last report and
+		 * save it
+		 */
+		fork.setLastReport(new DateTime(status.get(status.size()-1).getCreationDate()));
+		db.saveFork(fork);
 
 		/* Return all of the reports */
 		return Response.ok(status).build();

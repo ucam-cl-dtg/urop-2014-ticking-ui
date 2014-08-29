@@ -29,7 +29,7 @@ public class Strings {
 
 	public static final String NOFREESLOTS = "Error: there are no free slots at the given time.";
 
-	public static final String EXISTS = "Error: You have already created a tick with this name.";
+	public static final String EXISTS = "Error: You have already created a tick with this repository identifier.";
 
 	public static final String REMOVECREATOR = "Error: You may not remove the creator of the group. Any other users have been removed.";
 
@@ -47,7 +47,11 @@ public class Strings {
 	
 	public static final String TICKISINGROUP = "Error: That tick is already associated with the group.";
 	
+	public static final String LASTREPORT = "Error: You may only tick the most recent report.";
+	
+	public static final String NOTSTARTED = "Not started";
 	public static final String PASSED = "PASSED";
+	public static final String STAR = "PASSED*";
 	public static final String FAILED = "FAILED";
 	public static final String UNITPASSEDCODE = "UP";
 	public static final String UNITFAILEDCODE = "UF";
@@ -55,6 +59,10 @@ public class Strings {
 	public static final String UNITPASSED = "Passed automated tests";
 	public static final String UNITFAILED = "Failed automated tests";
 	public static final String INITIALISED = "Not submitted";
+	public static final String SIGNEDUP = "Signed up";
+	public static final String SIGNEDUPCODE = "SU";
+	
+	public static final String TICKERSLOT = "Unavailable";
 
 	/**
 	 * Private constructor to prevent this class being created

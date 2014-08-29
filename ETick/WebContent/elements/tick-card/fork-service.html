@@ -12,7 +12,7 @@
         <toast-ajax
                 id="ajaxLoad"
                 auto
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/fork/' + tickId + '/'}}"
+                url="{{ticking_service + '/fork/' + tickId + '/'}}"
                 handleAs="json"
                 method="GET"
                 on-core-response="{{forkGetSuccess}}"
@@ -21,7 +21,7 @@
 
         <toast-ajax
                 id="ajaxCreate"
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/fork/' + tickId + '/'}}"
+                url="{{ticking_service + '/fork/' + tickId + '/'}}"
                 handleAs="json"
                 method="POST"
                 on-core-response="{{forkPostSuccess}}"
@@ -35,12 +35,16 @@
     </template>
     <script>
         Polymer('fork-service', {
+			ticking_service: ticking_service,
             forkGetSuccess: function() {
                 this.forkObjectLoaded(this.$.ajaxLoad.response);
             },
 
             forkPostSuccess: function() {
-                this.forkObjectLoaded(this.$.ajaxCreate.response);
+                //only do this if the tick-card's context hasn't changed
+                if (this.tickId.lastIndexOf(this.$.ajaxCreat.response._id) > -1) {
+                    this.forkObjectLoaded(this.$.ajaxCreate.response);
+                }
             },
 
             forkObjectLoaded: function(forkObj) {

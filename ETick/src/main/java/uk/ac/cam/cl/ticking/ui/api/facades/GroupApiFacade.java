@@ -185,16 +185,16 @@ public class GroupApiFacade implements IGroupApiFacade {
 					.build();
 		}
 
-		File temp;
+		String output;
 		try {
-			temp = csv.generateCsvFile(group);
+			output = csv.generateCsvString(group);
 		} catch (IOException e) {
 			log.error("Tried exporting group fork status" + groupId, e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(Strings.IDEMPOTENTRETRY).build();
 		}
 
-		ResponseBuilder response = Response.ok((Object) temp);
+		ResponseBuilder response = Response.ok(output);
 		return response.build();
 	}
 	

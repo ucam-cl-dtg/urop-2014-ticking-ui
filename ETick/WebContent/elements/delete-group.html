@@ -14,7 +14,7 @@
 		<!-- Delete group API. -->
 		<toast-ajax id="deleteAPI"
 			method="DELETE"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + gid }}"
+			url="{{ticking_service + '/group/' + gid }}"
 			on-core-response="{{deleteResponse}}"
 			on-core-error="{{deleteError}}"
 			
@@ -32,8 +32,11 @@
 		<paper-toast id="deleteError" duration="3000" text="Error deleting group."></paper-toast>
 
 	</template>
+    <script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('delete-group', {
+
+            ticking_service: ticking_service,
 
 			deleteClicked: function () {
 				this.$.confirm.toggle();

@@ -26,9 +26,11 @@ public class Tick implements Comparable<Tick> {
 	private String name;
 	private String author;
 
-	private String stubRepo, correctnessRepo;
+	private String stubRepo;
 	private DateTime deadline;
 	private List<String> groups = new ArrayList<>();
+	
+	private boolean star;
 
 	private Map<String, DateTime> extensions = new HashMap<>();
 
@@ -71,6 +73,7 @@ public class Tick implements Comparable<Tick> {
 		this.setGroups(bean.getGroups());
 		this.setExtensions(bean.getExtensions());
 		this.setExternalReference(bean.getExternalReference());
+		this.setStar(bean.isStar());
 	}
 
 	/**
@@ -85,20 +88,6 @@ public class Tick implements Comparable<Tick> {
 	 */
 	public void setStubRepo(String stubRepo) {
 		this.stubRepo = stubRepo;
-	}
-
-	/**
-	 * @return correctnessRepo
-	 */
-	public String getCorrectnessRepo() {
-		return correctnessRepo;
-	}
-
-	/**
-	 * @param correctnessRepo
-	 */
-	public void setCorrectnessRepo(String correctnessRepo) {
-		this.correctnessRepo = correctnessRepo;
 	}
 
 	/**
@@ -237,7 +226,10 @@ public class Tick implements Comparable<Tick> {
 	 * Initialises the tickId field for the Tick object
 	 */
 	public void initTickId() {
-		this.tickId = author + "," + name;
+		String decodedName = name.replaceAll("_", "__");
+		decodedName = decodedName.replace(' ', '_');
+		decodedName = decodedName.replaceAll("[^a-zA-Z0-9_-]", "");
+		this.tickId = author + "," + decodedName;
 	}
 
 	/**
@@ -277,7 +269,7 @@ public class Tick implements Comparable<Tick> {
 		if (!(o instanceof Tick)) {
 			return false;
 		}
-		return this.tickId == ((Tick) o).tickId;
+		return this.tickId.equals(((Tick) o).tickId);
 	}
 
 	/**
@@ -286,6 +278,14 @@ public class Tick implements Comparable<Tick> {
 	@Override
 	public int hashCode() {
 		return tickId.hashCode();
+	}
+
+	public boolean isStar() {
+		return star;
+	}
+
+	public void setStar(boolean star) {
+		this.star = star;
 	}
 
 }

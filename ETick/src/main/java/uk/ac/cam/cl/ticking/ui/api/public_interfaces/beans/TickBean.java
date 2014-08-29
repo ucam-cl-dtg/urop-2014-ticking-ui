@@ -28,6 +28,12 @@ public class TickBean {
 	private List<StaticOptions> checkstyleOpts = new ArrayList<>();
 	
 	private String externalReference;
+	
+	private String containerId;
+	
+	private String testId;
+	
+	private boolean star;
 
 	/**
 	 * @param name
@@ -148,6 +154,30 @@ public class TickBean {
 
 	public void setExternalReference(String externalReference) {
 		this.externalReference = externalReference;
+	}
+
+	public String getContainerId() {
+		return containerId;
+	}
+
+	public void setContainerId(String containerId) {
+		this.containerId = containerId;
+	}
+
+	public String getTestId() {
+		return testId;
+	}
+
+	public void setTestId(String testId) {
+		this.testId = testId;
+	}
+
+	public boolean isStar() {
+		return star;
+	}
+
+	public void setStar(boolean star) {
+		this.star = star;
 	}
 
 }

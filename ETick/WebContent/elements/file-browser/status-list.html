@@ -16,13 +16,25 @@
     <core-selector multi
                    id="selector"
                    selected="{{highlight}}"
+                   selectedClass="core-selected"
                    valueattr="name">
       <template repeat="{{item in items}}">
-        <core-item icon='{{item.icon}}'
-                   name="{{item.className}}"
-                   class="{{item.outcome}}"
-                   label="{{item.problemDescription}}">
-        </core-item>
+        <div class="tooltipFiles-container"
+             name="{{item.className}}">
+          <core-item icon='{{item.icon}}'
+                     class="{{item.outcome}}"
+                     label="{{item.problemDescription}}">
+          </core-item>
+          <template if="{{item.files.length > 0}}">
+            <div class="tooltipFiles">
+              <ul>
+                <template repeat="{{filename in item.files}}">
+                <li>{{filename}}</li>
+                </template>
+              </ul>
+            </div>
+          </template>
+        </div>
       </template> 
     </core-selector>
     <p>
@@ -45,6 +57,10 @@
                           error.icon = "check";
                           break;
 
+                        case "MANUALCHECK":
+                          error.icon = "check-box-outline-blank";
+                          break;
+
                         case "WARNING":
                           error.icon = "warning";
                           break;
@@ -52,6 +68,13 @@
                         default:
                           error.icon = "error";
                       }
+
+                      error.files = error.fileDetails.map(
+                          function (fileDetail)
+                          {
+                            return fileDetail.file;
+                          });
+
                       return error;
                     });
 

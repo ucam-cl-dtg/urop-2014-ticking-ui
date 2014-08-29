@@ -24,7 +24,6 @@
 		</style>
 
 		<!-- Delete Tick Session API. -->
-		<!-- Add session API call. -->
 		<toast-ajax id="deleteSessionAPI"
 			method="DELETE"
 			on-core-response="{{deleteSessionResponse}}"
@@ -39,7 +38,7 @@
 			<!-- <h1 flex>Ticking Sessions ({{sheets ? sheets.length : 0}})</h1> -->
             <search-box id="searchBox" placeholder="Search..."></search-box>
 			<template if="{{isAuthor}}">
-				<core-tooltip label="Add">
+				<core-tooltip label="Create">
 					<paper-icon-button id="addSessionButton" icon="add" on-click="{{addClicked}}"></paper-icon-button>
 				</core-tooltip>
 				<core-tooltip label="Edit">
@@ -63,9 +62,12 @@
 		<!-- Response toasts. -->
 		<paper-toast id="deleteSessionError" duration="8000"></paper-toast>
 	</template>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('tick-session-list', {
+
 			sheetListFilter: function(items, q) {
+
 				if (items && q) {
 					return items.filter(this.sheetFilter.bind(this));
 				}
@@ -109,7 +111,7 @@
 
 			deleteConfirmed: function () {
 				var call = this.$.deleteSessionAPI;
-				call.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.selectedSheet._id
+				call.url = ticking_service + "/signups/sheets/" + this.selectedSheet._id
 				call.go();
 			},
 

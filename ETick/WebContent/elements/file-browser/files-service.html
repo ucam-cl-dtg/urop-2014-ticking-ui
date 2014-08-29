@@ -10,9 +10,11 @@
                 comments
                 commitId
                 repoName
+                failCause
                 testCount
                 testResult
                 reportsList
+                attachments
                 tickerResult
                 reportResult
                 selectedReport
@@ -43,6 +45,7 @@
   </template>
   <script src="../../bower_components/moment/moment.js"></script>
   <script src="../../js/prettyDate.js"></script>
+  <script src="../../js/hiddenFiles.js"></script>
   <script>
   Polymer('files-service'
     , {   repoNameChanged:
@@ -98,6 +101,9 @@
                               , "commit" : report.commitId
                             };
                   });
+
+            /* Just to be sure */
+            this.selectedReportChanged();
           }
 
         , selectedReportChanged:
@@ -133,8 +139,10 @@
             this.tickerResult = selReport.tickerResult;
             this.reportResult = selReport.reportResult;
             this.comments     = selReport.tickerComments;
+            this.failCause    = selReport.failCause;
             this.commitId     = selReport.commitId;
             this.testCount    = selReport.noOfTests;
+            this.attachments  = selReport.attachmentList;
             this.date         = prettyParse(selReport.creationDate)
             this.errors       =
               selReport.items.reduce(
@@ -150,13 +158,13 @@
           {
             "use strict";
 
-            this.files = this.$.fileContent.response;
-
-            var i;
-            for (i = 0; i < this.files.length; i++)
-            {
-              this.files[i].id = i;
-            }
+            this.files = this.$.fileContent.response.map(
+                function (file, index)
+                {
+                  file.id = index;
+                  file.hidden = isHidden(file);
+                  return file;
+                });
 
             this.fire('files-loaded');
           }

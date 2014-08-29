@@ -1,6 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html
-">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/core-dropdown/core-dropdown.html">
 <link rel="import" href="toast-ajax/toast-ajax.html">
 
@@ -12,7 +11,7 @@
 		<!-- All tick list API call. -->
 		<toast-ajax id="listAPI"
 			auto
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/ticks"
+			url="{{ticking_service}}/user/ticks"
 			handleAs="json"
 			on-core-response="{{listResponse}}"
 
@@ -54,15 +53,17 @@
 		</paper-dialog>
 
 	</template>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('add-tick', {
+			ticking_service: ticking_service,
 
 			addSubmitClicked: function () {
 				var sel = this.$.selector;
 				var selectedTick = sel.options[sel.selectedIndex].value;
 				console.log(selectedTick);
 
-				this.$.addTickAPI.url = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/tick/" + selectedTick + "/" + this.gid;
+				this.$.addTickAPI.url = ticking_service + "/tick/" + selectedTick + "/" + this.gid;
 				this.$.addTickAPI.go();
 			},
 

@@ -2,13 +2,14 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-selector/core-selector.html">
 
-<polymer-element name="box-list" attributes="selector valueattr multi">
+<polymer-element name="box-list" attributes="selector valueattr multi maxRows">
 	<template>
 		<style shim-shadowdom>
 
 			:host {
 				display: block;
 				width: 100%;
+				overflow: auto;
 			}
 
 			polyfill-next-selector { content: '.itemBox'; }
@@ -57,9 +58,25 @@
 	</template>
 	<script>
 		Polymer('box-list', {
+
+			domReady: function () {
+				// this.resize();
+			},
+
 			multi: false,
 
 			selector: false,
+
+			resize: function () {
+				if (this.maxRows) {
+					var box = this.querySelector('.itemBox');
+					if (box) {
+						var boxHeight = box.clientHeight;
+						var listHeight = this.maxRows * boxHeight;
+						this.style.maxHeight = listHeight + 'px';
+					}
+				}
+			}
 			
 		});
 	</script>

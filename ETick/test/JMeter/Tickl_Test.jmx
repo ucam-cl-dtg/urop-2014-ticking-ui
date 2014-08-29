@@ -33,8 +33,8 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">80</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">160</stringProp>
+        <stringProp name="ThreadGroup.num_threads">60</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">240</stringProp>
         <longProp name="ThreadGroup.start_time">1373789594000</longProp>
         <longProp name="ThreadGroup.end_time">1373789594000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -83,7 +83,7 @@
             </elementProp>
             <elementProp name="STARTTIME" elementType="Argument">
               <stringProp name="Argument.name">STARTTIME</stringProp>
-              <stringProp name="Argument.value">1409136300000</stringProp>
+              <stringProp name="Argument.value">1409138700000</stringProp>
               <stringProp name="Argument.desc">Slot start time as milliseconds since epoch</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
@@ -122,10 +122,6 @@
           <stringProp name="HTTPSampler.implementation">HttpClient3.1</stringProp>
           <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
         </ConfigTestElement>
-        <hashTree/>
-        <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Start Test In Groups" enabled="true">
-          <intProp name="groupSize">5</intProp>
-        </SyncTimer>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get LDAP" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
@@ -227,7 +223,7 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Submit Tick for Testing" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Submit Tick for Testing" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -260,7 +256,7 @@
           </BeanShellPreProcessor>
           <hashTree/>
         </hashTree>
-        <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="Wait for Tests to Complete" enabled="true">
+        <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="Wait for Tests to Complete" enabled="false">
           <stringProp name="WhileController.condition">${LOOP}</stringProp>
         </WhileController>
         <hashTree>

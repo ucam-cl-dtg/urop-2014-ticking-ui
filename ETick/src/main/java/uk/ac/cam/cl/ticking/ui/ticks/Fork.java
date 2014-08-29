@@ -35,6 +35,8 @@ public class Fork {
 
 	private String lastTickedBy;
 	private DateTime lastTickedOn;
+	
+	private DateTime lastReport;
 
 	/**
 	 * Create a new instance of the Submission object.
@@ -253,6 +255,14 @@ public class Fork {
 		this.humanFails = humanFails;
 	}
 	
+	public DateTime getLastReport() {
+		return lastReport;
+	}
+
+	public void setLastReport(DateTime lastReport) {
+		this.lastReport = lastReport;
+	}
+
 	public void incrementUnitFails() {
 		unitFails++;
 	}
@@ -266,7 +276,7 @@ public class Fork {
 	}
 	
 	public String stats() {
-		return humanFails+"/"+unitPasses+"/"+unitFails;
+		return humanFails+"|"+unitPasses+"|"+unitFails;
 	}
 	
 

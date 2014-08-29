@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/core-splitter/core-splitter.html"/>
 <link rel="import" href="../../bower_components/core-dropdown/core-dropdown.html"/>
 <link rel="import" href="../../bower_components/core-item/core-item.html"/>
+<link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html"/>
 <link rel="import" href="../../bower_components/marked-element/marked-element.html"/>
 <link rel="import" href="files-service.html"/>
 <link rel="import" href="file-card.html"/>
@@ -24,6 +25,7 @@
   <template>
     <link rel="stylesheet" href="../../css/shared-styles.css"/>
     <link rel="stylesheet" href="file-browser-style.css"/>
+    <link rel="stylesheet" href="file-style.css"/>
     <files-service id="service"
                    date="{{date}}"
                    crsid="{{crsid}}"
@@ -33,8 +35,10 @@
                    repoName="{{repoName}}"
                    comments="{{comments}}"
                    commitId="{{commitId}}"
+                   failCause="{{failCause}}"
                    testCount="{{testCount}}"
                    testResult="{{testResult}}"
+                   attachments="{{attachments}}"
                    reportsList="{{reportsList}}"
                    tickerResult="{{tickerResult}}"
                    reportResult="{{reportResult}}"
@@ -42,34 +46,64 @@
     </files-service>
     <div class="container" horizontal layout>
       <div class="sidebar">
-        <h3 id="resultString" class="result">
-        </h3>
-        <files-list files="{{files}}"
-                    selectedFileId="{{selectedFileId}}">
-        </files-list>
+        <div class="sidebar-element">
+          <h3 id="resultString" class="result">
+          </h3>
+          <files-list files="{{files}}"
+                      showHidden="{{showHidden}}"
+                      selectedFileId="{{selectedFileId}}">
+          </files-list>
+        </div>
         <hr/>
-        <status-list errors="{{errors}}" highlight="{{highlight}}">
-        </status-list>
+        <div class="sidebar-element">
+          <status-list errors="{{errors}}" highlight="{{highlight}}">
+          </status-list>
+        </div>
       </div>
-      <core-splitter direction="left"></core-splitter>
+      <core-splitter direction="right"></core-splitter>
       <div class="main">
 
-        <!-- Report selection -->
-        <core-dropdown id="reportSelector"
-                       selected="{{selectedReport}}">
-          <template repeat="{{report in reportsListString}}">
-            <core-item label="{{report}}"></core-item>
-          </template>
-        </core-dropdown>
-        <br/>
+        <!-- Report selection and refresh -->
+        <div horizontal layout wrap>
+          <div flex>
+            <core-dropdown id="reportSelector"
+                           selected="{{selectedReport}}">
+              <template repeat="{{report in reportsListString}}">
+                <core-item label="{{report}}"></core-item>
+              </template>
+            </core-dropdown>
+          </div>
+          <div>
+            <core-icon-button icon="refresh"
+                              on-tap="{{refresh}}">
+            Reload
+            </core-icon-button>
+          </div>
+        </div>
 
-        <!-- Ticker comments -->
-        <template if="{{comments != null}}">
-          <div class="ticker-comments">
-            Ticker comments:
-            <!-- Indentation due to marked element considering spaces -->
-            <marked-element text="{{comments}}">
-            </marked-element>
+        <!-- Ticker comments/error messages -->
+        <div class="ticker-comments"
+             hidden?="{{comments == null || comments == ''}}">
+          Ticker comments:
+          <!-- Indentation due to marked element considering spaces -->
+          <marked-element text="{{comments == null ? '' : comments}}">
+          </marked-element>
+        </div>
+        <div class="ticker-comments"
+             hidden?="{{failCause == null || failCause == ''}}">
+          Compilation failed:
+          <pre>
+{{failCause}}
+          </pre>
+          <!-- Indentation due to marked element considering spaces -->
+
+        </div>
+
+        <!-- Attachments to report -->
+        <template repeat="{{attachment in attachments}}">
+          <span class="file-name"> {{attachment.attachmentName}} </span>
+          <div>
+            <img src="data:{{attachment.mimeType}};base64,{{attachment.content}}"/>
           </div>
         </template>
 
@@ -79,13 +113,14 @@
           <file-card content="{{file.content}}"
                      name="{{file.name}}"
                      comments="{{errors}}"
+                     hidden?="{{file.hidden && !showHidden}}"
                      highlight="{{highlight}}">
           </file-card>
           </section>
         </template>
 
         <!-- Pass/fail button -->
-        <template if="{{ticker != undefined}}">
+        <template if="{{ticker != undefined && selectedReport == (reportsListString.length-1) && reportResult != 'PASS'}}">
           <ticker-set-result commitId="{{commitId}}"
                              crsid="{{crsid}}"
                              ticker="{{ticker}}"
@@ -104,6 +139,7 @@
   </template>
   <script src="../../bower_components/moment/moment.js"></script>
   <script src="../../js/prettyDate.js"></script>
+  <script src="../../js/hiddenFiles.js"></script>
   <script>
     Polymer('file-browser-card'
       , {   selectedFileIdChanged:
@@ -165,7 +201,7 @@
                 "You have failed the automatic tests." +
                 " See below for more detailed information."
             }
-            else if (this.tickerResult == "UNDEFINED")
+            else if (this.testResult == "PASS")
             {
               this.$.resultString.innerHTML =
                 "You have passed the automatic tests." +
@@ -196,11 +232,16 @@
             else if (this.tickerResult == "FAIL")
             {
               this.$.resultString.innerHTML =
-                "You have been failed by a ticker";
+                "You have been failed by a ticker.";
+            }
+            else if (reportResult == "PASS")
+            {
+              this.$.resultString.innerHTML = "You have passed!";
             }
             else
             {
-              this.$.resultString.innerHTML = "You have passed!";
+              this.$.resultString.innerHTML = "Something broke with" +
+               " the tests or the testing engine!";
             }
           }
 
@@ -221,6 +262,12 @@
                   });
             this.$.reportSelector.selected =
               this.reportsListString.length - 1;
+          }
+
+        , refresh:
+          function ()
+          {
+            this.$.service.$.report.go();
           }
         });
   </script>

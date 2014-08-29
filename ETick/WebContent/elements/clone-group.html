@@ -36,13 +36,15 @@
 		</toast-ajax>
 
 		<!-- Edit button. -->
-		<paper-icon-button id="cloneButton"
-			icon="content-copy"
-			on-click="{{toggleDialog}}">
-		</paper-icon-button>
+        <core-tooltip label="Clone Group">
+            <paper-icon-button id="cloneButton"
+                icon="content-copy"
+                on-click="{{toggleDialog}}">
+            </paper-icon-button>
+        </core-tooltip>
 
 		<!-- Edit dialog -->
-		<paper-dialog id="cloneGroupDialog" heading="Clone Group:" backdrop	
+		<paper-dialog id="cloneGroupDialog" heading="Clone Group:" backdrop
 				transition="core-transition-top">
 			<paper-input id="cloneGroupName"
 				required
@@ -54,7 +56,7 @@
 			<h2 class="subtitle">Group Info:</h2>
 
 			<textarea id="cloneGroupInfo" rows="3"></textarea>
-			
+
 			<h2 class="subtitle">Copy across:</h2>
 			<div layout horizontal center style="width: 100%;">
 				<paper-checkbox checked id="memberBox"></paper-checkbox>
@@ -62,13 +64,14 @@
 				<paper-checkbox checked id="tickBox"></paper-checkbox>
 				<div flex>Ticks</div>
 			</div>
-			
+
 			<template if="{{!$.cloneGroupName.invalid}}">
 				<paper-button id="cloneSubmit" class="dialogSubmit" label="CLONE" on-click="{{cloneButtonClicked}}" affirmative></paper-button>
 			</template>
 		</paper-dialog>
 
 	</template>
+    <script src="../js/hardcoded.js"></script>
 	<script>
 	Polymer('clone-group', {
 		domReady: function() {
@@ -87,7 +90,7 @@
 			var api = this.$.cloneAPI;
 
 			api.body = '{"name":"' + name + '", "info":"' + info + '"}';
-			api.url = 'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + this.gid;
+			api.url = ticking_service + '/group/' + this.gid;
 			api.url += (this.$.memberBox.checked) ? '?members=true' : '?members=false';
 			api.url += (this.$.tickBox.checked) ? '&ticks=true' : '&ticks=false';
 

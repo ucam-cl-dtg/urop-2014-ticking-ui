@@ -6,7 +6,7 @@
 <link rel="import" href="../bower_components/core-icons/image-icons.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="date-picker.html">
-<link rel="import" href="date-entry.html">
+<link rel="import" href="time-entry.html">
 
 
 <polymer-element name="add-edit-session" attributes="sheet gid">
@@ -61,7 +61,7 @@
 
 		<!-- Add session API call. -->
 		<toast-ajax id="addSessionAPI"
-			url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets"
+			url="{{ticking_service}}/signups/sheets"
 			method="POST"
 			contentType="application/json"
 			on-core-response="{{addSessionResponse}}"
@@ -73,7 +73,7 @@
 
 		<!-- Edit session API call. -->
 		<toast-ajax id="editSessionAPI"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/' + sheet._id }}"
+			url="{{ticking_service + '/signups/sheets/' + sheet._id }}"
 			method="POST"
 			contentType="application/json"
 			on-core-response="{{editSessionResponse}}"
@@ -134,22 +134,15 @@
 				error="Session date."></date-picker>
 			
 			<core-icon class="big" icon="device:access-time"></core-icon>
-			<paper-input id="startTime" class="datetime"
-				type="time"
-				required 
-				error="Start time." 
-				value="{{startTime}}"
-				on-change="{{validate}}">
-			</paper-input>
+			<time-entry id="startTime" class="datetime"
+				hrs="{{startH}}" mins="{{startM}}"
+				on-input="{{validate}}"></time-entry>
+
 
 			<core-icon class="big" icon="device:access-time"></core-icon>
-			<paper-input id="endTime" class="datetime"
-				type="time"
-				required 
-				error="End time." 
-				value="{{endTime}}"
-				on-change="{{validate}}">
-			</paper-input>
+			<time-entry id="endTime" class="datetime"
+				hrs="{{endH}}" mins="{{endM}}"
+				on-input="{{validate}}"></time-entry>
 		</div>
 
 		<h2>Tickers</h2>
@@ -180,8 +173,10 @@
     <script src="../bower_components/moment/moment.js"></script>
     <script src="../js/prettyDate.js"></script>
     <script src="../js/jsonSanitize.js"></script>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('add-edit-session', {
+			ticking_service: ticking_service,
 
 			domReady: function () {
 				if (this.sheet) {
@@ -189,6 +184,11 @@
 					var endDT   = prettyParse(this.sheet.endTime);
 
 					this.date = startDT.format("YYYY-MM-DD");
+					this.startH = startDT.hour().toString();
+					this.startM = startDT.minute().toString();
+					this.endH = endDT.hour().toString();
+					this.endM = endDT.minute().toString();
+
 					this.startTime = startDT.format("HH:mm");
 					this.endTime = endDT.format("HH:mm");
 				}
@@ -205,12 +205,11 @@
 			},
 
 			validate: function () {
-				console.log(this.$.titleInput.invalid);
 
 				if (!this.$.titleInput.invalid &&
 					this.tickers && this.tickers.length >= 1 &&
 					this.$.date.selectedDate &&
-					this.$.startTime.value && this.$.endTime.value &&
+					this.startH && this.startM && this.endH && this.endM &&
 					!this.$.slotLengthInput.invalid) {
 					this.$.submitButton.disabled = false;
 				}
@@ -241,8 +240,8 @@
 				this.title = this.$.titleInput.inputValue;
 				this.description = this.$.descInput.value;
 				this.location = this.$.locInput.inputValue;
-				this.subStartTime = prettyParse(this.$.date.selectedDate + "T" + this.$.startTime.value);
-				this.subEndTime = prettyParse(this.$.date.selectedDate + "T" + this.$.endTime.value);
+				this.subStartTime = prettyParse(this.$.date.selectedDate + "T" + this.$.startTime.hrs + ":" + this.$.startTime.mins);
+				this.subEndTime = prettyParse(this.$.date.selectedDate + "T" + this.$.endTime.hrs + ":" + this.$.endTime.mins);
 				this.slotLength = this.$.slotLengthInput.inputValue;
 
 				console.log(prettyDateTime(this.subStartTime),

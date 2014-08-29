@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
-<link rel="import" href="../../bower_components/core-icons/image-icons.html">
+<link rel="import" href="../custom-icons/custom-icons.html">
 <link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="../../bower_components/core-tooltip/core-tooltip.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
@@ -20,7 +20,7 @@
         <toast-ajax
                 id="ajaxLoadOverview"
                 auto
-                url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api_DEMO/group/' + gid + '/overview/csv'}}"
+                url="{{ticking_service + '/group/' + gid + '/overview/csv'}}"
                 handleAs="text"
                 on-core-response="{{overviewLoaded}}"
 
@@ -34,12 +34,10 @@
         <!-- API call: adds user if not already registered. -->
         <core-ajax id="ajaxCrsId"
                    auto
-                   url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/raven/login"
+                   url="{{ticking_service}}/raven/login"
                    handleAs="json"
                    on-core-response="{{loginResponse}}">
         </core-ajax>
-
-        <!--url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + gid + '/overview/csv'}}"-->
 
         <div id="overviewMainContainer" style="max-height: 600px; position: relative;" layout vertical>
             <div layout horizontal style="background: #2D91EC; color: #ABD3F7" class="overview-header-height">
@@ -54,11 +52,11 @@
                     </div>
 
                     <!-- User details column headers -->
-                    <div layout horizontal>
+                    <div layout horizontal style="max-width: 465px;">
                         <core-tooltip label="Progress" position="top">
 
                         <div class="auto-fix-container">
-                            <core-icon class="{{'auto-fix' + (sortField == 'progress' ? ' icon-white' : '')}}" icon="image:auto-fix" on-tap="{{sortProgress}}"></core-icon>
+                            <core-icon class="{{'auto-fix' + (sortField == 'progress' ? ' icon-white' : '')}}" icon="custom-icons:progress-bar" on-tap="{{sortProgress}}"></core-icon>
                         </div>
                         </core-tooltip>
                     <template repeat="{{item in ['Name', 'Forename(s)', 'College']}}" layout horizontal>
@@ -102,7 +100,7 @@
                 <div layout vertical>
                     <div id="userHeadings" style="overflow: hidden;">
                         <overview-users-bar sortField="{{sortField}}" users="{{displayUsers}}" userId="{{userId}}"></overview-users-bar>
-                        <div style="height: 30px;"></div>
+                        <div style="height: 20px;"></div>
                     </div>
                 </div>
 
@@ -121,15 +119,20 @@
             </div>
         </div>
     </template>
+    <script src="../../js/hardcoded.js"></script>
     <script>
         Polymer('overview-card', {
+            ticking_service: ticking_service,
+
             created: function() {
                 this.scrollAreaLeft = 0;    //used by overview list to determine if the tooltips should be pointing left
                                             //or right in order to not be cut off screen
 
                 this.iconCodeDict = {};
                 this.iconCodeDict["PASSED"] = "P";
+                this.iconCodeDict["PASSED*"] = "PS";
                 this.iconCodeDict["FAILED"] = "F";
+                this.iconCodeDict["SU"]     = "SU";
                 this.iconCodeDict["UP"]     = "UP";
                 this.iconCodeDict["UF"]     = "UF";
                 this.iconCodeDict["I"]      = "I";
@@ -242,7 +245,9 @@
                 comparisonDict["I"]  = 2;
                 comparisonDict["UF"] = 3;
                 comparisonDict["UP"] = 4;
-                comparisonDict["P"]  = 5;
+                comparisonDict["SU"] = 5;
+                comparisonDict["P"]  = 6;
+                comparisonDict["PS"]  = 7;
 
                 this.users.sort(function(a, b) {
                     return params.mode * (comparisonDict[a.displayStrings[params.selectedIndex].iconCode] -
@@ -292,7 +297,8 @@
                         college: temp[i].college,
                         displayStrings: temp[i].displayStrings.length == 0 ? [{iconCode: "", tooltip: "", index: 0}] : temp[i].displayStrings,
                         cssClass: i % 2 == 0 ? "overview-even" : "overview-odd",
-                        displayWidth: 'width: ' + temp[i].progress * 4.75 + 'px'
+                        displayWidth: 'width: ' + temp[i].progress * 4.75 + 'px',
+                        leftOffset: 'left: ' + temp[i].progress * -4.75 + 'px'
                     }
                 }
             },
@@ -427,21 +433,23 @@
 
                 this.scrollAreaWidth = parseInt(getComputedStyle(this.$.scrollArea).getPropertyValue("width"));
 
-                /*console.log("saw", this.scrollAreaWidth, "ovmac", this.$.overviewMainContainer.style.width);
-                if (this.scrollAreaWidth > this.$.overviewMainContainer.style.width - 440) {
+//                console.log("saw", this.scrollAreaWidth, "ovmac", this.$.overviewMainContainer.style.width);
+//                console.log(this.scrollAreaWidth, parseInt(getComputedStyle(this.$.overviewMainContainer).getPropertyValue("width")));
+                if (this.scrollAreaWidth > parseInt(getComputedStyle(this.$.overviewMainContainer).getPropertyValue("width")) - 470) {
                     //horizontal scroll bar exists
-                    this.$.overviewMainContainer.style.height = "1000px";
-                } else {*/
+//                    console.log("hsb!");
+                    this.$.overviewMainContainer.style.height = 34 * this.displayUsers.length + 165 + "px";
+                } else {
                     if (this.displayUsers != undefined) {
                         this.$.overviewMainContainer.style.height = 34 * this.displayUsers.length + 144 + "px";
                     }
-                //}
-
-                if (34 * this.displayUsers.length > 600-144) {
-                    this.$.scrollArea.style.overflowY = "auto";
-                } else {
-                    this.$.scrollArea.style.overflowY = "hidden";
                 }
+
+//                if (34 * (this.displayUsers.length - 0.5) > 600-144) {
+//                    this.$.scrollArea.style.overflowY = "auto";
+//                } else {
+//                    this.$.scrollArea.style.overflowY = "hidden";
+//                }
 
 
                 this.job('update-again', function() {

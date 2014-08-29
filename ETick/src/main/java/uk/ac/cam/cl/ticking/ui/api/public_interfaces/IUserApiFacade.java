@@ -119,5 +119,16 @@ public interface IUserApiFacade {
 	@Consumes("text/plain")
 	public abstract Response addSSHKey(@Context HttpServletRequest request,
 			String key);
+	
+	/**
+	 * Gets the lists of ticks and forks to be done by the current user
+	 * 
+	 * @param request
+	 * @return todobean object
+	 */
+	@GET
+	@Path("/todo")
+	@Produces("application/json")
+	public abstract Response getToDo(@Context HttpServletRequest request);
 
 }

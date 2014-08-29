@@ -1,8 +1,11 @@
 package uk.ac.cam.cl.ticking.ui.api.facades;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
@@ -20,10 +23,13 @@ import uk.ac.cam.cl.ticking.ui.actors.Group;
 import uk.ac.cam.cl.ticking.ui.actors.Role;
 import uk.ac.cam.cl.ticking.ui.actors.User;
 import uk.ac.cam.cl.ticking.ui.api.public_interfaces.IUserApiFacade;
+import uk.ac.cam.cl.ticking.ui.api.public_interfaces.beans.ToDoBean;
 import uk.ac.cam.cl.ticking.ui.configuration.Configuration;
 import uk.ac.cam.cl.ticking.ui.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.ticking.ui.dao.IDataManager;
+import uk.ac.cam.cl.ticking.ui.ticks.Fork;
 import uk.ac.cam.cl.ticking.ui.ticks.Tick;
+import uk.ac.cam.cl.ticking.ui.util.DeadlineFirstComparator;
 import uk.ac.cam.cl.ticking.ui.util.PermissionsManager;
 import uk.ac.cam.cl.ticking.ui.util.Strings;
 
@@ -82,6 +88,8 @@ public class UserApiFacade implements IUserApiFacade {
 	 */
 	@Override
 	public Response getUserFromCrsid(HttpServletRequest request, String crsid) {
+		//Currently unused but may be needed in future for permissions checking
+		@SuppressWarnings("unused")
 		String myCrsid = (String) request.getSession().getAttribute(
 				"RavenRemoteUser");
 
@@ -255,5 +263,42 @@ public class UserApiFacade implements IUserApiFacade {
 		user.setSsh(key);
 		db.saveUser(user);
 		return Response.status(Status.CREATED).entity(user).build();
+	}
+	
+	@Override
+	public Response getToDo(HttpServletRequest request) {
+		String crsid = (String) request.getSession().getAttribute(
+				"RavenRemoteUser");
+		
+		/* Get the user object, returning if not found */
+		User user = db.getUser(crsid);
+
+		if (user == null) {
+			log.error("User " + crsid + " requested user " + crsid
+					+ " to get todos, but they couldn't be found");
+			return Response.status(Status.NOT_FOUND).entity(Strings.MISSING)
+					.build();
+		}
+		
+		Set<Tick> ticks = new HashSet<>();
+		List<ToDoBean> todos = new ArrayList<>();
+		
+		for (Group group : db.getGroups(crsid, Role.SUBMITTER)) {
+			for (String tickId : group.getTicks()) {
+				Tick tick = db.getTick(tickId);
+				ticks.add(tick);
+			}
+		}
+		
+		List<Tick> tickList = new ArrayList<>(ticks);
+		Collections.sort(tickList, new DeadlineFirstComparator());
+		
+		for (Tick tick : tickList) {
+			Fork fork = db.getFork(Fork.generateForkId(crsid, tick.getTickId()));
+			todos.add(new ToDoBean(tick, fork));
+		}
+		
+		return Response.ok(todos).build();
+		
 	}
 }

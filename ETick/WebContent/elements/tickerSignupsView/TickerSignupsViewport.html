@@ -68,7 +68,7 @@
 	<!-- Kick someone out of a slot -->
     <toast-ajax
 		id="ajaxKick"
-        url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/students/{{crsId}}/ticks/{{tickId}}"
+        url="{{ticking_service}}/signups/students/{{crsId}}/ticks/{{tickId}}"
 		method = "DELETE"
 		contentType="application/json"
 		handleAs="text"
@@ -139,12 +139,14 @@
   </template>
   <script src="../../bower_components/moment/moment.js"></script>
   <script src="../../js/prettyDate.js"></script>
+  <script src="../../js/hardcoded.js"></script>
   <script>
   Polymer('ticker-signups-viewport', {
+			ticking_service: ticking_service,
 			reloadInterval: null,
 			refresh: function() {
 				this.fire("hide-report");
-				this.pathLoadTickers = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.sessionId;
+				this.pathLoadTickers = ticking_service + "/signups/sheets/" + this.sessionId;
 				if (this.location === "") {
 					this.locationDisplayed = "Location: No location is available";
 				}
@@ -246,7 +248,7 @@
 			tickerChange: function(event) {
 				if(event.target.checked) {
 					this.ticker = event.target.label;
-					this.pathLoadSlots = "http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/sheets/" + this.sessionId + "/tickers/" + this.ticker;
+					this.pathLoadSlots = ticking_service + "/signups/sheets/" + this.sessionId + "/tickers/" + this.ticker;
 					this.$.ajaxLoadSlots.go();
 					this.fire("hide-report");
 				}

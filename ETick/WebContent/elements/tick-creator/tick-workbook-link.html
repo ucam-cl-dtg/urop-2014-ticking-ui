@@ -1,0 +1,44 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<polymer-element name="tick-workbook-link" attributes="link">
+    <template>
+        <link rel="stylesheet" href="tick-creator-card.css">
+        <style>
+            #inputResources {
+                width: 100%;
+                outline: none;
+                font: inherit;
+                margin: 8px 0 8px 0;
+                padding: 0.5rem 0;
+                border: none;
+                border-bottom: 1px solid #757575;
+                overflow: hidden;
+            }
+        </style>
+
+        <h4>Resources</h4>
+        <br>
+        <span layout horizontal>
+            <!--<paper-input flex inputValue="{{link}}" label="Link..."></paper-input>-->
+            <textarea on-keyup="{{changedTextArea}}" on-focus="{{changedTextArea}}" rows="1" id="inputResources" placeholder="Links separated by new lines...">{{link}}</textarea>
+        </span>
+    </template>
+    <script>
+        Polymer('tick-workbook-link', {
+            changedTextArea: function() {
+                if (this.$.inputResources.scrollHeight > this.$.inputResources.clientHeight) {
+                    this.$.inputResources.style.height = this.$.inputResources.scrollHeight + "px";
+                }
+            },
+
+            linkChanged: function() {
+                console.log("link changed!");
+                this.job('job-title', function() {
+                    this.changedTextArea();
+                }, 200);
+
+            }
+        })
+    </script>
+</polymer-element>

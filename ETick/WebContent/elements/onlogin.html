@@ -7,7 +7,7 @@
 	<template>
 			<!-- API call: adds user if not already registered. -->
 			<core-ajax id="loginAjax"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/raven/login"
+				url="{{ticking_service}}/raven/login"
 				handleAs="json"
 				on-core-response="{{loginResponse}}"
 				on-core-error="{{loginError}}">
@@ -15,14 +15,14 @@
 
 			<!-- API call to populate sidebar menu. -->
 			<core-ajax id="sidebarAjax"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/groups"
+				url="{{ticking_service}}/user/groups"
 				handleAs="json"
 				on-core-response="{{sidebarResponse}}">
 			</core-ajax>
 			
 			<!-- API call to populate sidebar tick menu. -->
 			<core-ajax id="sidebarTickAjax"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/ticks"
+				url="{{ticking_service}}/user/ticks"
 				handleAs="json"
 				on-core-response="{{sidebarTickResponse}}">
 			</core-ajax>
@@ -30,13 +30,15 @@
 			<!-- API call to logout. -->
 			<core-ajax id="logoutAjax"
 				method="delete"
-				url="http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/raven/logout">
+				url="{{ticking_service}}/raven/logout">
 			</core-ajax>
 
 
 	</template>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('on-login', {
+			ticking_service: ticking_service,
 			ready: function() {
 				this.$.loginAjax.go();
 			},

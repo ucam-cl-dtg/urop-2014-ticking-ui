@@ -1,0 +1,80 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="toast-ajax/toast-ajax.html">
+<link rel="import" href="box-list.html">
+<link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="tick-box.html">
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
+<polymer-element name="todo-card" attributes="data rows">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			h1 {	
+				font-size: 1.8rem;
+				font-weight: 100;
+				padding: 0 0 0 10px;
+			}
+		</style>
+
+		<div id="headerBar" layout horizontal center>
+			<h1 flex>To do List ({{data ? number : 0}})</h1>
+			<search-box id="searchBox" placeholder="Search..."></search-box>
+			<core-tooltip id="toggleTooltip" label="{{(passedFilterOn ? 'Show' : 'Hide') + ' past ticks.'}}" 
+				position="left">
+				<paper-icon-button id="showPassed" icon="more-horiz" on-click="{{showPassedClicked}}"></paper-icon-button>
+			</core-tooltip>
+		</div>
+
+		<box-list id="list" maxRows="5">
+			<template repeat="{{tickFork in data | tickListFilter($.searchBox.query) | passedFilter(passedFilterOn)}}">
+				<tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
+			</template>
+		</box-list>
+
+	</template>
+	<script>
+		Polymer('todo-card', {
+			domReady: function () {
+				this.$.toggleTooltip.setPosition();
+			},
+
+			passedFilterOn: true,
+
+			tickListFilter: function(items, q) {
+				if (items && q) {
+					return items.filter(this.tickFilter.bind(this));
+				}
+				return items;
+			},
+
+			tickFilter: function(item) {
+				var q = this.$.searchBox.query.toLowerCase();
+				return (item.tick.name.toLowerCase().indexOf(q) > -1 ||
+						item.tick.author.toLowerCase().indexOf(q) > -1);
+			},
+
+			passedFilter: function(items, toFilter) {
+				if (!items || !toFilter) {
+					this.number = items.length;
+					return items;
+				}
+				else {
+					var tmp = items.filter(function (item) {
+						return !item.tick.deadline || !(moment(item.tick.deadline) < moment());
+					});
+					this.number = tmp.length;
+				}
+				return tmp;
+			},
+
+			showPassedClicked: function () {
+				this.passedFilterOn = !this.passedFilterOn;
+			}
+		});
+	</script>
+</polymer-element>

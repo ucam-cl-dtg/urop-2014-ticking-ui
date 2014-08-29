@@ -28,7 +28,7 @@
 
 		<!-- User roles API call. -->
 		<toast-ajax id="roleAjax"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/user/' + gid + '/roles'}}"
+			url="{{ticking_service + '/user/' + gid + '/roles'}}"
 			handleAs="json" on-core-response="{{roleResponse}}"
 
             popUpError
@@ -38,7 +38,7 @@
 
 		<!-- Available signup sheets API call. -->
 		<toast-ajax id="sheetListAPI"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/signups/groups/' + gid }}"
+			url="{{ticking_service + '/signups/groups/' + gid }}"
 			handleAs="json"
 			on-core-response="{{sheetListResponse}}"
             
@@ -68,14 +68,10 @@
                         </p>
 						<span layout horizontal end end-justified flex>
 							<template if="{{isAuthor || isAdmin}}">
-								<core-tooltip label="Edit">
-									<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
-								</core-tooltip>
-								<core-tooltip label="Clone">
-									<clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
-								</core-tooltip>
-								<core-tooltip label="Delete" class="delete-tooltip">
-									<paper-icon-button id="deleteButton" icon="delete" on-click="{{deleteClicked}}"></paper-icon-button>
+								<edit-group id="groupEditButton" gid="{{gid}}" name="{{name}}" info="{{info}}"></edit-group>
+							    <clone-group id="groupCloneButton" gid="{{gid}}" name="{{name}}"></clone-group>
+								<core-tooltip label="Delete" class="delete-tooltip" style="right: 5px;">
+									<paper-icon-button id="deleteButton" icon="delete" on-click="{{deleteClicked}}" style="top: -4px; left: 5px;"></paper-icon-button>
 								</core-tooltip>
 							</template>
 						</span>
@@ -99,12 +95,14 @@
             <span id="ticks" hidden>
                 <tick-list gid="{{gid}}" 
                 	on-fork-clicked="{{forkClickedHandler}}"
-                	canFork="{{isSubmitter||isAdmin}}"></tick-list>
+                	canFork="{{isSubmitter||isAdmin}}"
+                    id="tickList"
+                    maxRows="5"></tick-list>
             </span>
 
             <!-- Group Members Tab -->
             <span id="members" hidden>
-                <group-members gid="{{gid}}" allowAdd="{{isAuthor||isAdmin}}" rows="5"></group-members>
+                <group-members gid="{{gid}}" allowAdd="{{isAuthor||isAdmin}}"></group-members>
             </span>
 
             <!-- Ticking Sessions Tab -->
@@ -134,7 +132,8 @@
                                repoName="{{repoName}}"
                                tickObj="{{selectedTickObj}}"
                                lastTickedBy="{{lastTickedBy}}"
-                               lastTickedOn="{{lastTickedOn}}">
+                               lastTickedOn="{{lastTickedOn}}"
+                               on-status-changed="{{forkStatusUpdated}}">
                     </tick-card>
                 </main-card>
             </template>
@@ -180,8 +179,11 @@
 
 
 	</template>
+    <script src="../js/hardcoded.js"></script>
 	<script>
 		Polymer('x-group', {  
+
+            ticking_service: ticking_service,
 
 			domReady: function () {
 				this.formattedEditedOn = this.formatDate(this.editedOn);
@@ -263,7 +265,7 @@
 					showAddEditSession: true,
 					gid: this.gid,
 					sheet: null
-				}
+				};
 				this.showTickerSignup = false;
 			},			
 			
@@ -292,7 +294,11 @@
 
 			deleteClicked: function () {
 				this.$.deleteGroup.$.confirm.toggle();
-			}
+			},
+
+            forkStatusUpdated: function(e, detail) {
+                this.$.tickList.forkStatusUpdated(detail);
+            }
 		});
 	</script>
 </polymer-element>

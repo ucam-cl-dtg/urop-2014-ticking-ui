@@ -178,7 +178,6 @@ public class AuthManager {
 		LDAPUser u;
 		User user;
 		try {
-			// TODO async
 			u = LDAPQueryManager.getUser(crsid);
 			boolean notStudent = academicConfig.getConfig().represents(u);
 			boolean admin = adminConfig.getConfig().isAdmin(crsid);

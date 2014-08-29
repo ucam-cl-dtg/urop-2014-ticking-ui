@@ -25,7 +25,7 @@
 		<!-- Edit group API. -->
 		<toast-ajax id="editAPI"
 			method="PUT"
-			url="{{'http://urop2014.dtg.cl.cam.ac.uk/UROP_UI_DEMO/api/group/' + gid }}"
+			url="{{ticking_service + '/group/' + gid }}"
 			on-core-response="{{editResponse}}"
 			handleAs="json"
 			contentType="application/json"
@@ -37,10 +37,12 @@
 		</toast-ajax>
 
 		<!-- Edit button. -->
-		<paper-icon-button id="editButton"
-			icon="create"
-			on-click="{{toggleDialog}}">
-		</paper-icon-button>
+        <core-tooltip label="Edit Group">
+            <paper-icon-button id="editButton"
+                icon="create"
+                on-click="{{toggleDialog}}">
+            </paper-icon-button>
+        </core-tooltip>
 
 		<!-- Edit dialog -->
 		<paper-dialog id="editGroupDialog" heading="Edit Group:" backdrop	
@@ -62,6 +64,7 @@
 		</paper-dialog>
 
 	</template>
+	<script src="../js/hardcoded.js"></script>
 	<script>
 	Polymer('edit-group', {
 		domReady: function() {
