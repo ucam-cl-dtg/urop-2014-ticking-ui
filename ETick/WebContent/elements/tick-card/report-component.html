@@ -30,7 +30,7 @@
     <script>
         Polymer('report-component', {
             showReport: function() {
-                var regex = /urop2014\.dtg\.cl\.cam\.ac\.uk\/(.*)\.git/;
+                var regex = /^[^:]*:\/\/[^/]*\/(.*)\.git$/;
                 this.repoName = this.repo.match(regex)[1];
 
                 //having set repoName, databinding awesomeness will cause the report to automatically animate up
