@@ -71,7 +71,7 @@
 		<create-group id="createGroup" on-group-created="{{groupCreatedHandler}}"></create-group>
 
 		<!-- Page content cards. -->
-		<template id="dashTemp" if="{{showDash}}">
+		<template id="dashTemp" if="{{user && showDash}}">
 			<user-dash id="dash" data="{{user}}"></user-dash>
 		</template>
 
