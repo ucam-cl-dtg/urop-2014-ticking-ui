@@ -53,8 +53,12 @@
                     //Passed automated tests.
                     this.statusCode = "UP";
                 } else if (this.fork.humanPass) {
-                    //Passed by ticker
-                    this.statusCode = "P";
+                	//Passed by ticker
+                    if (this.fork.star) {
+                    	this.statusCode = "PS";
+                    } else {
+                    	this.statusCode = "P";
+                    }
                 } else {
                     //invalid fork object state
                     this.statusCode = "?";
