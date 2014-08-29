@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="status-icon/status-icon.html">
 <link rel="import" href="date-calendar.html">
 
 <polymer-element name="tick-box" attributes="tick fork">
@@ -7,7 +8,7 @@
 		
 		<div layout horizontal center id="container">
             <paper-ripple class="recenteringTouch" fit></paper-ripple>
-			<status-icon id="statusIcon" big="true" mode="{{statusCode}}"></status-icon>
+			<status-icon id="statusIcon" big="true" mode="{{statusCode}}" star="{{star}}"></status-icon>
 
 			<!-- <date-calendar datetime="{{tick.deadline}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>-->
 			<div layout vertical end flex class="textContainer">
@@ -33,6 +34,10 @@
 
             deadlinePassedChanged: function() {
                 this.forkChanged();
+            },
+
+            tickChanged: function() {
+                this.star = this.tick.star;
             },
             
             forkChanged: function() {

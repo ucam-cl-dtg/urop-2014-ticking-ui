@@ -173,13 +173,19 @@
                                    }
 
                                    var iconCode = el.split(" (")[0];
+
+                                   var star = iconCode.lastIndexOf("*") > -1;
+
+                                   if (iconCode != "PASSED*") {
+                                       iconCode = iconCode.replace("*", "");
+                                   }
                                    var tooltip = el.split(" (")[1].replace(")", "");
 
                                    if (iconCodeDict.hasOwnProperty(iconCode)) {
                                        iconCode = iconCodeDict[iconCode];
                                    }
 
-                                   return {iconCode: iconCode, tooltip: tooltip, index: index};
+                                   return {iconCode: iconCode, tooltip: tooltip, index: index, star: star};
                                })
                    }
                 });
