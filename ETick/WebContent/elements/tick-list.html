@@ -64,20 +64,24 @@
 			},
 
             forkStatusUpdated: function(detail) {
-                if (detail.statusCode == "-") {
-                    return;
-                }
-
                 this.tickForks.map(function(el) {
                     if (el.tick._id == detail.tickId) {
-                        el.statusCode = detail.statusCode;
+                        var newFork = {
+                            forked: detail.forkBean.forked,
+                            reportAvailable: detail.forkBean.reportAvailable,
+                            unitPass: detail.forkBean.unitPass,
+                            humanPass: detail.forkBean.humanPass,
+                            signedUp: detail.forkBean.signedUp,
+                            star: detail.forkBean.star
+                        };
+                        el.fork = newFork;
                     }
-                })
+                    return el;
+                });
             },
 
 			tickListFilter: function(items, q) {
 				if (items && q) {
-					this.$.list.resize();
 					return items.filter(this.tickFilter.bind(this));
 				}
 				return items;
