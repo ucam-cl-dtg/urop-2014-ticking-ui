@@ -58,16 +58,23 @@
 	</template>
 	<script>
 		Polymer('box-list', {
+
+			domReady: function () {
+				// this.resize();
+			},
+
 			multi: false,
 
 			selector: false,
 
-			domReady: function () {
-				console.log(this);
+			resize: function () {
 				if (this.maxRows) {
-					var boxHeight = this.querySelector('.itemBox').clientHeight;
-					var listHeight = this.maxRows * boxHeight;
-					this.style.maxHeight = listHeight + 'px';
+					var box = this.querySelector('.itemBox');
+					if (box) {
+						var boxHeight = box.clientHeight;
+						var listHeight = this.maxRows * boxHeight;
+						this.style.maxHeight = listHeight + 'px';
+					}
 				}
 			}
 			

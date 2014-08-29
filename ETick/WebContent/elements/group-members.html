@@ -138,6 +138,7 @@
 				this.searchQuery = newValue;
                 /* Reselect selected members */
                 this.$.members.$.list.$.selector.selectedChanged();
+                console.log(newValue, this.$.members.$.list.$.selector.selection);
 			},
 
 			personSelectionChanged: function () {
