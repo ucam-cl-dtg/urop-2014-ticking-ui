@@ -67,7 +67,7 @@ We also need to configure the system a bit more, before the project can be deplo
   \item However, to avoid the need to change the {\tt umask} of Apache, the Tickl system tries to avoid creating files for gitolite (exception is adding SSH keys, as gitolite won't need to delete them).
     So we use an SSH command to create repositories, so include {\tt command=\textquotedbl{}\~{}git{}/configure\_gitolite.sh tomcat7\textquotedbl{} Tomcat7 SSH public key} in \gitoliteAuthkeys{}.
     Do this outside of the {\tt gitolite start/end} comment blocks.
-    You should also connect from {\tt tomcat7} to {\tt git} using SSH (with the {\tt RSA} key), so that the host key is known, by running {\tt ssh git@localhost -o HostKeyAlgorithm=ssh-rsa}.
+    You should also connect from {\tt tomcat7} to {\tt git} using SSH (with the {\tt RSA} key), so that the host key is known, by running {\tt ssh git@localhost -o HostKeyAlgorithms=ssh-rsa}.
 
   \item The contents of {\tt \~{}git{}/configure\_gitolite.sh} should be
     \begin{verbatim}
@@ -153,6 +153,8 @@ Then for each of the directories {\tt urop-2014-git/server}, {\tt urop-2014-sign
 Installing each war file is then just a matter of moving it into \tomcatwd{}{\tt/webapps}.
 
 The sample configuration files for the project are in {\tt urop-2014-ticking-ui/defaults}, copy them to \tomcatwd{}{} and edit them to suit the set-up.
+
+After you edit them, you may want to restart the server for changes to take effect fully.
 
 \section{Maintenance}
 The databases should not be manually edited, as this can cause consistency problems.
