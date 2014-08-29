@@ -31,6 +31,7 @@
 		Polymer('person-list', {
 
 			queryChanged: function () {
+				console.log(query, this.$.list.selector.selected, this.$.list.selector.selection);
 				this.$.list.$.selector.updateSelected();
 			},
 
