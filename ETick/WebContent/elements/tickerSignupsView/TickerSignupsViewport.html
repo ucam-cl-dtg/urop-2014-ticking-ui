@@ -327,7 +327,7 @@
         kickDone : function() {
             this.$.ajaxLoadSlots.go();
         },
-        selfBook: function() {
+        selfBook: function(event) {
             var startTime = event.target.id;
             this.startTime = prettyParse(startTime).valueOf();
             var MyObject = {
@@ -338,7 +338,7 @@
             this.$.ajaxMarkAsUnavailable.body = JSON.stringify(MyObject);
             this.$.ajaxMarkAsUnavailable.go();
         },
-        tickerUnsignup: function() {
+        tickerUnsignup: function(event) {
             var startTime = event.target.id;
             this.startTime = prettyParse(startTime).valueOf();
             console.log("self unbooking");

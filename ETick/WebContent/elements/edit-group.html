@@ -67,12 +67,13 @@
 	<script src="../js/hardcoded.js"></script>
 	<script>
 	Polymer('edit-group', {
-        ticking_service: ticking_service,
 		domReady: function() {
 			this.newName = this.name;
 			this.newInfo = this.info;
 			
 		},
+		
+		ticking_service: tick_service,
 
 		toggleDialog: function () {
 			this.$.editGroupDialog.toggle();
@@ -90,7 +91,9 @@
 		editResponse: function () {
 			console.log('edit response');
 			var group = this.$.editAPI.response;
-			this.fire('group-edited', group);
+			this.async(function () {
+				this.fire('group-edited', group);
+			}, null, 500);
 		}
 
 	});
