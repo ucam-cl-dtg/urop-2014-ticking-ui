@@ -7,152 +7,117 @@
 <link rel="import" href="box-list.html">
 <link rel="import" href="add-tick.html">
 
-<polymer-element name="tick-list" attributes="gid isAuthor canFork maxRows">
-	<template>
+<polymer-element name="tick-list" attributes="gid canFork">
+    <template>
         <link rel="stylesheet" href="../css/shared-styles.css">
-		<style>
-			:host {
-				display: block;
-			}
-			h1 {
-				font-size: 1.8rem;
-				font-weight: 100;
-				padding: 0 0 0 10px;
-			}
-	    </style>
+        <style>
+            :host {
+                display: block;
+            }
+            h1 {
+                font-size: 1.8rem;
+                font-weight: 100;
+                padding: 0 0 0 10px;
+            }
+        </style>
+        <toast-ajax
+                auto
+                id="tickListAPI"
+                url="{{ticking_service + '/tick/list/' + gid}}"
+                handleAs="json"
+                on-core-response="{{tickListResponse}}"
 
-		<toast-ajax
-			auto
-			id="tickListAPI"
-			url="{{ticking_service + '/tick/list/' + gid}}"
-			handleAs="json"
-			on-core-response="{{tickListResponse}}"
+                popUpError
+                captureError
+                waitMessage="Loading ticks....">
+        </toast-ajax>
 
-			popUpError
-			captureError
-			waitMessage="Loading ticks....">
-		</toast-ajax>
+        <!-- Add Tick Element -->
+        <add-tick id="tickAdder" gid="{{gid}}" on-tick-added="{{tickAddedHandler}}"></add-tick>
 
-		<!-- Add Tick Element -->
-		<add-tick id="tickAdder" gid="{{gid}}" on-tick-added="{{tickAddedHandler}}"></add-tick>
-
-		<!-- Delete tick from group API. -->
-		<toast-ajax id="deleteTickAPI"
-			method="DELETE"
-			on-core-response="{{deleteTickResponse}}"
-			on-core-error="{{deleteTickError}}"
-
-			popUpResponse
-			responseMessage="Successfully removed tick from group."
-			waitBeforeToast="500"
-            waitMessage="Removing tick..."
-            popUpError
-            captureError>
-    	</toast-ajax>
-
-		<!-- Tick list card header. -->
-		<div id="headerBar" layout horizontal center>
-			<!--<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>-->
+        <!-- Tick list card header. -->
+        <div id="headerBar" layout horizontal center>
+            <!--<h1 flex>Ticks ({{ticks ? ticks.length : 0}})</h1>-->
             <span flex></span>
-			<search-box id="searchBox" placeholder="Search..."></search-box>
-			<template if="{{isAuthor}}">
-	            <core-tooltip label="Add">
-				    <paper-icon-button id="addTickButton" icon="add" on-click="{{addTickClicked}}"></paper-icon-button>
-	            </core-tooltip>
-	            <core-tooltip label="Remove" class="delete-tooltip">
-				    <paper-icon-button id="deleteTickButton" icon="delete" on-click="{{deleteTickClicked}}"></paper-icon-button>
-	            </core-tooltip>
-	        </template>
-		</div>
+            <search-box id="searchBox" placeholder="Search..."></search-box>
+            <core-tooltip label="Add Tick" class="add-tick-tooltip">
+                <paper-icon-button id="addTickButton" icon="add" on-click="{{addTickClicked}}"></paper-icon-button>
+            </core-tooltip>
+        </div>
 
-		<!-- Tick list. -->
-		<box-list id="list" selector on-core-select="{{selected}}" valueattr="tick" maxRows="{{maxRows}}">
-			<template repeat="{{tickFork in tickForks | tickListFilter($.searchBox.query)}}">
-				<tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
-			</template>
-		</box-list>
+        <!-- Tick list. -->
+        <box-list id="list" selector on-core-select="{{selected}}" valueattr="tick">
+            <template repeat="{{tickFork in tickForks | tickListFilter($.searchBox.query)}}">
+                <tick-box class="itemBox" tick="{{tickFork.tick}}" fork="{{tickFork.fork}}"></tick-box>
+            </template>
+        </box-list>
 
-	</template>
-	<script src="../js/hardcoded.js"></script>
-	<script>
-		Polymer('tick-list', {
-
-			ticking_service: ticking_service,
-
-			tickListResponse: function () {
+    </template>
+    <script src="../js/hardcoded.js"></script>
+    <script>
+        Polymer('tick-list', {
+            ticking_service: ticking_service,
+            tickListResponse: function () {
                 this.tickForks = this.$.tickListAPI.response;
-			},
-
-            forkStatusUpdated: function(detail) {
-                if (detail.statusCode == "-") {
-                    return;
-                }
-
-                this.tickForks.map(function(el) {
-                    if (el.tick._id == detail.tickId) {
-                        el.statusCode = detail.statusCode;
-                    }
-                })
             },
 
-			tickListFilter: function(items, q) {
-				if (items && q) {
-					this.$.list.resize();
-					return items.filter(this.tickFilter.bind(this));
-				}
-				return items;
-			},
+            forkStatusUpdated: function(detail) {
+                this.tickForks.map(function(el) {
+                    if (el.tick._id == detail.tickId) {
+                        var newFork = {
+                            deadlinePassed: detail.forkBean.deadlinePassed,
+                            forked: detail.forkBean.forked,
+                            reportAvailable: detail.forkBean.reportAvailable,
+                            unitPass: detail.forkBean.unitPass,
+                            humanPass: detail.forkBean.humanPass,
+                            signedUp: detail.forkBean.signedUp
+                        };
+                        el.fork = newFork;
+                    }
+                    return el;
+                });
+            },
 
-			tickFilter: function(item) {
-				var q = this.$.searchBox.query.toLowerCase();
-				return (item.tick.name.toLowerCase().indexOf(q) > -1 ||
-						item.tick.author.toLowerCase().indexOf(q) > -1);
-			},
+            tickListFilter: function(items, q) {
+                if (items && q) {
+                    return items.filter(this.tickFilter.bind(this));
+                }
+                return items;
+            },
 
-			selected: function() {
-				var sel = this.$.list.$.selector.selected;
-				this.selectedTickId = sel._id;
-				this.selectedTickIdName = sel.name;
+            tickFilter: function(item) {
+                var q = this.$.searchBox.query.toLowerCase();
+                return (item.tick.name.toLowerCase().indexOf(q) > -1 ||
+                        item.tick.author.toLowerCase().indexOf(q) > -1);
+            },
+
+            selected: function() {
+                var sel = this.$.list.$.selector.selected;
+                this.selectedTickId = sel._id;
+                this.selectedTickIdName = sel.name;
                 this.selectedTickObj = sel;
 
                 if (this.canFork) {
                     this.forkClicked();
                 }
-			},
+            },
 
-			forkClicked: function () {
-				if (this.selectedTickId)
-					this.fire('fork-clicked', {
-						tickId: this.selectedTickId,
-						tickName: this.selectedTickIdName,
+            forkClicked: function () {
+                if (this.selectedTickId)
+                    this.fire('fork-clicked', {
+                        tickId: this.selectedTickId,
+                        tickName: this.selectedTickIdName,
                         tickObj: this.selectedTickObj
-					});
-			},
+                    });
+            },
 
-			tickAddedHandler: function () {
-				this.$.tickListAPI.go();
-			},
+            tickAddedHandler: function () {
+                this.$.tickListAPI.go();
+            },
 
-			addTickClicked: function () {
-				this.$.tickAdder.$.dialog.toggle();
-			},
-
-			deleteTickClicked: function () {
-				if (this.selectedTickId) {
-					this.$.deleteTickAPI.url = ticking_service + "/tick/" + this.selectedTickId + "/" + this.gid
-					this.$.deleteTickAPI.go();
-				}
-			},
-
-			deleteTickResponse: function () {
-				this.$.tickListAPI.go();
-				this.$.list.$.selector.selected = null;
-				this.fire('fork-clicked', {
-						tickId: null,
-						tickName: null,
-                        tickObj: null,
-					});
-			}
-		});
-	</script>
+            addTickClicked: function () {
+                this.$.tickAdder.$.dialog.toggle();
+            }
+        });
+    </script>
 </polymer-element>

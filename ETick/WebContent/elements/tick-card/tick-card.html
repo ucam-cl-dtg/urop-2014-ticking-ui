@@ -11,272 +11,274 @@
 <polymer-element name="tick-card" attributes="tickName tickId sheets
                                               repoName tickObj
                                               lastTickedBy lastTickedOn">
-    <template>
-        <link rel="stylesheet" href="../../css/elements/group-members.css">
-        <link rel="stylesheet" href="tick-components.css">
+<template>
+    <link rel="stylesheet" href="../../css/elements/group-members.css">
+    <link rel="stylesheet" href="tick-components.css">
 
-        <style>
-            :host {
-                margin: 10px;
-            }
-            h1 {
-                margin: 0;
-                padding: 0;
-                font-size: 1.8rem;
-                font-weight: lighter;
-            }
-            h2 {
-                font-weight: normal;
-                font-size: 1.2rem;
-            }
-            paper-input {
-                width: 100%;
-            }
-            core-icon.big {
-                height: 27px;
-                width: 27px;
-                margin-right: 10px;
-                margin-top: 8px;
-            }
-            paper-input.datetime {
-                width: initial;
-                margin-right: 20px;
-            }
-            #submitButton {
-                background: #259b24;
-                color: #fff;
-            }
-            #buttonsContainer paper-button {
-                width: 18%;
-                margin: 20px 10px 10px;
-            }
-        </style>
+    <style>
+        :host {
+            margin: 10px;
+        }
+        h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 1.8rem;
+            font-weight: lighter;
+        }
+        h2 {
+            font-weight: normal;
+            font-size: 1.2rem;
+        }
+        paper-input {
+            width: 100%;
+        }
+        core-icon.big {
+            height: 27px;
+            width: 27px;
+            margin-right: 10px;
+            margin-top: 8px;
+        }
+        paper-input.datetime {
+            width: initial;
+            margin-right: 20px;
+        }
+        #submitButton {
+            background: #259b24;
+            color: #fff;
+        }
+        #buttonsContainer paper-button {
+            width: 18%;
+            margin: 20px 10px 10px;
+        }
+    </style>
 
-        <!-- for managing fork object data -->
-        <fork-service
-                id="forkService"
-                tickId="{{tickId}}"
-                unitPass="{{unitPass}}"
-                humanPass="{{humanPass}}"
-                signedUp="{{signedUp}}"
-                testRunning="{{testRunning}}"
-                reportAvailable="{{reportAvailable}}"
-                repo="{{repo}}"
-                forked="{{forked}}"
-                lastTickedBy="{{lastTickedBy}}"
-                lastTickedOn="{{lastTickedOn}}"
-                forking="{{forking}}">
-        </fork-service>
+    <!-- for managing fork object data -->
+    <fork-service
+            id="forkService"
+            tickId="{{tickId}}"
+            unitPass="{{unitPass}}"
+            humanPass="{{humanPass}}"
+            signedUp="{{signedUp}}"
+            testRunning="{{testRunning}}"
+            reportAvailable="{{reportAvailable}}"
+            repo="{{repo}}"
+            forked="{{forked}}"
+            lastTickedBy="{{lastTickedBy}}"
+            lastTickedOn="{{lastTickedOn}}"
+            forking="{{forking}}">
+    </fork-service>
 
-        <div id="mainContainer" layout horizontal>
+    <div id="mainContainer" layout horizontal>
 
-            <div flex>
-                <div layout horizontal style="margin-right: 10px;">
-                    <h1 flex vertical center>{{tickName}}</h1>
+        <div flex>
+            <div layout horizontal style="margin-right: 10px;">
+                <h1 flex vertical center>{{tickName}}</h1>
 
-                    <div layout vertical>
-                        <div flex></div>
-                        <status-icon style="vertical-align: middle" mode="{{statusCode}}" showText="true" big="true" star="{{star}}"></status-icon>
-                        <div flex></div>
-                    </div>
-
-                    <div style="margin-left: 15px;" layout vertical>
-                        <div flex></div>
-                        <div class="error">{{datetime == null ? 'No deadline' : 'Deadline:&nbsp;'}}</div>
-                        <div flex></div>
-                    </div>
-
-                    <core-collapse style="margin-right: -10px;" opened?="{{datetime != null}}" horizontal>
-                        <div style="padding: 3px;">
-                            <!-- If deadline passed then MD Red 500 else MD green 500 -->
-                            <date-calendar datetime="{{datetime}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>
-                        </div>
-                    </core-collapse>
+                <div layout vertical>
+                    <div flex></div>
+                    <status-icon style="vertical-align: middle" mode="{{statusCode}}" showText="true" big="true"></status-icon>
+                    <div flex></div>
                 </div>
 
-                <core-collapse opened?="{{displayRepo != ' '}}">
-                    <h2>Repository</h2>
-                    <div layout horizontal start>
-                        <input flex readonly="readonly" style="cursor: default; border: none; font-size: 16px;" onclick="this.select()" value="{{displayRepo}}"/>
-                    </div>
-                    <br>
+                <div style="margin-left: 15px;" layout vertical>
+                    <div flex></div>
+                    <div class="error">{{datetime == null ? 'No deadline' : 'Deadline:&nbsp;'}}</div>
+                    <div flex></div>
+                </div>
+
+                <core-collapse style="margin-right: -10px;" opened?="{{datetime != null}}" horizontal>
+                <div style="padding: 3px;">
+                    <!-- If deadline passed then MD Red 500 else MD green 500 -->
+                    <date-calendar datetime="{{datetime}}" hexColorPrimary="{{deadlinePassed ? '#e51c23' : '#259b24'}}"></date-calendar>
+                </div>
                 </core-collapse>
-
-                <core-collapse opened?="{{tickObj.externalReference != null && forked}}">
-                    <h2>Resources</h2>
-                    <template repeat="{{ref in externalReferences}}">
-                        <div><a href="{{ref}}" target="_blank">{{ref}}</a></div>
-                    </template>
-                    <br>
-                    <!-- This div is needed in order to make core-collapse show the <br> -->
-                    <div>&nbsp;</div>
-                </core-collapse>
-
-                <core-collapse opened?="{{!forked}}">
-                    <fork-component
-                            on-create-fork="{{createFork}}"
-                            repo="{{repo}}"
-                            initialising="{{forking}}"
-                            deadlinePassed="{{deadlinePassed}}">
-                    </fork-component>
-                </core-collapse>
-
-                <core-collapse opened?="{{forked}}">
-                    <h2>Submissions</h2>
-                    <submit-component flex
-                                      id="submitComponent"
-                                      tickId="{{tickId}}"
-                                      signedUp="{{signedUp}}"
-                                      testRunning="{{testRunning}}"
-                                      reportAvailable="{{reportAvailable}}"
-                                      unitPass="{{unitPass}}"
-                                      humanPass="{{humanPass}}"
-                                      repo="{{repo}}"
-                                      deadline="{{tickObj.deadline}}">
-                    </submit-component>
-
-                    <h2>Ticking Slot</h2>
-                    <signup-component flex
-                                      sheets="{{sheets}}"
-                                      signedUp="{{signedUp}}"
-                                      unitPass="{{unitPass}}"
-                                      testRunning="{{testRunning}}"
-                                      tickId="{{tickId}}"
-                                      humanPass="{{humanPass}}"
-                                      deadlinePassed="{{deadlinePassed}}">
-                    </signup-component>
-                    </div>
-                </core-collapse>
-
-                <div style="width: 20px;"></div>
             </div>
+
+            <core-collapse opened?="{{displayRepo != ' '}}">
+            <h2>Repository</h2>
+            <div layout horizontal start>
+                <input flex readonly="readonly" style="cursor: default; border: none; font-size: 16px;" onclick="this.select()" value="{{displayRepo}}"/>
+            </div>
+            <br>
+            </core-collapse>
+
+            <core-collapse opened?="{{tickObj.externalReference != null && forked}}">
+            <h2>Resources</h2>
+            <template repeat="{{ref in externalReferences}}">
+                <div><a href="{{ref}}" target="_blank">{{ref}}</a></div>
+            </template>
+            <br>
+            <!-- This div is needed in order to make core-collapse show the <br> -->
+            <div>&nbsp;</div>
+            </core-collapse>
+
+            <core-collapse opened?="{{!forked}}">
+            <fork-component
+                    on-create-fork="{{createFork}}"
+                    repo="{{repo}}"
+                    initialising="{{forking}}"
+                    deadlinePassed="{{deadlinePassed}}">
+            </fork-component>
+            </core-collapse>
+
+            <core-collapse opened?="{{forked}}">
+            <h2>Submissions</h2>
+            <submit-component flex
+                              id="submitComponent"
+                              tickId="{{tickId}}"
+                              signedUp="{{signedUp}}"
+                              testRunning="{{testRunning}}"
+                              reportAvailable="{{reportAvailable}}"
+                              unitPass="{{unitPass}}"
+                              humanPass="{{humanPass}}"
+                              repo="{{repo}}"
+                              deadline="{{tickObj.deadline}}">
+            </submit-component>
+
+            <h2>Ticking Slot</h2>
+            <signup-component flex
+                              sheets="{{sheets}}"
+                              signedUp="{{signedUp}}"
+                              unitPass="{{unitPass}}"
+                              testRunning="{{testRunning}}"
+                              tickId="{{tickId}}"
+                              humanPass="{{humanPass}}"
+                              deadlinePassed="{{deadlinePassed}}">
+            </signup-component>
         </div>
-        <br><br>
-    </template>
-    <script>
-        Polymer('tick-card', {
-            created: function() {
-                this.unitPass = null;
-                this.humanPass = null;
-                this.signedUp = null;
-                this.testRunning = null;
-                this.reportAvailable  = null;
-                this.repo = null;
-                this.displayRepo = null;
-                this.repoName = null;
-                this.tickObj = null;
+        </core-collapse>
+
+        <div style="width: 20px;"></div>
+    </div>
+    </div>
+    <br><br>
+</template>
+<script>
+    Polymer('tick-card', {
+        created: function() {
+            this.unitPass = null;
+            this.humanPass = null;
+            this.signedUp = null;
+            this.testRunning = null;
+            this.reportAvailable  = null;
+            this.repo = null;
+            this.displayRepo = null;
+            this.repoName = null;
+            this.tickObj = null;
+            this.datetime = null;
+            this.deadlinePassed = null;
+        },
+
+        observe: {
+            forked: 'showNewStatusCode',
+            reportAvailable: 'showNewStatusCode',
+            unitPass: 'showNewStatusCode',
+            humanPass: 'showNewStatusCode',
+            deadlinePassed: 'showNewStatusCode',
+            signedUp: 'showNewStatusCode'
+        },
+
+        domReady: function() {
+            var that = this.$;
+            this.$.forkService.addEventListener('test-running', function() {
+                that.submitComponent.continuePolling();
+            });
+        },
+
+        tickObjChanged: function() {
+            console.log("tickObj changed", this.tickObj);
+
+            if (this.tickObj.deadline == null) {
                 this.datetime = null;
-                this.deadlinePassed = null;
-            },
-
-            observe: {
-                forked: 'showNewStatusCode',
-                reportAvailable: 'showNewStatusCode',
-                unitPass: 'showNewStatusCode',
-                humanPass: 'showNewStatusCode',
-                star: 'showNewStatusCode',
-                deadlinePassed: 'showNewStatusCode'
-            },
-
-            domReady: function() {
-                var that = this.$;
-                this.$.forkService.addEventListener('test-running', function() {
-                    that.submitComponent.continuePolling();
-                });
-            },
-
-            tickObjChanged: function() {
-                console.log("tickObj changed", this.tickObj);
-
-                if (this.tickObj.deadline == null) {
-                    this.datetime = null;
-                    this.deadlinePassed = false;
-                } else {
-                    this.datetime = moment(this.tickObj.deadline);
-                    this.deadlinePassed = this.datetime < moment();
-                    console.log("deadline Passed?", this.deadlinePassed);
-                }
-
-                this.forking = false;
-
-                this.star = this.tickObj.star;
-
-                if (this.tickObj.externalReference != null)
-                {
-                    this.externalReferences = this.tickObj.externalReference.split(/([ ,]|\n)+/);
-                    console.log("ex-refs", this.externalReferences);
-                }
-            },
-
-            createFork: function() {
-               this.$.forkService.createFork();
-            },
-
-            repoChanged: function() {
-                if (this.repo != null) {
-                    this.displayRepo = this.repo;
-                }
-
-                this.reportAvailableChanged();
-            },
-
-            reportAvailableChanged: function() {
-                if (this.reportAvailable && this.repo != null) {
-                    this.showReport();
-                } else {
-                    this.repoName = null;
-                }
-            },
-
-            showReport: function() {
-                this.job('show-report', function(){
-                    var regex = /urop2014\.dtg\.cl\.cam\.ac\.uk\/(.*)\.git/;
-                    this.repoName = this.repo.match(regex)[1];
-                }, 500);
-            },
-
-            showNewStatusCode: function() {
-                this.job('new-status', function() {
-                    this.computeStatusCode();
-                }, 330);
-            },
-
-            computeStatusCode: function() {
-                var oldCode = this.statusCode;
-                if (this.signedUp && !this.humanPass) {
-                    this.statusCode = "SU";
-                } else  if (this.deadlinePassed){
-                    //deadline passed, so failed.
-                    this.statusCode = "F";
-                } else if (!this.forked) {
-                    //Not started.
-                    this.statusCode = "-";
-                } else if (!this.reportAvailable) {
-                    //Not submitted.
-                    this.statusCode = "I";
-                } else if (!this.unitPass) {
-                    //Failed automated tests.
-                    this.statusCode = "UF";
-                } else if (!this.humanPass) {
-                    //Passed automated tests.
-                    this.statusCode = "UP";
-                } else if (this.humanPass) {
-                    //Passed by ticker
-                    if (this.tickObj.star) {
-                    	this.statusCode = "PS";
-                    } else {
-                    	this.statusCode = "P";
-                    }
-                } else {
-                    //invalid fork object state
-                    this.statusCode = "?";
-                }
-
-                if (oldCode != this.statusCode) {
-                    console.log("status code changed!");
-                    this.fire('status-changed', {tickId: this.tickId, statusCode: this.statusCode});
-                }
+                this.deadlinePassed = false;
+            } else {
+                this.datetime = moment(this.tickObj.deadline);
+                this.deadlinePassed = this.datetime < moment();
+                console.log("deadline Passed?", this.deadlinePassed);
             }
-        });
-    </script>
+
+            this.forking = false;
+
+            if (this.tickObj.externalReference != null)
+            {
+                this.externalReferences = this.tickObj.externalReference.split(/([ ,]|\n)+/);
+                console.log("ex-refs", this.externalReferences);
+            }
+        },
+
+        createFork: function() {
+            this.$.forkService.createFork();
+        },
+
+        repoChanged: function() {
+            if (this.repo != null) {
+                this.displayRepo = this.repo;
+            }
+
+            this.reportAvailableChanged();
+        },
+
+        reportAvailableChanged: function() {
+            if (this.reportAvailable && this.repo != null) {
+                this.showReport();
+            } else {
+                this.repoName = null;
+            }
+        },
+
+        showReport: function() {
+            this.job('show-report', function(){
+                var regex = /urop2014\.dtg\.cl\.cam\.ac\.uk\/(.*)\.git/;
+                this.repoName = this.repo.match(regex)[1];
+            }, 500);
+        },
+
+        showNewStatusCode: function() {
+            this.job('new-status', function() {
+                this.computeStatusCode();
+            }, 330);
+        },
+
+        computeStatusCode: function() {
+            var oldCode = this.statusCode;
+
+            if (this.signedUp) {
+                this.statusCode = "SU";
+            } else if (this.deadlinePassed){
+                //deadline passed, so failed.
+                this.statusCode = "F";
+            } else if (!this.forked) {
+                //Not started.
+                this.statusCode = "-";
+            } else if (!this.reportAvailable) {
+                //Not submitted.
+                this.statusCode = "I";
+            } else if (!this.unitPass) {
+                //Failed automated tests.
+                this.statusCode = "UF";
+            } else if (!this.humanPass) {
+                //Passed automated tests.
+                this.statusCode = "UP";
+            } else if (this.humanPass) {
+                //Passed by ticker
+                this.statusCode = "P";
+            } else {
+                //invalid fork object state
+                this.statusCode = "?";
+            }
+
+            if (oldCode != this.statusCode) {
+                console.log("status code changed!");
+                this.fire('status-changed', {tickId: this.tickId, forkBean: {
+                    deadlinePassed: this.deadlinePassed,
+                    forked: this.forked,
+                    reportAvailable: this.reportAvailable,
+                    unitPass: this.unitPass,
+                    humanPass: this.humanPass,
+                    signedUp: this.signedUp
+                }});
+            }
+        }
+    });
+</script>
 </polymer-element>
